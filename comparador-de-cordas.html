@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador Analítico | O Violino Definitivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">O Violino Definitivo.</a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="guia-de-cordas.html">Cordas</a>
+                    <div class="dropdown-content">
+                        <a href="guia-de-cordas.html">Guia Técnico</a>
+                        <a href="comparador-de-cordas.html">Comparador Analítico</a>
+                    </div>
+                </li>
+                <li><a href="fisica-do-som.html">Física do Som</a></li>
+                <li><a href="clinica-lutheria.html">Lutheria</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" style="margin-bottom: 3rem;">
+            <h1>Comparador Tribológico</h1>
+            <p>Cruze matrizes de tensão e comportamento friccional das principais cordas mundiais.</p>
+        </section>
+
+        <div class="selector-container">
+            <div class="select-group">
+                <label>Vetor Comparativo A</label>
+                <select id="stringA" onchange="updateComparison()">
+                    <option value="dominant">Thomastik Dominant</option>
+                    <option value="evah">Pirastro Evah Pirazzi</option>
+                    <option value="larsen">Larsen Tzigane</option>
+                    <option value="calixto">Mauro Calixto Tradicional</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label>Vetor Comparativo B</label>
+                <select id="stringB" onchange="updateComparison()">
+                    <option value="evah">Pirastro Evah Pirazzi</option>
+                    <option value="dominant">Thomastik Dominant</option>
+                    <option value="larsen">Larsen Tzigane</option>
+                    <option value="calixto">Mauro Calixto Tradicional</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-layout" style="margin-top: 0;">
+            <div id="cardA" class="string-data-card"></div>
+            <div id="cardB" class="string-data-card"></div>
+        </div>
+    </main>
+
+    <script>
+        const stringData = {
+            dominant: {
+                name: "Thomastik Dominant",
+                core: "Perlon Sintético",
+                tone: "Equilibrado",
+                projection: "Média",
+                tension: "Média",
+                bestFor: "O padrão referencial da indústria. Muito flexíveis, estabilizam rapidamente e são usadas largamente por profissionais em todo o mundo.[3]"
+            },
+            evah: {
+                name: "Pirastro Evah Pirazzi",
+                core: "Sintético Avançado",
+                tone: "Brilhante / Potente",
+                projection: "Alta",
+                tension: "Alta",
+                bestFor: "A escolha absoluta de solistas que demandam projeção massiva, volume intenso e resposta de arco ultra rápida.[1]"
+            },
+            larsen: {
+                name: "Larsen Tzigane",
+                core: "Compósito Sintético",
+                tone: "Quente / Texturizado",
+                projection: "Alta",
+                tension: "Baixa",
+                bestFor: "Possui grande ressonância e baixa tensão. Excelente para neutralizar instrumentos de timbres excessivamente estridentes.[1]"
+            },
+            calixto: {
+                name: "Mauro Calixto Trad.",
+                core: "100% Perlon",
+                tone: "Quente / Focado",
+                projection: "Média",
+                tension: "Média",
+                bestFor: "A excelência em custo-benefício nacional. Entrega dedilhado muito macio, similar a cordas importadas caríssimas.[2]"
+            }
+        };
+
+        function renderCard(id, dataKey) {
+            const data = stringData[dataKey];
+            const card = document.getElementById(id);
+            card.innerHTML = `
+                <h3>${data.name}</h3>
+                <div class="stat-row"><span class="stat-label">Núcleo Base</span> <span>${data.core}</span></div>
+                <div class="stat-row"><span class="stat-label">Textura Tonal</span> <span>${data.tone}</span></div>
+                <div class="stat-row"><span class="stat-label">Projeção</span> <span>${data.projection}</span></div>
+                <div class="stat-row"><span class="stat-label">Força Tensional</span> <span>${data.tension}</span></div>
+                <div class="stat-row" style="border: none; flex-direction: column; margin-top: 1rem;">
+                    <span class="stat-label" style="color: var(--secondary); margin-bottom: 0.5rem;">Cenário Ideal:</span> 
+                    <span style="font-size: 0.85rem; line-height: 1.6;">${data.bestFor}</span>
+                </div>
+            `;
+        }
+
+        function updateComparison() {
+            renderCard('cardA', document.getElementById('stringA').value);
+            renderCard('cardB', document.getElementById('stringB').value);
+        }
+
+        updateComparison();
+    </script>
+
+    <a href="https://wa.me/seunumeroaqui" class="whatsapp-float" target="_blank">W</a>
+    <footer>
+        <p>&copy; 2026 O Violino Definitivo. Alta performance estruturada com elegância.</p>
+    </footer>
+</body>
+</html>
