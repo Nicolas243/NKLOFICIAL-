@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador Analítico | O Violino Definitivo</title>
+    <title>Comparador Analítico | Violino NKL</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">O Violino Definitivo.</a>
+            <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
+            <img src="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.w50-h30-c1.png">
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
                 <li class="dropdown">
                     <a href="guia-de-cordas.html">Cordas</a>
                     <div class="dropdown-content">
@@ -19,21 +22,26 @@
                         <a href="comparador-de-cordas.html">Comparador Analítico</a>
                     </div>
                 </li>
-                <li><a href="fisica-do-som.html">Física do Som</a></li>
-                <li><a href="clinica-lutheria.html">Lutheria</a></li>
+                <li>
+                    <a href="fisica-do-som.html">Física do Som</a>
+                </li>
+                <li>
+                    <a href="clinica-lutheria.html">Lutheria</a>
+                    <a href="contatos/index.html">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;contatos</a>
+                </li>
             </ul>
         </nav>
     </header>
 
     <main>
         <section class="hero" style="margin-bottom: 3rem;">
-            <h1>Comparador Tribológico</h1>
-            <p>Cruze matrizes de tensão e comportamento friccional das principais cordas mundiais.</p>
+            <h1>Escolha com Ouvido e Coração</h1>
+            <p>Não compre no escuro. Coloque as principais marcas do mercado lado a lado e descubra qual delas vai casar melhor com a voz do seu violino.</p>
         </section>
 
         <div class="selector-container">
             <div class="select-group">
-                <label>Vetor Comparativo A</label>
+                <label>Primeira Opção de Corda</label>
                 <select id="stringA" onchange="updateComparison()">
                     <option value="dominant">Thomastik Dominant</option>
                     <option value="evah">Pirastro Evah Pirazzi</option>
@@ -42,7 +50,7 @@
                 </select>
             </div>
             <div class="select-group">
-                <label>Vetor Comparativo B</label>
+                <label>Segunda Opção de Corda</label>
                 <select id="stringB" onchange="updateComparison()">
                     <option value="evah">Pirastro Evah Pirazzi</option>
                     <option value="dominant">Thomastik Dominant</option>
@@ -62,35 +70,35 @@
         const stringData = {
             dominant: {
                 name: "Thomastik Dominant",
-                core: "Perlon Sintético",
-                tone: "Equilibrado",
+                core: "Sintético (Perlon)",
+                tone: "Neutro e Equilibrado",
                 projection: "Média",
                 tension: "Média",
-                bestFor: "O padrão referencial da indústria. Muito flexíveis, estabilizam rapidamente e são usadas largamente por profissionais em todo o mundo.[3]"
+                bestFor: "Considerada o padrão da indústria mundial. Elas são incrivelmente flexíveis, se adaptam muito rápido ao instrumento e servem como uma linha de base perfeita para profissionais testarem a acústica natural de um violino novo."
             },
             evah: {
                 name: "Pirastro Evah Pirazzi",
-                core: "Sintético Avançado",
-                tone: "Brilhante / Potente",
+                core: "Sintético Moderno",
+                tone: "Brilhante e Potente",
                 projection: "Alta",
                 tension: "Alta",
-                bestFor: "A escolha absoluta de solistas que demandam projeção massiva, volume intenso e resposta de arco ultra rápida.[1]"
+                bestFor: "A escolha favorita dos solistas que precisam de projeção massiva e um som que corte a orquestra. Entrega uma resposta imediata de arco, muito foco nas notas e uma presença imponente."
             },
             larsen: {
                 name: "Larsen Tzigane",
-                core: "Compósito Sintético",
-                tone: "Quente / Texturizado",
+                core: "Composto Sintético",
+                tone: "Quente e Encorpado",
                 projection: "Alta",
                 tension: "Baixa",
-                bestFor: "Possui grande ressonância e baixa tensão. Excelente para neutralizar instrumentos de timbres excessivamente estridentes.[1]"
+                bestFor: "Excelente para acalmar e equilibrar violinos que possuem um som excessivamente estridente ou agudo de fábrica. Oferece uma sensação de maciez muito confortável sob os dedos da mão esquerda."
             },
             calixto: {
                 name: "Mauro Calixto Trad.",
                 core: "100% Perlon",
-                tone: "Quente / Focado",
+                tone: "Quente e Focado",
                 projection: "Média",
                 tension: "Média",
-                bestFor: "A excelência em custo-benefício nacional. Entrega dedilhado muito macio, similar a cordas importadas caríssimas.[2]"
+                bestFor: "O maior destaque nacional em termos de custo-benefício. Perfeita para estudantes e profissionais que tocam no dia a dia e buscam um som macio, aveludado e confortável sem precisar investir em importadas caras."
             }
         };
 
@@ -100,11 +108,11 @@
             card.innerHTML = `
                 <h3>${data.name}</h3>
                 <div class="stat-row"><span class="stat-label">Núcleo Base</span> <span>${data.core}</span></div>
-                <div class="stat-row"><span class="stat-label">Textura Tonal</span> <span>${data.tone}</span></div>
-                <div class="stat-row"><span class="stat-label">Projeção</span> <span>${data.projection}</span></div>
-                <div class="stat-row"><span class="stat-label">Força Tensional</span> <span>${data.tension}</span></div>
+                <div class="stat-row"><span class="stat-label">Cor do Som</span> <span>${data.tone}</span></div>
+                <div class="stat-row"><span class="stat-label">Projeção de Volume</span> <span>${data.projection}</span></div>
+                <div class="stat-row"><span class="stat-label">Tensão/Peso nos Dedos</span> <span>${data.tension}</span></div>
                 <div class="stat-row" style="border: none; flex-direction: column; margin-top: 1rem;">
-                    <span class="stat-label" style="color: var(--secondary); margin-bottom: 0.5rem;">Cenário Ideal:</span> 
+                    <span class="stat-label" style="color: var(--secondary); margin-bottom: 0.5rem;">Quando vale a pena usar?</span> 
                     <span style="font-size: 0.85rem; line-height: 1.6;">${data.bestFor}</span>
                 </div>
             `;
@@ -118,9 +126,9 @@
         updateComparison();
     </script>
 
-    <a href="https://wa.me/seunumeroaqui" class="whatsapp-float" target="_blank">W</a>
+    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
     <footer>
-        <p>&copy; 2026 O Violino Definitivo. Alta performance estruturada com elegância.</p>
+        <p>&copy; 2026 Violino NkL. Alta performance estruturada com elegância.</p>
     </footer>
 </body>
 </html>
