@@ -21,7 +21,7 @@
                 </div>
                 <ul>
                     <li>
-                        <a href="index.html">Home</a>
+                        <a href="index.html" class="active">Home</a>
                     </li>
                     <li>
                         <a href="importacao.html">Importação</a>
@@ -65,7 +65,7 @@
                 </section>
             </div>
         </main>
-        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"></a>
         <footer class="site-footer">
             <div class="footer-grid">
                 <div class="footer-box">
@@ -93,35 +93,12 @@
         <script>
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
-
-            // Ícones em SVG desenhados diretamente no código (super leves)
-            const sunIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-            const moonIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-
-            // 1. Verifica se o usuário já escolheu antes (memória do navegador)
             const savedTheme = localStorage.getItem('nkl_theme');
-            // 2. Verifica a preferência do sistema operacional do usuário
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            // Se já tem salvo como escuro, OU se não tem salvo nada mas o sistema é escuro...
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-                body.classList.add('dark-theme');
-                themeToggleBtn.innerHTML = sunIcon; // Mostra o sol para poder voltar pro claro
-            } else {
-                themeToggleBtn.innerHTML = moonIcon; // Mostra a lua para poder ir pro escuro
-            }
-
-            // Ação do clique no botão
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { body.classList.add('dark-theme'); }
             themeToggleBtn.addEventListener('click', () => {
                 body.classList.toggle('dark-theme');
-                
-                if (body.classList.contains('dark-theme')) {
-                    localStorage.setItem('nkl_theme', 'dark'); // Salva a escolha
-                    themeToggleBtn.innerHTML = sunIcon; // Troca o ícone
-                } else {
-                    localStorage.setItem('nkl_theme', 'light'); // Salva a escolha
-                    themeToggleBtn.innerHTML = moonIcon; // Troca o ícone
-                }
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
             });
         </script>
     </body>

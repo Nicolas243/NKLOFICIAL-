@@ -11,7 +11,7 @@
     <meta property="og:title" content="Violino NKL | Referência em Acústica e Lutheria"/>
     <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
     <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
-    <body class="">
+    <body>
         <header class="site-header">
             <nav>
                 <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
@@ -32,7 +32,7 @@
                         <a href="javascript:void(0);">Cordas ▾</a>
                         <div class="dropdown-content">
                             <a href="guia-de-cordas.html">Guia Técnico</a>
-                            <a href="comparador-de-cordas.html">Comparador Analítico</a>
+                            <a href="comparador-de-cordas.html" class="active">Comparador Analítico</a>
                         </div>
                     </li>
                     <li>
@@ -134,7 +134,7 @@
 
         updateComparison();
     </script>
-        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"><br></a>
         <footer class="site-footer">
             <div class="footer-grid">
                 <div class="footer-box">
@@ -159,5 +159,16 @@
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+        <script>
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('nkl_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { body.classList.add('dark-theme'); }
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+        </script>
     </body>
 </html>

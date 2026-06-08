@@ -59,9 +59,9 @@
                 <p>Dentro do violino existe uma pequena estaca cilíndrica de madeira que chamamos carinhosamente de "Alma". Esse nome não é por acaso: ela literalmente dita a personalidade do instrumento. Localizada estrategicamente logo atrás do pé direito do cavalete, ela funciona como um ponto de apoio dinâmico que impede que as ondas sonoras se cancelem dentro da caixa. Músicos experientes sabem que mover a alma menos de 1mm para frente, para trás ou para os lados pode transformar completamente a projeção das notas. Um ajuste fino na alma pode deixar o som mais doce e aveludado para uma sala de câmara, ou extremamente focado e agressivo para solar em um grande teatro.</p>
             </section>
         </main>
-        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"></a>
         <footer class="site-footer">
-            <div class="footer-grid">
+            <div class="footer-grid pinegrow-ui-helper-relative">
                 <div class="footer-box">
                     <h4>Sua voz importa</h4>
                     <p>Queremos construir o melhor portal de lutheria do Brasil. Como podemos melhorar sua experiência?</p>
@@ -84,5 +84,16 @@
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+        <script>
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('nkl_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { body.classList.add('dark-theme'); }
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+        </script>
     </body>
 </html>

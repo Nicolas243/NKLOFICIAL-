@@ -525,25 +525,17 @@
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"></a>
         <script>
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('nkl_theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-            body.classList.add('dark-theme');
-        }
-
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            if (body.classList.contains('dark-theme')) {
-                localStorage.setItem('nkl_theme', 'dark');
-            } else {
-                localStorage.setItem('nkl_theme', 'light');
-            }
-        });
-    </script>
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('nkl_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { body.classList.add('dark-theme'); }
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+        </script>
     </body>
 </html>

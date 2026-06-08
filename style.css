@@ -3,12 +3,15 @@
 :root {
     --primary: #1a1a1a;
     --secondary: #a68a61;
-
-    /* Subtle Gold/Brass */
     --bg: #ffffff;
     --surface: #fdfdfd;
     --text: #4a4a4a;
     --border: #eeeeee;
+
+    /* Cores Dinâmicas para o Menu Ativo */
+    --active-link: #003b73;
+
+    /* Azul Céu Escuro para Tema Claro */
 }
 
 * {
@@ -48,14 +51,16 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
+    transition: background 0.3s, border-color 0.3s;
 }
 
 nav {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
     padding: 0 2rem;
 }
 
@@ -67,10 +72,13 @@ nav {
 }
 
 nav ul {
-    display: flex;
-    list-style: none;
-    gap: 2.5rem;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    list-style: none !important;
+    gap: 2.5rem !important;
+    margin: 0 auto 0 auto !important;
+    padding: 0 !important;
+    align-items: center !important;
 }
 
 nav ul li a {
@@ -78,10 +86,30 @@ nav ul li a {
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text);
+    font-weight: 500;
 }
 
 nav ul li a:hover {
     color: var(--secondary);
+}
+
+/* Menu Ativo (Negrito, Sublinhado e Azul) */
+.site-header nav a.active {
+    color: var(--active-link) !important;
+    font-weight: 700 !important;
+    position: relative;
+}
+
+.site-header nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--active-link);
+    border-radius: 2px;
+    transition: background-color 0.3s;
 }
 
 /* Dropdown */
@@ -117,14 +145,13 @@ nav ul li a:hover {
     color: var(--secondary);
 }
 
-/* Main Layout */
+/* Main Layout & Cards */
 main {
     max-width: 900px;
     margin: 5rem auto;
     padding: 0 2rem;
 }
 
-/* Hero Section */
 .hero {
     text-align: center;
     margin-bottom: 5rem;
@@ -160,7 +187,6 @@ main {
     color: var(--primary);
 }
 
-/* Grid & Cards */
 .grid-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -172,11 +198,12 @@ main {
     background: var(--surface);
     padding: 3.5rem 2.5rem;
     border: 1px solid var(--border);
-    transition: transform 0.3s;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
 }
 
 .section-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 .section-card h2,
@@ -198,7 +225,7 @@ main {
     letter-spacing: 1px;
 }
 
-/* Tables */
+/* Tabelas e Comparadores */
 .comparison-table {
     width: 100%;
     border-collapse: collapse;
@@ -219,7 +246,6 @@ main {
     color: var(--primary);
 }
 
-/* Comparador Selectors */
 .selector-container {
     display: flex;
     gap: 2rem;
@@ -280,7 +306,6 @@ select:focus {
     color: var(--primary);
 }
 
-/* Visualizador PDF */
 .pdf-container {
     width: 100%;
     height: 600px;
@@ -289,86 +314,16 @@ select:focus {
     background: var(--surface);
 }
 
-/* Footer & WhatsApp Monograma Chic */
-footer {
-    text-align: center;
-    padding: 4rem 2rem;
-    border-top: 1px solid var(--border);
-    margin-top: 5rem;
-    font-size: 0.85rem;
-    color: #999;
-}
-
-.whatsapp-float {
-    position: fixed;
-    bottom: 35px;
-    right: 35px;
-    width: 55px;
-    height: 55px;
-    background: var(--primary);
-    color: var(--bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    font-style: italic;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: transform 0.3s, background 0.3s;
-    z-index: 9999;
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.05);
-    background: var(--secondary);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    nav {
-        flex-direction: column;
-        padding: 1rem;
-    }
-
-    nav ul {
-        margin-top: 1.5rem;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .grid-layout,
-    .selector-container,
-    .comparison-table {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-        display: block;
-    }
-
-    .hero h1 {
-        font-size: 2.2rem;
-    }
-
-    .comparison-table td,
-    .comparison-table th {
-        display: block;
-        width: 100%;
-    }
-}
-
-/* =========================================
-   ATUALIZAÇÃO NKL: SEO, ANIMAÇÕES E DARK MODE
-   ========================================= */
-/* 1. Animações de Vida para o site */
+/* Animações Orgânicas e Chiques */
 .section-card,
 .hero {
-    animation: fadeUp 0.8s ease-out forwards;
+    animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fadeUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
 
     to {
@@ -377,24 +332,7 @@ footer {
     }
 }
 
-/* 2. Menu Dinâmico */
-.site-header nav a.active {
-    color: var(--secondary) !important;
-    position: relative;
-}
-
-.site-header nav a.active::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--secondary);
-    border-radius: 2px;
-}
-
-/* 3. Imagens interativas nas páginas */
+/* Imagens Interativas */
 .image-placeholder {
     width: 100%;
     height: auto;
@@ -418,14 +356,16 @@ footer {
     object-fit: cover;
 }
 
-/* 4. Modo Escuro Inteligente (Dark Mode) */
-/* 4. Modo Escuro Manual e Dinâmico */
+/* ─── Modo Escuro Dinâmico ─── */
 body.dark-theme {
-    --bg: #121212;
+    --bg: #000000;
     --surface: #1e1e1e;
     --text: #e0e0e0;
     --primary: #ffffff;
     --border: #333333;
+    --active-link: #89CFF0;
+
+    /* Azul Bebê para Tema Escuro */
 }
 
 body.dark-theme .logo-img {
@@ -438,20 +378,6 @@ body.dark-theme .image-placeholder {
     color: #aaa;
 }
 
-/* Estilo do Botão de Tema */
-.theme-toggle {
-    background: none;
-    border: none;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px;
-    border-radius: 50%;
-    transition: background 0.3s, color 0.3s, transform 0.3s;
-}
-
 /* ─── Sistema de Ícone Único Inteligente (moonsun.png) ─── */
 .theme-toggle {
     width: 32px;
@@ -462,12 +388,8 @@ body.dark-theme .image-placeholder {
     border: none;
     cursor: pointer;
     flex-shrink: 0;
-
-    /* Mostra a imagem inteira, centralizada e sem cortar */
     background-size: contain;
     background-position: center;
-
-    /* Animação suave para o giro */
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -475,12 +397,11 @@ body.dark-theme .image-placeholder {
     transform: scale(1.15) rotate(15deg);
 }
 
-/* Quando o tema é escuro, o ícone dá um giro completo de 360 graus */
 body.dark-theme .theme-toggle {
     transform: rotate(360deg);
 }
 
-/* 5. Novo Rodapé Profissional */
+/* Rodapé & WhatsApp */
 .site-footer {
     background-color: var(--surface);
     border-top: 1px solid var(--border);
@@ -543,8 +464,6 @@ body.dark-theme .theme-toggle {
     font-weight: 600;
     font-family: 'Inter', sans-serif;
     display: inline-flex;
-
-    /* Isso é o que conserta o alinhamento (deixa ele no tamanho exato) */
     align-items: center;
     justify-content: center;
     gap: 8px;
@@ -556,6 +475,55 @@ body.dark-theme .theme-toggle {
     filter: brightness(1.1);
 }
 
-.btn-pix:hover {
-    filter: brightness(1.1);
+.whatsapp-float {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    width: 55px;
+    height: 55px;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header nav {
+        flex-direction: column !important;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    header nav ul {
+        flex-direction: column !important;
+        margin: 1rem 0 !important;
+        gap: 1rem !important;
+    }
+
+    .grid-layout,
+    .selector-container,
+    .comparison-table {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        display: block;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .comparison-table td,
+    .comparison-table th {
+        display: block;
+        width: 100%;
+    }
 }

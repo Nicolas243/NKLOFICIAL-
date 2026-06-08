@@ -36,7 +36,7 @@
                         </div>
                     </li>
                     <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
+                        <a href="fisica-do-som.html" class="active">Física do Som</a>
                     </li>
                     <li>
                         <a href="contatos/index.html">Contatos</a>
@@ -100,5 +100,16 @@
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+        <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('nkl_theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { body.classList.add('dark-theme'); }
+        themeToggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        });
+    </script>
     </body>
 </html>
