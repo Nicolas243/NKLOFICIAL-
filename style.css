@@ -112,6 +112,31 @@ nav ul li a:hover {
     transition: background-color 0.3s;
 }
 
+/* Altura do cabeçalho padronizada com o Contatos */
+header,
+.site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 0 !important;
+
+    /* Reduzido de 2rem para 1.5rem */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* Afasta a logo "NKL" do link "HOME" */
+.nav-brand {
+    margin-right: 3rem !important;
+}
+
+/* Afasta o botão Sol/Lua do link "CONTATOS" */
+.theme-toggle {
+    margin-left: 2rem !important;
+
+    /* ... mantenha o resto das regras do theme-toggle que já estão aí ... */
+}
+
 /* Dropdown */
 .dropdown {
     position: relative;
