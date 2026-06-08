@@ -520,35 +520,34 @@ body.dark-theme .theme-toggle {
     transform: scale(1.1);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
-    header nav {
-        flex-direction: column !important;
-        padding: 1rem;
-        gap: 1rem;
+    /* 1. Altura do cabeçalho otimizada para o celular */
+    .site-header { padding: 1rem 0 !important; }
+
+    /* 2. Layout do Nav: Logo e Botão em cima, Menu embaixo */
+    .site-header nav { 
+        flex-wrap: wrap !important; 
+        padding: 0 1rem !important; 
     }
 
-    header nav ul {
-        flex-direction: column !important;
-        margin: 1rem 0 !important;
-        gap: 1rem !important;
+    /* 3. Ajuste da Logo e do Botão */
+    .nav-brand { margin-right: auto !important; }
+    .theme-toggle { margin-left: 1rem !important; }
+
+    /* 4. Menu em linha única com scroll horizontal (evita quebrar a tela) */
+    .site-header nav ul { 
+        width: 100% !important; 
+        margin-top: 1rem !important;
+        overflow-x: auto !important; /* Permite arrastar o menu para o lado */
+        white-space: nowrap !important;
+        display: flex !important;
+        flex-direction: row !important; /* Mantém em linha */
+        gap: 1.5rem !important;
+        justify-content: flex-start !important;
+        padding-bottom: 0.5rem !important;
     }
 
-    .grid-layout,
-    .selector-container,
-    .comparison-table {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-        display: block;
-    }
-
-    .hero h1 {
-        font-size: 2.2rem;
-    }
-
-    .comparison-table td,
-    .comparison-table th {
-        display: block;
-        width: 100%;
-    }
+    /* 5. Ajuste fino do tamanho da fonte para caber tudo */
+    .site-header nav ul li a { font-size: 0.7rem !important; }
+}
 }
