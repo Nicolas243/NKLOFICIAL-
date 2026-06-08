@@ -358,18 +358,34 @@ body {
     }
 }
 
-@media (max-width: 480px) {
-    .link-card {
-        padding: 1rem;
+@media (max-width: 768px) {
+    /* 1. Altura do cabeçalho otimizada para o celular */
+    .site-header { padding: 1rem 0 !important; }
+
+    /* 2. Layout do Nav: Logo e Botão em cima, Menu embaixo */
+    .site-header nav { 
+        flex-wrap: wrap !important; 
+        padding: 0 1rem !important; 
     }
 
-    .link-icon {
-        width: 40px;
-        height: 40px;
-        margin-right: 1rem;
+    /* 3. Ajuste da Logo e do Botão */
+    .nav-brand { margin-right: auto !important; }
+    .theme-toggle { margin-left: 1rem !important; }
+
+    /* 4. Menu em linha única com scroll horizontal (evita quebrar a tela) */
+    .site-header nav ul { 
+        width: 100% !important; 
+        margin-top: 1rem !important;
+        overflow-x: auto !important; /* Permite arrastar o menu para o lado */
+        white-space: nowrap !important;
+        display: flex !important;
+        flex-direction: row !important; /* Mantém em linha */
+        gap: 1.5rem !important;
+        justify-content: flex-start !important;
+        padding-bottom: 0.5rem !important;
     }
 
-    .footer-grid {
-        text-align: center;
-    }
+    /* 5. Ajuste fino do tamanho da fonte para caber tudo */
+    .site-header nav ul li a { font-size: 0.7rem !important; }
+}
 }
