@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
-        <link rel="icon" type="image/png" href="NKL/NKL.png">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Importação Direta | Método NKL</title>
+        <title>Gráfico de Cordas | Método NKL</title>
+        <link rel="icon" type="image/png" href="NKL/NKL.png">
         <link rel="stylesheet" href="style.css">
-        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino">
+        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, gráfico de cordas, pirastro, thomastik">
         <meta name="author" content="Nicolas Da Costa Santos">
-        <meta property="og:title" content="Importação Direta | Método NKL"/>
-        <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
+        <meta property="og:title" content="Gráfico de Cordas | Método NKL"/>
+        <meta property="og:description" content="Explore o mapa analítico de cordas para violino. Encontre o equilíbrio perfeito entre brilho, calor e tensão."/>
         <meta property="og:image" content="NKL/NKL.png"/>
         <style>
             .site-header { font-family: 'Inter', sans-serif !important; background-color: var(--bg) !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
@@ -33,13 +33,17 @@
             .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
             .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
 
+            /* Estilos específicos para a tabela/conteúdo de cordas */
+            .grid-caracteristicas { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+            .card-info { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; }
+            .card-info h3 { color: var(--secondary); margin-bottom: 0.5rem; }
+
             @media (max-width: 768px) { 
                 .site-header { padding: 1rem 0 !important; }
                 .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
                 .site-header .nav-brand { margin-right: auto !important; } 
                 .theme-toggle { margin-left: 0 !important; } 
                 
-                /* ESTADO INICIAL (No topo): Menu aberto e botão oculto */
                 .mobile-menu-btn { display: none; }
                 .site-header nav ul { 
                     display: flex !important; 
@@ -52,17 +56,9 @@
                     order: 3; 
                 } 
 
-                /* ESTADO APÓS O SCROLL (Classe .scrolled ativada via JavaScript) */
-                .site-header.scrolled .mobile-menu-btn { 
-                    display: block; 
-                }
-                .site-header.scrolled nav ul { 
-                    display: none !important; 
-                } 
-                /* Se o usuário clicar para abrir o menu mesmo após o scroll */
-                .site-header.scrolled nav ul.show { 
-                    display: flex !important; 
-                }
+                .site-header.scrolled .mobile-menu-btn { display: block; }
+                .site-header.scrolled nav ul { display: none !important; } 
+                .site-header.scrolled nav ul.show { display: flex !important; }
             }
         </style>
     </head>
@@ -78,15 +74,15 @@
                         <a href="index.html">Home</a>
                     </li>
                     <li>
-                        <a href="importacao.html" class="active">Importação</a>
+                        <a href="importacao.html">Importação</a>
                     </li>
                     <li>
                         <a href="recomendados.html">Recomendados</a>
                     </li>
                     <li class="dropdown">
-                        <a href="javascript:void(0);">Cordas▾</a>
+                        <a href="javascript:void(0);" class="active">Cordas▾</a>
                         <div class="dropdown-content">
-                            <a href="guia-de-cordas.html">Gráfico de Cordas</a>
+                            <a href="guia-de-cordas.html" class="active">Gráfico de Cordas</a>
                             <a href="comparador-de-cordas.html">Comparador Analítico</a>
                         </div>
                     </li>
@@ -110,35 +106,36 @@
         </header>
         <main>
             <section class="hero" style="margin-bottom: 3rem;">
-                <h1>Equipamento Premium, Preço de Fábrica</h1>
-                <p>Descubra como adquirir violinos, arcos e acessórios de alta performance cortando intermediários e economizando até 40%.</p>
+                <h1>Gráfico Analítico de Cordas</h1>
+                <p>Compreenda a fundo como cada modelo se comporta em termos de timbre, projeção e resposta física sob o arco.</p>
             </section>
+
             <section class="section-card">
-                <h2>O Segredo do Mercado Musical</h2>
-                <p>Você já se perguntou por que um instrumento custa tão caro nas lojas brasileiras? A resposta está na cadeia de atravessadores. Como músico e pesquisador, eu desenvolvi um caminho para que você tenha acesso direto às fontes.</p>
-                <ul style="line-height: 1.8; margin-top: 1.5rem; margin-left: 1.5rem;">
-                    <li>
-                        <strong>Instrumentos Completos:</strong> A lei permite a importação de violinos, violas e violoncelos (caixas de até 30kg). Você pode adquirir instrumentos de oficina com madeiras tradicionais europeias por uma fração do preço nacional.
-                    </li>
-                    <li>
-                        <strong>Acessórios Direto da Fonte:</strong> Arcos de pau-brasil, estojos de fibra de carbono, cordas profissionais e breus premium importados com segurança.
-                    </li>
-                    <li>
-                        <strong>Oportunidade de Negócio:</strong> Muitos alunos utilizam este método para iniciar sua própria loja ou oficina, revendendo acessórios com alta margem de lucro.
-                    </li>
-                </ul>
-            </section>
-            <section class="section-card" style="background: var(--surface); border: 2px solid var(--secondary); text-align: center; padding: 3rem 2rem;">
-                <h2 style="margin-bottom: 1rem;">O Método NKL</h2>
-                <p style="font-size: 1.1rem; max-width: 800px; margin: 0 auto 2rem;">
-                    O conhecimento tem valor. Se você tem condições financeiras de investir neste treinamento, saiba que o valor cobrado é irrisório perto dos milhares de reais que você vai economizar ao longo da sua vida musical. <br><br> <strong>Mas nós conhecemos a realidade do músico no Brasil.</strong> Se a grana está realmente curta e você precisa desse acesso para evoluir nos seus estudos, use o cupom de apoio abaixo.
-                </p>
-                <div style="background: var(--bg); display: inline-flex; align-items: center; padding: 10px 20px; border-radius: 8px; border: 1px dashed var(--border); margin-bottom: 2rem;">
-                    <span style="font-family: monospace; font-size: 1.2rem; font-weight: bold; margin-right: 15px;" id="cupomText">METODONKL</span>
-                    <button onclick="navigator.clipboard.writeText('METODONKL'); alert('Cupom copiado!');" style="background: var(--secondary); color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Copiar Cupom</button>
+                <h2>O Mapa do Timbre Perfeito</h2>
+                <p>Escolher a corda ideal não é uma questão de comprar a mais cara, mas sim de encontrar o complemento acústico para as deficiências ou qualidades do seu instrumento. Um violino excessivamente estridente pede cordas calorosas; um instrumento focado e escuro pode se beneficiar de cordas brilhantes.</p>
+                
+                <div class="grid-caracteristicas">
+                    <div class="card-info">
+                        <h3>Cordas Brilhantes (Bright)</h3>
+                        <p>Oferecem maior clareza, projeção e harmônicos superiores evidentes. Excelentes para solos e instrumentos que soam muito "fechados". Exemplos: Evah Pirazzi, Dominant Pro.</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Cordas Calorosas (Warm)</h3>
+                        <p>Focadas nas frequências fundamentais fundamentadas, gerando um som encorpado, aveludado e doce. Ideal para domar violinos estridentes. Exemplos: Obligato, Kaplan Amo.</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Núcleo Sintético</h3>
+                        <p>A engenharia moderna (como o nylon modificado ou multifilamentos sintéticos) entrega a estabilidade de afinação do metal com a riqueza tímbrica das antigas cordas de tripa.</p>
+                    </div>
                 </div>
-                <br>
-                <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" style="display: inline-block; background: #E94D35; color: #fff; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 8px; text-decoration: none; transition: transform 0.2s;">Acessar o Método NKL Agora</a>
+            </section>
+
+            <section class="section-card">
+                <h2>Como Utilizar o Guia Técnico</h2>
+                <p>Nesta seção, estruturamos os dados cruzando a **Tensão Dinâmica** (em Newtons/Kg) com a **Curva de Equalização Natural** do material. Para testar combinações específicas e simular o impacto direto no cavalete, utilize a nossa ferramenta interativa no menu.</p>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="comparador-de-cordas.html" class="btn-outline" style="display: inline-block; text-decoration: none; padding: 12px 24px;">Ir para o Comparador Analítico ➔</a>
+                </div>
             </section>
         </main>
         <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"></a>
@@ -189,18 +186,16 @@
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.getElementById('nav-links');
 
-            // Abre/Fecha manualmente via clique nas 3 barras (quando recolhido)
             mobileBtn.addEventListener('click', () => {
                 navLinks.classList.toggle('show');
             });
 
-            // Monitora a rolagem da página para encolher/expandir
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
                     header.classList.add('scrolled');
                 } else {
                     header.classList.remove('scrolled');
-                    navLinks.classList.remove('show'); // Reseta o estado aberto ao colar no topo
+                    navLinks.classList.remove('show');
                 }
             });
         </script>
