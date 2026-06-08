@@ -5,62 +5,108 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Equipamentos Recomendados | Violino NKL</title>
         <link rel="stylesheet" href="style.css">
-        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria">
+        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, equipamentos, arcos, breu, espalheira, cavalete">
         <meta name="author" content="Nicolas Da Costa Santos">
+        <meta property="og:title" content="Equipamentos Recomendados | Violino NKL"/>
+        <meta property="og:description" content="Seleção criteriosa de acessórios e arcos testados na bancada e aprovados por alunos."/>
+        
         <style>
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .product-thumb { width: 100%; height: 180px; background: #fdfdfd; border-radius: 6px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: #ccc; font-style: italic; border: 1px dashed var(--border); overflow: hidden; }
-        .product-thumb img { width: 100%; height: 100%; object-fit: contain; }
-        .product-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary); line-height: 1.4; }
-        .product-comment { font-size: 0.85rem; font-style: italic; color: #666; margin-bottom: 1.2rem; flex-grow: 1; line-height: 1.5; }
-        .product-price { font-size: 1.3rem; font-weight: bold; color: var(--secondary); margin-bottom: 1rem; }
-        .button-group { display: flex; gap: 8px; width: 100%; }
-        .product-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: opacity 0.2s, filter 0.2s; border: none; cursor: pointer; }
-        .product-btn:hover { filter: brightness(0.95); }
-        .btn-shopee { background: #EE4D2D; color: white; }
-        .btn-ml { background: #FFF159; color: #333; border: 1px solid #e6d83e; }
-        .btn-aliexpress { background: #FF4747; color: white; }
-        .category-title { margin-top: 4rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; font-size: 1.8rem; }
-        .subcategory-divider { font-size: 1.1rem; color: var(--secondary); margin: 2rem 0 1rem; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif; font-weight: 600; }
-        body.dark-theme .product-thumb { background: #2a2a2a; border-color: #444; color: #aaa; }
-    </style>
+            .site-header { font-family: 'Inter', sans-serif !important; background-color: var(--bg) !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
+            .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
+            .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
+            .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: var(--text) !important; text-decoration: none; } 
+            .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
+            .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text) !important; text-decoration: none; transition: color 0.3s; } 
+            .site-header nav a:hover, .site-header nav a.active { color: #a68a61 !important; } 
+            .site-header .dropdown { position: relative; } 
+            .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface) !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); } 
+            .site-header .dropdown:hover .dropdown-content { display: block; } 
+            .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; } 
+            .site-header .dropdown-content a:hover { background-color: var(--bg) !important; color: #a68a61 !important; } 
+            .theme-toggle { width: 32px; height: 32px; margin-left: 2rem !important; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
+            .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
+            .dark-theme .theme-toggle { transform: rotate(360deg); } 
+            body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
+
+            /* Botão mobile */
+            .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
+            .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
+
+            @media (max-width: 768px) { 
+                .site-header { padding: 1rem 0 !important; }
+                .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
+                .site-header .nav-brand { margin-right: auto !important; } 
+                .theme-toggle { margin-left: 0 !important; } 
+                
+                .mobile-menu-btn { display: none; }
+                .site-header nav ul { 
+                    display: flex !important; 
+                    width: 100%; 
+                    flex-direction: column !important; 
+                    margin: 1rem 0 0 0 !important; 
+                    padding-top: 1rem !important; 
+                    border-top: 1px solid var(--border); 
+                    gap: 1rem !important; 
+                    order: 3; 
+                } 
+
+                .site-header.scrolled .mobile-menu-btn { display: block; }
+                .site-header.scrolled nav ul { display: none !important; } 
+                .site-header.scrolled nav ul.show { display: flex !important; }
+            }
+
+            /* Product Grid */
+            .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+            .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; }
+            .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+            .product-thumb { width: 100%; height: 120px; background: #fdfdfd; border-radius: 6px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: #ccc; font-style: italic; font-size: 0.9rem; font-weight: bold; border: 1px dashed var(--border); overflow: hidden; text-align: center; padding: 1rem; }
+            .product-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary); line-height: 1.4; }
+            .product-comment { font-size: 0.85rem; font-style: italic; color: #666; margin-bottom: 1.2rem; flex-grow: 1; line-height: 1.5; }
+            .product-price { font-size: 1.3rem; font-weight: bold; color: var(--secondary); margin-bottom: 1rem; }
+            .button-group { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+            .product-btn { display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; min-width: 80px; padding: 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: opacity 0.2s, filter 0.2s; border: none; cursor: pointer; text-align: center; }
+            .product-btn:hover { filter: brightness(0.95); }
+            .btn-shopee { background: #EE4D2D; color: white; }
+            .btn-ml { background: #FFF159; color: #333; border: 1px solid #e6d83e; }
+            .btn-aliexpress { background: #FF4747; color: white; }
+            .category-title { margin-top: 4rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; font-size: 1.8rem; }
+            .subcategory-divider { font-size: 1.1rem; color: var(--secondary); margin: 2rem 0 0.5rem; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif; font-weight: 600; }
+            .sub-badge { display: inline-block; background: var(--secondary); color: var(--bg); padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; vertical-align: middle; }
+            body.dark-theme .product-thumb { background: #2a2a2a; border-color: #444; color: #aaa; }
+        </style>
     </head>
     <body class="dark-theme">
-        <header class="site-header">
+        <header id="site-header" class="site-header">
             <nav>
-                <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
+                <div class="nav-brand">
                     <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
                     <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
                 </div>
-                <ul class="">
-                    <li>
-                        <a href="index.html">Home</a>
-                    </li>
-                    <li>
-                        <a href="importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="recomendados.html" class="active">Recomendados</a>
-                    </li>
+                <ul id="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="importacao.html">Importação</a></li>
+                    <li><a href="recomendados.html" class="active">Recomendados</a></li>
                     <li class="dropdown">
-                        <a href="javascript:void(0);" class="">Cordas▾</a>
+                        <a href="javascript:void(0);">Cordas▾</a>
                         <div class="dropdown-content">
                             <a href="guia-de-cordas.html">Gráfico de Cordas</a>
                             <a href="comparador-de-cordas.html">Comparador Analítico</a>
                         </div>
                     </li>
-                    <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
-                    </li>
-                    <li>
-                        <a href="contatos/index.html">Contatos</a>
-                    </li>
+                    <li><a href="fisica-do-som.html">Física do Som</a></li>
+                    <li><a href="contatos/index.html">Contatos</a></li>
                 </ul>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+                <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
+                    <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
             </nav>
         </header>
+
         <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
             <section class="hero" style="margin-bottom: 2rem; text-align: center;">
                 <h1>Equipamentos Recomendados</h1>
@@ -72,13 +118,16 @@
                     <a href="#cavaletes" class="btn-outline">Cavaletes</a>
                 </div>
             </section>
-            <h2 id="arcos" class="category-title">Arcos Recomendados (Do mais barato ao mais caro)</h2>
+
+            <!-- ================= ARCOS ================= -->
+            <h2 id="arcos" class="category-title">Arcos Recomendados <span style="font-size: 1rem; font-weight: normal; color: #888;">(Do mais barato ao mais caro)</span></h2>
+            
             <div class="subcategory-divider">&#9632; Violino</div>
             <div class="product-grid">
                 <div class="product-card">
-                    <div class="product-thumb">ARCO MAÇARANDUBA</div>
+                    <div class="product-thumb">MADEIRA MAÇARANDUBA</div>
                     <h3 class="product-title">Arco de Madeira Maçaranduba 4/4</h3>
-                    <p class="product-comment">&quot;Dois alunos compraram e achei Excelente.&quot;</p>
+                    <p class="product-comment">"Dois alunos compraram e achei Excelente."</p>
                     <div class="product-price">R$ 159</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/6pm8v9NS3U" target="_blank" class="product-btn btn-shopee">Shopee</a>
@@ -87,56 +136,205 @@
                 <div class="product-card">
                     <div class="product-thumb">FIBRA DE CARBONO</div>
                     <h3 class="product-title">Arco Fibra de Carbono Talão Flor de Lis (Crina Animal)</h3>
-                    <p class="product-comment">&quot;Excelente estabilidade e distribuição de peso.&quot;</p>
-                    <div class="product-price">R$ 254,32</div>
+                    <p class="product-comment">"Excelente estabilidade e distribuição de peso."</p>
+                    <div class="product-price">R$ 254</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/40RxXvig8W" target="_blank" class="product-btn btn-shopee">Shopee</a>
                     </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-thumb">ARCO ATUAL NIKO</div>
+                    <div class="product-thumb">MADEIRA OITAVADO</div>
+                    <h3 class="product-title">Arco Profissional Oitavado Flor de Lis Gold</h3>
+                    <p class="product-comment">"Crina Animal Mongólia."</p>
+                    <div class="product-price">R$ 259</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/2fxCNtKqaH" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MADEIRA PREMIUM</div>
                     <h3 class="product-title">Arco Madeira Guarnição Premium Crina Animal Top</h3>
-                    <p class="product-comment">&quot;Arco que uso atualmente, super recomendo.&quot;</p>
+                    <p class="product-comment">"Arco que uso atualmente, super recomendo."</p>
                     <div class="product-price">R$ 259</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/2VdmBwtM2t" target="_blank" class="product-btn btn-shopee">Shopee</a>
                     </div>
                 </div>
                 <div class="product-card">
+                    <div class="product-thumb">FIBRA TRANÇADO</div>
+                    <h3 class="product-title">Arco Fibra Carbono Trançado Flor Lis/Gold</h3>
+                    <p class="product-comment">"Sou mais arco de madeira, mas ótima opção em fibra."</p>
+                    <div class="product-price">R$ 309 - R$ 310</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/7KiPW1vxRD" target="_blank" class="product-btn btn-shopee">Talão Gold</a>
+                        <a href="https://s.shopee.com.br/7peg6ZYXyS" target="_blank" class="product-btn btn-shopee">Flor Lis Gold</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PAU COBRA</div>
+                    <h3 class="product-title">Arco Premium Pau Cobra Flor Lis Gold</h3>
+                    <p class="product-comment">"Profissional premium."</p>
+                    <div class="product-price">R$ 332</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/7fLsLKqwwP" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PAU BRASIL</div>
+                    <h3 class="product-title">Arco Pau Brasil Oficina</h3>
+                    <p class="product-comment">"Madeira nobre, salto de qualidade considerável."</p>
+                    <div class="product-price">R$ 601</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/1BC9Qbs" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PAU COBRA PREMIUM</div>
+                    <h3 class="product-title">Arco Pau Cobra Premium</h3>
+                    <p class="product-comment">"Estabilidade superior na condução do som."</p>
+                    <div class="product-price">R$ 789</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/2NXmhRE" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
                     <div class="product-thumb">PERNAMBUCO ORQUEZZ</div>
                     <h3 class="product-title">Arco Pau Brasil Pernambuco Orquezz</h3>
-                    <p class="product-comment">&quot;Madeira selecionada nível orquestra.&quot;</p>
+                    <p class="product-comment">"Madeira selecionada nível orquestra."</p>
                     <div class="product-price">R$ 867</div>
                     <div class="button-group">
                         <a href="https://mercadolivre.com/sec/1ttgU6G" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
                     </div>
                 </div>
                 <div class="product-card">
+                    <div class="product-thumb">PAU BRASIL OLIST</div>
+                    <h3 class="product-title">Arco Pau Brasil Olist</h3>
+                    <p class="product-comment">"Opção premium em Pau Brasil."</p>
+                    <div class="product-price">R$ 917</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/26k7ZJP" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
                     <div class="product-thumb">PERNAMBUCO MARFIM</div>
-                    <h3 class="product-title">Arco Pau Brasil Pernambuco Talão Osso Marfim</h3>
-                    <p class="product-comment">&quot;A obra-prima do setup. Resposta instantânea e timbre limpo.&quot;</p>
+                    <h3 class="product-title">Arco Pernambuco Talão Osso Marfim</h3>
+                    <p class="product-comment">"A obra-prima do setup. Resposta instantânea e timbre limpo."</p>
                     <div class="product-price">R$ 1.597</div>
                     <div class="button-group">
                         <a href="https://meli.la/1Xq6QGb" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
                     </div>
                 </div>
             </div>
+
+            <div class="subcategory-divider">&#9632; Viola de Arco</div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">MASSARANDUBA</div>
+                    <h3 class="product-title">Arco Viola Profissional Massaranduba</h3>
+                    <p class="product-comment">"Boa relação custo/benefício para iniciar."</p>
+                    <div class="product-price">R$ 265</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/9KdAnpOEqR" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PHOENIX CLASSIC</div>
+                    <h3 class="product-title">Arco Profissional Viola Phoenix Classic</h3>
+                    <p class="product-comment">"Construção robusta."</p>
+                    <div class="product-price">R$ 357</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/AUp8ByJnTg" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MADEIRA IPÊ</div>
+                    <h3 class="product-title">Arco Profissional Viola Madeira Ipê</h3>
+                    <p class="product-comment">"Tá muito barato."</p>
+                    <div class="product-price">R$ 538</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/AKVhzfKQof" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PAU BRASIL PERNAMBUCO</div>
+                    <h3 class="product-title">Arco Viola Pau Brasil Pernambuco</h3>
+                    <p class="product-comment">"O salto definitivo para timbre profissional em viola."</p>
+                    <div class="product-price">R$ 1.259</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/2ixcoyQ" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subcategory-divider">&#9632; Violoncelo</div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">MASSARANDUBA BÁSICO</div>
+                    <h3 class="product-title">Arco Cello 4/4 Massaranduba</h3>
+                    <p class="product-comment">"Opção de entrada para estudo."</p>
+                    <div class="product-price">R$ 175</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/8V43o5ASP5" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">FLOR LIS MASSARANDUBA</div>
+                    <h3 class="product-title">Arco Cello Flor Lis Massaranduba</h3>
+                    <p class="product-comment">"Melhor acabamento visual e peso."</p>
+                    <div class="product-price">R$ 315</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/8KkdbmB5k2" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">PROFISSIONAL IPÊ</div>
+                    <h3 class="product-title">Arco Profissional Cello Madeira Ipê</h3>
+                    <p class="product-comment">"Material nobre e resposta ágil."</p>
+                    <div class="product-price">R$ 727 <span style="font-size:0.8rem;font-weight:normal">(PIX)</span></div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/8ARDPTBj4z" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= BREUS ================= -->
             <h2 id="breus" class="category-title">Breus (Resinas - Já testados)</h2>
             <div class="product-grid">
                 <div class="product-card">
-                    <div class="product-thumb">BREU RIO CLARO</div>
+                    <div class="product-thumb">RIO CLARO</div>
                     <h3 class="product-title">Breu Rio Claro (Escuro ou Claro)</h3>
-                    <p class="product-comment">&quot;O Melhor até um bom tempo.&quot;</p>
+                    <p class="product-comment">"O Melhor até um bom tempo."</p>
                     <div class="product-price">R$ 35</div>
                     <div class="button-group">
-                        <a href="https://s.shopee.com.br/900KQcuMNQ" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://s.shopee.com.br/900KQcuMNQ" target="_blank" class="product-btn btn-shopee">Shopee 1</a>
+                        <a href="https://s.shopee.com.br/9AJkcvtj2T" target="_blank" class="product-btn btn-shopee">Shopee 2</a>
                         <a href="https://meli.la/2yojfwT" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">D'ADDARIO KAPLAN CLARO</div>
+                    <h3 class="product-title">Breu D'addario Kaplan Claro</h3>
+                    <p class="product-comment">"Timbre suave, pouca poeira."</p>
+                    <div class="product-price">R$ 80 - R$ 140</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/4L5O3PF476" target="_blank" class="product-btn btn-shopee">Opc 1 (R$80)</a>
+                        <a href="https://s.shopee.com.br/5KxvFJUP6A" target="_blank" class="product-btn btn-shopee">Opc 2 (R$140)</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">SOLLO MEIO A MEIO</div>
+                    <h3 class="product-title">Breu Sollo Meio a Meio</h3>
+                    <p class="product-comment">"Parece moeda de 1 Real. Mistura versátil."</p>
+                    <div class="product-price">R$ 85</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/8fNU20vd3O" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://meli.la/2cDSHMn" target="_blank" class="product-btn btn-ml">M. Livre</a>
                     </div>
                 </div>
                 <div class="product-card">
                     <div class="product-thumb">GUSTAVE BERNARDEL</div>
                     <h3 class="product-title">Breu Gustave Bernardel Claro</h3>
-                    <p class="product-comment">&quot;O mais famoso atualmente e o melhor custo benefício.&quot;</p>
+                    <p class="product-comment">"O mais famoso atualmente e o melhor custo benefício."</p>
                     <div class="product-price">R$ 130</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/7069ER0Rcn" target="_blank" class="product-btn btn-shopee">Shopee</a>
@@ -144,9 +342,19 @@
                     </div>
                 </div>
                 <div class="product-card">
+                    <div class="product-thumb">D'ADDARIO KAPLAN ESCURO</div>
+                    <h3 class="product-title">Breu D'addario Kaplan Escuro</h3>
+                    <p class="product-comment">"Caixa de aliança. Mais aderência."</p>
+                    <div class="product-price">R$ 130</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/9zjknrr2lF" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://meli.la/2SATf61" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
                     <div class="product-thumb">CECILIA SOLO</div>
                     <h3 class="product-title">Breu Cécilia Solo Mini Claro</h3>
-                    <p class="product-comment">&quot;O melhor breu para muitos músicos solistas.&quot;</p>
+                    <p class="product-comment">"O melhor breu para muitos músicos solistas."</p>
                     <div class="product-price">R$ 215</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/5AeV2qZ4sv" target="_blank" class="product-btn btn-shopee">Shopee</a>
@@ -154,22 +362,42 @@
                     </div>
                 </div>
             </div>
-            <h2 id="espalheiras" class="category-title">Espalheiras (Ergonomia Confortável)</h2>
+
+            <!-- ================= ESPALHEIRAS ================= -->
+            <h2 id="espalheiras" class="category-title">Espalheiras (Ergonomia)</h2>
             <div class="subcategory-divider">&#9632; Violino</div>
             <div class="product-grid">
                 <div class="product-card">
                     <div class="product-thumb">ESPALHEIRA METAL</div>
-                    <h3 class="product-title">Espalheira Ergonômica de Metal Ajustável</h3>
-                    <p class="product-comment">&quot;Vários alunos meus têm e está melhor que a minha de 300 reais. Compensa juntar 100 reais na plataforma para frete grátis.&quot;</p>
+                    <h3 class="product-title">Espalheira Ergonômica Metal</h3>
+                    <p class="product-comment">"Você modela conforme o corpo. Melhor que a minha de 300 reais. Junte R$100 na plataforma para frete grátis."</p>
                     <div class="product-price">R$ 30</div>
                     <div class="button-group">
                         <a href="https://pt.aliexpress.com/item/1005007030905504.html" target="_blank" class="product-btn btn-aliexpress">Aliexpress</a>
                     </div>
                 </div>
                 <div class="product-card">
+                    <div class="product-thumb">ESPALHEIRA ESPUMA</div>
+                    <h3 class="product-title">Espalheira Espuma Violino/Viola</h3>
+                    <p class="product-comment">"Para quem acha espalheira tradicional muito desconfortável."</p>
+                    <div class="product-price">R$ 70</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/1TUB3dG" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">RIO CLARO SPALLA</div>
+                    <h3 class="product-title">Espalheira Rio Claro Spalla</h3>
+                    <p class="product-comment">"Estilo ombreira tradicional."</p>
+                    <div class="product-price">R$ 72</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/11Sgyk5" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
                     <div class="product-thumb">LUNNON PREMIUM</div>
-                    <h3 class="product-title">Espaleira Para Violino Lunnon Premium Black</h3>
-                    <p class="product-comment">&quot;Ajuste alto excelente para quem tem 3 metros de pescoço.&quot;</p>
+                    <h3 class="product-title">Lunnon Premium Black</h3>
+                    <p class="product-comment">"Ajuste alto excelente para quem tem 3 metros de pescoço."</p>
                     <div class="product-price">R$ 91</div>
                     <div class="button-group">
                         <a href="https://meli.la/28oq9qz" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
@@ -177,21 +405,68 @@
                 </div>
                 <div class="product-card">
                     <div class="product-thumb">WOLF FORTE SECONDO</div>
-                    <h3 class="product-title">Espaleira Profissional Wolf Forte Secondo 4/4</h3>
-                    <p class="product-comment">&quot;Essa aqui Deus me deu de presente. Ergonômica nível profissional.&quot;</p>
+                    <h3 class="product-title">Wolf Forte Secondo 4/4</h3>
+                    <p class="product-comment">"Essa aqui Deus me deu de presente. Ergonômica nível profissional."</p>
                     <div class="product-price">R$ 373</div>
                     <div class="button-group">
                         <a href="https://meli.la/1obxkaV" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
                     </div>
                 </div>
             </div>
+
+            <div class="subcategory-divider">&#9632; Viola de Arco</div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">ESPUMA VIOLA</div>
+                    <h3 class="product-title">Espalheira Espuma Violino/Viola</h3>
+                    <p class="product-comment">"Leve e confortável."</p>
+                    <div class="product-price">R$ 70</div>
+                    <div class="button-group">
+                        <a href="https://meli.la/1TUB3dG" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">RIO CLARO VIOLA</div>
+                    <h3 class="product-title">Espalheira Rio Claro Viola (Até 42)</h3>
+                    <p class="product-comment">"Suporte clássico."</p>
+                    <div class="product-price">R$ 70</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/BOvwKjN7i" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">LUNNON PREMIUM VIOLA</div>
+                    <h3 class="product-title">Viola Lunnon Premium Preta Ajustável</h3>
+                    <p class="product-comment">"Para quem é pescoçudo."</p>
+                    <div class="product-price">R$ 93 - R$ 110</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/40beVJjWbe" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://meli.la/2njMbhq" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">WOLF FORTE PRIMO</div>
+                    <h3 class="product-title">Wolf Forte Primo Viola</h3>
+                    <p class="product-comment">"Profissional. Ergonômica."</p>
+                    <div class="product-price">R$ 206 - R$ 341</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/4VXv6N9Bi4" target="_blank" class="product-btn btn-shopee">R$ 206 (Inf.)</a>
+                        <a href="https://s.shopee.com.br/BOvwEYWmH" target="_blank" class="product-btn btn-shopee">R$ 236</a>
+                        <a href="https://meli.la/2N9Shtk" target="_blank" class="product-btn btn-ml">M. Livre (PIX)</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CAVALETES ================= -->
             <h2 id="cavaletes" class="category-title">Cavaletes (Transmissão de Frequência)</h2>
-            <div class="subcategory-divider">&#9632; Violino &#8212; Excelente</div>
+            <p style="margin-bottom: 2rem; color: var(--text);">Quanto melhor o cavalete, melhor ele irá passar a vibração das cordas para a caixa do instrumento. Um bom cavalete requer uma boa corda.</p>
+            
+            <div class="subcategory-divider">&#9632; Violino <span class="sub-badge">EXCELENTE</span></div>
             <div class="product-grid">
                 <div class="product-card">
                     <div class="product-thumb">AUBERT SUPER DE LUXE</div>
-                    <h3 class="product-title">Cavalete Aubert Super De Luxe (Francês)</h3>
-                    <p class="product-comment">&quot;Madeira tratada historicamente para projeção máxima de harmônicos.&quot;</p>
+                    <h3 class="product-title">Aubert Super De Luxe (Francês)</h3>
+                    <p class="product-comment">"Madeira tratada historicamente para projeção máxima."</p>
                     <div class="product-price">R$ 345</div>
                     <div class="button-group">
                         <a href="https://s.shopee.com.br/8zz2Wf77px" target="_blank" class="product-btn btn-shopee">Shopee</a>
@@ -199,16 +474,195 @@
                     </div>
                 </div>
                 <div class="product-card">
-                    <div class="product-thumb">DESPIAU 3 ARVORES</div>
-                    <h3 class="product-title">Cavalete Despiau A 3 Árvores (Francês)</h3>
-                    <p class="product-comment">&quot;Uma das escolhas preferidas por solistas mundiais.&quot;</p>
+                    <div class="product-thumb">BARSA DE LUXE</div>
+                    <h3 class="product-title">Barsa De Luxe (Bósnia)</h3>
+                    <p class="product-comment">"Estou com um, logo irei instalar no meu violino."</p>
+                    <div class="product-price">R$ 289</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/1XfCC2x" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MILO STAMM ROYAL</div>
+                    <h3 class="product-title">Milo Stamm Royal (Alemão)</h3>
+                    <p class="product-comment">"Top de linha Alemão."</p>
+                    <div class="product-price">R$ 345</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/1ALbTbF" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU 3 ÁRVORES</div>
+                    <h3 class="product-title">Despiau A 3 Árvores (Francês)</h3>
+                    <p class="product-comment">"Uma das escolhas preferidas por solistas mundiais."</p>
                     <div class="product-price">R$ 300</div>
                     <div class="button-group">
                         <a href="https://mercadolivre.com/sec/1ZSZror" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
                     </div>
                 </div>
             </div>
+
+            <div class="subcategory-divider">&#9632; Violino <span class="sub-badge" style="background:#555;">MUITO BOM</span></div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">BARSA 3 ESTRELAS</div>
+                    <h3 class="product-title">Barsa 3 Estrelas (Bósnia)</h3>
+                    <div class="product-price">R$ 245</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/2duFXod" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">AUBERT MIRECOURT LUXE</div>
+                    <h3 class="product-title">Aubert Mirecourt Luxe (Francês)</h3>
+                    <div class="product-price">R$ 285</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/2rFPHzb" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MILO STAMM PREMIUM</div>
+                    <h3 class="product-title">Milo Stamm Premium (Alemão)</h3>
+                    <p class="product-comment">"Já instalei num violino, muito muito bom."</p>
+                    <div class="product-price">R$ 180 - R$ 184</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/LZxSnUjd2" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://mercadolivre.com/sec/2wAWPtS" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU B 2 ÁRVORES</div>
+                    <h3 class="product-title">Despiau B 2 Árvores</h3>
+                    <div class="product-price">R$ 190</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/13YZHdJ" target="_blank" class="product-btn btn-ml">Mercado Livre</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subcategory-divider">&#9632; Violino <span class="sub-badge" style="background:#888;">BOM</span></div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">BARSA 1 E 2 ESTRELAS</div>
+                    <h3 class="product-title">Barsa 1 ou 2 Estrelas (Bósnia)</h3>
+                    <div class="product-price">R$ 55 - R$ 145</div>
+                    <div class="button-group">
+                        <a href="https://mercadolivre.com/sec/2Gsf1zN" target="_blank" class="product-btn btn-ml">1 Estrela</a>
+                        <a href="https://mercadolivre.com/sec/2duFXod" target="_blank" class="product-btn btn-ml">2 Estrelas</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">AUBERT MIRECOURT</div>
+                    <h3 class="product-title">Aubert Mirecourt in France</h3>
+                    <div class="product-price">R$ 89 - R$ 128</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/30aifXa84Y" target="_blank" class="product-btn btn-shopee">Shopee 1</a>
+                        <a href="https://s.shopee.com.br/BGXIW6s1f" target="_blank" class="product-btn btn-shopee">Shopee 2</a>
+                        <a href="https://mercadolivre.com/sec/2c78K8Z" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MILO STAMM PADRÃO</div>
+                    <h3 class="product-title">Milo Stamm Padrão (Alemão)</h3>
+                    <div class="product-price">R$ 115 - R$ 118</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/9pR2mSBijT" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://mercadolivre.com/sec/2KSBR3J" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU SUPERIOR C</div>
+                    <h3 class="product-title">Despiau Superior C (1 Árvore)</h3>
+                    <p class="product-comment">"O meu atual faz muita diferença."</p>
+                    <div class="product-price">R$ 105 - R$ 137</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/6pnRFGQV48" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://mercadolivre.com/sec/2yCYQww" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU SUPERIOR D</div>
+                    <h3 class="product-title">Despiau Superior D</h3>
+                    <p class="product-comment">"Já instalei em vários violinos."</p>
+                    <div class="product-price">R$ 52 - R$ 54</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/x6x3YUY3" target="_blank" class="product-btn btn-shopee">41.5mm</a>
+                        <a href="https://s.shopee.com.br/5puttjVAD9" target="_blank" class="product-btn btn-shopee">Padrão</a>
+                        <a href="https://mercadolivre.com/sec/33KqkJg" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">AUBERT IN FRANCE</div>
+                    <h3 class="product-title">Aubert in France</h3>
+                    <div class="product-price">R$ 48</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/AA3t3kvS6g" target="_blank" class="product-btn btn-shopee">Shopee</a>
+                        <a href="https://mercadolivre.com/sec/2bk5GNF" target="_blank" class="product-btn btn-ml">M. Livre</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subcategory-divider">&#9632; Viola de Arco <span class="sub-badge" style="background:#555;">MUITO BOM</span></div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">MILO STAMM PREMIUM VIOLA</div>
+                    <h3 class="product-title">Milo Stamm Premium</h3>
+                    <div class="product-price">R$ 235</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/7Kjhr1U3gC" target="_blank" class="product-btn btn-shopee">48mm</a>
+                        <a href="https://s.shopee.com.br/8pYVdsLvMw" target="_blank" class="product-btn btn-shopee">52mm</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subcategory-divider">&#9632; Viola de Arco <span class="sub-badge" style="background:#888;">BOM</span></div>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-thumb">AUBERT MIRECOURT VIOLA</div>
+                    <h3 class="product-title">Aubert Mirecourt Viola</h3>
+                    <div class="product-price">A partir de R$ 123</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/6VAaqPKd3z" target="_blank" class="product-btn btn-shopee">42mm</a>
+                        <a href="https://s.shopee.com.br/6VAaqRkDfZ" target="_blank" class="product-btn btn-shopee">46mm</a>
+                        <a href="https://s.shopee.com.br/6KrAe0fHnh" target="_blank" class="product-btn btn-shopee">48mm</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">MILO STAMM PADRÃO VIOLA</div>
+                    <h3 class="product-title">Milo Stamm Padrão Viola</h3>
+                    <div class="product-price">R$ 125 - R$ 130</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/3Au8tfTRii" target="_blank" class="product-btn btn-shopee">46mm</a>
+                        <a href="https://s.shopee.com.br/2qHIUzEfBK" target="_blank" class="product-btn btn-shopee">48mm</a>
+                        <a href="https://s.shopee.com.br/8KcF3BrN16" target="_blank" class="product-btn btn-shopee">52mm</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU SUP. C (1 ÁRVORE) VIOLA</div>
+                    <h3 class="product-title">Despiau Superior C (1 Árvore)</h3>
+                    <div class="product-price">R$ 120 - R$ 135</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/LZxVpGJuW" target="_blank" class="product-btn btn-shopee">46mm</a>
+                        <a href="https://s.shopee.com.br/4q2Ms1wTRH" target="_blank" class="product-btn btn-shopee">48mm (Op1)</a>
+                        <a href="https://s.shopee.com.br/5AfDGniIUI" target="_blank" class="product-btn btn-shopee">48mm (Op2)</a>
+                        <a href="https://s.shopee.com.br/6VAarKxGjT" target="_blank" class="product-btn btn-shopee">50mm</a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-thumb">DESPIAU SUPERIOR D VIOLA</div>
+                    <h3 class="product-title">Despiau Superior D Viola</h3>
+                    <div class="product-price">R$ 57 - R$ 62</div>
+                    <div class="button-group">
+                        <a href="https://s.shopee.com.br/50Ln4GFSS8" target="_blank" class="product-btn btn-shopee">46mm</a>
+                        <a href="https://s.shopee.com.br/7fMYF8AVuf" target="_blank" class="product-btn btn-shopee">48mm</a>
+                    </div>
+                </div>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: #888; text-align: center; margin-top: 2rem;">Nota: Cavaletes considerados inferiores (Teller Germany 3, 2, 1 estrela e Despiau Ecolier) não estão listados intencionalmente nesta seleção.</p>
+
         </main>
+
         <footer class="site-footer">
             <div class="footer-grid">
                 <div class="footer-box">
@@ -223,30 +677,52 @@
                 </div>
                 <div class="footer-box">
                     <h4>Apoie o Projeto</h4>
-                    <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou, considere apoiar nosso trabalho.</p>
-                    <button onclick="navigator.clipboard.writeText('contato.nikoluthieria@gmail.com'); alert('Chave PIX (E-mail) copiada com sucesso!');" class="btn-pix">❖ Apoiar com PIX</button>
+                    <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou de alguma forma, considere apoiar nosso trabalho mantendo a estrutura no ar.</p>
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                        Apoiar NKL
+                    </a>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+
         <script>
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        const savedTheme = localStorage.getItem('nkl_theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) { 
-            body.classList.remove('dark-theme'); 
-        } else {
-            body.classList.add('dark-theme');
-        }
-        
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        });
-    </script>
+            // Gerenciamento de Tema Claro/Escuro
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('nkl_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) { 
+                body.classList.remove('dark-theme'); 
+            } else {
+                body.classList.add('dark-theme');
+            }
+            
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+
+            // Controle do Menu Mobile e Mecanismo de Scroll
+            const header = document.getElementById('site-header');
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+
+            mobileBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                    navLinks.classList.remove('show');
+                }
+            });
+        </script>
     </body>
 </html>
