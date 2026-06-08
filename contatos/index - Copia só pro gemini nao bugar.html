@@ -15,55 +15,46 @@
         <link rel="stylesheet" href="style.css"/>
         <style>/* ─── Importando as fontes originais do site principal ─── */@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap'); /* ─── Cabeçalho Blindado 100% Horizontal ─── */.site-header { --primary: #1a1a1a; --secondary: #a68a61; --bg: #ffffff; --surface: #fdfdfd; --text: #4a4a4a; --border: #eeeeee; font-family: 'Inter', sans-serif; background: var(--bg); border-bottom: 1px solid var(--border); padding: 1.5rem 0; position: sticky; top: 0; z-index: 1000; color: var(--text); } .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important;  /* Força a ficar na horizontal */ justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } /* Agrupa a logo e a imagem para não separarem */.site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; } .site-header .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -1px; color: var(--primary); text-decoration: none; } /* Força os links a ficarem lado a lado */.site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 !important; padding: 0 !important; align-items: center !important; } .site-header nav ul li { display: block !important; margin: 0 !important; } .site-header nav a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s ease; } .site-header nav a:hover { color: var(--secondary); } /* Comportamento do Dropdown (Sub-menu) */.site-header .dropdown { position: relative; } .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-top: 0; } .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; font-size: 0.95rem; } .site-header .dropdown:hover .dropdown-content { display: block; } /* Comportamento no Celular (aí sim fica vertical) */@media (max-width: 768px) { .site-header nav {  flex-direction: column !important;  gap: 1.5rem;  text-align: center; }  .site-header nav ul {  flex-direction: column !important;  gap: 1rem !important; }  .site-header .dropdown-content {  position: static;  transform: none;  box-shadow: none;  border: none;  padding-bottom: 0; } }</style>
     </head>
-    <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino, cavalete, breu, espalheira">
-    <meta name="author" content="Nicolas Da Costa Santos">
-    <meta property="og:title" content="Violino NKL | Referência em Acústica e Lutheria"/>
-    <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
-    <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
     <body>
         <header class="site-header">
             <nav>
-                <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
-                    <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                    <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
+                <div class="nav-brand">
+                    <a href="../index.html" class="logo">&nbsp;Violino&nbsp;</a>
+                    <img src="../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png" style="height: 40px; width: auto; object-fit: contain;" alt="Logo NKL">
                 </div>
                 <ul>
                     <li>
-                        <a href="index.html">Home</a>
-                    </li>
-                    <li>
-                        <a href="importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="recomendados.html">Recomendados</a>
+                        <a href="../index.html">Home</a>
                     </li>
                     <li class="dropdown">
                         <a href="javascript:void(0);">Cordas ▾</a>
                         <div class="dropdown-content">
-                            <a href="guia-de-cordas.html">Guia Técnico</a>
-                            <a href="comparador-de-cordas.html">Comparador Analítico</a>
+                            <a href="../guia-de-cordas.html">Gráfico de Cordas</a>
+                            <a href="../comparador-de-cordas.html">Comparador Analítico</a>
                         </div>
                     </li>
                     <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
+                        <a href="../fisica-do-som.html">Física do Som</a>
                     </li>
                     <li>
-                        <a href="contatos/index.html">Contatos</a>
+                        <a href="../clinica-lutheria.html">Lutheria</a>
+                    </li>
+                    <li>
+                        <a href="index.html"><strong>contatos</strong></a>
                     </li>
                 </ul>
-                <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
             </nav>
         </header>
         <div class="bg-grid" aria-hidden="true"></div>
         <div class="bg-decorations" aria-hidden="true">
-            <span class="formula f1">&#8711;&#178;&#966; = &#961;/&#949;&#8320;</span>
-            <span class="formula f2">E = mc&#178;</span>
-            <span class="formula f3">&#8750; B&middot;dA = 0</span>
+            <span class="formula f1">∇²φ = ρ/ε₀</span>
+            <span class="formula f2">E = mc²</span>
+            <span class="formula f3">∮ B·dA = 0</span>
             <span class="formula f4">F = ma</span>
-            <span class="formula f5">∂&#178;u/∂t&#178; = c&#178;&#8711;&#178;u</span>
-            <span class="formula f6">&#955; = h/mv</span>
-            <span class="formula f7">&sum;F = 0</span>
-            <span class="formula f8">&#963; = E&middot;&#949;</span>
+            <span class="formula f5">∂²u/∂t² = c²∇²u</span>
+            <span class="formula f6">λ = h/mv</span>
+            <span class="formula f7">∑F = 0</span>
+            <span class="formula f8">σ = E·ε</span>
             <div class="geo-circle c1"></div>
             <div class="geo-circle c2"></div>
             <div class="geo-rect r1"></div>
@@ -72,17 +63,17 @@
             <div class="geo-cross x2"></div>
             <div class="corner-mark tl">// NKL.ENG ── v2.0</div>
             <div class="corner-mark tr">ref: 2026.06</div>
-            <div class="corner-mark bl">2P &#8801; 0 (mod 2)</div>
-            <div class="corner-mark br">&#8747;&#8747; dA = &#960;&middot;r&#178;</div>
+            <div class="corner-mark bl">2P ≡ 0 (mod 2)</div>
+            <div class="corner-mark br">∫∫ dA = π·r²</div>
         </div>
         <main class="container" style="margin-top: 2rem;">
             <header class="profile" style="background: transparent; border: none; padding: 0; position: relative;">
                 <div class="avatar-wrapper">
-                    <img src="assets/nkl-logo.png" alt="NKL Logo" class="avatar">
+                    <img src="assets/nkl-logo.png" alt="NKL Logo" class="avatar"/>
                     <div class="avatar-dot"></div>
                 </div>
                 <h1 class="display-name">NKL_oficial</h1>
-                <p class="bio">Engenheiro &middot; Criador de conteúdo</p>
+                <p class="bio">Engenheiro · Criador de conteúdo</p>
                 <div class="divider">
                     <span class="divider-line"></span>
                     <span class="divider-label">// links</span>
@@ -90,30 +81,30 @@
                 </div>
             </header>
             <section class="links-list" id="links">
-                <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.w50-h30-c1.png" alt="NKL" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">Método NKL</span> <span class="link-desc">Importando violino de oficina por 5 reais!</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="assets/nkllogopequenatransparente.png" alt="NKL" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">Método NKL</span> <span class="link-desc">Importando violino de oficina por 5 reais!</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg> </a>
                 <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="assets/whatsapplogo.png" alt="WhatsApp" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">Canal do WhatsApp</span> <span class="link-desc">Participe da nossa comunidade oficial</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg> </a>
                 <a href="https://www.youtube.com/@NKLoficial" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="assets/youtubelogo.png" alt="YouTube" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">YouTube NKL</span> <span class="link-desc">Assista aos nossos vídeos completos</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg> </a>
                 <a href="https://www.instagram.com/nkloficial/" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="assets/instagramlogo.png" alt="Instagram" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">Instagram</span> <span class="link-desc">Acompanhe os bastidores</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg> </a>
                 <a href="https://www.tiktok.com/@nkloficial" target="_blank" rel="noopener noreferrer" class="link-card"> <span class="link-icon"> <img src="assets/tiktoklogo.png" alt="TikTok" style="width: 20px; height: 20px; object-fit: contain;"> </span> <span class="link-content"> <span class="link-title">TikTok</span> <span class="link-desc">Dicas rápidas e diretas</span> </span> <svg class="link-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg> </a>
             </section>
             <footer class="footer">
@@ -122,46 +113,12 @@
                     <a href="https://instagram.com/nkloficial" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Instagram"> <img src="assets/instagramlogo.png" alt="Instagram" style="width: 20px; height: 20px; object-fit: contain;"> </a>
                     <a href="https://tiktok.com/@nkloficial" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="TikTok"> <img src="assets/tiktoklogo.png" alt="TikTok" style="width: 20px; height: 20px; object-fit: contain;"> </a>
                     <a href="https://www.youtube.com/@NKLoficial" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="YouTube"> <img src="assets/youtubelogo.png" alt="YouTube" style="width: 20px; height: 20px; object-fit: contain;"> </a>
-                    <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Método NKL"> <img src="../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.w50-h30-c1.png" alt="Método NKL" style="width: 20px; height: 20px; object-fit: contain;" class=""> </a>
+                    <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="Método NKL"> <img src="assets/nkllogopequenatransparente.png" alt="Método NKL" style="width: 20px; height: 20px; object-fit: contain;"> </a>
                 </div>
                 <p class="footer-brand">── NKL ENGENHARIA ──</p>
-                <p class="footer-sub font-mono">// nkl_oficial &middot; links</p>
+                <p class="footer-sub font-mono">// nkl_oficial · links</p>
             </footer>
         </main>
         <script src="script.js"></script>
-        <script>
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const body = document.body;
-
-            // Ícones em SVG desenhados diretamente no código (super leves)
-            const sunIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-            const moonIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-
-            // 1. Verifica se o usuário já escolheu antes (memória do navegador)
-            const savedTheme = localStorage.getItem('nkl_theme');
-            // 2. Verifica a preferência do sistema operacional do usuário
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            // Se já tem salvo como escuro, OU se não tem salvo nada mas o sistema é escuro...
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-                body.classList.add('dark-theme');
-                themeToggleBtn.innerHTML = sunIcon; // Mostra o sol para poder voltar pro claro
-            } else {
-                themeToggleBtn.innerHTML = moonIcon; // Mostra a lua para poder ir pro escuro
-            }
-
-            // Ação do clique no botão
-            themeToggleBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-theme');
-                
-                if (body.classList.contains('dark-theme')) {
-                    localStorage.setItem('nkl_theme', 'dark'); // Salva a escolha
-                    themeToggleBtn.innerHTML = sunIcon; // Troca o ícone
-                } else {
-                    localStorage.setItem('nkl_theme', 'light'); // Salva a escolha
-                    themeToggleBtn.innerHTML = moonIcon; // Troca o ícone
-                }
-            });
-        </script>
     </body>
 </html>

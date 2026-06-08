@@ -1,72 +1,81 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparador Analítico | Violino NKL</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-            <img src="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.w50-h30-c1.png">
-            <ul>
-                <li>
-                    <a href="index.html">Home</a>
-                </li>
-                <li class="dropdown">
-                    <a href="guia-de-cordas.html">Cordas</a>
-                    <div class="dropdown-content">
-                        <a href="guia-de-cordas.html">Guia Técnico</a>
-                        <a href="comparador-de-cordas.html">Comparador Analítico</a>
-                    </div>
-                </li>
-                <li>
-                    <a href="fisica-do-som.html">Física do Som</a>
-                </li>
-                <li>
-                    <a href="clinica-lutheria.html">Lutheria</a>
-                    <a href="contatos/index.html">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;contatos</a>
-                </li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero" style="margin-bottom: 3rem;">
-            <h1>Escolha com Ouvido e Coração</h1>
-            <p>Não compre no escuro. Coloque as principais marcas do mercado lado a lado e descubra qual delas vai casar melhor com a voz do seu violino.</p>
-        </section>
-
-        <div class="selector-container">
-            <div class="select-group">
-                <label>Primeira Opção de Corda</label>
-                <select id="stringA" onchange="updateComparison()">
-                    <option value="dominant">Thomastik Dominant</option>
-                    <option value="evah">Pirastro Evah Pirazzi</option>
-                    <option value="larsen">Larsen Tzigane</option>
-                    <option value="calixto">Mauro Calixto Tradicional</option>
-                </select>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Comparador Analítico | Violino NKL</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino, cavalete, breu, espalheira">
+    <meta name="author" content="Nicolas Da Costa Santos">
+    <meta property="og:title" content="Violino NKL | Referência em Acústica e Lutheria"/>
+    <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
+    <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
+    <body class="">
+        <header class="site-header">
+            <nav>
+                <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
+                    <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
+                </div>
+                <ul>
+                    <li>
+                        <a href="index.html">Home</a>
+                    </li>
+                    <li>
+                        <a href="importacao.html">Importação</a>
+                    </li>
+                    <li>
+                        <a href="recomendados.html">Recomendados</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0);">Cordas ▾</a>
+                        <div class="dropdown-content">
+                            <a href="guia-de-cordas.html">Guia Técnico</a>
+                            <a href="comparador-de-cordas.html">Comparador Analítico</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="fisica-do-som.html">Física do Som</a>
+                    </li>
+                    <li>
+                        <a href="contatos/index.html">Contatos</a>
+                    </li>
+                </ul>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+            </nav>
+        </header>
+        <main>
+            <section class="hero" style="margin-bottom: 3rem;">
+                <h1 class="">Escolha com Ouvido e Coração</h1>
+                <p>Não compre no escuro. Coloque as principais marcas do mercado lado a lado e descubra qual delas vai casar melhor com a voz do seu violino.</p>
+            </section>
+            <div class="selector-container">
+                <div class="select-group">
+                    <label>Primeira Opção de Corda</label>
+                    <select id="stringA" onchange="updateComparison()">
+                        <option value="dominant">Thomastik Dominant</option>
+                        <option value="evah">Pirastro Evah Pirazzi</option>
+                        <option value="larsen">Larsen Tzigane</option>
+                        <option value="calixto">Mauro Calixto Tradicional</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label>Segunda Opção de Corda</label>
+                    <select id="stringB" onchange="updateComparison()">
+                        <option value="evah">Pirastro Evah Pirazzi</option>
+                        <option value="dominant">Thomastik Dominant</option>
+                        <option value="larsen">Larsen Tzigane</option>
+                        <option value="calixto">Mauro Calixto Tradicional</option>
+                    </select>
+                </div>
             </div>
-            <div class="select-group">
-                <label>Segunda Opção de Corda</label>
-                <select id="stringB" onchange="updateComparison()">
-                    <option value="evah">Pirastro Evah Pirazzi</option>
-                    <option value="dominant">Thomastik Dominant</option>
-                    <option value="larsen">Larsen Tzigane</option>
-                    <option value="calixto">Mauro Calixto Tradicional</option>
-                </select>
+            <div class="grid-layout" style="margin-top: 0;">
+                <div id="cardA" class="string-data-card"></div>
+                <div id="cardB" class="string-data-card"></div>
             </div>
-        </div>
-
-        <div class="grid-layout" style="margin-top: 0;">
-            <div id="cardA" class="string-data-card"></div>
-            <div id="cardB" class="string-data-card"></div>
-        </div>
-    </main>
-
-    <script>
+        </main>
+        <script>
         const stringData = {
             dominant: {
                 name: "Thomastik Dominant",
@@ -125,10 +134,30 @@
 
         updateComparison();
     </script>
-
-    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
-    <footer>
-        <p>&copy; 2026 Violino NkL. Alta performance estruturada com elegância.</p>
-    </footer>
-</body>
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy">W</a>
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div class="footer-box">
+                    <h4>Sua voz importa</h4>
+                    <p>Queremos construir o melhor portal de lutheria do Brasil. Como podemos melhorar sua experiência?</p>
+                    <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Contato Direto</h4>
+                    <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
+                    <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--secondary); font-weight: 500;">contato.nikoluthieria@gmail.com</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Apoie o Projeto</h4>
+                    <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou de alguma forma, considere apoiar nosso trabalho mantendo a estrutura no ar.</p>
+                    <button onclick="navigator.clipboard.writeText('contato.nikoluthieria@gmail.com'); alert('Chave PIX (E-mail) copiada com sucesso!');" class="btn-pix">
+                        ❖ Apoiar com PIX
+</button>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
+            </div>
+        </footer>
+    </body>
 </html>
