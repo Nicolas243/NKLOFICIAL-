@@ -312,12 +312,11 @@ body {
 .btn-outline {
     display: inline-block;
     padding: 8px 16px;
-    border: 1px solid #89CFF0;
-    color: #89CFF0;
+    border: 1px solid var(--secondary);
+    color: var(--secondary);
     border-radius: 4px;
     font-size: 0.85rem;
     transition: all 0.3s;
-    text-decoration: none;
 }
 
 .btn-outline:hover {
