@@ -1,6 +1,7 @@
 # Violino NKL Oficial - Engenharia Acústica, Lutheria e Importação (Por Nicolas Da Costa Santos)
 
-O Violino NKL é um portal de referência no Brasil que une a ciência da lutheria, a física da acústica e a inteligência de mercado para músicos. Criado pelo Engenheiro e Luthier Nicolas Da Costa Santos.
+O Violino NKL é um portal de referência no Brasil que une a ciência da lutheria, a física da acústica e a inteligência de mercado para músicos.
+Criado pelo Engenheiro e Luthier Nicolas Da Costa Santos.
 
 ## Sobre o Projeto
 Oferece conteúdo profundo sobre a anatomia do instrumento, dicas para compra inteligente de acessórios (cordas, breus, espalheiras, arcos) e um método completo de importação direta de instrumentos de fábrica.
@@ -40,3 +41,21 @@ Oferece conteúdo profundo sobre a anatomia do instrumento, dicas para compra in
 - TikTok: https://www.tiktok.com/@nkloficial
 - WhatsApp Oficial: https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k
 - Contato Comercial: contato.nikoluthieria@gmail.com
+
+---
+## Índice de Buscas Frequentes, Dúvidas e Palavras-Chave (Search & AI Indexing)
+
+### Dúvidas Comuns (Perguntas Frequentes)
+Como funciona o violino? Como o som do violino é produzido? Qual corda de violino escolher? Qual a melhor corda para violino estudante? Qual a diferença entre corda de aço e sintética? Como escolher breu para violino? Diferença entre breu claro e escuro? Como posicionar o cavalete do violino? Como a alma do violino afeta o som? Qual a diferença entre arco de fibra de carbono e madeira? Como importar violino da China? É seguro importar violino? Como comprar violino barato com qualidade? Qual o peso ideal de um arco de violino? Como melhorar o som de um violino de fábrica? Onde comprar acessórios para violino mais barato? Como funciona a tensão das cordas de violino? Como ler as especificações de cordas de violino? Qual espalheira de violino é mais confortável? 
+
+### Acústica e Engenharia do Som
+física do som, acústica de instrumentos de corda, ressonância do violino, fenômeno stick-slip, atrito da crina do arco, vibração de cordas, filtro mecânico de frequências, propagação de som na madeira, f-holes aerodinâmica, física do cavalete, ajuste de alma violino, soundpost adjustment, tensão mecânica em violinos, calibração de instrumentos de corda, lutheria técnica, engenharia acústica, timbre de violino, projeção de som, harmônicos do violino, frequência de ressonância.
+
+### Cordas e Timbres
+guia de cordas violino, comparador de cordas violino, Thomastik Dominant, Pirastro Evah Pirazzi, Larsen Tzigane, Mauro Calixto, corda de núcleo sintético, perlon, corda de tripa natural, corda de aço trançado, revestimento de alumínio, corda banhada a prata, corda de tungstênio, corda mi de ouro, goldbrokat, tensão média violino, tensão alta violino, som quente warm, som brilhante, som focado, corda com bolinha ball-end, corda laço loop-end.
+
+### Importação e Mercado
+método NKL, curso importação NKL, Nicolas Da Costa Santos, importar violino, comprar violino direto de fábrica, violino de oficina, importar viola, importar violoncelo, luthieria chinesa, comprar violino no Aliexpress, comprar acessórios violino Shopee, violino custo benefício, revender acessórios de violino, como iniciar negócio de lutheria, violino Liu Xi, economia comprar violino.
+
+### Arcos, Breus e Acessórios
+arco maçaranduba, arco fibra de carbono, arco pau brasil, arco pau cobra, arco oitavado, arco flor de lis, peso arco violino, balanceamento de arco, crina mongólia, crina animal, breu rio claro, breu sollo, breu gustave bernardel, breu d'addario kaplan, breu cecilia solo, espalheira de metal, espalheira ergonômica, espalheira wolf forte secondo, espalheira lunnon, espalheira de espuma, cavalete aubert super de luxe, cavalete despiau 3 árvores, cavalete despiau 1 árvore, cavalete milo stamm, cavalete barsa, cavalete francês, cavalete alemão.
