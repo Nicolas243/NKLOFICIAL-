@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
-        <link rel="icon" type="image/png" href="NKL/NKL.png">
+                        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        
+          gtag('config', 'G-QD0HQJFWVW');
+        </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>O Violino Definitivo | Engenharia Acústica</title>
+        
+        <link rel="icon" type="image/png" href="NKL/NKL.png">
         <link rel="stylesheet" href="style.css">
+        
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;600&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
+        
         <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino, cavalete, breu, espalheira">
         <meta name="author" content="Nicolas Da Costa Santos">
         <meta property="og:title" content="Violino NKL | Referência em Acústica e Lutheria"/>
         <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
         <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
+        
         <style>
             .site-header { font-family: 'Inter', sans-serif !important; background-color: var(--bg) !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
             .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
@@ -66,7 +80,7 @@
             }
         </style>
     </head>
-    <body>
+    <body class="dark-theme">
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
@@ -131,14 +145,14 @@
         <footer class="site-footer">
             <div class="footer-grid">
                 <div class="footer-box">
-                    <h4>Sua voz importa</h4>
+                    <h4>Sua voice importa</h4>
                     <p>Queremos construir o melhor portal de lutheria do Brasil. Como podemos melhorar sua experiência?</p>
                     <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
                 </div>
                 <div class="footer-box">
                     <h4>Contato Direto</h4>
                     <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--secondary); font-weight: 500;">contato.nikoluthieria@gmail.com</a>
+                    <a href="mailto:contato.nikoluthieria@gmail.com" style="color: #89CFF0; font-weight: 500;">contato.nikoluthieria@gmail.com</a>
                 </div>
                 <div class="footer-box">
                     <h4>Apoie o Projeto</h4>
@@ -153,16 +167,16 @@
             </div>
         </footer>
         <script>
-            // Gerenciamento de Tema Claro/Escuro
+            // Gerenciamento de Tema Claro/Escuro unificado com as outras páginas
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
             const savedTheme = localStorage.getItem('nkl_theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
-                body.classList.add('dark-theme'); 
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) { 
+                body.classList.remove('dark-theme'); 
             } else {
-                body.classList.remove('dark-theme');
+                body.classList.add('dark-theme');
             }
             
             themeToggleBtn.addEventListener('click', () => {
