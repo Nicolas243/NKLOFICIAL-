@@ -309,19 +309,22 @@ body {
     padding-top: 2rem;
 }
 
+/* Botão idêntico ao site principal (Cor Dourada/Bronze) */
 .btn-outline {
     display: inline-block;
     padding: 8px 16px;
-    border: 1px solid var(--secondary);
-    color: var(--secondary);
+    border: 1px solid #a68a61; /* Código exato do seu Dourado/Bronze */
+    color: #a68a61;
     border-radius: 4px;
     font-size: 0.85rem;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
+/* Efeito ao passar o mouse (fundo preenchido) */
 .btn-outline:hover {
-    background: #89CFF0;
-    color: #000000;
+    background: #a68a61;
+    color: #000000; /* Fica com o texto preto para dar contraste */
 }
 
 .btn-pix {
