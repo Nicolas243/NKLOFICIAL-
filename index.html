@@ -40,6 +40,24 @@
             .dark-theme .theme-toggle { transform: rotate(360deg); } 
             body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
 
+            /* Ajuste de Cores do Tema (Verde Limão substituído por Azul Bebê) */
+            :root {
+                --bg: #ffffff;
+                --surface: #f5f5f5;
+                --text: #0a0a0a;
+                --border: #eeeeee;
+                --neon: #89CFF0;
+                --neon-dim: rgba(137, 207, 240, 0.15);
+            }
+            body.dark-theme {
+                --bg: #0a0a0a;
+                --surface: #121212;
+                --text: #ffffff;
+                --border: #333333;
+                --neon: #89CFF0; /* Azul Bebê definitivo */
+                --neon-dim: rgba(137, 207, 240, 0.2);
+            }
+
             /* Menu Mobile */
             .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
             .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
@@ -77,9 +95,9 @@
                 box-shadow: 0 4px 12px rgba(166, 138, 97, 0.15);
             }
             .btn-home-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
-            body.dark-theme .btn-home-cta { background: linear-gradient(135deg, #00FF88, #00aa55); color: #000000 !important; box-shadow: 0 4px 12px rgba(0, 255, 136, 0.15); }
+            body.dark-theme .btn-home-cta { background: linear-gradient(135deg, #89CFF0, #5da2c4); color: #000000 !important; box-shadow: 0 4px 12px rgba(137, 207, 240, 0.15); }
 
-            /* Seções Laterais de Fotos com Inversão de Cores */
+            /* Seções Laterais de Fotos */
             .photo-side { flex: 0.7; display: flex; justify-content: center; align-items: center; }
             .photo-box { 
                 width: 100%; max-width: 280px; height: 200px; 
@@ -90,17 +108,35 @@
                 transition: border-color 0.3s;
             }
             .showcase-section:hover .photo-box { border-color: #a68a61; }
-            body.dark-theme .showcase-section:hover .photo-box { border-color: #00FF88; }
+            body.dark-theme .showcase-section:hover .photo-box { border-color: #89CFF0; }
 
             .home-photo-img { 
                 width: 100%; height: 100%; object-fit: cover; 
                 filter: grayscale(100%); 
                 transition: filter 0.3s, transform 0.3s;
             }
+            /* Cancelado o inversor de cores (invert(1)) conforme solicitado */
             body.dark-theme .home-photo-img { 
-                filter: grayscale(100%) brightness(0.7) invert(1); 
+                filter: grayscale(100%) brightness(0.7); 
             }
-            .showcase-section:hover .home-photo-img { transform: scale(1.03); }
+            
+            /* Customizações específicas de transformação das imagens */
+            .img-contain-zoom-out { object-fit: contain !important; transform: scale(0.85); }
+            .img-zoom-in { transform: scale(1.10); }
+            .img-rotate-left { transform: rotate(-90deg); }
+
+            .showcase-section:hover .home-photo-img:not(.img-contain-zoom-out):not(.img-zoom-in):not(.img-rotate-left) { transform: scale(1.03); }
+            .showcase-section:hover .img-contain-zoom-out { transform: scale(0.88); }
+            .showcase-section:hover .img-zoom-in { transform: scale(1.13); }
+            .showcase-section:hover .img-rotate-left { transform: rotate(-90deg) scale(1.03); }
+
+            /* Estilos do Modal Pop-up do QR Code */
+            .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
+            .modal-overlay.show { display: flex; }
+            .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); animation: fade-in 0.3s ease; }
+            .close-btn { position: absolute; top: 12px; right: 18px; font-size: 1.6rem; cursor: pointer; color: var(--text); opacity: 0.6; transition: opacity 0.2s; }
+            .close-btn:hover { opacity: 1; }
+            @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
             @media (max-width: 768px) {
                 .home-container { gap: 3rem; }
@@ -116,7 +152,8 @@
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
-                    <a href="index.html" class="logo active">&nbsp;Violino&nbsp;</a>
+                    <!-- Removido a classe 'active' do Violino conforme solicitado -->
+                    <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
                     <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
                 </div>
                 <ul id="nav-links">
@@ -147,7 +184,7 @@
         <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
             <section class="hero" style="margin-bottom: 4rem; text-align: center;">
                 <h1>NKL Oficial | Engenharia Acústica & Lutheria</h1>
-                <p>Alta performance estruturada with elegância. Explore ferramentas analíticas de ponta e domine a ciência oculta por trás do som perfeito.</p>
+                <p>Alta performance estruturada com elegância. Explore ferramentas analíticas de ponta e domine a ciência oculta por trás do som perfeito.</p>
             </section>
 
             <div class="home-container">
@@ -161,7 +198,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Atualizado para .png conforme solicitado -->
                             <img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Importação">
                         </div>
                     </div>
@@ -171,13 +207,13 @@
                 <div class="showcase-section reverse">
                     <div class="content-side">
                         <h2>Equipamentos Recomendados</h2>
-                        <p>Chega de gastar rios de dinheiro comprando acessórios no escuro. Acesse nossa vitrine com uma curadoria implacável de arcos de madeira premium ou fibra de carbono, breus e espalheiras testados exaustivamente na bancada e amplamente aprovados por alunos.</p>
+                        <p>Chega de gastar rios de dinheiro comprando acessórios no escuro. Acesse nossa vitrine com uma curadoria implacável de arcos de madeira premium ou fibra de carbono, breus e espalheiras testados na bancada e amplamente aprovados por alunos.</p>
                         <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados →</a>
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Atualizado para .png conforme solicitado -->
-                            <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Recomendados">
+                            <!-- Home page 2 configurada para conter sem preencher a janela e com redução de zoom de 15% -->
+                            <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-contain-zoom-out" alt="Foto Recomendados">
                         </div>
                     </div>
                 </div>
@@ -191,8 +227,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Atualizado para .png conforme solicitado -->
-                            <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Gráfico de Cordas">
+                            <!-- Home page 3 configurada com um zoom de 10% para preenchimento total -->
+                            <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-in" alt="Foto Gráfico de Cordas">
                         </div>
                     </div>
                 </div>
@@ -201,13 +237,13 @@
                 <div class="showcase-section reverse">
                     <div class="content-side">
                         <h2>Comparador Analítico Avançado</h2>
-                        <p>Coloque as grandes marcas do mercado mundial frente a frente. Nosso sistema dinâmico cruza de forma instantânea 16 características técnicas cruciais de 92 encordoados diferentes, incluindo durabilidade tonal, sensibilidade climática e velocidade de resposta mecânica.</p>
-                        <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Encordoados ao Vivo →</a>
+                        <p>Coloque as grandes marcas do mercado mundial frente a frente. Nosso sistema dinâmico cruza de forma instantânea 16 características técnicas cruciais de 92 cordas diferentes, incluindo durabilidade tonal, sensibilidade climática e velocidade de resposta mecânica.</p>
+                        <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo →</a>
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Atualizado para .png conforme solicitado -->
-                            <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Comparador">
+                            <!-- Home page 4 rotacionada 90 graus para a esquerda -->
+                            <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-rotate-left" alt="Foto Comparador">
                         </div>
                     </div>
                 </div>
@@ -221,7 +257,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Atualizado para .png conforme solicitado -->
                             <img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Física do Som">
                         </div>
                     </div>
@@ -229,6 +264,16 @@
 
             </div>
         </main>
+
+        <!-- Modal do QR Code PIX -->
+        <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closePixModal()">&times;</span>
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar com QR Code PIX</h4>
+                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do seu banco para apoiar a nossa estrutura.</p>
+                <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PIX NKL">
+            </div>
+        </div>
 
         <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"><br></a>
         
@@ -247,9 +292,15 @@
                 <div class="footer-box">
                      <h4>Apoie o Projeto</h4>
                     <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou de alguma forma, considere apoiar nosso trabalho mantendo a estrutura no ar.</p>
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
-                        Apoiar NKL
-                    </a>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.5rem;">
+                        <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                            Apoiar NKL
+                        </a>
+                        <!-- Botão Dinâmico solicitado: Copia e-mail, dispara o aviso e abre o QR Code -->
+                        <button onclick="handlePixSupport()" class="btn-outline" style="background: transparent; cursor: pointer; font-family: 'Inter', sans-serif;">
+                            ❖ PIX QR Code / E-mail
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -258,6 +309,17 @@
         </footer>
 
         <script>
+            // Lógica para o novo botão de suporte integrado
+            function handlePixSupport() {
+                navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
+                alert('Chave PIX (E-mail) copiada com sucesso!');
+                document.getElementById('pix-modal').classList.add('show');
+            }
+
+            function closePixModal() {
+                document.getElementById('pix-modal').classList.remove('show');
+            }
+
             // Lógica do Tema Claro/Escuro
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
