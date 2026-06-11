@@ -5,7 +5,7 @@
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
-          function gtag()){dataLayer.push(arguments);}
+          function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
         
           gtag('config', 'G-QD0HQJFWVW');
@@ -204,21 +204,21 @@
             });
 
             const keysMapping = [
-                { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota escolhida de acordo com a média feita com relatos de musicistas.' },
-                { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas. Muitas cordas dão várias opções de tensões.' },
-                { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico do som no ambiente.' },
-                { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre entre a maciez (Quente) e a definição focada brilhante (Focada).' },
-                { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural que compõe a alma física da corda.' },
-                { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro necessário para o encordoamento completo.' },
-                { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica com que a corda reage e vibra ao toque inicial do arco.' },
-                { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o melhor aproveitamento acústico do material.' },
-                { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica do encordoamento da marca.' },
-                { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período estável de horas necessário para fixar a afinação e abrir o timbre real.' },
-                { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que o material perca suas propriedades elásticas e fique "morto".' },
-                { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações barométricas, térmicas e higrométricas (umidade).' },
-                { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal nobre enrolado externamente sobre o núcleo base.' },
-                { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado com bolinha (ball) ou laço (loop) para o microafinado.' },
-                { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão ou condução da linha de arco sem produzir ruídos caóticos.' }
+                { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota média baseada em relatos de musicistas (Escala: 0.0 a 10.0).' },
+                { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas (Opções: Baixa, Média, Alta, Mista).' },
+                { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico (Opções: Suave, Moderada, Forte, Muito Forte).' },
+                { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre (Porcentagens variando entre QUENTE e FOCADA).' },
+                { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural da corda (Opções: Tripa, Sintético/Perlon, Aço, Híbrido).' },
+                { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro (Escala: de $ [~R$50] até $$$$$ [~R$1500+]).' },
+                { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica ao toque inicial do arco (Opções: Lenta, Moderada, Rápida, Instantânea).' },
+                { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o aproveitamento acústico (Opções: Interno, Externo, Ambos).' },
+                { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica da marca (Escala de notas: de A+ [Máxima] até E- [Mínima]).' },
+                { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período necessário para fixar a afinação e abrir o timbre (Opções: Minutos, Horas, Dias, Semanas).' },
+                { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que a corda perca o brilho elástico (Opções: Curta, Média, Longa).' },
+                { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações de temperatura e umidade (Opções: Baixa/Estável, Média, Alta).' },
+                { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal enrolado externamente sobre o núcleo (Opções: Alumínio, Prata, Ouro, Tungstênio, Cromo, etc).' },
+                { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado para o microafinador (Opções: Bolinha [Ball-end], Laço [Loop-end] ou Removível).' },
+                { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão sem produzir chiados ou ruídos (Opções: Baixa, Média, Alta).' }
             ];
 
             const formBaseUrl = "https://docs.google.com/forms/d/e/SEU_ID_DO_FORMULARIO_AQUI/viewform?usp=pp_url&entry.SEU_ENTRY_ID_AQUI=";
