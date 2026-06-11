@@ -269,8 +269,8 @@
         <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <span class="close-btn" onclick="closePixModal()">&times;</span>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar com QR Code PIX</h4>
-                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do seu banco para apoiar a nossa estrutura.</p>
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar border NKL pelo PayPal</h4>
+                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do paypal ou câmera para apoiar a nossa estrutura.</p>
                 <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PIX NKL">
             </div>
         </div>
@@ -298,7 +298,7 @@
                         </a>
                         <!-- Botão Dinâmico solicitado: Copia e-mail, dispara o aviso e abre o QR Code -->
                         <button onclick="handlePixSupport()" class="btn-outline" style="background: transparent; cursor: pointer; font-family: 'Inter', sans-serif;">
-                            ❖ PIX QR Code / E-mail
+                            PayPal 
                         </button>
                     </div>
                 </div>
@@ -312,7 +312,7 @@
             // Lógica para o novo botão de suporte integrado
             function handlePixSupport() {
                 navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
-                alert('Chave PIX (E-mail) copiada com sucesso!');
+                alert('Endereço paypal copiado com sucesso!');
                 document.getElementById('pix-modal').classList.add('show');
             }
 
