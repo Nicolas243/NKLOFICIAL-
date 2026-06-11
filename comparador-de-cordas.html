@@ -5,7 +5,7 @@
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
+          function gtag()){dataLayer.push(arguments);}
           gtag('js', new Date());
         
           gtag('config', 'G-QD0HQJFWVW');
@@ -38,7 +38,6 @@
             .dark-theme .theme-toggle { transform: rotate(360deg); } 
             body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
 
-            /* Botão mobile */
             .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
             .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
 
@@ -47,31 +46,11 @@
                 .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
                 .site-header .nav-brand { margin-right: auto !important; } 
                 .theme-toggle { margin-left: 0 !important; } 
-                
-                /* ESTADO INICIAL (No topo): Menu aberto e botão oculto */
                 .mobile-menu-btn { display: none; }
-                .site-header nav ul { 
-                    display: flex !important; 
-                    width: 100%; 
-                    flex-direction: column !important; 
-                    margin: 1rem 0 0 0 !important; 
-                    padding-top: 1rem !important; 
-                    border-top: 1px solid var(--border); 
-                    gap: 1rem !important; 
-                    order: 3; 
-                } 
-
-                /* ESTADO APÓS O SCROLL (Classe .scrolled ativada via JavaScript) */
-                .site-header.scrolled .mobile-menu-btn { 
-                    display: block; 
-                }
-                .site-header.scrolled nav ul { 
-                    display: none !important; 
-                } 
-                /* Se o usuário clicar para abrir o menu mesmo após o scroll */
-                .site-header.scrolled nav ul.show { 
-                    display: flex !important; 
-                }
+                .site-header nav ul { display: flex !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; } 
+                .site-header.scrolled .mobile-menu-btn { display: block; }
+                .site-header.scrolled nav ul { display: none !important; } 
+                .site-header.scrolled nav ul.show { display: flex !important; }
             }
 
             /* Estilos do Comparador Dinâmico */
@@ -86,13 +65,41 @@
             
             .comparison-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
             .comparison-table th, .comparison-table td { padding: 1.2rem; border-bottom: 1px solid var(--border); text-align: left; }
-            .comparison-table th { background: rgba(166, 138, 97, 0.1); color: var(--secondary); font-family: 'Playfair Display', serif; font-size: 1.1rem; width: 33%; }
+            .comparison-table th { background: rgba(166, 138, 97, 0.1); color: var(--secondary); font-family: 'Playfair Display', serif; font-size: 1.1rem; width: 33%; vertical-align: middle; }
             .comparison-table td { font-size: 0.95rem; color: var(--text); width: 33%; vertical-align: top; }
             .comparison-table tr:last-child td { border-bottom: none; }
-            .feature-name { font-weight: 600; color: var(--primary); }
+            
+            .feature-container { display: flex; flex-direction: column; gap: 0.3rem; }
+            .feature-name { font-weight: 600; color: var(--primary); font-size: 1.05rem; }
+            .feature-desc { font-size: 0.8rem; color: var(--text); opacity: 0.65; font-weight: 400; line-height: 1.4; }
+            
+            /* Estilização dos Botões de Afiliados nas Colunas */
+            .col-header-container { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+            .btn-affiliate { 
+                display: inline-flex; align-items: center; justify-content: center;
+                padding: 10px 16px; font-size: 0.85rem; font-weight: bold;
+                color: #ffffff !important; background: linear-gradient(135deg, #a68a61, #8c6f42);
+                border: none; border-radius: 6px; text-decoration: none !important;
+                box-shadow: 0 4px 10px rgba(166, 138, 97, 0.2);
+                transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+                width: 100%; text-align: center;
+            }
+            .btn-affiliate:hover { 
+                transform: translateY(-2px); 
+                box-shadow: 0 6px 15px rgba(166, 138, 97, 0.35);
+                filter: brightness(1.1);
+            }
             
             body.dark-theme .comparison-table th { background: rgba(0, 255, 136, 0.05); }
             body.dark-theme .feature-name { color: var(--text); }
+            body.dark-theme .btn-affiliate {
+                background: linear-gradient(135deg, #00FF88, #00aa55);
+                color: #000000 !important;
+                box-shadow: 0 4px 10px rgba(0, 255, 136, 0.15);
+            }
+            body.dark-theme .btn-affiliate:hover {
+                box-shadow: 0 6px 15px rgba(0, 255, 136, 0.3);
+            }
             
             @media (max-width: 768px) {
                 .selector-container { flex-direction: column; padding: 1rem; }
@@ -111,15 +118,9 @@
                     <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
                 </div>
                 <ul id="nav-links">
-                    <li>
-                        <a href="index.html">Home</a>
-                    </li>
-                    <li>
-                        <a href="importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="recomendados.html">Recomendados</a>
-                    </li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="importacao.html">Importação</a></li>
+                    <li><a href="recomendados.html">Recomendados</a></li>
                     <li class="dropdown">
                         <a href="javascript:void(0);" class="active">Cordas▾</a>
                         <div class="dropdown-content">
@@ -127,15 +128,10 @@
                             <a href="comparador-de-cordas.html" class="active">Comparador Analítico</a>
                         </div>
                     </li>
-                    <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
-                    </li>
-                    <li>
-                        <a href="contatos/index.html">Contatos</a>
-                    </li>
+                    <li><a href="fisica-do-som.html">Física do Som</a></li>
+                    <li><a href="contatos/index.html">Contatos</a></li>
                 </ul>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                
                 <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
                     <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -158,14 +154,14 @@
                         <select id="corda1">
                             <option value="">-- Selecione a primeira corda --</option>
                         </select>
-                        <a href="#" id="btn-report1" class="btn-report" target="_blank" title="Viu algum dado errado? Clique para avisar!">Reportar Erro (Corda 1)</a>
+                        <a href="#" id="btn-report1" class="btn-report" target="_blank">Reportar Erro (Corda 1)</a>
                     </div>
                     <div class="select-group">
                         <label>Segunda Opção de Corda</label>
                         <select id="corda2">
                             <option value="">-- Selecione a segunda corda --</option>
                         </select>
-                        <a href="#" id="btn-report2" class="btn-report" target="_blank" title="Viu algum dado errado? Clique para avisar!">Reportar Erro (Corda 2)</a>
+                        <a href="#" id="btn-report2" class="btn-report" target="_blank">Reportar Erro (Corda 2)</a>
                     </div>
                 </div>
 
@@ -178,8 +174,8 @@
                         <thead>
                             <tr>
                                 <th>Característica</th>
-                                <th id="th-corda1">Corda 1</th>
-                                <th id="th-corda2">Corda 2</th>
+                                <th id="th-corda1"><div class="col-header-container"><span class="string-name-label">Corda 1</span></div></th>
+                                <th id="th-corda2"><div class="col-header-container"><span class="string-name-label">Corda 2</span></div></th>
                             </tr>
                         </thead>
                         <tbody id="comparison-body">
@@ -208,24 +204,30 @@
             });
 
             const keysMapping = [
-                { key: 'nota', label: 'Nota de Avaliação' },
-                { key: 'tensao', label: 'Tensão/Peso nos Dedos' },
-                { key: 'projecao', label: 'Projeção de Volume' },
-                { key: 'cor', label: 'Cor do Som' },
-                { key: 'nucleo', label: 'Núcleo Base' },
-                { key: 'preco', label: 'Faixa de Preço' },
-                { key: 'resposta', label: 'Velocidade de Resposta' },
-                { key: 'ambiente', label: 'Ambiente Recomendado' },
-                { key: 'qualidade', label: 'Nível de Qualidade Geral' },
-                { key: 'amaciamento', label: 'Tempo de Amaciamento' },
-                { key: 'durabilidade', label: 'Durabilidade Tonal' },
-                { key: 'clima', label: 'Sensibilidade Climática' },
-                { key: 'revestimento', label: 'Material do Revestimento' },
-                { key: 'fixacao', label: 'Fixação da Corda Mi' },
-                { key: 'tolerancia', label: 'Tolerância a Erros de Arco' }
+                { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota escolhida de acordo com a média feita com relatos de musicistas.' },
+                { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas. Muitas cordas dão várias opções de tensões.' },
+                { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico do som no ambiente.' },
+                { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre entre a maciez (Quente) e a definição focada brilhante (Focada).' },
+                { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural que compõe a alma física da corda.' },
+                { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro necessário para o encordoamento completo.' },
+                { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica com que a corda reage e vibra ao toque inicial do arco.' },
+                { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o melhor aproveitamento acústico do material.' },
+                { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica do encordoamento da marca.' },
+                { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período estável de horas necessário para fixar a afinação e abrir o timbre real.' },
+                { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que o material perca suas propriedades elásticas e fique "morto".' },
+                { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações barométricas, térmicas e higrométricas (umidade).' },
+                { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal nobre enrolado externamente sobre o núcleo base.' },
+                { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado com bolinha (ball) ou laço (loop) para o microafinado.' },
+                { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão ou condução da linha de arco sem produzir ruídos caóticos.' }
             ];
 
             const formBaseUrl = "https://docs.google.com/forms/d/e/SEU_ID_DO_FORMULARIO_AQUI/viewform?usp=pp_url&entry.SEU_ENTRY_ID_AQUI=";
+
+            // Função para converter o formato W: XX% | F: YY% para QUENTE: XX% | FOCADA: YY%
+            function formatStringColor(rawString) {
+                if (!rawString || rawString === 'N/A') return 'N/A';
+                return rawString.replace(/W:/gi, 'QUENTE:').replace(/F:/gi, 'FOCADA:');
+            }
 
             function updateComparison() {
                 const val1 = select1.value;
@@ -240,15 +242,27 @@
                 if(val1 !== "") {
                     btn1.style.display = "inline-block";
                     btn1.href = formBaseUrl + encodeURIComponent(db[val1].nome);
+                    document.getElementById('th-corda1').innerHTML = `
+                        <div class="col-header-container">
+                            <span class="string-name-label" style="font-weight: 700; color: var(--primary);">${db[val1].nome}</span>
+                            <a href="#" class="btn-affiliate" title="Ver preço e comprar esta corda">Ver Oferta</a>
+                        </div>`;
                 } else {
                     btn1.style.display = "none";
+                    document.getElementById('th-corda1').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 1</span></div>';
                 }
 
                 if(val2 !== "") {
                     btn2.style.display = "inline-block";
                     btn2.href = formBaseUrl + encodeURIComponent(db[val2].nome);
+                    document.getElementById('th-corda2').innerHTML = `
+                        <div class="col-header-container">
+                            <span class="string-name-label" style="font-weight: 700; color: var(--primary);">${db[val2].nome}</span>
+                            <a href="#" class="btn-affiliate" title="Ver preço e comprar esta corda">Ver Oferta</a>
+                        </div>`;
                 } else {
                     btn2.style.display = "none";
+                    document.getElementById('th-corda2').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 2</span></div>';
                 }
 
                 if(val1 === "" || val2 === "") {
@@ -263,30 +277,41 @@
                 const corda1 = db[val1];
                 const corda2 = db[val2];
 
-                document.getElementById('th-corda1').innerText = corda1.nome;
-                document.getElementById('th-corda2').innerText = corda2.nome;
-
                 tbody.innerHTML = '';
 
                 keysMapping.forEach(item => {
                     let tr = document.createElement('tr');
                     
                     let tdFeature = document.createElement('td');
-                    tdFeature.className = 'feature-name';
-                    tdFeature.innerText = item.label;
+                    tdFeature.innerHTML = `
+                        <div class="feature-container">
+                            <span class="feature-name">${item.label}</span>
+                            <span class="feature-desc">${item.desc}</span>
+                        </div>`;
+
+                    let rawVal1 = corda1[item.key];
+                    let rawVal2 = corda2[item.key];
+
+                    // Se for a característica Cor do Som, formata o texto
+                    if (item.key === 'cor') {
+                        rawVal1 = formatStringColor(rawVal1);
+                        rawVal2 = formatStringColor(rawVal2);
+                    }
 
                     let tdVal1 = document.createElement('td');
-                    tdVal1.innerText = corda1[item.key];
+                    tdVal1.innerText = rawVal1;
                     
                     if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') {
                         tdVal1.style.color = 'var(--neon, #00FF88)';
+                        tdVal1.style.fontWeight = '600';
                     }
 
                     let tdVal2 = document.createElement('td');
-                    tdVal2.innerText = corda2[item.key];
+                    tdVal2.innerText = rawVal2;
                     
                     if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') {
                         tdVal2.style.color = 'var(--neon, #00FF88)';
+                        tdVal2.style.fontWeight = '600';
                     }
 
                     tr.appendChild(tdFeature);
