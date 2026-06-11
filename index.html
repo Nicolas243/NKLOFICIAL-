@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
-                        <!-- Google tag (gtag.js) -->
+        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
@@ -10,29 +10,26 @@
         
           gtag('config', 'G-QD0HQJFWVW');
         </script>
+        <link rel="icon" type="image/png" href="NKL/NKL.png">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>O Violino Definitivo | Engenharia Acústica</title>
-        
-        <link rel="icon" type="image/png" href="NKL/NKL.png">
-        <link rel="stylesheet" href="style.css">
-        
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;600&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
-        
+        <title>Violino NKL | Engenharia Acústica e Lutheria</title>
         <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino, cavalete, breu, espalheira">
         <meta name="author" content="Nicolas Da Costa Santos">
         <meta property="og:title" content="Violino NKL | Referência em Acústica e Lutheria"/>
-        <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance."/>
+        <meta property="og:description" content="Descubra a ciência por trás do som perfeito e aprenda a importar equipamentos de alta performance com precisão técnica."/>
         <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
-        
+        <link rel="stylesheet" href="style.css">
         <style>
+            /* Padronização do Cabeçalho Global */
             .site-header { font-family: 'Inter', sans-serif !important; background-color: var(--bg) !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
             .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
             .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
             .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: var(--text) !important; text-decoration: none; } 
             .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
             .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text) !important; text-decoration: none; transition: color 0.3s; } 
-            .site-header nav a:hover, .site-header nav a.active { color: #a68a61 !important; } 
+            .site-header nav a:hover { color: #a68a61 !important; } 
+            .site-header nav a.active { color: #a68a61 !important; font-weight: 700; }
             .site-header .dropdown { position: relative; } 
             .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface) !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); } 
             .site-header .dropdown:hover .dropdown-content { display: block; } 
@@ -43,7 +40,7 @@
             .dark-theme .theme-toggle { transform: rotate(360deg); } 
             body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
 
-            /* Botão mobile */
+            /* Menu Mobile */
             .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
             .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
 
@@ -52,31 +49,66 @@
                 .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
                 .site-header .nav-brand { margin-right: auto !important; } 
                 .theme-toggle { margin-left: 0 !important; } 
-                
-                /* ESTADO INICIAL (No topo): Menu aberto e botão oculto */
                 .mobile-menu-btn { display: none; }
-                .site-header nav ul { 
-                    display: flex !important; 
-                    width: 100%; 
-                    flex-direction: column !important; 
-                    margin: 1rem 0 0 0 !important; 
-                    padding-top: 1rem !important; 
-                    border-top: 1px solid var(--border); 
-                    gap: 1rem !important; 
-                    order: 3; 
-                } 
+                .site-header nav ul { display: flex !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; } 
+                .site-header.scrolled .mobile-menu-btn { display: block; }
+                .site-header.scrolled nav ul { display: none !important; } 
+                .site-header.scrolled nav ul.show { display: flex !important; }
+            }
 
-                /* ESTADO APÓS O SCROLL (Classe .scrolled ativada via JavaScript) */
-                .site-header.scrolled .mobile-menu-btn { 
-                    display: block; 
-                }
-                .site-header.scrolled nav ul { 
-                    display: none !important; 
-                } 
-                /* Se o usuário clicar para abrir o menu mesmo após o scroll */
-                .site-header.scrolled nav ul.show { 
-                    display: flex !important; 
-                }
+            /* Estilização das Seções Dinâmicas da Home */
+            .home-container { display: flex; flex-direction: column; gap: 5rem; margin-top: 4rem; }
+            .showcase-section { display: flex; gap: 3rem; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 2.5rem; border-radius: 12px; transition: transform 0.3s, box-shadow 0.3s; }
+            .showcase-section:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
+            .showcase-section.reverse { flex-direction: row-reverse; }
+            
+            .content-side { flex: 1.3; display: flex; flex-direction: column; gap: 1rem; }
+            .content-side h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary); margin: 0; }
+            body.dark-theme .content-side h2 { color: var(--text); }
+            .content-side p { font-size: 1rem; line-height: 1.6; color: var(--text); opacity: 0.85; margin: 0; }
+            
+            /* Botões de Chamada de Ação (CTA) */
+            .btn-home-cta {
+                display: inline-flex; align-items: center; justify-content: center;
+                align-self: flex-start; padding: 12px 24px; font-size: 0.9rem; font-weight: bold;
+                color: #ffffff !important; background: linear-gradient(135deg, #a68a61, #8c6f42);
+                border: none; border-radius: 6px; text-decoration: none !important;
+                transition: transform 0.2s, filter 0.2s; margin-top: 0.5rem;
+                box-shadow: 0 4px 12px rgba(166, 138, 97, 0.15);
+            }
+            .btn-home-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
+            body.dark-theme .btn-home-cta { background: linear-gradient(135deg, #00FF88, #00aa55); color: #000000 !important; box-shadow: 0 4px 12px rgba(0, 255, 136, 0.15); }
+
+            /* Seções Laterais de Fotos com Inversão de Cores */
+            .photo-side { flex: 0.7; display: flex; justify-content: center; align-items: center; }
+            .photo-box { 
+                width: 100%; max-width: 280px; height: 200px; 
+                border: 1px solid var(--border); border-radius: 8px; 
+                background-color: var(--bg); overflow: hidden;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+                transition: border-color 0.3s;
+            }
+            .showcase-section:hover .photo-box { border-color: #a68a61; }
+            body.dark-theme .showcase-section:hover .photo-box { border-color: #00FF88; }
+
+            .home-photo-img { 
+                width: 100%; height: 100%; object-fit: cover; 
+                filter: grayscale(100%); 
+                transition: filter 0.3s, transform 0.3s;
+            }
+            body.dark-theme .home-photo-img { 
+                filter: grayscale(100%) brightness(0.7) invert(1); 
+            }
+            .showcase-section:hover .home-photo-img { transform: scale(1.03); }
+
+            @media (max-width: 768px) {
+                .home-container { gap: 3rem; }
+                .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
+                .photo-side { width: 100%; }
+                .photo-box { max-width: 100%; height: 160px; }
+                .content-side { text-align: center; }
+                .btn-home-cta { align-self: center; width: 100%; }
             }
         </style>
     </head>
@@ -84,19 +116,13 @@
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
-                    <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
+                    <a href="index.html" class="logo active">&nbsp;Violino&nbsp;</a>
                     <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
                 </div>
                 <ul id="nav-links">
-                    <li>
-                        <a href="index.html" class="active">Home</a>
-                    </li>
-                    <li>
-                        <a href="importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="recomendados.html">Recomendados</a>
-                    </li>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="importacao.html">Importação</a></li>
+                    <li><a href="recomendados.html">Recomendados</a></li>
                     <li class="dropdown">
                         <a href="javascript:void(0);">Cordas▾</a>
                         <div class="dropdown-content">
@@ -104,15 +130,10 @@
                             <a href="comparador-de-cordas.html">Comparador Analítico</a>
                         </div>
                     </li>
-                    <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
-                    </li>
-                    <li>
-                        <a href="contatos/index.html">Contatos</a>
-                    </li>
+                    <li><a href="fisica-do-som.html">Física do Som</a></li>
+                    <li><a href="contatos/index.html">Contatos</a></li>
                 </ul>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                
                 <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
                     <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -122,40 +143,109 @@
                 </button>
             </nav>
         </header>
-        <main>
-            <section class="hero">
-                <h1>A Ciência por trás da Arte.</h1>
-                <p>O seu cantinho de informação técnica e curiosidades sobre o seu instrumento de cordas. Prepare-se para muitas surpresas.</p>
-                <a href="guia-de-cordas.html" class="btn">Explorar o gráfico de Cordas</a>
+
+        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+            <section class="hero" style="margin-bottom: 4rem; text-align: center;">
+                <h1>NKL Oficial | Engenharia Acústica & Lutheria</h1>
+                <p>Alta performance estruturada with elegância. Explore ferramentas analíticas de ponta e domine a ciência oculta por trás do som perfeito.</p>
             </section>
-            <div class="grid-layout">
-                <section class="section-card">
-                    <h3>Espectro de Cordas</h3>
-                    <p>Compreenda a fricção de polímeros e a física tensional. Acesse análises de marcas globais e o gráfico definitivo de frequência.</p>
-                    <a href="guia-de-cordas.html" class="link-arrow">Ver Gráfico de Cordas &rarr;</a>
-                </section>
-                <section class="section-card">
-                    <h3>Clínica e Geometria</h3>
-                    <p>Domine os milímetros que transformam madeira em som. Aprenda sobre ajuste de almas, vetores de tensão e preservação do tampo harmônico.</p>
-                    <a href="clinica-lutheria.html" class="link-arrow">Ver clínica &rarr;</a>
-                </section>
+
+            <div class="home-container">
+                
+                <!-- SEÇÃO 1: IMPORTAÇÃO (MÉTODO NKL) -->
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Importação Direta | Método NKL</h2>
+                        <p>Descubra o mapa de cabeceira estratégico que quebra a cadeia de intermediários no Brasil. Aprenda a selecionar e importar violinos de oficina e acessórios direto de fábrica com até 40% de economia, garantindo a máxima segurança contra prejuízos e taxas caóticas.</p>
+                        <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação →</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <!-- Atualizado para .png conforme solicitado -->
+                            <img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Importação">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 2: RECOMENDADOS -->
+                <div class="showcase-section reverse">
+                    <div class="content-side">
+                        <h2>Equipamentos Recomendados</h2>
+                        <p>Chega de gastar rios de dinheiro comprando acessórios no escuro. Acesse nossa vitrine com uma curadoria implacável de arcos de madeira premium ou fibra de carbono, breus e espalheiras testados exaustivamente na bancada e amplamente aprovados por alunos.</p>
+                        <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados →</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <!-- Atualizado para .png conforme solicitado -->
+                            <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Recomendados">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 3: GRÁFICO DE CORDAS -->
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Gráfico Analítico de Cordas</h2>
+                        <p>Entenda a distribuição exata do espectro de frequências das principais marcas mundiais. Um mapa visual limpo e intuitivo projetado para você calibrar a projeção de volume e entender a resposta dinâmica de tensão ideal para as características do seu violino.</p>
+                        <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas →</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <!-- Atualizado para .png conforme solicitado -->
+                            <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Gráfico de Cordas">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 4: COMPARADOR ANALÍTICO -->
+                <div class="showcase-section reverse">
+                    <div class="content-side">
+                        <h2>Comparador Analítico Avançado</h2>
+                        <p>Coloque as grandes marcas do mercado mundial frente a frente. Nosso sistema dinâmico cruza de forma instantânea 16 características técnicas cruciais de 92 encordoados diferentes, incluindo durabilidade tonal, sensibilidade climática e velocidade de resposta mecânica.</p>
+                        <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Encordoados ao Vivo →</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <!-- Atualizado para .png conforme solicitado -->
+                            <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Comparador">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 5: FÍSICA DO SOM -->
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>A Física Estrutural do Som</h2>
+                        <p>Mergulhe fundo nas engrenagens mecânicas e matemáticas da lutheria. Desvende os mistérios científicos por trás do movimento de Helmholtz, o fenômeno oscilatório do atrito "stick-slip" e entenda como a alma e o cavalete filtram as frequências harmônicas do instrumento.</p>
+                        <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica →</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <!-- Atualizado para .png conforme solicitado -->
+                            <img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Física do Som">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
-        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"></a>
+
+        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"><br></a>
+        
         <footer class="site-footer">
             <div class="footer-grid">
                 <div class="footer-box">
-                    <h4>Sua voice importa</h4>
+                    <h4>Sua voz importa</h4>
                     <p>Queremos construir o melhor portal de lutheria do Brasil. Como podemos melhorar sua experiência?</p>
                     <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
                 </div>
                 <div class="footer-box">
                     <h4>Contato Direto</h4>
                     <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline" font-weight: 500;">contato.nikoluthieria@gmail.com</a>
+                    <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--secondary); font-weight: 500;">contato.nikoluthieria@gmail.com</a>
                 </div>
                 <div class="footer-box">
-                    <h4>Apoie o Projeto</h4>
+                     <h4>Apoie o Projeto</h4>
                     <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou de alguma forma, considere apoiar nosso trabalho mantendo a estrutura no ar.</p>
                     <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
                         Apoiar NKL
@@ -163,20 +253,21 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
+                <p>&copy; 2026 NKL Engenharia e Lutheria | Niko Luthiengenharia. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
+
         <script>
-            // Gerenciamento de Tema Claro/Escuro unificado com as outras páginas
+            // Lógica do Tema Claro/Escuro
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
             const savedTheme = localStorage.getItem('nkl_theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) { 
-                body.classList.remove('dark-theme'); 
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
+                body.classList.add('dark-theme'); 
             } else {
-                body.classList.add('dark-theme');
+                body.classList.remove('dark-theme');
             }
             
             themeToggleBtn.addEventListener('click', () => {
@@ -184,23 +275,23 @@
                 localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
             });
 
-            // Controle do Menu Mobile e Mecanismo de Scroll
+            // Controle do Cabeçalho Mobile ao dar Scroll
             const header = document.getElementById('site-header');
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.getElementById('nav-links');
 
-            // Abre/Fecha manualmente via clique nas 3 barras (quando recolhido)
-            mobileBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('show');
-            });
+            if(mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('show');
+                });
+            }
 
-            // Monitora a rolagem da página para encolher/expandir
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
                     header.classList.add('scrolled');
                 } else {
                     header.classList.remove('scrolled');
-                    navLinks.classList.remove('show'); // Reseta o estado aberto ao colar no topo
+                    if(navLinks) navLinks.classList.remove('show');
                 }
             });
         </script>
