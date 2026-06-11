@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
-                        <!-- Google tag (gtag.js) -->
+        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
@@ -73,9 +73,37 @@
                     display: flex !important; 
                 }
             }
+
+            /* Estilos do Comparador Dinâmico */
+            .comparison-wrapper { margin-top: 3rem; }
+            .selector-container { display: flex; gap: 2rem; margin-bottom: 2rem; background: var(--surface); padding: 2rem; border: 1px solid var(--border); border-radius: 8px; }
+            .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+            .select-group label { font-size: 0.9rem; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: 1px; }
+            .select-group select { padding: 1rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; cursor: pointer; transition: border-color 0.3s; }
+            .select-group select:focus { border-color: var(--secondary); }
+            .btn-report { align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 4px; text-decoration: none; transition: all 0.2s; display: none; background: transparent; font-weight: 600; margin-top: 0.5rem; }
+            .btn-report:hover { background: #ff4d4d; color: #fff; }
+            
+            .comparison-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+            .comparison-table th, .comparison-table td { padding: 1.2rem; border-bottom: 1px solid var(--border); text-align: left; }
+            .comparison-table th { background: rgba(166, 138, 97, 0.1); color: var(--secondary); font-family: 'Playfair Display', serif; font-size: 1.1rem; width: 33%; }
+            .comparison-table td { font-size: 0.95rem; color: var(--text); width: 33%; vertical-align: top; }
+            .comparison-table tr:last-child td { border-bottom: none; }
+            .feature-name { font-weight: 600; color: var(--primary); }
+            
+            body.dark-theme .comparison-table th { background: rgba(0, 255, 136, 0.05); }
+            body.dark-theme .feature-name { color: var(--text); }
+            
+            @media (max-width: 768px) {
+                .selector-container { flex-direction: column; padding: 1rem; }
+                .comparison-table { display: block; overflow-x: auto; white-space: nowrap; }
+            }
+            
+            .hidden { display: none !important; }
+            .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text); opacity: 0.6; }
         </style>
     </head>
-    <body>
+    <body class="dark-theme">
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
@@ -93,7 +121,7 @@
                         <a href="recomendados.html">Recomendados</a>
                     </li>
                     <li class="dropdown">
-                        <a href="javascript:void(0);">Cordas▾</a>
+                        <a href="javascript:void(0);" class="active">Cordas▾</a>
                         <div class="dropdown-content">
                             <a href="guia-de-cordas.html">Gráfico de Cordas</a>
                             <a href="comparador-de-cordas.html" class="active">Comparador Analítico</a>
@@ -117,132 +145,193 @@
                 </button>
             </nav>
         </header>
-        <main>
-            <section class="hero" style="margin-bottom: 3rem;">
+        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+            <section class="hero" style="margin-bottom: 3rem; text-align: center;">
                 <h1 class="">Escolha com Ouvido e Coração</h1>
                 <p>Não compre no escuro. Coloque as principais marcas do mercado lado a lado e descubra qual delas vai casar melhor com a voz do seu violino.</p>
             </section>
-            <div class="selector-container">
-                <div class="select-group">
-                    <label>Primeira Opção de Corda</label>
-                    <select id="stringA" onchange="updateComparison()">
-                        <option value="dominant">Thomastik Dominant</option>
-                        <option value="evah">Pirastro Evah Pirazzi</option>
-                        <option value="larsen">Larsen Tzigane</option>
-                        <option value="calixto">Mauro Calixto Tradicional</option>
-                    </select>
+            
+            <div class="comparison-wrapper">
+                <div class="selector-container">
+                    <div class="select-group">
+                        <label>Primeira Opção de Corda</label>
+                        <select id="corda1">
+                            <option value="">-- Selecione a primeira corda --</option>
+                        </select>
+                        <a href="#" id="btn-report1" class="btn-report" target="_blank" title="Viu algum dado errado? Clique para avisar!">Reportar Erro (Corda 1)</a>
+                    </div>
+                    <div class="select-group">
+                        <label>Segunda Opção de Corda</label>
+                        <select id="corda2">
+                            <option value="">-- Selecione a segunda corda --</option>
+                        </select>
+                        <a href="#" id="btn-report2" class="btn-report" target="_blank" title="Viu algum dado errado? Clique para avisar!">Reportar Erro (Corda 2)</a>
+                    </div>
                 </div>
-                <div class="select-group">
-                    <label>Segunda Opção de Corda</label>
-                    <select id="stringB" onchange="updateComparison()">
-                        <option value="evah">Pirastro Evah Pirazzi</option>
-                        <option value="dominant">Thomastik Dominant</option>
-                        <option value="larsen">Larsen Tzigane</option>
-                        <option value="calixto">Mauro Calixto Tradicional</option>
-                    </select>
+
+                <div id="empty-state" class="empty-state">
+                    <p><i>Selecione duas cordas no menu acima para gerar o relatório comparativo.</i></p>
                 </div>
-            </div>
-            <div class="grid-layout" style="margin-top: 0;">
-                <div id="cardA" class="string-data-card"></div>
-                <div id="cardB" class="string-data-card"></div>
+
+                <div id="table-container" class="hidden">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Característica</th>
+                                <th id="th-corda1">Corda 1</th>
+                                <th id="th-corda2">Corda 2</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-body">
+                            <!-- Gerado via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
         <script>
-        const stringData = {
-            dominant: {
-                name: "Thomastik Dominant",
-                core: "Sintético (Perlon)",
-                tone: "Neutro e Equilibrado",
-                projection: "Média",
-                tension: "Média",
-                bestFor: "Considerada o padrão da indústria mundial. Elas são incrivelmente flexíveis, se adaptam muito rápido ao instrumento e servem como uma linha de base perfeita para profissionais testarem a acústica natural de um violino novo."
-            },
-            evah: {
-                name: "Pirastro Evah Pirazzi",
-                core: "Sintético Moderno",
-                tone: "Brilhante e Potente",
-                projection: "Alta",
-                tension: "Alta",
-                bestFor: "A escolha favorita dos solistas que precisam de projeção massiva e um som que corte a orquestra. Entrega uma resposta imediata de arco, muito foco nas notas e uma presença imponente."
-            },
-            larsen: {
-                name: "Larsen Tzigane",
-                core: "Composto Sintético",
-                tone: "Quente e Encorpado",
-                projection: "Alta",
-                tension: "Baixa",
-                bestFor: "Excelente para acalmar e equilibrar violinos que possuem um som excessivamente estridente ou agudo de fábrica. Oferece uma sensação de maciez muito confortável sob os dedos da mão esquerda."
-            },
-            calixto: {
-                name: "Mauro Calixto Trad.",
-                core: "100% Perlon",
-                tone: "Quente e Focado",
-                projection: "Média",
-                tension: "Média",
-                bestFor: "O maior destaque nacional em termos de custo-benefício. Perfeita para estudantes e profissionais que tocam no dia a dia e buscam um som macio, aveludado and confortável sem precisar investir em importadas caras."
+            const db = [{"nome": "Alice A703", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Alice A708", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Alice A747", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Corelli Alliance", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético (Kevlar)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.60", "amaciamento": "Lento (4+ dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Cantiga", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Crystal", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Stabalon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "D'Addario Ascenté", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Monel / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Helicore", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Amo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Vivo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 90%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "D'Addario Prelude", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Pro-Arte", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Zyex", "tensao": "Alta", "projecao": "Forte", "cor": "W: 60% | F: 80%", "nucleo": "Sintético (Zyex)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Di Pietro Studio Uno", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Aço (Alemão)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Dogal Capriccio", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata / Ligas Cobre", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Dogal Green Label", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Bronze", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Bronze", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Dominante Orchestral", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 60%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Aço", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Erudithus #01", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo / Cobre", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "EuroString", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "For-Tune Charm", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 60%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Giannini GEAV", "tensao": "Média", "projecao": "Baixa", "cor": "W: 40% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "D+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Metálicas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Classic", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 70%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Evoke", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Superior", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Young Talent", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Larsen Aurora", "tensao": "Média", "projecao": "Moderada", "cor": "W: 65% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.40", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Il Cannone", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Dir. Foc.", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 100%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 60% | F: 95%", "nucleo": "Sintético", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Prata / Alumínio", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Silver", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 70%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata (Fio Ext D/G)", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Solist", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 50% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Original", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Larsen Tzigane", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 10%", "nucleo": "Sintético (Nylon)", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Virtuoso", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.10", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Lenzner Goldbrokat (Só E)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço Nu / Banhada Ouro", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Mauro Calixto Padrão", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.60", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "NIG NVE804", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Hexagonal)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel Cromo (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Opal Titan", "tensao": "Alta", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Titânio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Orquezz PRO", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "9.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Paganini PE950 (Aço)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Paganini PE980 (Perlon)", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "N/A", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Aricore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Chorda", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 0%", "nucleo": "Tripa (Nua)", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.00", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Sem Revest. / Prata", "fixacao": "Tie-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Chromcor", "tensao": "Alta", "projecao": "Forte", "cor": "W: 5% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Eudoxa", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 5%", "nucleo": "Tripa", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.00", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.30", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi Gold", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 80%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Flexocor Permanent", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Gold Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 50%", "nucleo": "Tripa", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.80", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Obligato", "tensao": "Média", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A", "nota": "9.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Oliv", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 10%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.40", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.10", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A+", "nota": "9.20", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Perpetual", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 95%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina / Prata / Aço", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Pirastro Piranito", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "7.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Synoxa", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Tonica", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Violino", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Wondertone Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Prim Heavy", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 5% | F: 95%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B+", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Prim Medium", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Ranghiere", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Smart", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Strinberg VS4", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Red Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C", "nota": "7.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Sensicore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B-", "nota": "8.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Alphayue", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.10", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 40%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.80", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant Pro", "tensao": "Alta", "projecao": "Forte", "cor": "W: 80% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio/Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Dynamo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 40%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dynamo Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 75% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Blue", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Red", "tensao": "Média", "projecao": "Moderada", "cor": "W: 90% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Peter Infeld (PI)", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina/Ouro/Estanho/Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Prazision", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Rondo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Rondo Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 90% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Spirit", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 70% | F: 40%", "nucleo": "Sintético", "preco": "$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B-", "nota": "8.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Spirocore", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 75%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Superflexible", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 50%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Ti", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Vision", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Vision Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Vision Tit. Orq.", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Média"}, {"nome": "Thomastik Vision Tit. Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 15% | F: 95%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "A", "nota": "9.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Baixa"}, {"nome": "Warchal Amber", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 60%", "nucleo": "Sintético (W-Core)", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end (Helix)", "tolerancia": "Média"}, {"nome": "Warchal Ametyst", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 30% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Brilliant", "tensao": "Baixa", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Warchal Brilliant Vintage", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Loop-end", "tolerancia": "Média"}, {"nome": "Warchal Karneol", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 90% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Russian A", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Warchal Timbre", "tensao": "Média", "projecao": "Muito Forte", "cor": "W: 95% | F: 65%", "nucleo": "Sintético (W-Core)", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata Pura", "fixacao": "Ball-end (Helix)", "tolerancia": "Baixa"}];
+
+            const select1 = document.getElementById('corda1');
+            const select2 = document.getElementById('corda2');
+            
+            db.forEach((corda, index) => {
+                let option1 = document.createElement('option');
+                option1.value = index;
+                option1.text = corda.nome;
+                select1.appendChild(option1);
+
+                let option2 = document.createElement('option');
+                option2.value = index;
+                option2.text = corda.nome;
+                select2.appendChild(option2);
+            });
+
+            const keysMapping = [
+                { key: 'nota', label: 'Nota de Avaliação' },
+                { key: 'tensao', label: 'Tensão/Peso nos Dedos' },
+                { key: 'projecao', label: 'Projeção de Volume' },
+                { key: 'cor', label: 'Cor do Som' },
+                { key: 'nucleo', label: 'Núcleo Base' },
+                { key: 'preco', label: 'Faixa de Preço' },
+                { key: 'resposta', label: 'Velocidade de Resposta' },
+                { key: 'ambiente', label: 'Ambiente Recomendado' },
+                { key: 'qualidade', label: 'Nível de Qualidade Geral' },
+                { key: 'amaciamento', label: 'Tempo de Amaciamento' },
+                { key: 'durabilidade', label: 'Durabilidade Tonal' },
+                { key: 'clima', label: 'Sensibilidade Climática' },
+                { key: 'revestimento', label: 'Material do Revestimento' },
+                { key: 'fixacao', label: 'Fixação da Corda Mi' },
+                { key: 'tolerancia', label: 'Tolerância a Erros de Arco' }
+            ];
+
+            const formBaseUrl = "https://docs.google.com/forms/d/e/SEU_ID_DO_FORMULARIO_AQUI/viewform?usp=pp_url&entry.SEU_ENTRY_ID_AQUI=";
+
+            function updateComparison() {
+                const val1 = select1.value;
+                const val2 = select2.value;
+                const tableContainer = document.getElementById('table-container');
+                const emptyState = document.getElementById('empty-state');
+                const tbody = document.getElementById('comparison-body');
+                
+                const btn1 = document.getElementById('btn-report1');
+                const btn2 = document.getElementById('btn-report2');
+
+                if(val1 !== "") {
+                    btn1.style.display = "inline-block";
+                    btn1.href = formBaseUrl + encodeURIComponent(db[val1].nome);
+                } else {
+                    btn1.style.display = "none";
+                }
+
+                if(val2 !== "") {
+                    btn2.style.display = "inline-block";
+                    btn2.href = formBaseUrl + encodeURIComponent(db[val2].nome);
+                } else {
+                    btn2.style.display = "none";
+                }
+
+                if(val1 === "" || val2 === "") {
+                    tableContainer.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                tableContainer.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+
+                const corda1 = db[val1];
+                const corda2 = db[val2];
+
+                document.getElementById('th-corda1').innerText = corda1.nome;
+                document.getElementById('th-corda2').innerText = corda2.nome;
+
+                tbody.innerHTML = '';
+
+                keysMapping.forEach(item => {
+                    let tr = document.createElement('tr');
+                    
+                    let tdFeature = document.createElement('td');
+                    tdFeature.className = 'feature-name';
+                    tdFeature.innerText = item.label;
+
+                    let tdVal1 = document.createElement('td');
+                    tdVal1.innerText = corda1[item.key];
+                    
+                    if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') {
+                        tdVal1.style.color = 'var(--neon, #00FF88)';
+                    }
+
+                    let tdVal2 = document.createElement('td');
+                    tdVal2.innerText = corda2[item.key];
+                    
+                    if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') {
+                        tdVal2.style.color = 'var(--neon, #00FF88)';
+                    }
+
+                    tr.appendChild(tdFeature);
+                    tr.appendChild(tdVal1);
+                    tr.appendChild(tdVal2);
+                    tbody.appendChild(tr);
+                });
             }
-        };
 
-        function renderCard(id, dataKey) {
-            const data = stringData[dataKey];
-            const card = document.getElementById(id);
-            card.innerHTML = `
-                <h3>${data.name}</h3>
-                <div class="stat-row"><span class="stat-label">Núcleo Base</span> <span>${data.core}</span></div>
-                <div class="stat-row"><span class="stat-label">Cor do Som</span> <span>${data.tone}</span></div>
-                <div class="stat-row"><span class="stat-label">Projeção de Volume</span> <span>${data.projection}</span></div>
-                <div class="stat-row"><span class="stat-label">Tensão/Peso nos Dedos</span> <span>${data.tension}</span></div>
-                <div class="stat-row" style="border: none; flex-direction: column; margin-top: 1rem;">
-                    <span class="stat-label" style="color: var(--secondary); margin-bottom: 0.5rem;">Quando vale a pena usar?</span> 
-                    <span style="font-size: 0.85rem; line-height: 1.6;">${data.bestFor}</span>
-                </div>
-            `;
-        }
+            select1.addEventListener('change', updateComparison);
+            select2.addEventListener('change', updateComparison);
 
-        function updateComparison() {
-            renderCard('cardA', document.getElementById('stringA').value);
-            renderCard('cardB', document.getElementById('stringB').value);
-        }
-
-        updateComparison();
-
-        // Gerenciamento de Tema Claro/Escuro
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        const savedTheme = localStorage.getItem('nkl_theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
-            body.classList.add('dark-theme'); 
-        } else {
-            body.classList.remove('dark-theme');
-        }
-        
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        });
-
-        // Controle do Menu Mobile e Mecanismo de Scroll
-        const header = document.getElementById('site-header');
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-
-        // Abre/Fecha manualmente via clique nas 3 barras (quando recolhido)
-        mobileBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('show');
-        });
-
-        // Monitora a rolagem da página para encolher/expandir
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('nkl_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
+                body.classList.add('dark-theme'); 
             } else {
-                header.classList.remove('scrolled');
-                navLinks.classList.remove('show'); // Reseta o estado aberto ao colar no topo
+                body.classList.remove('dark-theme');
             }
-        });
-    </script>
+            
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
+
+            const header = document.getElementById('site-header');
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+
+            mobileBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                    navLinks.classList.remove('show');
+                }
+            });
+        </script>
         <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"><br></a>
         <footer class="site-footer">
             <div class="footer-grid">
@@ -265,7 +354,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 NKL Engenharia e Lutheria | Nicolas Da Costa Santos. Alta performance estruturada com elegância.</p>
+                <p>&copy; 2026 NKL Engenharia e Lutheria | Niko Luthiengenharia. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
     </body>
