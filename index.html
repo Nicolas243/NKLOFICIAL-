@@ -40,7 +40,7 @@
             .dark-theme .theme-toggle { transform: rotate(360deg); } 
             body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
 
-            /* Ajuste de Cores do Tema (Verde Limão substituído por Azul Bebê) */
+            /* Ajuste de Cores do Tema */
             :root {
                 --bg: #ffffff;
                 --surface: #f5f5f5;
@@ -54,7 +54,7 @@
                 --surface: #121212;
                 --text: #ffffff;
                 --border: #333333;
-                --neon: #89CFF0; /* Azul Bebê definitivo */
+                --neon: #89CFF0; 
                 --neon-dim: rgba(137, 207, 240, 0.2);
             }
 
@@ -115,20 +115,21 @@
                 filter: grayscale(100%); 
                 transition: filter 0.3s, transform 0.3s;
             }
-            /* Cancelado o inversor de cores (invert(1)) conforme solicitado */
             body.dark-theme .home-photo-img { 
                 filter: grayscale(100%) brightness(0.7); 
             }
             
-            /* Customizações específicas de transformação das imagens */
-            .img-contain-zoom-out { object-fit: contain !important; transform: scale(0.85); }
-            .img-zoom-in { transform: scale(1.10); }
-            .img-rotate-left { transform: rotate(-90deg); }
+            /* Customizações de imagens solicitadas */
+            .img-top { object-position: top; }
+            .img-zoom-15 { transform: scale(1.15); }
+            .img-zoom-10 { transform: scale(1.10); }
+            .img-rotate-bottom { transform: rotate(-90deg); object-fit: contain !important; object-position: left center; } /* left vira bottom após rotação -90 */
 
-            .showcase-section:hover .home-photo-img:not(.img-contain-zoom-out):not(.img-zoom-in):not(.img-rotate-left) { transform: scale(1.03); }
-            .showcase-section:hover .img-contain-zoom-out { transform: scale(0.88); }
-            .showcase-section:hover .img-zoom-in { transform: scale(1.13); }
-            .showcase-section:hover .img-rotate-left { transform: rotate(-90deg) scale(1.03); }
+            /* Efeitos de Hover integrando as escalas */
+            .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-bottom) { transform: scale(1.03); }
+            .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
+            .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
+            .showcase-section:hover .img-rotate-bottom { transform: rotate(-90deg) scale(1.03); }
 
             /* Estilos do Modal Pop-up do QR Code */
             .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
@@ -152,7 +153,6 @@
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
-                    <!-- Removido a classe 'active' do Violino conforme solicitado -->
                     <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
                     <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
                 </div>
@@ -189,7 +189,7 @@
 
             <div class="home-container">
                 
-                <!-- SEÇÃO 1: IMPORTAÇÃO (MÉTODO NKL) -->
+                <!-- SEÇÃO 1: IMPORTAÇÃO -->
                 <div class="showcase-section">
                     <div class="content-side">
                         <h2>Importação Direta | Método NKL</h2>
@@ -198,7 +198,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Importação">
+                            <!-- Foto 1 apoiada na borda superior -->
+                            <img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-top" alt="Foto Importação">
                         </div>
                     </div>
                 </div>
@@ -212,8 +213,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Home page 2 configurada para conter sem preencher a janela e com redução de zoom de 15% -->
-                            <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-contain-zoom-out" alt="Foto Recomendados">
+                            <!-- Foto 2 encostada na borda superior e com zoom in 0.15 -->
+                            <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-top img-zoom-15" alt="Foto Recomendados">
                         </div>
                     </div>
                 </div>
@@ -227,8 +228,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Home page 3 configurada com um zoom de 10% para preenchimento total -->
-                            <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-in" alt="Foto Gráfico de Cordas">
+                            <!-- Foto 3 com zoom de 10% -->
+                            <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-10" alt="Foto Gráfico de Cordas">
                         </div>
                     </div>
                 </div>
@@ -242,8 +243,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Home page 4 rotacionada 90 graus para a esquerda -->
-                            <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px';" class="home-photo-img img-rotate-left" alt="Foto Comparador">
+                            <!-- Foto 4 inteira, sem cortar (contain) e encostada na borda de baixo -->
+                            <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px';" class="home-photo-img img-rotate-bottom" alt="Foto Comparador">
                         </div>
                     </div>
                 </div>
@@ -257,7 +258,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img" alt="Foto Física do Som">
+                            <!-- Foto 5 com zoom in de 0.15 -->
+                            <img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-15" alt="Foto Física do Som">
                         </div>
                     </div>
                 </div>
@@ -265,12 +267,12 @@
             </div>
         </main>
 
-        <!-- Modal do QR Code PIX -->
+        <!-- Modal do QR Code PayPal -->
         <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <span class="close-btn" onclick="closePixModal()">&times;</span>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar border NKL pelo PayPal</h4>
-                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do paypal ou câmera para apoiar a nossa estrutura.</p>
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
+                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do PayPal ou câmera para apoiar a nossa estrutura.</p>
                 <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
             </div>
         </div>
@@ -287,7 +289,8 @@
                 <div class="footer-box">
                     <h4>Contato Direto</h4>
                     <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--secondary); font-weight: 500;">contato.nikoluthieria@gmail.com</a>
+                    <!-- E-mail agora com a classe .btn-outline para exibir a caixinha em volta -->
+                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline" style="text-transform: lowercase; font-weight: 500;">contato.nikoluthieria@gmail.com</a>
                 </div>
                 <div class="footer-box">
                      <h4>Apoie o Projeto</h4>
@@ -296,9 +299,8 @@
                         <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
                             Apoiar NKL
                         </a>
-                        <!-- Botão Dinâmico solicitado: Copia e-mail, dispara o aviso e abre o QR Code -->
                         <button onclick="handlePixSupport()" class="btn-outline" style="background: transparent; cursor: pointer; font-family: 'Inter', sans-serif;">
-                            PayPal 
+                            ❖ PayPal 
                         </button>
                     </div>
                 </div>
@@ -309,10 +311,10 @@
         </footer>
 
         <script>
-            // Lógica para o novo botão de suporte integrado
+            // Lógica para o botão PayPal
             function handlePixSupport() {
                 navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
-                alert('Endereço paypal copiado com sucesso!');
+                alert('Endereço PayPal copiado com sucesso!');
                 document.getElementById('pix-modal').classList.add('show');
             }
 
