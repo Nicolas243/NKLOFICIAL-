@@ -94,7 +94,7 @@
                 transition: transform 0.2s, filter 0.2s; margin-top: 0.5rem;
                 box-shadow: 0 4px 12px rgba(166, 138, 97, 0.15);
             }
-            .btn-home-cta:hover { transform: translateY(-2pximger: brightness(1.1); }
+            .btn-home-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
             body.dark-theme .btn-home-cta { background: linear-gradient(135deg, #89CFF0, #5da2c4); color: #000000 !important; box-shadow: 0 4px 12px rgba(137, 207, 240, 0.15); }
 
             /* Seções Laterais de Fotos */
@@ -119,17 +119,18 @@
                 filter: grayscale(100%) brightness(0.7); 
             }
             
-            /* Customizações de imagens solicitadas */
+            /* Customizações de imagens */
             .img-top { object-position: top; }
             .img-zoom-15 { transform: scale(1.15); }
             .img-zoom-10 { transform: scale(1.10); }
-            .img-rotate-bottom { transform: rotate(-90deg); object-fit: contain !important; object-position: left center; } /* left vira bottom após rotação -90 */
+            /* Atualizado de left para right para que a foto rotacionada a -90deg encoste no Top */
+            .img-rotate-top { transform: rotate(-90deg); object-fit: contain !important; object-position: right center; } 
 
             /* Efeitos de Hover integrando as escalas */
-            .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-bottom) { transform: scale(1.03); }
+            .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-top) { transform: scale(1.03); }
             .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
             .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
-            .showcase-section:hover .img-rotate-bottom { transform: rotate(-90deg) scale(1.03); }
+            .showcase-section:hover .img-rotate-top { transform: rotate(-90deg) scale(1.03); }
 
             /* Estilos do Modal Pop-up do QR Code */
             .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
@@ -198,7 +199,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Foto 1 apoiada na borda superior -->
                             <img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-top" alt="Foto Importação">
                         </div>
                     </div>
@@ -213,7 +213,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Foto 2 encostada na borda superior e com zoom in 0.15 -->
                             <img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-top img-zoom-15" alt="Foto Recomendados">
                         </div>
                     </div>
@@ -228,7 +227,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Foto 3 com zoom de 10% -->
                             <img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-10" alt="Foto Gráfico de Cordas">
                         </div>
                     </div>
@@ -243,9 +241,8 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Foto 4 inteira, sem cortar (contain) e encostada na borda de baixo -->
+                            <!-- Corrigida a linha e classe de posicionamento para a borda superior conforme solicitado -->
                             <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-rotate-top" alt="Foto Comparador">
-                
                         </div>
                     </div>
                 </div>
@@ -259,7 +256,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Foto 5 com zoom in de 0.15 -->
                             <img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-zoom-15" alt="Foto Física do Som">
                         </div>
                     </div>
@@ -290,7 +286,6 @@
                 <div class="footer-box">
                     <h4>Contato Direto</h4>
                     <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <!-- E-mail agora com a classe .btn-outline para exibir a caixinha em volta -->
                     <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline" style="text-transform: lowercase; font-weight: 500;">contato.nikoluthieria@gmail.com</a>
                 </div>
                 <div class="footer-box">
@@ -312,7 +307,6 @@
         </footer>
 
         <script>
-            // Lógica para o botão PayPal
             function handlePixSupport() {
                 navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
                 alert('Endereço PayPal copiado com sucesso!');
@@ -323,7 +317,6 @@
                 document.getElementById('pix-modal').classList.remove('show');
             }
 
-            // Lógica do Tema Claro/Escuro
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
             const savedTheme = localStorage.getItem('nkl_theme');
@@ -340,7 +333,6 @@
                 localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
             });
 
-            // Controle do Cabeçalho Mobile ao dar Scroll
             const header = document.getElementById('site-header');
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.getElementById('nav-links');
