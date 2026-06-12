@@ -123,16 +123,15 @@
             .img-top { object-position: top; }
             .img-zoom-15 { transform: scale(1.15); }
             .img-zoom-10 { transform: scale(1.10); }
-            /* Atualizado de left para right para que a foto rotacionada a -90deg encoste no Top */
             .img-rotate-top { transform: rotate(-90deg); object-fit: contain !important; object-position: right center; } 
 
-            /* Efeitos de Hover integrando as escalas */
+            /* Efeitos de Hover integrando as escalas - ATUALIZADO PARA OPÇÃO 2 (scale 1.15 no hover da imagem 4) */
             .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-top) { transform: scale(1.03); }
             .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
             .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
-            .showcase-section:hover .img-rotate-top { transform: rotate(-90deg) scale(1.03); }
+            .showcase-section:hover .img-rotate-top { transform: rotate(-90deg) scale(1.15); }
 
-            /* Estilos do Modal Pop-up do QR Code */
+            /* Estilos do Modal Pop-up do QR Code PayPal */
             .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
             .modal-overlay.show { display: flex; }
             .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); animation: fade-in 0.3s ease; }
@@ -241,7 +240,6 @@
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <!-- Corrigida a linha e classe de posicionamento para a borda superior conforme solicitado -->
                             <img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.padding='20px'; this.style.objectFit='contain';" class="home-photo-img img-rotate-top" alt="Foto Comparador">
                         </div>
                     </div>
