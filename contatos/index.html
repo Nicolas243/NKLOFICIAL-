@@ -20,29 +20,28 @@
         <title>NKL_oficial | Contatos</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;600&family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
         <link rel="stylesheet" href="style.css"/>
-        <link rel="icon" type="image/png" href="../NKL/NKL.png">
         <style>
-            /* Cabeçalho obrigatoriamente PRETO (#000000) */
-            .site-header { font-family: 'Inter', sans-serif !important; background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
+            /* Padronização do Cabeçalho Global (Fundo forçado para #000000) */
+            .site-header { font-family: 'Inter', sans-serif !important; background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: padding 0.3s; } 
             .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
             .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
-            .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: #ffffff !important; text-decoration: none; } /* Logo fixa branca já que o fundo é preto */
+            /* Cor do texto ajustada para branco, já que o fundo é sempre preto */
+            .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: #ffffff !important; text-decoration: none; } 
             .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
-            .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff !important; text-decoration: none; transition: color 0.3s; } /* Links brancos no menu escuro */
-            .site-header nav a:hover { color: #a68a61 !important; } 
-            .site-header nav a.active { color: #89CFF0 !important; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+            .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff !important; text-decoration: none; transition: color 0.3s; } 
+            .site-header nav a:hover { color: #89CFF0 !important; } 
+            .site-header nav a.active { color: #89CFF0 !important; font-weight: 700; }
             .site-header .dropdown { position: relative; } 
-            .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface) !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); } 
+            .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: #121212 !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); } 
             .site-header .dropdown:hover .dropdown-content { display: block; } 
-            .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; color: var(--text) !important; } 
-            .site-header .dropdown-content a:hover { background-color: var(--bg) !important; color: #a68a61 !important; } 
-            .theme-toggle { width: 32px; height: 32px; margin-left: 2rem !important; background-image: url('../NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); filter: invert(1); } /* Invertido para aparecer no fundo preto */
+            .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; color: #ffffff !important; } 
+            .site-header .dropdown-content a:hover { background-color: #000000 !important; color: #89CFF0 !important; } 
+            .theme-toggle { width: 32px; height: 32px; margin-left: 2rem !important; background-image: url('../NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
             .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-            .dark-theme .theme-toggle { transform: rotate(360deg); filter: invert(1); } 
-            
-            body.dark-theme .logo-img, body.dark-theme .metodo-img { filter: brightness(0) invert(1); } 
+            .dark-theme .theme-toggle { transform: rotate(360deg); } 
+            .logo-img, .metodo-img { filter: brightness(0) invert(1); } /* Inverte sempre, pois o fundo é preto */
 
-            /* Ajuste de Cores do Tema (Azul Bebê Definido) */
+            /* Ajuste de Cores do Tema */
             :root {
                 --bg: #ffffff;
                 --surface: #f5f5f5;
@@ -60,7 +59,7 @@
                 --neon-dim: rgba(137, 207, 240, 0.2);
             }
 
-            /* Botão mobile */
+            /* Menu Mobile */
             .mobile-menu-btn { display: none; background: transparent; border: none; color: #ffffff !important; cursor: pointer; padding: 0; margin-left: 1rem; }
             .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
 
@@ -69,25 +68,13 @@
                 .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
                 .site-header .nav-brand { margin-right: auto !important; } 
                 .theme-toggle { margin-left: 0 !important; } 
-                
                 .mobile-menu-btn { display: none; }
-                .site-header nav ul { 
-                    display: flex !important; 
-                    width: 100%; 
-                    flex-direction: column !important; 
-                    margin: 1rem 0 0 0 !important; 
-                    padding-top: 1rem !important; 
-                    border-top: 1px solid var(--border); 
-                    gap: 1rem !important; 
-                    order: 3; 
-                    background: #000000;
-                } 
-
+                .site-header nav ul { display: flex !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; background-color: #000000; } 
                 .site-header.scrolled .mobile-menu-btn { display: block; }
                 .site-header.scrolled nav ul { display: none !important; } 
                 .site-header.scrolled nav ul.show { display: flex !important; }
             }
-            
+
             /* Estilos do Modal Pop-up do QR Code PayPal */
             .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
             .modal-overlay.show { display: flex; }
@@ -96,27 +83,31 @@
             .close-btn:hover { opacity: 1; }
             @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+            /* Botão flutuante WhatsApp (Direita) */
+            .whatsapp-float {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 999;
+                transition: transform 0.3s ease;
+            }
+            .whatsapp-float:hover { transform: scale(1.1); }
+            .whatsapp-float img { width: 50px; height: 50px; }
         </style>
+        <link rel="icon" type="image/png" href="../NKL/NKL.png">
     </head>
     <body class="dark-theme">
         <header id="site-header" class="site-header">
             <nav>
                 <div class="nav-brand">
                     <a href="../index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                    <!-- A logo foi forçada para inverter já que o fundo é sempre preto (#000000) -->
-                    <img src="../NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain; filter: brightness(0) invert(1);" alt="Logo NKL">
+                    <img src="../NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
                 </div>
                 
                 <ul id="nav-links">
-                    <li>
-                        <a href="../index.html">Home</a>
-                    </li>
-                    <li>
-                        <a href="../importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="../recomendados.html">Recomendados</a>
-                    </li>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../importacao.html">Importação</a></li>
+                    <li><a href="../recomendados.html">Recomendados</a></li>
                     <li class="dropdown">
                         <a href="javascript:void(0);" class="">Cordas▾</a>
                         <div class="dropdown-content">
@@ -124,12 +115,8 @@
                             <a href="../comparador-de-cordas.html">Comparador Analítico</a>
                         </div>
                     </li>
-                    <li>
-                        <a href="../fisica-do-som.html">Física do Som</a>
-                    </li>
-                    <li>
-                        <a href="index.html" class="active">Contatos</a>
-                    </li>
+                    <li><a href="../fisica-do-som.html">Física do Som</a></li>
+                    <li><a href="index.html" class="active" style="text-decoration: underline; text-underline-offset: 4px;">Contatos</a></li>
                 </ul>
 
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
@@ -143,17 +130,17 @@
                 </button>
             </nav>
         </header>
-        
+
         <div class="bg-grid" aria-hidden="true"></div>
         <div class="bg-decorations" aria-hidden="true">
             <span class="formula f1">∇²φ = ρ/ε₀</span> <span class="formula f2">E = mc²</span>
             <span class="formula f3">∮ B·dA = 0</span> <span class="formula f4">F = ma</span>
         </div>
-        
+
         <main class="container" style="margin-top: 2rem;">
             <header class="profile" style="background: transparent; border: none; padding: 0;">
                 <div class="avatar-wrapper">
-                    <img src="assets/nkl-logo.png" alt="NKL Logo" class="avatar" onerror="this.src='../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.filter='brightness(0) invert(1)';">
+                    <img src="assets/nkl-logo.png" alt="NKL Logo" class="avatar" onerror="this.src='../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.filter='brightness(0) invert(1)'; this.style.objectFit='contain';">
                     <div class="avatar-dot"></div>
                 </div>
                 <h1 class="display-name">NKL_oficial</h1>
@@ -164,47 +151,51 @@
                     <span class="divider-line"></span>
                 </div>
             </header>
-            
+
             <section class="links-list" id="links">
                 <a href="https://go.hotmart.com/P105515350D?dp=1" target="_blank" class="link-card"> 
                     <span class="link-icon"><img src="../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png" alt="NKL" class="metodo-img" style="width: 20px; object-fit: contain;"></span> 
                     <span class="link-content">
                         <span class="link-title">Método NKL</span>
-                        <span class="link-desc">Importando violino de oficina por 5 reais! Se a grana estiver curta, use o cupom METODONKL.</span>
+                        <span class="link-desc">Importe violinos de alta performance cortando intermediários! Use o cupom METODONKL.</span>
                     </span> 
                 </a>
+                
                 <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" target="_blank" class="link-card"> 
-                    <span class="link-icon"><img src="assets/whatsapplogo.png" alt="WhatsApp" style="width: 20px;"></span> 
+                    <span class="link-icon"><img src="assets/whatsapplogo.png" alt="WhatsApp" onerror="this.src='../NKL/wpplogo.w70-h70-c1.png'" style="width: 20px;"></span> 
                     <span class="link-content">
-                        <span class="link-title">Canal do WhatsApp</span>
-                        <span class="link-desc">Lá vai ter dicas, curiosidades e promoções</span>
+                        <span class="link-title">Comunidade VIP no WhatsApp</span>
+                        <span class="link-desc">Destrave curiosidades ocultas de lutheria, acesso antecipado a dicas e promoções secretas para membros.</span>
                     </span> 
                 </a>
+                
                 <a href="https://www.youtube.com/@NKLoficial" target="_blank" class="link-card"> 
                     <span class="link-icon"><img src="assets/youtubelogo.png" alt="YouTube" style="width: 20px;"></span> 
                     <span class="link-content">
-                        <span class="link-title">YouTube NKL</span>
-                        <span class="link-desc">Posto mais aulas e vídeos tocando</span>
+                        <span class="link-title">Masterclasses no YouTube</span>
+                        <span class="link-desc">Acesse aulas técnicas, testes práticos em bancada e sinta o som das ferramentas em ação.</span>
                     </span> 
                 </a>
+                
                 <a href="https://www.instagram.com/nkloficial/" target="_blank" class="link-card"> 
                     <span class="link-icon"><img src="assets/instagramlogo.png" alt="Instagram" style="width: 20px;"></span> 
                     <span class="link-content">
-                        <span class="link-title">Instagram</span>
-                        <span class="link-desc">Vídeos tocando e bastidores</span>
+                        <span class="link-title">Instagram Oficial</span>
+                        <span class="link-desc">Acompanhe os bastidores caóticos da oficina, projetos diários em tempo real e música sem cortes.</span>
                     </span> 
                 </a>
+                
                 <a href="https://www.tiktok.com/@nkloficial" target="_blank" class="link-card"> 
                     <span class="link-icon"><img src="assets/tiktoklogo.png" alt="TikTok" style="width: 20px;"></span> 
                     <span class="link-content">
-                        <span class="link-title">TikTok</span>
-                        <span class="link-desc">Posto mais aulas e vídeos tocando</span>
+                        <span class="link-title">Pílulas no TikTok</span>
+                        <span class="link-desc">Dicas rápidas, diretas ao ponto e resolução de problemas estruturais em vídeos de 1 minuto.</span>
                     </span> 
                 </a>
             </section>
         </main>
-        
-        <!-- Modal do QR Code PayPal -->
+
+        <!-- Modal do QR Code PayPal (Herdado do Index) -->
         <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <span class="close-btn" onclick="closePixModal()">&times;</span>
@@ -226,7 +217,6 @@
                 <div class="footer-box">
                     <h4>Contato Direto</h4>
                     <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <!-- Correção da tag e-mail (font-weight formatado corretamente) -->
                     <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline" style="text-transform: lowercase; font-weight: 500;">contato.nikoluthieria@gmail.com</a>
                 </div>
                 <div class="footer-box">
@@ -246,8 +236,9 @@
                 <p>&copy; 2026 NKL Engenharia e Lutheria | Niko Luthiengenharia. Alta performance estruturada com elegância.</p>
             </div>
         </footer>
-        
+
         <script>
+            // Lógica do Modal PayPal
             function handlePixSupport() {
                 navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
                 alert('Endereço PayPal copiado com sucesso!');
@@ -258,15 +249,16 @@
                 document.getElementById('pix-modal').classList.remove('show');
             }
 
+            // Controle de Tema
             const themeToggleBtn = document.getElementById('theme-toggle');
             const body = document.body;
             const savedTheme = localStorage.getItem('nkl_theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) { 
-                body.classList.remove('dark-theme'); 
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
+                body.classList.add('dark-theme'); 
             } else {
-                body.classList.add('dark-theme');
+                body.classList.remove('dark-theme');
             }
             
             themeToggleBtn.addEventListener('click', () => {
@@ -279,18 +271,18 @@
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.getElementById('nav-links');
 
-            // Abre/Fecha manualmente via clique nas 3 barras (quando recolhido)
-            mobileBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('show');
-            });
+            if(mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('show');
+                });
+            }
 
-            // Monitora a rolagem da página
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
                     header.classList.add('scrolled');
                 } else {
                     header.classList.remove('scrolled');
-                    navLinks.classList.remove('show'); // Reseta o clique manual ao voltar pro topo
+                    if(navLinks) navLinks.classList.remove('show');
                 }
             });
         </script>
