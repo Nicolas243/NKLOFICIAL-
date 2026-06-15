@@ -5,9 +5,9 @@
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Física do Som | Portal NKL</title>
-    <link rel="icon" type="image/png" href="NKL/NKL.png">
-    <link rel="stylesheet" href="style.css">
+    <title>Portal NKL</title>
+    <link rel="icon" type="image/png" href="../NKL/NKL.png">
+    <link rel="stylesheet" href="../style.css">
     <style>
         :root { --bg: #ffffff; --surface: #f5f5f5; --text: #0a0a0a; --border: #eeeeee; --neon: #4A90E2; --neon-dim: rgba(74, 144, 226, 0.15); }
         body.dark-theme { --bg: #0a0a0a; --surface: #121212; --text: #ffffff; --border: #333333; --neon: #89CFF0; --neon-dim: rgba(137, 207, 240, 0.2); }
@@ -29,7 +29,7 @@
         .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: background 0.2s; }
         .lang-content a:hover { background-color: var(--bg); }
         .lang-dropdown:hover .lang-content { display: block; }
-        .theme-toggle { width: 32px; height: 32px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
+        .theme-toggle { width: 32px; height: 32px; background-image: url('../NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
         .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
         .dark-theme .theme-toggle { transform: rotate(360deg); } 
         body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
@@ -57,14 +57,11 @@
         .close-btn:hover { opacity: 1; }
 
         
-        .physics-block { background: var(--surface); padding: 2rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem;}
-        .physics-img-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-        .physics-img { width: 100%; max-width: 600px; border-radius: 8px; border: 1px solid var(--border); }
-        .img-credits { font-size: 0.7rem; opacity: 0.6; font-style: italic; }
-        @media (min-width: 768px) {
-            .physics-row { display: flex; gap: 2rem; align-items: center; }
-            .physics-row > * { flex: 1; }
-        }
+        .links-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+        .link-card { display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1.5rem; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text); transition: transform 0.2s; }
+        .link-card:hover { transform: translateY(-3px); border-color: var(--neon); }
+        .link-icon { font-size: 1.5rem; }
+        .link-title { font-weight: bold; display: block; margin-bottom: 0.2rem; }
     
     </style>
 </head>
@@ -82,22 +79,22 @@
     <header id="site-header" class="site-header">
         <nav>
             <div class="nav-brand">
-                <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
+                <a href="../index.html" class="logo">&nbsp;Violino&nbsp;</a>
+                <img src="../NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
             </div>
             <ul id="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="importacao.html">Importação</a></li>
-                <li><a href="recomendados.html">Recomendados</a></li>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../importacao.html">Importação</a></li>
+                <li><a href="../recomendados.html">Recomendados</a></li>
                 <li class="dropdown">
                     <a href="javascript:void(0);">Cordas▾</a>
                     <div class="dropdown-content">
-                        <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
+                        <a href="../guia-de-cordas.html">Gráfico de Cordas</a>
+                        <a href="../comparador-de-cordas.html">Comparar Cordas</a>
                     </div>
                 </li>
-                <li><a href="fisica-do-som.html">Física do Som</a></li>
-                <li><a href="contatos/index.html">Contatos</a></li>
+                <li><a href="../fisica-do-som.html">Física do Som</a></li>
+                <li><a href="../contatos/index.html">Contatos</a></li>
             </ul>
             <div style="display: flex; align-items: center;">
                 <div class="lang-dropdown">
@@ -125,49 +122,50 @@
     </header>
 
     
-        <main style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
-            <h1 style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 2rem;">A Física do Som</h1>
-            
-            <div class="physics-block">
-                <div class="physics-row">
-                    <div>
-                        <h2>1. O Atrito do Arco na Corda</h2>
-                        <p style="line-height: 1.6; opacity: 0.85;">A mágica começa no fenômeno "stick-slip" (prende-solta). O breu na crina gruda na corda, puxando-a até o limite elástico. Quando a corda não aguenta mais, ela escorrega e volta, gerando a vibração inicial.</p>
-                    </div>
-                    <div class="physics-img-container">
-                        <div style="width:100%; max-width: 400px; height: 250px; background: #222; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--border); color: #fff; overflow:hidden; position:relative;">
-                            <img src="NKL/arco-camera-lenta.gif" onerror="this.style.display='none'" style="width:100%; height:100%; object-fit:cover; border-radius:8px; position:absolute; z-index:1;">
-                            <span style="position:absolute; z-index:0; text-align:center;">[ Placeholder NKL/arco-camera-lenta.gif ]</span>
-                        </div>
-                        <span class="img-credits">* Adicione os créditos da fonte original da animação aqui.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="physics-block">
-                <div class="physics-row" style="flex-direction: row-reverse;">
-                    <div>
-                        <h2>2. Cavalete e Alma</h2>
-                        <p style="line-height: 1.6; opacity: 0.85;">A vibração viaja até o cavalete, que age como um filtro acústico. Um lado do cavalete apoia sobre a alma (um cilindro de madeira que transfere as altas frequências para o fundo do violino), e o outro lado apoia sobre a barra harmônica (que espalha os graves pelo tampo).</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="physics-block">
-                <div class="physics-row">
-                    <div>
-                        <h2>3. A Ressonância e os F-Holes</h2>
-                        <p style="line-height: 1.6; opacity: 0.85;">A caixa do violino funciona como um pulmão. O ar lá dentro começa a pulsar e é empurrado violentamente para fora através das aberturas em formato de "f" (f-holes). É a combinação dessa ressonância da madeira com o ar escapando que cria a voz e o volume do seu instrumento.</p>
-                    </div>
-                    <div class="physics-img-container">
-                        <div style="width:100%; max-width: 400px; height: 250px; background: #222; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--border); color: #fff; overflow:hidden; position:relative;">
-                            <img src="NKL/f-holes-sound.jpg" onerror="this.style.display='none'" style="width:100%; height:100%; object-fit:cover; border-radius:8px; position:absolute; z-index:1;">
-                            <span style="position:absolute; z-index:0; text-align:center;">[ Placeholder NKL/f-holes-sound.jpg ]</span>
-                        </div>
-                        <span class="img-credits">* Adicione os créditos da fonte original da Imagem aqui.</span>
-                    </div>
-                </div>
-            </div>
+        <main class="container" style="margin-top: 2rem; padding: 2rem;">
+            <header style="text-align: center; margin-bottom: 3rem;">
+                <img src="../assets/nkl-logo.png" onerror="this.src='../NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.filter='brightness(0) invert(1)'; this.style.objectFit='contain';" style="width: 80px; height: 80px; border-radius: 50%;">
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 1rem 0;">Portal NKL</h1>
+                <p style="opacity: 0.8;">O seu Portal Violinista de confiança.</p>
+            </header>
+            <section class="links-list">
+                <a href="https://ebay.us/ea99Iy" target="_blank" class="link-card">
+                    <span class="link-icon">🌐</span>
+                    <span class="link-content"><span class="link-title">CRIAR CONTA NO EBAY + LOJA COM PROMOÇÕES/LEILÕES</span></span>
+                </a>
+                <a href="https://fansbuy.com/register?invite=RmFucy1UdE11bnoxOQ==" target="_blank" class="link-card">
+                    <span class="link-icon">📦</span>
+                    <span class="link-content"><span class="link-title">SITE REDIRECIONADOR DE COMPRAS DA CHINA PRO BRASIL</span></span>
+                </a>
+                <a href="https://www.goofish.com/search?q=%20violin&spm=a21ybx.search.searchInput.0" target="_blank" class="link-card">
+                    <span class="link-icon">🇨🇳</span>
+                    <span class="link-content"><span class="link-title">SITE DA OLX DA CHINA GOOFISH OU XIANYU</span></span>
+                </a>
+                <a href="https://chromewebstore.google.com/detail/importkit/ccbhhdpejdlnaahapcifabbaajagoifo" target="_blank" class="link-card">
+                    <span class="link-icon">🧩</span>
+                    <span class="link-content"><span class="link-title">SITE COM A EXTENSÃO PARA USAR O XIANYU e CRIADOR</span></span>
+                </a>
+                <a href="https://portalimportador.correios.com.br/pages/pesquisarRemessaImportador/pesquisarRemessaImportador.jsf" target="_blank" class="link-card">
+                    <span class="link-icon">📬</span>
+                    <span class="link-content"><span class="link-title">SITE MINHAS IMPORTAÇÕES DOS CORREIOS</span></span>
+                </a>
+                <a href="https://portalunico.siscomex.gov.br/portal/#/" target="_blank" class="link-card">
+                    <span class="link-icon">🏛️</span>
+                    <span class="link-content"><span class="link-title">SITE SISCOMEX SITUAÇÃO DA IMPORTAÇÃO</span></span>
+                </a>
+                <a href="https://ebay.us/uh8E5o" target="_blank" class="link-card">
+                    <span class="link-icon">📄</span>
+                    <span class="link-content"><span class="link-title">SITE PARA ADIÇÃO DE DOCUMENTOS RECEITA</span></span>
+                </a>
+                <a href="https://www.ebay.com/sch/i.html?_nkw=VIOLIN&_sacat=0&_from=R40&LH_Auction=1&_sop=1" target="_blank" class="link-card">
+                    <span class="link-icon">🎻</span>
+                    <span class="link-content"><span class="link-title">SITE COM VIOLINOS DE OFICINA NÍVEL MT MAIS ALTO</span></span>
+                </a>
+                <a href="https://uscloser.com/cadastre-se/nkloficial" target="_blank" class="link-card">
+                    <span class="link-icon">🇺🇸</span>
+                    <span class="link-content"><span class="link-title">SITE COM ITENS DO EUA QUE NÃO VEM PRO BRASIL (REDIRECIONADOR)</span></span>
+                </a>
+            </section>
         </main>
     
 
@@ -176,11 +174,11 @@
             <button class="close-btn" onclick="closePixModal()">&times;</button>
             <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
             <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-            <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+            <img src="../NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
         </div>
     </div>
 
-    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank"><img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy"></a>
+    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank"><img src="../NKL/wpplogo.w70-h70-c1.png" loading="lazy"></a>
     
     <footer class="site-footer">
         <div class="footer-grid" style="max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">

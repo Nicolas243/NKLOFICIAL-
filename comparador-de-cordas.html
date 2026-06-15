@@ -1,441 +1,428 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparar Cordas | Portal NKL</title>
+    <link rel="icon" type="image/png" href="NKL/NKL.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root { --bg: #ffffff; --surface: #f5f5f5; --text: #0a0a0a; --border: #eeeeee; --neon: #4A90E2; --neon-dim: rgba(74, 144, 226, 0.15); }
+        body.dark-theme { --bg: #0a0a0a; --surface: #121212; --text: #ffffff; --border: #333333; --neon: #89CFF0; --neon-dim: rgba(137, 207, 240, 0.2); }
+        .site-header { font-family: 'Inter', sans-serif !important; background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: padding 0.3s; } 
+        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
+        .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
+        .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: #ffffff !important; text-decoration: none; } 
+        .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
+        .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff !important; text-decoration: none; transition: color 0.3s; } 
+        .site-header nav a:hover, .site-header nav a.active { color: var(--neon) !important; font-weight: 700; } 
+        .site-header .dropdown { position: relative; } 
+        .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: #121212 !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); } 
+        .site-header .dropdown:hover .dropdown-content { display: block; } 
+        .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; color: #ffffff !important; } 
+        .site-header .dropdown-content a:hover { background-color: #000000 !important; color: var(--neon) !important; } 
+        .lang-dropdown { position: relative; display: inline-block; margin-right: 15px; }
+        .lang-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+        .lang-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--surface); min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: background 0.2s; }
+        .lang-content a:hover { background-color: var(--bg); }
+        .lang-dropdown:hover .lang-content { display: block; }
+        .theme-toggle { width: 32px; height: 32px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
+        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
+        .dark-theme .theme-toggle { transform: rotate(360deg); } 
+        body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
+        .mobile-menu-btn { display: none; background: transparent; border: none; color: #ffffff !important; cursor: pointer; padding: 0; margin-left: 1rem; }
+        .bg-music-decorations { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+        .music-icon { position: absolute; opacity: 0.05; font-size: 4rem; color: var(--text); user-select: none; }
+        .music-text { position: absolute; opacity: 0.03; font-family: 'Playfair Display', serif; font-size: 3rem; font-style: italic; color: var(--text); white-space: nowrap; user-select: none; }
         
-          gtag('config', 'G-QD0HQJFWVW');
-        </script>
-        <link rel="icon" type="image/png" href="NKL/NKL.png">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Comparador Analítico | Violino NKL</title>
-        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som, importar violino, cavalete, breu, espalheira">
-        <meta name="author" content="Nicolas Da Costa Santos">
-        <meta property="og:title" content="Comparador Analítico de Cordas | Violino NKL"/>
-        <meta property="og:description" content="Cruze dados técnicos, tensão, durabilidade e timbre de 92 modelos de cordas mundiais."/>
-        <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
-        <link rel="stylesheet" href="style.css">
-        <style>
-            /* Padronização do Cabeçalho Global */
-            .site-header { font-family: 'Inter', sans-serif !important; background-color: var(--bg) !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: background-color 0.3s, padding 0.3s; } 
-            .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
-            .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
-            .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: var(--text) !important; text-decoration: none; } 
-            .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
-            .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text) !important; text-decoration: none; transition: color 0.3s; } 
-            .site-header nav a:hover { color: #a68a61 !important; } 
-            .site-header nav a.active { color: #a68a61 !important; font-weight: 700; }
-            .site-header .dropdown { position: relative; } 
-            .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface) !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); } 
-            .site-header .dropdown:hover .dropdown-content { display: block; } 
-            .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; } 
-            .site-header .dropdown-content a:hover { background-color: var(--bg) !important; color: #a68a61 !important; } 
-            .theme-toggle { width: 32px; height: 32px; margin-left: 2rem !important; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
-            .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-            .dark-theme .theme-toggle { transform: rotate(360deg); } 
-            body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
+        @media (max-width: 768px) { 
+            .site-header { padding: 1rem 0 !important; }
+            .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
+            .site-header .nav-brand { margin-right: auto !important; } 
+            .mobile-menu-btn { display: block; }
+            .site-header nav ul { display: none !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; background-color: #000000; } 
+            .site-header nav ul.show { display: flex !important; }
+        }
+        
+        .whatsapp-float { position: fixed; bottom: 25px; right: 25px; z-index: 999; transition: transform 0.3s ease; }
+        .whatsapp-float:hover { transform: scale(1.1); }
+        .whatsapp-float img { width: 50px; height: 50px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .close-btn { position: absolute; top: 12px; right: 18px; font-size: 1.6rem; cursor: pointer; color: var(--text); opacity: 0.6; background:none; border:none; }
+        .close-btn:hover { opacity: 1; }
 
-            /* Ajuste de Cores do Tema (Azul Bebê Definido) */
-            :root {
-                --bg: #ffffff;
-                --surface: #f5f5f5;
-                --text: #000000;
-                --border: #eeeeee;
-                --neon: #89CFF0;
-                --neon-dim: rgba(137, 207, 240, 0.15);
-            }
-            body.dark-theme {
-                --bg: #000000;
-                --surface: #121212;
-                --text: #ffffff;
-                --border: #333333;
-                --neon: #89CFF0; 
-                --neon-dim: rgba(137, 207, 240, 0.2);
-            }
+        
+        .comparison-wrapper { margin-top: 2rem; }
+        .selector-container { display: flex; gap: 2rem; margin-bottom: 2rem; background: var(--surface); padding: 1.5rem; border: 1px solid var(--border); border-radius: 8px; }
+        .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .select-group label { font-size: 0.9rem; font-weight: 600; color: var(--text); opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .select-group select { padding: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; cursor: pointer; }
+        .btn-report { align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; color: var(--neon); border: 1px solid var(--neon); border-radius: 4px; text-decoration: none; display: none; background: transparent; font-weight: 600; margin-top: 0.5rem; }
+        .btn-report:hover { background: var(--neon); color: #000; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; table-layout: fixed; }
+        .comparison-table th, .comparison-table td { padding: 1rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; word-wrap: break-word;}
+        .comparison-table th:nth-child(1), .comparison-table td:nth-child(1) { width: 50%; background: rgba(0,0,0,0.02); }
+        .comparison-table th:nth-child(2), .comparison-table td:nth-child(2) { width: 25%; }
+        .comparison-table th:nth-child(3), .comparison-table td:nth-child(3) { width: 25%; }
+        .feature-container { display: flex; flex-direction: column; gap: 0.3rem; }
+        .feature-name { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+        .feature-desc { font-size: 0.75rem; color: var(--text); opacity: 0.7; font-weight: 400; line-height: 1.3; }
+        .td-content { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; }
+        .vote-system { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+        .btn-vote { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 0.75rem; padding: 2px 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; opacity: 0.6; transition: all 0.2s; }
+        .btn-vote:hover { opacity: 1; border-color: var(--text); }
+        .btn-vote.active { opacity: 1; background-color: var(--neon-dim); border-color: var(--neon); color: var(--neon); font-weight: bold; }
+        .col-header-container { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+        .btn-affiliate { display: flex; align-items: center; justify-content: center; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #ffffff !important; background: var(--text); border: none; border-radius: 6px; text-decoration: none !important; width: 100%; text-align: center; transition: transform 0.2s; }
+        .btn-affiliate:hover { transform: translateY(-2px); opacity: 0.9; }
+        body.dark-theme .btn-affiliate { color: #000000 !important; background: #ffffff; }
+        .store-modal-content { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 1.5rem; }
+        .btn-store { padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; text-decoration: none; font-size: 1rem; color: #fff; display: block; border: none; cursor: pointer;}
+        .store-ml { background-color: #FFE600; color: #2D3277; font-family: Arial, sans-serif; }
+        .store-shopee { background-color: #EE4D2D; font-family: 'Helvetica Neue', sans-serif;}
+        .store-amazon { background-color: #232F3E; font-family: Arial, sans-serif;}
+        .store-ebay { background-color: #ffffff; color: #000; border: 1px solid #ccc; background-image: linear-gradient(to right, #E53238 25%, #0064D2 25%, #0064D2 50%, #F5AF02 50%, #F5AF02 75%, #86B817 75%); background-size: 100% 4px; background-repeat: no-repeat; background-position: bottom;}
+        @media (max-width: 768px) { 
+            .selector-container { flex-direction: column; padding: 1rem; gap: 1rem;}
+            .comparison-table th, .comparison-table td { padding: 0.5rem; font-size: 0.8rem; }
+            .feature-name { font-size: 0.85rem; }
+            .feature-desc { font-size: 0.65rem; }
+            .btn-affiliate { font-size: 0.7rem; padding: 6px; }
+            .vote-system { flex-direction: column; align-items: flex-start; }
+            .td-content { gap: 0.2rem; }
+        }
+        .hidden { display: none !important; }
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text); opacity: 0.6; }
+    
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="bg-music-decorations" aria-hidden="true">
+        <div class="music-icon" style="top: 10%; left: 5%;">𝄞</div>
+        <div class="music-icon" style="top: 40%; right: 10%;">𝄢</div>
+        <div class="music-icon" style="bottom: 20%; left: 15%;">♪</div>
+        <div class="music-icon" style="top: 70%; right: 25%;">♫</div>
+        <div class="music-text" style="top: 25%; left: 30%; transform: rotate(-10deg);">Stradivarius</div>
+        <div class="music-text" style="bottom: 15%; right: 5%; transform: rotate(5deg);">Guarneri del Gesù</div>
+        <div class="music-text" style="top: 60%; left: 5%; transform: rotate(-15deg);">Paganini</div>
+    </div>
 
-            /* Menu Mobile */
-            .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text) !important; cursor: pointer; padding: 0; margin-left: 1rem; }
-            .mobile-menu-btn svg { width: 28px; height: 28px; stroke: currentColor; }
-
-            @media (max-width: 768px) { 
-                .site-header { padding: 1rem 0 !important; }
-                .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
-                .site-header .nav-brand { margin-right: auto !important; } 
-                .theme-toggle { margin-left: 0 !important; } 
-                .mobile-menu-btn { display: none; }
-                .site-header nav ul { display: flex !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; } 
-                .site-header.scrolled .mobile-menu-btn { display: block; }
-                .site-header.scrolled nav ul { display: none !important; } 
-                .site-header.scrolled nav ul.show { display: flex !important; }
-            }
-
-            /* Estilos do Comparador Dinâmico */
-            .comparison-wrapper { margin-top: 3rem; }
-            .selector-container { display: flex; gap: 2rem; margin-bottom: 2rem; background: var(--surface); padding: 2rem; border: 1px solid var(--border); border-radius: 8px; }
-            .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-            .select-group label { font-size: 0.9rem; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: 1px; }
-            .select-group select { padding: 1rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; cursor: pointer; transition: border-color 0.3s; }
-            .select-group select:focus { border-color: var(--secondary); }
-            
-            /* Botão Melhorar Dados */
-            .btn-report { align-self: flex-start; padding: 8px 14px; font-size: 0.8rem; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 4px; text-decoration: none; transition: all 0.2s; display: none; background: transparent; font-weight: 600; margin-top: 0.5rem; }
-            .btn-report:hover { background: #ff4d4d; color: #fff; box-shadow: 0 4px 10px rgba(255, 77, 77, 0.2); transform: translateY(-1px); }
-            
-            .comparison-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-            .comparison-table th, .comparison-table td { padding: 1.2rem; border-bottom: 1px solid var(--border); text-align: left; }
-            .comparison-table th { background: rgba(166, 138, 97, 0.1); color: var(--secondary); font-family: 'Playfair Display', serif; font-size: 1.1rem; width: 33%; vertical-align: middle; }
-            .comparison-table td { font-size: 0.95rem; color: var(--text); width: 33%; vertical-align: top; }
-            .comparison-table tr:last-child td { border-bottom: none; }
-            
-            .feature-container { display: flex; flex-direction: column; gap: 0.5rem; }
-            .feature-name { font-weight: 600; color: var(--primary); font-size: 1.05rem; }
-            .feature-desc { font-size: 0.8rem; color: var(--text); opacity: 0.65; font-weight: 400; line-height: 1.5; display: block; }
-            
-            /* Estilização dos Botões de Afiliados nas Colunas */
-            .col-header-container { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-start; }
-            .btn-affiliate { 
-                display: inline-flex; align-items: center; justify-content: center;
-                padding: 10px 16px; font-size: 0.85rem; font-weight: bold;
-                color: #ffffff !important; background: linear-gradient(135deg, #a68a61, #8c6f42);
-                border: none; border-radius: 6px; text-decoration: none !important;
-                box-shadow: 0 4px 10px rgba(166, 138, 97, 0.2);
-                transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-                width: 100%; text-align: center;
-            }
-            .btn-affiliate:hover { 
-                transform: translateY(-2px); 
-                box-shadow: 0 6px 15px rgba(166, 138, 97, 0.35);
-                filter: brightness(1.1);
-            }
-            
-            body.dark-theme .comparison-table th { background: rgba(137, 207, 240, 0.05); }
-            body.dark-theme .feature-name { color: var(--text); }
-            body.dark-theme .btn-affiliate {
-                background: linear-gradient(135deg, #89CFF0, #5da2c4);
-                color: #000000 !important;
-                box-shadow: 0 4px 10px rgba(137, 207, 240, 0.15);
-            }
-            body.dark-theme .btn-affiliate:hover {
-                box-shadow: 0 6px 15px rgba(137, 207, 240, 0.3);
-            }
-            
-            /* Estilos do Modal Pop-up do QR Code PayPal */
-            .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
-            .modal-overlay.show { display: flex; }
-            .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); animation: fade-in 0.3s ease; }
-            .close-btn { position: absolute; top: 12px; right: 18px; font-size: 1.6rem; cursor: pointer; color: var(--text); opacity: 0.6; transition: opacity 0.2s; }
-            .close-btn:hover { opacity: 1; }
-            @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-            @media (max-width: 768px) {
-                .selector-container { flex-direction: column; padding: 1rem; }
-                .comparison-table { display: block; overflow-x: auto; white-space: nowrap; }
-            }
-            
-            .hidden { display: none !important; }
-            .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text); opacity: 0.6; }
-        </style>
-    </head>
-    <body class="dark-theme">
-        <header id="site-header" class="site-header">
-            <nav>
-                <div class="nav-brand">
-                    <!-- Removido classe active do Violino para ficar idêntico à Home -->
-                    <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                    <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL Oficial">
+    <header id="site-header" class="site-header">
+        <nav>
+            <div class="nav-brand">
+                <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
+                <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
+            </div>
+            <ul id="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="importacao.html">Importação</a></li>
+                <li><a href="recomendados.html">Recomendados</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);">Cordas▾</a>
+                    <div class="dropdown-content">
+                        <a href="guia-de-cordas.html">Gráfico de Cordas</a>
+                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
+                    </div>
+                </li>
+                <li><a href="fisica-do-som.html">Física do Som</a></li>
+                <li><a href="contatos/index.html">Contatos</a></li>
+            </ul>
+            <div style="display: flex; align-items: center;">
+                <div class="lang-dropdown">
+                    <button class="lang-btn">🇧🇷/🇵🇹</button>
+                    <div class="lang-content">
+                        <a href="#">🇧🇷/🇵🇹 Português</a>
+                        <a href="#">🇪🇸/🇦🇷 Español</a>
+                        <a href="#">🇺🇸/🇬🇧 English</a>
+                        <a href="#">🇷🇺 Русский</a>
+                        <a href="#">🇨🇳 中文</a>
+                        <a href="#">🇯🇵 日本語</a>
+                        <a href="#">🇰🇷 한국어</a>
+                    </div>
                 </div>
-                <ul id="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="importacao.html">Importação</a></li>
-                    <li><a href="recomendados.html">Recomendados</a></li>
-                    <li class="dropdown">
-                        <a href="javascript:void(0);" class="active">Cordas▾</a>
-                        <div class="dropdown-content">
-                            <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                            <a href="comparador-de-cordas.html" class="active">Comparador Analítico</a>
-                        </div>
-                    </li>
-                    <li><a href="fisica-do-som.html">Física do Som</a></li>
-                    <li><a href="contatos/index.html">Contatos</a></li>
-                </ul>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
-                    <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
-            </nav>
-        </header>
-        
-        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
-            <section class="hero" style="margin-bottom: 3rem; text-align: center;">
-                <h1 class="">Escolha com Ouvido e Coração</h1>
-                <p>Não compre no escuro. Coloque as principais marcas do mercado lado a lado e descubra qual delas vai casar melhor com a voz do seu violino.</p>
+            </div>
+            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
+                <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="28" color="#fff">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </nav>
+    </header>
+
+    
+        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+            <section style="margin-bottom: 2rem; text-align: center;">
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem;">Comparar Cordas</h1>
+                <p style="opacity: 0.8; font-size: 0.95rem;">Cruze os dados e descubra qual modelo encaixa melhor no seu instrumento.</p>
             </section>
             
             <div class="comparison-wrapper">
                 <div class="selector-container">
                     <div class="select-group">
                         <label>Primeira Opção de Corda</label>
-                        <select id="corda1">
-                            <option value="">-- Selecione a primeira corda --</option>
-                        </select>
-                        <a href="#" id="btn-report1" class="btn-report" target="_blank">Melhorar Dados (Corda 1)</a>
+                        <select id="corda1"><option value="">-- Selecione a primeira corda --</option></select>
+                        <a href="#" id="btn-report1" class="btn-report" target="_blank">Melhorar Dados</a>
                     </div>
                     <div class="select-group">
                         <label>Segunda Opção de Corda</label>
-                        <select id="corda2">
-                            <option value="">-- Selecione a segunda corda --</option>
-                        </select>
-                        <a href="#" id="btn-report2" class="btn-report" target="_blank">Melhorar Dados (Corda 2)</a>
+                        <select id="corda2"><option value="">-- Selecione a segunda corda --</option></select>
+                        <a href="#" id="btn-report2" class="btn-report" target="_blank">Melhorar Dados</a>
                     </div>
                 </div>
-
                 <div id="empty-state" class="empty-state">
                     <p><i>Selecione duas cordas no menu acima para gerar o relatório comparativo.</i></p>
                 </div>
-
                 <div id="table-container" class="hidden">
                     <table class="comparison-table">
                         <thead>
                             <tr>
                                 <th>Característica</th>
-                                <th id="th-corda1"><div class="col-header-container"><span class="string-name-label">Corda 1</span></div></th>
-                                <th id="th-corda2"><div class="col-header-container"><span class="string-name-label">Corda 2</span></div></th>
+                                <th id="th-corda1">Corda 1</th>
+                                <th id="th-corda2">Corda 2</th>
                             </tr>
                         </thead>
-                        <tbody id="comparison-body">
-                            <!-- Gerado via JS -->
-                        </tbody>
+                        <tbody id="comparison-body"></tbody>
                     </table>
                 </div>
             </div>
         </main>
-
-        <!-- Modal do QR Code PayPal -->
-        <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+        
+        <div id="store-modal" class="modal-overlay" onclick="closeStoreModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
-                <span class="close-btn" onclick="closePixModal()">&times;</span>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
-                <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo no aplicativo do PayPal ou câmera para apoiar a nossa estrutura.</p>
-                <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+                <button class="close-btn" onclick="closeStoreModal()">&times;</button>
+                <h3 style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 0.5rem;" id="store-modal-title">Nome da Corda</h3>
+                <p style="text-align: center; opacity: 0.8; font-size: 0.85rem;">Escolha onde deseja verificar a oferta:</p>
+                <div class="store-modal-content">
+                    <a href="#" class="btn-store store-ml">Mercado Livre</a>
+                    <a href="#" class="btn-store store-shopee">Shopee</a>
+                    <a href="#" class="btn-store store-amazon">Amazon</a>
+                    <a href="#" class="btn-store store-ebay">eBay</a>
+                </div>
             </div>
         </div>
+    
 
-        <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank" aria-label="Contato Suporte Luthier"><img src="NKL/wpplogo.w70-h70-c1.png" sizes="4000px" loading="lazy"><br></a>
-        
-        <footer class="site-footer">
-            <div class="footer-grid">
-                <div class="footer-box">
-                    <h4>Sua voz importa</h4>
-                    <p>Queremos construir o melhor portal de lutheria do Brasil. Como podemos melhorar sua experiência?</p>
-                    <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
-                </div>
-                <div class="footer-box">
-                    <h4>Contato Direto</h4>
-                    <p>Dúvidas, parcerias ou projetos pessoais? Mande um e-mail para nós:</p>
-                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline" style="text-transform: lowercase; font-weight: 500;">contato.nikoluthieria@gmail.com</a>
-                </div>
-                <div class="footer-box">
-                     <h4>Apoie o Projeto</h4>
-                    <p>Todo o conteúdo gratuito do NKL exige tempo e pesquisa. Se o site te ajudou de alguma forma, considere apoiar nosso trabalho mantendo a estrutura no ar.</p>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.5rem;">
-                        <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" class="btn-outline">
-                            Apoiar NKL
-                        </a>
-                        <button onclick="handlePixSupport()" class="btn-outline" style="background: transparent; cursor: pointer; font-family: 'Inter', sans-serif;">
-                            ❖ PayPal 
-                        </button>
-                    </div>
+    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closePixModal()">&times;</button>
+            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
+            <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+            <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+        </div>
+    </div>
+
+    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank"><img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy"></a>
+    
+    <footer class="site-footer">
+        <div class="footer-grid" style="max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div class="footer-box">
+                <h4>Sua voz importa</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Queremos construir o melhor portal de lutheria do Brasil.</p>
+                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Deixar Feedback Rápido</a>
+            </div>
+            <div class="footer-box">
+                <h4>Contato Direto</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Dúvidas, parcerias ou projetos pessoais?</p>
+                <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--neon); font-weight: bold; text-decoration: none;">contato.nikoluthieria@gmail.com</a>
+            </div>
+            <div class="footer-box">
+                 <h4>Apoie o Projeto</h4>
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Todo o conteúdo gratuito do NKL exige tempo e pesquisa.</p>
+                <div style="display: flex; gap: 10px;">
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Apoiar NKL</a>
+                    <button onclick="handlePixSupport()" style="padding: 10px 15px; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 6px; cursor: pointer;">❖ PayPal</button>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 NKL Engenharia e Lutheria | Niko Luthiengenharia. Alta performance estruturada com elegância.</p>
-            </div>
-        </footer>
+        </div>
+        <div class="footer-bottom" style="text-align: center; padding: 2rem; border-top: 1px solid var(--border); opacity: 0.7; font-size: 0.85rem;">
+            <p>&copy; 2026 NKL Engenharia e Lutheria. O seu Portal Violinista de confiança.</p>
+        </div>
+    </footer>
+    
+    <script>
+        function handlePixSupport() {
+            navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
+            alert('Endereço PayPal copiado com sucesso!');
+            document.getElementById('pix-modal').classList.add('show');
+        }
+        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const savedTheme = localStorage.getItem('nkl_theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { body.classList.add('dark-theme'); } else { body.classList.remove('dark-theme'); }
+        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light'); });
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        if(mobileBtn) { mobileBtn.addEventListener('click', () => { navLinks.classList.toggle('show'); }); }
         
-        <script>
-            // Banco de dados embutido - as the previous one, loading from JSON
-            // We just need to load it here
+        
+const db = [{"nome": "Alice A703", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Alice A708", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Alice A747", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Corelli Alliance", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético (Kevlar)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.6", "amaciamento": "Lento (4+ dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Cantiga", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Crystal", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Stabalon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "D'Addario Ascenté", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Monel / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Helicore", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Amo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Vivo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 90%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "D'Addario Prelude", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Pro-Arte", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Zyex", "tensao": "Alta", "projecao": "Forte", "cor": "W: 60% | F: 80%", "nucleo": "Sintético (Zyex)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Di Pietro Studio Uno", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Aço (Alemão)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Dogal Capriccio", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata / Ligas Cobre", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Dogal Green Label", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Bronze", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Bronze", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Dominante Orchestral", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 60%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Aço", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Erudithus #01", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo / Cobre", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "EuroString", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "For-Tune Charm", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 60%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Giannini GEAV", "tensao": "Média", "projecao": "Baixa", "cor": "W: 40% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "D+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Metálicas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Classic", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 70%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Evoke", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Superior", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Young Talent", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Larsen Aurora", "tensao": "Média", "projecao": "Moderada", "cor": "W: 65% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.4", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Il Cannone", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Dir. Foc.", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 100%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 60% | F: 95%", "nucleo": "Sintético", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Prata / Alumínio", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Silver", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 70%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata (Fio Ext D/G)", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Solist", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 50% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Original", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Larsen Tzigane", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 10%", "nucleo": "Sintético (Nylon)", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Virtuoso", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.1", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Lenzner Goldbrokat (Só E)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço Nu / Banhada Ouro", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Mauro Calixto Padrão", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.6", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "NIG NVE804", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Hexagonal)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel Cromo (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Opal Titan", "tensao": "Alta", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Titânio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Orquezz PRO", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "9.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Paganini PE950 (Aço)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Paganini PE980 (Perlon)", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "N/A", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Aricore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Chorda", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 0%", "nucleo": "Tripa (Nua)", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.0", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Sem Revest. / Prata", "fixacao": "Tie-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Chromcor", "tensao": "Alta", "projecao": "Forte", "cor": "W: 5% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Eudoxa", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 5%", "nucleo": "Tripa", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.0", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.3", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi Gold", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 80%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Flexocor Permanent", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Gold Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 50%", "nucleo": "Tripa", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.8", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Obligato", "tensao": "Média", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A", "nota": "9.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Oliv", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 10%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.4", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.1", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A+", "nota": "9.2", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Perpetual", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 95%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina / Prata / Aço", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Pirastro Piranito", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "7.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Synoxa", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Tonica", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Violino", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Wondertone Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Prim Heavy", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 5% | F: 95%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B+", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Prim Medium", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Ranghiere", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Smart", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Strinberg VS4", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Red Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C", "nota": "7.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Sensicore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B-", "nota": "8.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Alphayue", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.1", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 40%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.8", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant Pro", "tensao": "Alta", "projecao": "Forte", "cor": "W: 80% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio/Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Dynamo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 40%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dynamo Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 75% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Blue", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Red", "tensao": "Média", "projecao": "Moderada", "cor": "W: 90% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Peter Infeld (PI)", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina/Ouro/Estanho/Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Prazision", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Rondo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Rondo Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 90% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Spirit", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 70% | F: 40%", "nucleo": "Sintético", "preco": "$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B-", "nota": "8.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Spirocore", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 75%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Superflexible", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 50%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Ti", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Vision", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Vision Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Vision Tit. Orq.", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Média"}, {"nome": "Thomastik Vision Tit. Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 15% | F: 95%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "A", "nota": "9.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Baixa"}, {"nome": "Warchal Amber", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 60%", "nucleo": "Sintético (W-Core)", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end (Helix)", "tolerancia": "Média"}, {"nome": "Warchal Ametyst", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 30% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Brilliant", "tensao": "Baixa", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Warchal Brilliant Vintage", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Loop-end", "tolerancia": "Média"}, {"nome": "Warchal Karneol", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 90% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Russian A", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Warchal Timbre", "tensao": "Média", "projecao": "Muito Forte", "cor": "W: 95% | F: 65%", "nucleo": "Sintético (W-Core)", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata Pura", "fixacao": "Ball-end (Helix)", "tolerancia": "Baixa"}];
 
-            const db = [{"nome": "Alice A703", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Alice A708", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Alice A747", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Corelli Alliance", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético (Kevlar)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.60", "amaciamento": "Lento (4+ dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Cantiga", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Crystal", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Stabalon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "D'Addario Ascenté", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Monel / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Helicore", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Amo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Vivo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 90%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "D'Addario Prelude", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Pro-Arte", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Zyex", "tensao": "Alta", "projecao": "Forte", "cor": "W: 60% | F: 80%", "nucleo": "Sintético (Zyex)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Di Pietro Studio Uno", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Aço (Alemão)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Dogal Capriccio", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata / Ligas Cobre", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Dogal Green Label", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Bronze", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Bronze", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Dominante Orchestral", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 60%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Aço", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Erudithus #01", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo / Cobre", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "EuroString", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "For-Tune Charm", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 60%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Giannini GEAV", "tensao": "Média", "projecao": "Baixa", "cor": "W: 40% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "D+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Metálicas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Classic", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 70%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Evoke", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Superior", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Young Talent", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Larsen Aurora", "tensao": "Média", "projecao": "Moderada", "cor": "W: 65% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.40", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Il Cannone", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Dir. Foc.", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 100%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 60% | F: 95%", "nucleo": "Sintético", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Prata / Alumínio", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Silver", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 70%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata (Fio Ext D/G)", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Solist", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 50% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Original", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Larsen Tzigane", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 10%", "nucleo": "Sintético (Nylon)", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Virtuoso", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.10", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Lenzner Goldbrokat (Só E)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço Nu / Banhada Ouro", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Mauro Calixto Padrão", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.60", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "NIG NVE804", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Hexagonal)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel Cromo (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Opal Titan", "tensao": "Alta", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Titânio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Orquezz PRO", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "9.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Paganini PE950 (Aço)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Paganini PE980 (Perlon)", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "N/A", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Aricore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Chorda", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 0%", "nucleo": "Tripa (Nua)", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.00", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Sem Revest. / Prata", "fixacao": "Tie-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Chromcor", "tensao": "Alta", "projecao": "Forte", "cor": "W: 5% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Eudoxa", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 5%", "nucleo": "Tripa", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.00", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.30", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi Gold", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 80%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Flexocor Permanent", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Gold Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 50%", "nucleo": "Tripa", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.80", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Obligato", "tensao": "Média", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A", "nota": "9.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Oliv", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 10%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.40", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.10", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A+", "nota": "9.20", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Perpetual", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 95%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina / Prata / Aço", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Pirastro Piranito", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "7.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Synoxa", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Tonica", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Violino", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Wondertone Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.70", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Prim Heavy", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 5% | F: 95%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B+", "nota": "8.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Prim Medium", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Ranghiere", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Smart", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Strinberg VS4", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Red Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C", "nota": "7.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Sensicore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B-", "nota": "8.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Alphayue", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.10", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 40%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.80", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant Pro", "tensao": "Alta", "projecao": "Forte", "cor": "W: 80% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.40", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio/Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Dynamo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 40%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dynamo Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 75% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Blue", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Red", "tensao": "Média", "projecao": "Moderada", "cor": "W: 90% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Peter Infeld (PI)", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.70", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina/Ouro/Estanho/Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Prazision", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Rondo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Rondo Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 90% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Spirit", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 70% | F: 40%", "nucleo": "Sintético", "preco": "$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B-", "nota": "8.00", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Spirocore", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 75%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.60", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Superflexible", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 50%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.30", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Ti", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.10", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Vision", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.50", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Vision Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Vision Tit. Orq.", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Média"}, {"nome": "Thomastik Vision Tit. Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 15% | F: 95%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "A", "nota": "9.20", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Baixa"}, {"nome": "Warchal Amber", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 60%", "nucleo": "Sintético (W-Core)", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.60", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end (Helix)", "tolerancia": "Média"}, {"nome": "Warchal Ametyst", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 30% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Brilliant", "tensao": "Baixa", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.00", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Warchal Brilliant Vintage", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.90", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Loop-end", "tolerancia": "Média"}, {"nome": "Warchal Karneol", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 90% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.50", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Russian A", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.20", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Warchal Timbre", "tensao": "Média", "projecao": "Muito Forte", "cor": "W: 95% | F: 65%", "nucleo": "Sintético (W-Core)", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.80", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata Pura", "fixacao": "Ball-end (Helix)", "tolerancia": "Baixa"}];
+const select1 = document.getElementById('corda1');
+const select2 = document.getElementById('corda2');
 
-            const select1 = document.getElementById('corda1');
-            const select2 = document.getElementById('corda2');
-            
-            db.forEach((corda, index) => {
-                let option1 = document.createElement('option');
-                option1.value = index;
-                option1.text = corda.nome;
-                select1.appendChild(option1);
+db.forEach((corda, index) => {
+    let option1 = document.createElement('option');
+    option1.value = index;
+    option1.text = corda.nome;
+    select1.appendChild(option1);
 
-                let option2 = document.createElement('option');
-                option2.value = index;
-                option2.text = corda.nome;
-                select2.appendChild(option2);
-            });
+    let option2 = document.createElement('option');
+    option2.value = index;
+    option2.text = corda.nome;
+    select2.appendChild(option2);
+});
 
-            // Descrições otimizadas com a nova ordem: Nota, Qualidade, Cor, Preço...
-            const keysMapping = [
-                { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota média baseada em relatos de musicistas.<br>(Escala: 0.0 a 10.0).' },
-                { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica da marca.<br>(Escala de notas: de A+ [Máxima] até E- [Mínima]).' },
-                { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre.<br>QUENTE (Sombrio/Macio) vs BRILHANTE (Aberto/Metálico).<br>FOCADA (Direto/Claro) vs COMPLEXO (Rico/Espalhado).' },
-                { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro.<br>(Escala: de $ [~R$50] até $$$$$ [~R$1500+]).' },
-                { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas.<br>(Opções: Baixa, Média, Alta, Mista).' },
-                { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico.<br>(Opções: Suave, Moderada, Forte, Muito Forte).' },
-                { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural da corda.<br>(Opções: Tripa, Sintético/Perlon, Aço, Híbrido).' },
-                { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica ao toque inicial do arco.<br>(Opções: Lenta, Moderada, Rápida, Instantânea).' },
-                { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o aproveitamento acústico.<br>(Opções: Interno, Externo, Ambos).' },
-                { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período necessário para fixar a afinação e abrir o timbre.<br>(Opções: Minutos, Horas, Dias, Semanas).' },
-                { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que a corda perca o brilho elástico.<br>(Opções: Curta, Média, Longa).' },
-                { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações de temperatura e umidade.<br>(Opções: Baixa/Estável, Média, Alta).' },
-                { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal enrolado externamente sobre o núcleo.<br>(Opções: Alumínio, Prata, Ouro, Tungstênio, Cromo, etc).' },
-                { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado para o microafinador.<br>(Opções: Bolinha [Ball-end], Laço [Loop-end] ou Removível).' },
-                { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão sem produzir chiados ou ruídos.<br>(Opções: Baixa, Média, Alta).' }
-            ];
+const keysMapping = [
+    { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota média baseada em relatos de musicistas (Escala: 0.0 a 10.0).' },
+    { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica da marca (Escala de notas: de A+ [Máxima] até E- [Mínima]).' },
+    { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre.<br><strong>Q</strong>uente (Sombrio/Macio) vs Brilhante.<br><strong>F</strong>ocada (Direto/Claro) vs Complexo.' },
+    { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro (Escala: de $ [~R$50] até $$$$$ [~R$1500+]).' },
+    { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas (Opções: Baixa, Média, Alta, Mista).' },
+    { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico (Opções: Suave, Moderada, Forte, Muito Forte).' },
+    { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural da corda (Opções: Tripa, Sintético/Perlon, Aço, Híbrido).' },
+    { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica ao toque inicial do arco (Opções: Lenta, Moderada, Rápida, Instantânea).' },
+    { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o aproveitamento acústico (Opções: Interno, Externo, Ambos).' },
+    { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período necessário para fixar a afinação e abrir o timbre (Opções: Minutos, Horas, Dias, Semanas).' },
+    { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que a corda perca o brilho elástico (Opções: Curta, Média, Longa).' },
+    { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações de temperatura e umidade (Opções: Baixa/Estável, Média, Alta).' },
+    { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal enrolado externamente sobre o núcleo (Opções: Alumínio, Prata, Ouro, Tungstênio, Cromo, etc).' },
+    { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado para o microafinador (Opções: Bolinha [Ball-end], Laço [Loop-end] ou Removível).' },
+    { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão sem produzir chiados ou ruídos (Opções: Baixa, Média, Alta).' }
+];
 
-            const formBaseUrl = "https://docs.google.com/forms/d/e/SEU_ID_DO_FORMULARIO_AQUI/viewform?usp=pp_url&entry.SEU_ENTRY_ID_AQUI=";
+function gerarLink(corda) {
+    return "https://docs.google.com/forms/d/e/1FAIpQLSe_REPLACE_ME_LATER/viewform?usp=pp_url" +
+           "&entry.1000001=" + encodeURIComponent(corda.nome) +
+           "&entry.1000002=" + encodeURIComponent(corda.nota) +
+           "&entry.1000003=" + encodeURIComponent(corda.qualidade) +
+           "&entry.1000004=" + encodeURIComponent(corda.cor) +
+           "&entry.1000006=" + encodeURIComponent(corda.preco) +
+           "&entry.1000007=" + encodeURIComponent(corda.tensao);
+}
 
-            function updateComparison() {
-                const val1 = select1.value;
-                const val2 = select2.value;
-                const tableContainer = document.getElementById('table-container');
-                const emptyState = document.getElementById('empty-state');
-                const tbody = document.getElementById('comparison-body');
-                
-                const btn1 = document.getElementById('btn-report1');
-                const btn2 = document.getElementById('btn-report2');
+function formatStringColor(rawString) {
+    if (!rawString || rawString === 'N/A') return 'N/A';
+    return rawString.replace(/W:/gi, 'Q:');
+}
 
-                if(val1 !== "") {
-                    btn1.style.display = "inline-block";
-                    btn1.href = formBaseUrl + encodeURIComponent(db[val1].nome);
-                    document.getElementById('th-corda1').innerHTML = `
-                        <div class="col-header-container">
-                            <span class="string-name-label" style="font-weight: 700; color: var(--primary);">${db[val1].nome}</span>
-                            <a href="#" class="btn-affiliate" title="Ver preço e comprar esta corda">Ver Oferta</a>
-                        </div>`;
-                } else {
-                    btn1.style.display = "none";
-                    document.getElementById('th-corda1').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 1</span></div>';
-                }
+function showStoresModal(cordaName) {
+    document.getElementById('store-modal-title').innerText = cordaName;
+    document.getElementById('store-modal').classList.add('show');
+}
 
-                if(val2 !== "") {
-                    btn2.style.display = "inline-block";
-                    btn2.href = formBaseUrl + encodeURIComponent(db[val2].nome);
-                    document.getElementById('th-corda2').innerHTML = `
-                        <div class="col-header-container">
-                            <span class="string-name-label" style="font-weight: 700; color: var(--primary);">${db[val2].nome}</span>
-                            <a href="#" class="btn-affiliate" title="Ver preço e comprar esta corda">Ver Oferta</a>
-                        </div>`;
-                } else {
-                    btn2.style.display = "none";
-                    document.getElementById('th-corda2').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 2</span></div>';
-                }
+function closeStoreModal() {
+    document.getElementById('store-modal').classList.remove('show');
+}
 
-                if(val1 === "" || val2 === "") {
-                    tableContainer.classList.add('hidden');
-                    emptyState.classList.remove('hidden');
-                    return;
-                }
+function handleVote(el) {
+    const container = el.parentElement;
+    container.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+}
 
-                tableContainer.classList.remove('hidden');
-                emptyState.classList.add('hidden');
+function updateComparison() {
+    const val1 = select1.value;
+    const val2 = select2.value;
+    const tableContainer = document.getElementById('table-container');
+    const emptyState = document.getElementById('empty-state');
+    const tbody = document.getElementById('comparison-body');
+    
+    const btn1 = document.getElementById('btn-report1');
+    const btn2 = document.getElementById('btn-report2');
 
-                const corda1 = db[val1];
-                const corda2 = db[val2];
+    if(val1 !== "") {
+        btn1.style.display = "inline-block";
+        btn1.href = gerarLink(db[val1]);
+        document.getElementById('th-corda1').innerHTML = `
+            <div class="col-header-container">
+                <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val1].nome}</span>
+                <button onclick="showStoresModal('${db[val1].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
+            </div>`;
+    } else {
+        btn1.style.display = "none";
+        document.getElementById('th-corda1').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 1</span></div>';
+    }
 
-                tbody.innerHTML = '';
+    if(val2 !== "") {
+        btn2.style.display = "inline-block";
+        btn2.href = gerarLink(db[val2]);
+        document.getElementById('th-corda2').innerHTML = `
+            <div class="col-header-container">
+                <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val2].nome}</span>
+                <button onclick="showStoresModal('${db[val2].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
+            </div>`;
+    } else {
+        btn2.style.display = "none";
+        document.getElementById('th-corda2').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 2</span></div>';
+    }
 
-                keysMapping.forEach(item => {
-                    let tr = document.createElement('tr');
-                    
-                    let tdFeature = document.createElement('td');
-                    tdFeature.innerHTML = `
-                        <div class="feature-container">
-                            <span class="feature-name">${item.label}</span>
-                            <span class="feature-desc">${item.desc}</span>
-                        </div>`;
+    if(val1 === "" || val2 === "") {
+        tableContainer.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+    }
 
-                    let rawVal1 = corda1[item.key];
-                    let rawVal2 = corda2[item.key];
+    tableContainer.classList.remove('hidden');
+    emptyState.classList.add('hidden');
 
-                    let tdVal1 = document.createElement('td');
-                    tdVal1.innerText = rawVal1;
-                    
-                    if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') {
-                        tdVal1.style.color = 'var(--neon, #89CFF0)';
-                        tdVal1.style.fontWeight = '600';
-                    }
+    const corda1 = db[val1];
+    const corda2 = db[val2];
 
-                    let tdVal2 = document.createElement('td');
-                    tdVal2.innerText = rawVal2;
-                    
-                    if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') {
-                        tdVal2.style.color = 'var(--neon, #89CFF0)';
-                        tdVal2.style.fontWeight = '600';
-                    }
+    tbody.innerHTML = '';
 
-                    tr.appendChild(tdFeature);
-                    tr.appendChild(tdVal1);
-                    tr.appendChild(tdVal2);
-                    tbody.appendChild(tr);
-                });
-            }
+    keysMapping.forEach(item => {
+        let tr = document.createElement('tr');
+        
+        let tdFeature = document.createElement('td');
+        tdFeature.innerHTML = `
+            <div class="feature-container">
+                <span class="feature-name">${item.label}</span>
+                <span class="feature-desc">${item.desc}</span>
+            </div>`;
 
-            select1.addEventListener('change', updateComparison);
-            select2.addEventListener('change', updateComparison);
+        let rawVal1 = corda1[item.key];
+        let rawVal2 = corda2[item.key];
 
-            function handlePixSupport() {
-                navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
-                alert('Endereço PayPal copiado com sucesso!');
-                document.getElementById('pix-modal').classList.add('show');
-            }
+        if (item.key === 'cor') {
+            rawVal1 = formatStringColor(rawVal1);
+            rawVal2 = formatStringColor(rawVal2);
+        }
 
-            function closePixModal() {
-                document.getElementById('pix-modal').classList.remove('show');
-            }
+        // Col 1
+        let tdVal1 = document.createElement('td');
+        let html1 = `<div class="td-content"><span>${rawVal1}</span>`;
+        html1 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>14</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>2</span></button></div>`;
+        html1 += `</div>`;
+        tdVal1.innerHTML = html1;
+        if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') { tdVal1.style.color = 'var(--neon)'; tdVal1.style.fontWeight = '600'; }
 
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const body = document.body;
-            const savedTheme = localStorage.getItem('nkl_theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) { 
-                body.classList.add('dark-theme'); 
-            } else {
-                body.classList.remove('dark-theme');
-            }
-            
-            themeToggleBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-theme');
-                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-            });
+        // Col 2
+        let tdVal2 = document.createElement('td');
+        let html2 = `<div class="td-content"><span>${rawVal2}</span>`;
+        html2 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>45</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>3</span></button></div>`;
+        html2 += `</div>`;
+        tdVal2.innerHTML = html2;
+        if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') { tdVal2.style.color = 'var(--neon)'; tdVal2.style.fontWeight = '600'; }
 
-            const header = document.getElementById('site-header');
-            const mobileBtn = document.getElementById('mobile-menu-btn');
-            const navLinks = document.getElementById('nav-links');
+        tr.appendChild(tdFeature);
+        tr.appendChild(tdVal1);
+        tr.appendChild(tdVal2);
+        tbody.appendChild(tr);
+    });
+}
 
-            if(mobileBtn) {
-                mobileBtn.addEventListener('click', () => {
-                    navLinks.classList.toggle('show');
-                });
-            }
+select1.addEventListener('change', updateComparison);
+select2.addEventListener('change', updateComparison);
 
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                    if(navLinks) navLinks.classList.remove('show');
-                }
-            });
-        </script>
-    </body>
+    </script>
+</body>
 </html>
