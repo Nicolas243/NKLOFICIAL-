@@ -15,7 +15,8 @@
             --surface: #f5f5f5;
             --text: #0a0a0a;
             --border: #eeeeee;
-            --neon: #1E90FF; /* Azul 1E90FF */
+            --neon: #1E90FF; /* Azul para Destaques do Menu */
+            --neon-dark: #0056b3; /* Azul mais escuro para Botões */
             --neon-dim: rgba(30, 144, 255, 0.15);
         }
         body.dark-theme {
@@ -23,7 +24,8 @@
             --surface: #121212;
             --text: #ffffff;
             --border: #333333;
-            --neon: #1E90FF; /* Azul 1E90FF */
+            --neon: #1E90FF;
+            --neon-dark: #0056b3;
             --neon-dim: rgba(30, 144, 255, 0.2);
         }
         
@@ -31,86 +33,79 @@
 
         /* Header e Navbar Auto-hide */
         .site-header { 
-            background-color: var(--bg); /* Fundo dinâmico baseado no tema */
+            background-color: var(--bg); 
             border-bottom: 1px solid var(--border); 
             padding: 1rem 0; 
-            position: fixed; /* Mudado para fixed para o auto-hide funcionar */
+            position: fixed; 
             width: 100%;
             top: 0; 
             z-index: 1000; 
             transition: top 0.3s ease-in-out, background-color 0.3s; 
         } 
-        /* Classe aplicada via JS quando o scroll vai para baixo */
         .site-header.hide { top: -100px; }
 
         .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
         
-        /* Dropdown Violino (Nav Brand) */
-        .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; }
+        /* Dropdown Violino e Cordas com o MESMO PADRÃO */
+        .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; margin-right: 3rem; }
         .nav-brand-logo { height: 30px; width: auto; object-fit: contain; }
         body.dark-theme .nav-brand-logo { filter: brightness(0) invert(1); }
-        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 5px; }
-        .logo-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface); border: 1px solid var(--border); min-width: 180px; padding: 0.5rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-radius: 8px; margin-top: 10px; }
-        .logo-dropdown-content a { display: block; padding: 0.8rem 1.5rem; text-decoration: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; }
-        .logo-dropdown-content a:hover { background-color: var(--bg); color: var(--neon); }
-        .logo-dropdown-content a.active { color: var(--neon); font-weight: bold; background-color: var(--neon-dim);}
+        
+        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
+        
+        .logo-dropdown-content, .dropdown-content, .lang-content { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background-color: var(--surface) !important; border: 1px solid var(--border); 
+            min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 8px; margin-top: 5px;
+        } 
         .nav-brand-container.show-dropdown .logo-dropdown-content { display: block; }
+        
+        .logo-dropdown-content a, .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-decoration: none; color: var(--text) !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; text-transform: none; letter-spacing: 0;}
+        .logo-dropdown-content a:hover, .dropdown-content a:hover { background-color: var(--bg) !important; color: var(--neon) !important; }
+        .logo-dropdown-content a.active { color: var(--neon) !important; font-weight: bold; background-color: var(--neon-dim);}
 
-        .nav-menu { display: flex; list-style: none; gap: 2rem; margin: 0; padding: 0; align-items: center; } 
-        .nav-menu a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
-        .nav-menu a:hover { color: var(--neon); } 
-        /* Home ativa */
+        .nav-menu { display: flex; list-style: none; gap: 2.5rem; margin: 0; padding: 0; align-items: center; } 
+        .nav-menu > li > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
+        .nav-menu > li > a:hover { color: var(--neon); } 
         .nav-menu a.home-active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
         
         .nav-item-dropdown { position: relative; } 
-        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface); border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px;} 
         .nav-item-dropdown:hover .dropdown-content { display: block; } 
-        .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; } 
-        .dropdown-content a:hover { background-color: var(--bg); color: var(--neon); } 
+        .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
 
-        .header-controls { display: flex; align-items: center; gap: 15px; }
+        /* Seção direita (Bandeiras, Moonsun, Hamburguer) */
+        .header-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; justify-content: flex-end;}
 
         /* Dropdown Bandeiras no Clique */
         .lang-dropdown { position: relative; display: inline-block; }
-        .lang-btn { background: transparent; border: 2px solid transparent; font-size: 1.5rem; cursor: pointer; padding: 4px 8px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: border-color 0.2s;}
-        .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); } /* Borda azul no hover e ativo */
+        .lang-btn { background: transparent; border: 2px solid transparent; cursor: pointer; padding: 2px 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: border-color 0.2s;}
+        .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); }
         
-        /* Nova bandeira metadinha via CSS linear-gradient com emojis (gambiarra visual funcional) ou texto */
-        .flag-split {
-            display: inline-block;
-            position: relative;
-            width: 32px;
-            height: 24px;
-            overflow: hidden;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
-        .flag-br { position: absolute; left: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: left; }
-        .flag-pt { position: absolute; right: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: right; }
+        .flag-split { display: inline-block; position: relative; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .flag-pt { position: absolute; left: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: left; }
+        .flag-br { position: absolute; right: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: right; }
 
-        .lang-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--surface); min-width: 150px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-top: 10px;}
-        .lang-content a { color: var(--text); padding: 12px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
+        .lang-content { right: 0; left: auto; min-width: 150px; }
+        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
         .lang-content a:hover { background-color: var(--bg); color: var(--neon); }
         .lang-dropdown.show-lang .lang-content { display: block; }
 
-        /* Botão Tema */
-        .theme-toggle { width: 28px; height: 28px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
+        /* Botão Tema - Sem Inverter Cor no Dark Theme */
+        .theme-toggle { width: 26px; height: 26px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
         .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-        .dark-theme .theme-toggle { transform: rotate(360deg); filter: brightness(0) invert(1);} 
+        .dark-theme .theme-toggle { transform: rotate(360deg); } 
         
-        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
+        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; }
 
         /* Fundo Parallax Violinos Famosos */
         .parallax-bg {
-            position: fixed;
-            top: -10%; left: -10%; width: 120%; height: 120%;
+            position: fixed; top: -15%; left: -15%; width: 130%; height: 130%;
             pointer-events: none; z-index: -1;
-            transition: transform 0.1s ease-out; /* Suaviza o movimento do mouse */
+            transition: transform 0.05s linear;
         }
-        .music-symbol { position: absolute; opacity: 0.04; font-size: 5rem; color: var(--text); }
-        .violin-name { position: absolute; opacity: 0.03; font-family: 'Playfair Display', serif; font-size: 3.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
+        .music-symbol { position: absolute; opacity: 0.03; font-size: 4rem; color: var(--text); }
+        .violin-name { position: absolute; opacity: 0.02; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
         
-        /* Ajuste do Main para não ficar escondido pelo header fixed */
         .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
 
         /* Showcase Cards */
@@ -121,99 +116,147 @@
         .content-side { flex: 1.2; display: flex; flex-direction: column; gap: 1rem; }
         .content-side h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text); margin: 0; }
         .content-side p { font-size: 1rem; line-height: 1.6; color: var(--text); opacity: 0.85; margin: 0; }
-        .btn-home-cta { display: inline-flex; align-items: center; padding: 12px 24px; font-weight: bold; color: #ffffff !important; background: var(--neon); border-radius: 6px; text-decoration: none !important; margin-top: 0.5rem; align-self: flex-start;}
+        
+        /* Botão Azul Escuro */
+        .btn-home-cta { display: inline-flex; align-items: center; padding: 12px 24px; font-weight: bold; color: #ffffff !important; background: var(--neon-dark); border-radius: 6px; text-decoration: none !important; margin-top: 0.5rem; align-self: flex-start;}
         .btn-home-cta:hover { filter: brightness(1.1); }
+        
         .photo-side { flex: 0.8; }
-        .photo-box { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); overflow: hidden; }
-        .home-photo-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s; }
+        .photo-box { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center;}
+        .home-photo-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s, transform 0.3s; }
         body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
         .showcase-section:hover .home-photo-img { filter: grayscale(0%); }
 
-        /* Area de Captura de E-mail */
+        .img-top { object-position: top; }
+        .img-zoom-15 { transform: scale(1.15); }
+        .img-zoom-10 { transform: scale(1.10); }
+        /* Foto 4: Gira, mas se contem inteira na caixa sem cortes */
+        .img-rotate-fill { transform: rotate(-90deg); object-fit: contain; } 
+        
+        .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
+        .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
+        .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
+        /* No hover, gira e cresce de forma contida */
+        .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(1.05); }
+
+        /* Area de Captura de E-mail (Grudada no Rodapé) */
         .email-capture-section {
-            max-width: 800px;
-            margin: 6rem auto 3rem;
-            padding: 3rem 2rem;
+            width: 100%;
+            padding: 4rem 2rem;
             background: var(--surface);
-            border: 1px solid var(--neon);
-            border-radius: 12px;
+            border-top: 1px solid var(--border);
             text-align: center;
-            box-shadow: 0 10px 30px var(--neon-dim);
         }
-        .email-capture-section h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 1.5rem 0;}
-        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;}
-        .capture-input { padding: 12px 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s;}
+        .email-capture-section h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 1.5rem 0; font-weight: normal;}
+        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 700px; margin: 0 auto;}
+        
+        /* Input com Correção de Autofill para Chrome */
+        .capture-input { padding: 14px 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s;}
         .capture-input:focus { border-color: var(--neon); }
-        .capture-btn { padding: 12px 25px; background: var(--neon); color: #fff; font-weight: bold; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: filter 0.2s;}
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
+            -webkit-text-fill-color: var(--text) !important;
+        }
+
+        .capture-btn { padding: 14px 30px; background: var(--neon-dark); color: #fff; font-weight: bold; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: filter 0.2s;}
         .capture-btn:hover { filter: brightness(1.1); }
 
-        /* Rodapé Reduzido e Monocromático */
+        /* Rodapé Reduzido, Alinhado e Monocromático */
         .site-footer { 
-            border-top: 1px solid var(--border); 
             background: var(--bg); 
             color: var(--text); 
-            padding: 2rem 0 1rem; 
+            padding: 2rem 0; 
         }
         .footer-grid { 
             max-width: 1200px; margin: 0 auto; 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 1.5rem; /* Espaçamento pela metade */
+            display: flex; gap: 2rem;
             padding: 0 2rem;
         }
-        .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); text-shadow: none; font-weight: bold;}
-        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 0.8rem 0; line-height: 1.4;}
-        .btn-outline { display: inline-block; padding: 8px 12px; border: 1px solid var(--text); text-decoration: none; color: var(--text); border-radius: 4px; font-size: 0.85rem; transition: background 0.2s;}
+        .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;}
+        .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600;}
+        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1rem 0; line-height: 1.5;}
+        
+        .btn-outline { display: inline-block; padding: 10px 15px; border: 1px solid var(--text); text-decoration: none; color: var(--text); background: transparent; border-radius: 4px; font-size: 0.85rem; font-weight: 500; transition: background 0.2s; font-family: 'Inter', sans-serif; cursor: pointer; margin-top: auto;}
         .btn-outline:hover { background: var(--text); color: var(--bg); }
-        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px;}
+        
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 400; opacity: 0.7;}
 
-        /* Modais */
+        /* Modal Paypal */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal-overlay.show { display: flex; }
         .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 90%; text-align: center; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
 
         @media (max-width: 768px) { 
-            .site-header { padding: 1rem 0; }
-            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start;} 
+            .site-header nav { padding: 0 1rem; }
+            .nav-brand-container { margin-right: auto; }
+            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 0; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start; background: var(--bg); position: absolute; top: 100%; left: 0; border-bottom: 1px solid var(--border);} 
+            .nav-menu > li { width: 100%; border-bottom: 1px solid var(--border); }
+            .nav-menu > li:last-child { border-bottom: none; }
+            .nav-menu > li > a, .nav-item-dropdown > a { display: block; padding: 1rem 2rem; width: 100%; }
             .nav-menu.show { display: flex; }
             .mobile-menu-btn { display: block; }
             .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
             .capture-form { flex-direction: column; }
             .capture-btn { width: 100%; }
+            .footer-grid { flex-direction: column; gap: 2.5rem; }
+            .footer-box { align-items: center; text-align: center;}
+            .footer-box > a, .footer-box > div { width: 100%; justify-content: center;}
         }
     </style>
 </head>
 <body class="dark-theme">
+    <!-- TELA DE INTRODUÇÃO -->
+<div id="intro-screen">
+    <!-- Linhas que vão para as laterais -->
+    <div class="line line-left"></div>
+    <div class="line line-right"></div>
+    
+    <!-- Logo do Violino (Substitua o src pelo caminho da sua imagem) -->
+    <!-- Se for usar um arquivo externo, coloque na mesma pasta e mude o nome abaixo -->
+    <img src="logo-violino.png" alt="Logo Violino" class="intro-logo">
+    
+    <!-- Caso não tenha a imagem agora, comente a tag <img> acima e descomente o SVG abaixo para testar -->
+    <!--
+    <svg class="intro-logo" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8 2 6 5 6 9C6 11 7.5 12.5 8 14C8 17 6 18 6 18L7 20C7 20 10 18.5 11 15C12 11.5 11 9 11 9C11 9 12.5 9.5 13 11C13 11 13 14 15 15C17 16 18 13.5 18 10C18 5 15 2 12 2Z"/>
+    </svg>
+    -->
+</div>
 
-    <!-- Fundo Parallax -->
+<!-- O RESTO DO SEU SITE COMEÇA AQUI -->
+<div id="conteudo-do-site">
+    <!-- Seu conteúdo principal aqui -->
+</div>
+
+    <!-- Fundo Parallax Expandido -->
     <div class="parallax-bg" id="parallax-bg">
-        <!-- Ícones -->
-        <span class="music-symbol" style="top: 15%; left: 10%;">𝄞</span>
-        <span class="music-symbol" style="top: 45%; right: 15%;">𝄢</span>
-        <span class="music-symbol" style="bottom: 25%; left: 20%;">♪</span>
-        <span class="music-symbol" style="top: 75%; right: 30%;">♫</span>
-        <span class="music-symbol" style="top: 85%; left: 40%;">𝄿</span>
-        <span class="music-symbol" style="top: 35%; left: 60%;">𝆕</span>
+        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
+        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
+        <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
+        <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
+        <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
+        <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
+        <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
+        <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
         
-        <!-- Nomes Violinos Famosos -->
-        <span class="violin-name" style="top: 20%; left: 35%; transform: rotate(-5deg);">Il Cannone 1743</span>
-        <span class="violin-name" style="top: 55%; right: 10%; transform: rotate(3deg);">Le Messie 1716</span>
+        <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
+        <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
         <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
-        <span class="violin-name" style="top: 10%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
-        <span class="violin-name" style="top: 40%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
-        <span class="violin-name" style="bottom: 40%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
-        <span class="violin-name" style="top: 70%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
-        <span class="violin-name" style="top: 85%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
+        <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
+        <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
+        <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
+        <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
+        <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
         <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
         <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
     </div>
 
     <header id="site-header" class="site-header">
         <nav>
-            <!-- Substituído Logo estático por Dropdown Violino -->
             <div class="nav-brand-container" id="logo-dropdown-container">
                 <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
-                <button class="logo-dropdown-btn" id="logo-btn">Violino ▾</button>
+                <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
                 <div class="logo-dropdown-content">
                     <a href="#" class="active">Violino</a>
                     <a href="#">Viola</a>
@@ -236,20 +279,20 @@
                 <li><a href="contatos/index.html">Contatos</a></li>
             </ul>
             
+            <!-- Controles à direita com espaçamento cravado de 15px -->
             <div class="header-controls">
-                <!-- Dropdown de Idiomas Metadinha -->
                 <div class="lang-dropdown" id="lang-dropdown">
                     <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
-                        <!-- Imagens simuladas de bandeiras metadinhas, usando imagens reais online temporárias ou texto para estruturar -->
+                        <!-- Portugal na esquerda, Brasil na direita -->
                         <div class="flag-split">
-                            <img src="https://flagcdn.com/br.svg" class="flag-br" alt="BR">
                             <img src="https://flagcdn.com/pt.svg" class="flag-pt" alt="PT">
+                            <img src="https://flagcdn.com/br.svg" class="flag-br" alt="BR">
                         </div>
                     </button>
                     <div class="lang-content">
-                        <a href="#"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/br.svg" class="flag-br"><img src="https://flagcdn.com/pt.svg" class="flag-pt"></div> PT/BR</a>
-                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/es.svg" class="flag-br"><img src="https://flagcdn.com/ar.svg" class="flag-pt"></div> ES/AR</a>
-                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/us.svg" class="flag-br"><img src="https://flagcdn.com/gb.svg" class="flag-pt"></div> EN/UK</a>
+                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg" class="flag-pt"><img src="https://flagcdn.com/br.svg" class="flag-br"></div> PT/BR</a>
+                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg" class="flag-pt"><img src="https://flagcdn.com/ar.svg" class="flag-br"></div> ES/AR</a>
+                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg" class="flag-pt"><img src="https://flagcdn.com/us.svg" class="flag-br"></div> EN/US</a>
                         <a href="ru/index.html"><img src="https://flagcdn.com/ru.svg" width="24" style="border-radius:2px;"> Russo</a>
                         <a href="zh/index.html"><img src="https://flagcdn.com/cn.svg" width="24" style="border-radius:2px;"> Chinês</a>
                         <a href="ja/index.html"><img src="https://flagcdn.com/jp.svg" width="24" style="border-radius:2px;"> Japonês</a>
@@ -267,7 +310,7 @@
 
     <main class="main-content">
         <section style="margin-bottom: 3rem; text-align: center;">
-            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Portal NKL</h1>
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">Portal NKL</h1>
             <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
         </section>
         
@@ -305,7 +348,8 @@
                     <p>Ficou na dúvida entre duas ou mais opções para o seu violino? Escolha os encordoamentos que você está de olho e veja lado a lado todas as diferenças de resposta, durabilidade e peso nos dedos antes de fechar o carrinho.</p>
                     <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo</a>
                 </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: rotate(-90deg) scale(1.4); object-position: center;"></div></div>
+                <!-- Foto 4 ajustada para girar contida na caixa -->
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-rotate-fill"></div></div>
             </div>
             
             <div class="showcase-section">
@@ -317,20 +361,19 @@
                 <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.15);"></div></div>
             </div>
         </div>
-
-        <!-- NOVO: Formulário de Captura de E-mail -->
-        <section class="email-capture-section">
-            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-            <form class="capture-form" onsubmit="event.preventDefault(); alert('E-mail cadastrado com sucesso!');">
-                <input type="text" class="capture-input" placeholder="Seu nome" required>
-                <input type="email" class="capture-input" placeholder="escreva o seu e-mail principal" required>
-                <button type="submit" class="capture-btn">Confirmar</button>
-            </form>
-        </section>
-
     </main>
 
-    <!-- Modal PayPal otimizado sem brilhos -->
+    <!-- Formulário Colado no Rodapé -->
+    <section class="email-capture-section">
+        <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+        <form class="capture-form" action="#" onsubmit="event.preventDefault(); alert('E-mail cadastrado com sucesso!');">
+            <input type="text" class="capture-input" placeholder="Seu nome" required>
+            <input type="email" class="capture-input" placeholder="escreva o seu e-mail principal" required>
+            <button type="submit" class="capture-btn">Confirmar</button>
+        </form>
+    </section>
+
+    <!-- Modal PayPal -->
     <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closePixModal()">&times;</button>
@@ -344,20 +387,20 @@
         <div class="footer-grid">
             <div class="footer-box">
                 <h4>Sua voz importa</h4>
-                <p>Queremos construir o melhor portal de lutheria do Brasil.</p>
+                <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
                 <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
             </div>
             <div class="footer-box">
                 <h4>Contato Direto</h4>
-                <p>Dúvidas, parcerias ou projetos pessoais?</p>
+                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande de nos um email.</p>
                 <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
             </div>
             <div class="footer-box">
                  <h4>Apoie o Projeto</h4>
-                <p>Todo o conteúdo gratuito exige pesquisa. Apoie nossa estrutura.</p>
+                <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
                 <div style="display: flex; gap: 10px;">
                     <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline">Apoiar NKL</a>
-                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="cursor: pointer;">❖ PayPal</button>
+                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline">❖ PayPal</button>
                 </div>
             </div>
         </div>
@@ -370,27 +413,27 @@
         // Logica Auto-Hide Header
         let lastScrollTop = 0;
         const header = document.getElementById('site-header');
+        const navMenu = document.getElementById('nav-menu');
         
         window.addEventListener('scroll', function() {
             let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-            // Se rolar pra baixo e passou de 100px, oculta. Se subir, mostra.
+            
+            // Auto-hide e fechar menu no celular
             if (currentScroll > lastScrollTop && currentScroll > 100) {
                 header.classList.add('hide');
+                navMenu.classList.remove('show');
             } else {
                 header.classList.remove('hide');
             }
-            // Fundo solidifica após scroll
-            if(currentScroll > 50) {
-                header.style.backgroundColor = 'var(--bg)';
-            }
+            
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
 
-        // Lógica Parallax Background
+        // Lógica Parallax Background (Velocidade aumentada)
         document.addEventListener('mousemove', function(e) {
             const bg = document.getElementById('parallax-bg');
-            const x = (e.clientX * -0.02) + 'px';
-            const y = (e.clientY * -0.02) + 'px';
+            const x = (e.clientX * -0.05) + 'px';
+            const y = (e.clientY * -0.05) + 'px';
             bg.style.transform = `translate(${x}, ${y})`;
         });
 
@@ -432,9 +475,8 @@
             localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
         });
 
-        // Menu Mobile
+        // Menu Mobile Toggle
         const mobileBtn = document.getElementById('mobile-menu-btn');
-        const navMenu = document.getElementById('nav-menu');
         if(mobileBtn) {
             mobileBtn.addEventListener('click', () => {
                 navMenu.classList.toggle('show');
