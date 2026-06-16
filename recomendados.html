@@ -39,7 +39,7 @@
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
 
         /* CABEÇALHO PADRÃO GLOBAL */
-        .site-header { background-color: var(--header-bg) !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; transition: top 0.3s ease-in-out, background-color 0.3s; } 
+        .site-header { background-color: var(--header-bg) !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-: 1000; transition: top 0.3s ease-in-out, background-color 0.3s; } 
         .site-header.hide { top: -100px; }
         .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
         
@@ -91,7 +91,7 @@
         .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
 
         /* Fundo Parallax (-0.15) */
-        .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
+        .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-: -1; transition: transform 0.05s linear; }
         .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
         .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
         body.dark-theme .music-symbol { opacity: 0.03; }
@@ -165,7 +165,7 @@
         
         .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 400; opacity: 0.7;}
 
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal-overlay.show { display: flex; }
         .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 90%; text-align: center; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
@@ -244,7 +244,7 @@
                     </div>
                 </li>
                 <li><a href="fisica-do-som.html">Física do Som</a></li>
-                <li><a href="contatos/index.html">Contatos</a></li>
+                <li><a href="contatos.html">Contatos</a></li>
             </ul>
             
             <div class="header-controls">
