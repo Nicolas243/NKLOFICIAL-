@@ -112,6 +112,9 @@
             transition: filter 0.3s;
         }
         body.dark-theme .avatar { filter: brightness(0) invert(1); } /* Inverte a NKL.png no tema escuro */
+        /* Animação mágica para esconder o perfil */
+        .profile { transition: all 0.4s ease; }
+        .profile.esconder { opacity: 0; visibility: hidden; transform: translateY(-30px); }
 
         .display-name { font-family: 'Playfair Display', serif; color: var(--text); margin: 1rem 0 0.5rem 0; font-size: 2rem; }
         .bio { color: var(--text); opacity: 0.8; font-size: 1rem; margin-bottom: 2rem; }
@@ -545,6 +548,26 @@
         }
         
         function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+        // AUTO-HIDE HEADER E PERFIL
+        let lastScrollTop = 0;
+        const header = document.getElementById('site-header');
+        const navMenu = document.getElementById('nav-menu');
+        const profile = document.querySelector('.profile'); // <--- LINHA NOVA 1
+        
+        window.addEventListener('scroll', function() {
+            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // <--- LINHA NOVA 2 (Esconde o perfil se rolar mais de 50px)
+            if(profile) { currentScroll > 50 ? profile.classList.add('esconder') : profile.classList.remove('esconder'); }
+
+            if (currentScroll > lastScrollTop && currentScroll > 100) {
+                header.classList.add('hide');
+                if(navMenu) navMenu.classList.remove('show');
+            } else {
+                header.classList.remove('hide');
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, false);
     </script>
 </body>
 </html>
