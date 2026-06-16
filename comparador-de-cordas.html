@@ -599,7 +599,11 @@
             }
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
-
+        document.addEventListener('click', () => {
+            if(logoContainer) logoContainer.classList.remove('show-dropdown');
+            if(langDropdown) langDropdown.classList.remove('show-lang');
+            if(cordasItem) cordasItem.classList.remove('show-click'); // <-- Adicione apenas esta linha
+        });
         // PARALLAX BACKGROUND
         document.addEventListener('mousemove', function(e) {
             const bg = document.getElementById('parallax-bg');
