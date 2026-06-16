@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <script async src="[https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW](https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW)"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,15 +18,17 @@
             --neon: #1E90FF;
             --neon-dark: #0056b3;
             --neon-dim: rgba(30, 144, 255, 0.15);
+            --header-bg: #ffffff;
         }
         body.dark-theme {
-            --bg: #000000;
+            --bg: #0a0a0a;
             --surface: #121212;
             --text: #ffffff;
             --border: #333333;
             --neon: #1E90FF;
             --neon-dark: #0056b3;
             --neon-dim: rgba(30, 144, 255, 0.2);
+            --header-bg: #000000;
         }
 
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
@@ -49,20 +51,17 @@
             z-index: 99998;
             transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
         }
-        .curtain-left { left: 0; transform-origin: left; }
-        .curtain-right { right: 0; transform-origin: right; }
-
-        /* The lines splitting the screen */
-        .split-line {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 2px; height: 0%;
-            background-color: var(--text);
-            transform: translate(-50%, -50%);
-            z-index: 99999;
+        
+        .curtain::after {
+            content: ''; position: absolute; top: 0; width: 2px; height: 100vh; background-color: #ffffff; opacity: 0; transition: opacity 0.2s;
         }
+        
+        .curtain-left { left: 0; transform-origin: left; }
+        .curtain-left::after { right: 0; }
+        
+        .curtain-right { right: 0; transform-origin: right; }
+        .curtain-right::after { left: 0; }
 
-        /* Center Dot / Logo */
         .intro-logo {
             position: absolute;
             top: 50%; left: 50%;
@@ -76,19 +75,15 @@
 
         /* Animation Classes */
         .anim-dot-in { animation: dotPopIn 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .anim-line-grow { animation: lineGrow 0.6s forwards 0.6s cubic-bezier(0.86, 0, 0.07, 1); }
-        .anim-curtain-open-l { transform: scaleX(0); transition-delay: 1.3s; }
-        .anim-curtain-open-r { transform: scaleX(0); transition-delay: 1.3s; }
-        .anim-logo-fade { animation: logoFadeOut 0.5s forwards 1.3s; }
-        .anim-bg-fade { animation: bgFadeOut 0.5s forwards 1.8s; }
+        .anim-show-lines::after { opacity: 1; } /* Mostra as linhas brancas */
+        .anim-curtain-open-l { transform: scaleX(0); transition-delay: 0.2s; }
+        .anim-curtain-open-r { transform: scaleX(0); transition-delay: 0.2s; }
+        .anim-logo-fade { animation: logoFadeOut 0.5s forwards 0.2s; }
+        .anim-bg-fade { animation: bgFadeOut 0.5s forwards 0.7s; }
 
         @keyframes dotPopIn {
             0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-        @keyframes lineGrow {
-            0% { height: 0%; }
-            100% { height: 100vh; }
         }
         @keyframes logoFadeOut {
             0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -101,56 +96,69 @@
 
         /* ---------------------------------------------------- */
 
-        .site-header { background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; transition: top 0.3s ease-in-out; } 
+        .site-header { background-color: var(--header-bg) !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; transition: top 0.3s ease-in-out, background-color 0.3s; } 
         .site-header.hide { top: -100px; }
         .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
         
         .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; margin-right: 3rem; }
-        .nav-brand-logo { height: 30px; width: auto; object-fit: contain; filter: brightness(0) invert(1); }
-        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: #ffffff; background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
+        .nav-brand-logo { height: 30px; width: auto; object-fit: contain; }
+        body.dark-theme .nav-brand-logo { filter: brightness(0) invert(1); }
+        
+        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; transition: color 0.3s;}
         
         .logo-dropdown-content, .dropdown-content, .lang-content { 
             display: none; position: absolute; top: 100%; left: 0; 
-            background-color: #121212 !important; border: 1px solid var(--border); 
-            min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-radius: 8px; margin-top: 5px;
+            background-color: var(--surface) !important; border: 1px solid var(--border); 
+            min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px; margin-top: 5px;
         } 
+        body.dark-theme .logo-dropdown-content, body.dark-theme .dropdown-content, body.dark-theme .lang-content { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
         .nav-brand-container.show-dropdown .logo-dropdown-content { display: block; }
-        .logo-dropdown-content a, .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-decoration: none; color: #ffffff !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; text-transform: none; letter-spacing: 0;}
-        .logo-dropdown-content a:hover, .dropdown-content a:hover { background-color: #000000 !important; color: var(--neon) !important; }
+        .logo-dropdown-content a, .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-decoration: none; color: var(--text) !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; text-transform: none; letter-spacing: 0;}
+        .logo-dropdown-content a:hover, .dropdown-content a:hover { background-color: var(--bg) !important; color: var(--neon) !important; }
         .logo-dropdown-content a.active { color: var(--neon) !important; font-weight: bold; background-color: var(--neon-dim);}
 
         .nav-menu { display: flex; list-style: none; gap: 2.5rem; margin: 0; padding: 0; align-items: center; } 
-        .nav-menu > li > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff; text-decoration: none; transition: color 0.3s; } 
+        .nav-menu > li > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
         .nav-menu > li > a:hover { color: var(--neon); } 
         .nav-menu a.home-active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
         
         .nav-item-dropdown { position: relative; } 
         .nav-item-dropdown:hover .dropdown-content { display: block; } 
-        .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff; text-decoration: none; cursor: pointer;}
+        .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
 
         .header-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; justify-content: flex-end;}
 
         .lang-dropdown { position: relative; display: inline-block; }
         .lang-btn { background: transparent; border: 2px solid transparent; cursor: pointer; padding: 2px 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: border-color 0.2s;}
         .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); }
-        .flag-split { display: inline-block; position: relative; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .flag-pt { position: absolute; left: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: left; }
-        .flag-br { position: absolute; right: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: right; }
+        
+        /* Correção das Bandeiras */
+        .flag-split { display: flex; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; }
+        .flag-split img { width: 50%; height: 100%; object-fit: cover; }
+        .flag-split img:first-child { object-position: left; border-right: 0.5px solid rgba(0,0,0,0.1); }
+        .flag-split img:last-child { object-position: right; }
 
         .lang-content { right: 0; left: auto; min-width: 150px; }
-        .lang-content a { color: #ffffff; padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
-        .lang-content a:hover { background-color: #000000; color: var(--neon); }
+        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
+        .lang-content a:hover { background-color: var(--bg); color: var(--neon); }
         .lang-dropdown.show-lang .lang-content { display: block; }
 
         .theme-toggle { width: 26px; height: 26px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
         .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
+        body.dark-theme .theme-toggle { filter: invert(1) brightness(2); }
         
-        .mobile-menu-btn { display: none; background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0; margin-left: 10px; }
+        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
 
         .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
-        .music-symbol { position: absolute; opacity: 0.03; font-size: 4rem; color: var(--text); }
-        .violin-name { position: absolute; opacity: 0.02; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
+        /* Opacidade aumentada em +10% para o tema Claro */
+        .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
+        .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
         
+        /* Garante que no tema Escuro continue bem apagado (5%) para não atrapalhar a leitura */
+        body.dark-theme .music-symbol { opacity: 0.05; }
+        body.dark-theme .violin-name { opacity: 0.05; }
+                
         .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
 
         .home-container { display: flex; flex-direction: column; gap: 4rem; }
@@ -174,35 +182,46 @@
         .img-zoom-15 { transform: scale(1.15); }
         .img-zoom-10 { transform: scale(1.10); }
         
-        /* The fix for Image 4 */
+        /* The fix for Image 4 (Zoom Extra 25% solicitado) */
         .img-rotate-fill { 
             width: auto; height: 180%; 
-            transform: rotate(-90deg) scale(0.85); 
+            transform: rotate(-90deg) scale(1.15); 
             object-fit: cover;
         } 
         
         .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
         .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
         .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
-        .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(0.9); }
+        .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(1.20); }
 
-        .email-capture-section { width: 100%; padding: 4rem 2rem; background: var(--surface); border-top: 1px solid var(--border); text-align: center; }
-        .email-capture-section h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 1.5rem 0; font-weight: normal;}
-        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 700px; margin: 0 auto;}
+        .site-footer { background: var(--bg); color: var(--text); padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem;}
         
-        .capture-input { padding: 14px 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s;}
+        /* Header do Footer contendo a Form */
+        .footer-header { max-width: 1200px; margin: 0 auto 3rem auto; padding: 0 2rem; text-align: center; }
+        .footer-header h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 0.5rem 0; font-weight: normal;}
+        .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1rem 0; }
+        
+        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto; }
+        .capture-input { padding: 0 15px; height: 42px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; box-sizing: border-box;}
         .capture-input:focus { border-color: var(--neon); }
-        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{ -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important; -webkit-text-fill-color: var(--text) !important; }
-        .capture-btn { padding: 14px 30px; background: var(--neon-dark); color: #fff; font-weight: bold; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: filter 0.2s;}
-        .capture-btn:hover { filter: brightness(1.1); }
+        .capture-btn { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 25px; background: var(--text); color: var(--bg); font-weight: 600; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; font-family: 'Inter', sans-serif;}
+        .capture-btn:hover { filter: brightness(1.2); }
 
-        .site-footer { background: var(--bg); color: var(--text); padding: 2rem 0; }
         .footer-grid { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; padding: 0 2rem; }
         .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;}
         .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600;}
         .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1rem 0; line-height: 1.5;}
         
-        .btn-outline { display: inline-flex; align-items: center; justify-content: center; padding: 10px 15px; border: 1px solid var(--text); text-decoration: none; color: var(--text); background: transparent; border-radius: 4px; font-size: 0.85rem; font-weight: 500; transition: background 0.2s; font-family: 'Inter', sans-serif; cursor: pointer; margin-top: auto; min-width: 120px;}
+        /* Botões padronizados no mesmo tamanho e altura perfeitamente exatos */
+        .btn-outline { 
+            display: inline-flex; align-items: center; justify-content: center; 
+            height: 42px; padding: 0 15px; border: 1px solid var(--text); 
+            text-decoration: none; color: var(--text); background: transparent; 
+            border-radius: 4px; font-size: 0.85rem; font-weight: 500; 
+            transition: background 0.2s, color 0.2s; font-family: 'Inter', sans-serif; 
+            cursor: pointer; margin-top: auto; min-width: 120px;
+            box-sizing: border-box; line-height: 1;
+        }
         .btn-outline:hover { background: var(--text); color: var(--bg); }
         
         .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 400; opacity: 0.7;}
@@ -215,7 +234,7 @@
         @media (max-width: 768px) { 
             .site-header nav { padding: 0 1rem; }
             .nav-brand-container { margin-right: auto; }
-            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 0; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start; background: #000000; position: absolute; top: 100%; left: 0; border-bottom: 1px solid var(--border);} 
+            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 0; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start; background: var(--header-bg); position: absolute; top: 100%; left: 0; border-bottom: 1px solid var(--border);} 
             .nav-menu > li { width: 100%; border-bottom: 1px solid var(--border); }
             .nav-menu > li:last-child { border-bottom: none; }
             .nav-menu > li > a, .nav-item-dropdown > a { display: block; padding: 1rem 2rem; width: 100%; }
@@ -223,7 +242,7 @@
             .mobile-menu-btn { display: block; }
             .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
             .capture-form { flex-direction: column; }
-            .capture-btn { width: 100%; }
+            .capture-btn, .capture-input { width: 100%; }
             .footer-grid { flex-direction: column; gap: 2.5rem; }
             .footer-box { align-items: center; text-align: center;}
             .footer-box > a, .footer-box > div { width: 100%; justify-content: center;}
@@ -234,13 +253,14 @@
 </head>
 <body class="dark-theme">
 
+    <!-- INTRO ANIMATION (SPLIT SCREEN REVEAL) -->
     <div id="intro-animation">
         <div class="curtain curtain-left" id="curtain-left"></div>
         <div class="curtain curtain-right" id="curtain-right"></div>
-        <div class="split-line" id="split-line"></div>
         <img src="NKL/logo-violino.png" alt="Violino" class="intro-logo" id="intro-logo" onerror="this.src='NKL/NKL.png';">
     </div>
 
+    <!-- Fundo Parallax Expandido -->
     <div class="parallax-bg" id="parallax-bg">
         <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
         <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
@@ -294,18 +314,18 @@
                 <div class="lang-dropdown" id="lang-dropdown">
                     <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
                         <div class="flag-split">
-                            <img src="[https://flagcdn.com/pt.svg](https://flagcdn.com/pt.svg)" class="flag-pt" alt="PT">
-                            <img src="[https://flagcdn.com/br.svg](https://flagcdn.com/br.svg)" class="flag-br" alt="BR">
+                            <img src="https://flagcdn.com/pt.svg" alt="PT">
+                            <img src="https://flagcdn.com/br.svg" alt="BR">
                         </div>
                     </button>
                     <div class="lang-content">
-                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="[https://flagcdn.com/pt.svg](https://flagcdn.com/pt.svg)" class="flag-pt"><img src="[https://flagcdn.com/br.svg](https://flagcdn.com/br.svg)" class="flag-br"></div> PT/BR</a>
-                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="[https://flagcdn.com/es.svg](https://flagcdn.com/es.svg)" class="flag-pt"><img src="[https://flagcdn.com/ar.svg](https://flagcdn.com/ar.svg)" class="flag-br"></div> ES/AR</a>
-                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="[https://flagcdn.com/gb.svg](https://flagcdn.com/gb.svg)" class="flag-pt"><img src="[https://flagcdn.com/us.svg](https://flagcdn.com/us.svg)" class="flag-br"></div> EN/US</a>
-                        <a href="ru/index.html"><img src="[https://flagcdn.com/ru.svg](https://flagcdn.com/ru.svg)" width="24" style="border-radius:2px;"> Russo</a>
-                        <a href="zh/index.html"><img src="[https://flagcdn.com/cn.svg](https://flagcdn.com/cn.svg)" width="24" style="border-radius:2px;"> Chinês</a>
-                        <a href="ja/index.html"><img src="[https://flagcdn.com/jp.svg](https://flagcdn.com/jp.svg)" width="24" style="border-radius:2px;"> Japonês</a>
-                        <a href="ko/index.html"><img src="[https://flagcdn.com/kr.svg](https://flagcdn.com/kr.svg)" width="24" style="border-radius:2px;"> Coreano</a>
+                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
+                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
+                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
+                        <a href="ru/index.html"><img src="https://flagcdn.com/ru.svg" width="24" style="border-radius:2px;"> Russo</a>
+                        <a href="zh/index.html"><img src="https://flagcdn.com/cn.svg" width="24" style="border-radius:2px;"> Chinês</a>
+                        <a href="ja/index.html"><img src="https://flagcdn.com/jp.svg" width="24" style="border-radius:2px;"> Japonês</a>
+                        <a href="ko/index.html"><img src="https://flagcdn.com/kr.svg" width="24" style="border-radius:2px;"> Coreano</a>
                     </div>
                 </div>
 
@@ -370,31 +390,24 @@
             </div>
         </div>
     </main>
-
-    <section class="email-capture-section">
-        <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-        <form class="capture-form" action="#" onsubmit="event.preventDefault(); alert('E-mail cadastrado com sucesso!');">
-            <input type="text" class="capture-input" placeholder="Seu nome" required>
-            <input type="email" class="capture-input" placeholder="escreva o seu e-mail principal" required>
-            <button type="submit" class="capture-btn">Confirmar</button>
-        </form>
-    </section>
-
-    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-            <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
-        </div>
-    </div>
     
     <footer class="site-footer">
+        <!-- Formulário embutido no topo do rodapé, combinando o espaçamento exato -->
+        <div class="footer-header">
+            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
+            <form class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
+                <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
+                <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
+                <button type="submit" class="capture-btn">Confirmar</button>
+            </form>
+        </div>
+
         <div class="footer-grid">
             <div class="footer-box">
                 <h4>Sua voz importa</h4>
                 <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
-                <a href="[https://forms.gle/mcfnxfXuF7bmuhPDA](https://forms.gle/mcfnxfXuF7bmuhPDA)" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
             </div>
             <div class="footer-box">
                 <h4>Contato Direto</h4>
@@ -405,7 +418,7 @@
                  <h4>Apoie o Projeto</h4>
                 <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
                 <div style="display: flex; gap: 10px;">
-                    <a href="[https://link.mercadopago.com.br/apoienkloficial](https://link.mercadopago.com.br/apoienkloficial)" target="_blank" class="btn-outline">Apoiar NKL</a>
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline">Apoiar NKL</a>
                     <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline">❖ PayPal</button>
                 </div>
             </div>
@@ -415,33 +428,43 @@
         </div>
     </footer>
 
+    <!-- Modal PayPal -->
+    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closePixModal()">&times;</button>
+            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+            <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+        </div>
+    </div>
+
     <script>
-        // === ANIMAÇÃO DE ENTRADA ===
-        window.addEventListener('load', () => {
+        // === ANIMAÇÃO DE ENTRADA OTIMIZADA PARA CARREGAMENTO RÁPIDO ===
+        document.addEventListener('DOMContentLoaded', () => {
             const logo = document.getElementById('intro-logo');
-            const line = document.getElementById('split-line');
             const leftCurtain = document.getElementById('curtain-left');
             const rightCurtain = document.getElementById('curtain-right');
             const introBg = document.getElementById('intro-animation');
 
-            // 1. Pingo/Logo aparece
+            // 1. Pingo/Logo aparece rapidamente
             logo.classList.add('anim-dot-in');
 
-            // 2. Linha cresce
-            line.classList.add('anim-line-grow');
-
-            // 3. Cortinas abrem e Logo some
+            // 2. Linhas brancas surgem instantaneamente nas cortinas (espera de 0.8s para não conflitar com a logo)
             setTimeout(() => {
+                leftCurtain.classList.add('anim-show-lines');
+                rightCurtain.classList.add('anim-show-lines');
+                
+                // 3. Cortinas abrem e Logo faz fade out
                 leftCurtain.classList.add('anim-curtain-open-l');
                 rightCurtain.classList.add('anim-curtain-open-r');
                 logo.classList.add('anim-logo-fade');
                 introBg.classList.add('anim-bg-fade');
-            }, 1000);
+            }, 800);
 
-            // Remove o div do DOM para não bloquear cliques
+            // Remove o elemento visualmente para liberar interação
             setTimeout(() => {
                 introBg.style.display = 'none';
-            }, 2500);
+            }, 2000);
         });
         // ============================
 
