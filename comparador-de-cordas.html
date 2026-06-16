@@ -6,88 +6,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparar Cordas | Portal NKL</title>
+    <meta name="description" content="Cruze dados técnicos, tensão, durabilidade e timbre de cordas mundiais.">
     <link rel="icon" type="image/png" href="NKL/NKL.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        :root { --bg: #ffffff; --surface: #f5f5f5; --text: #0a0a0a; --border: #eeeeee; --neon: #4A90E2; --neon-dim: rgba(74, 144, 226, 0.15); }
-        body.dark-theme { --bg: #0a0a0a; --surface: #121212; --text: #ffffff; --border: #333333; --neon: #89CFF0; --neon-dim: rgba(137, 207, 240, 0.2); }
-        .site-header { font-family: 'Inter', sans-serif !important; background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: padding 0.3s; } 
-        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
-        .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
-        .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: #ffffff !important; text-decoration: none; } 
-        .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
-        .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff !important; text-decoration: none; transition: color 0.3s; } 
-        .site-header nav a:hover, .site-header nav a.active { color: var(--neon) !important; font-weight: 700; } 
-        .site-header .dropdown { position: relative; } 
-        .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: #121212 !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); } 
-        .site-header .dropdown:hover .dropdown-content { display: block; } 
-        .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; color: #ffffff !important; } 
-        .site-header .dropdown-content a:hover { background-color: #000000 !important; color: var(--neon) !important; } 
-        .lang-dropdown { position: relative; display: inline-block; margin-right: 15px; }
-        .lang-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
-        .lang-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--surface); min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
-        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: background 0.2s; }
-        .lang-content a:hover { background-color: var(--bg); }
-        .lang-dropdown:hover .lang-content { display: block; }
-        .theme-toggle { width: 32px; height: 32px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
-        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-        .dark-theme .theme-toggle { transform: rotate(360deg); } 
-        body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
-        .mobile-menu-btn { display: none; background: transparent; border: none; color: #ffffff !important; cursor: pointer; padding: 0; margin-left: 1rem; }
-        .bg-music-decorations { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-        .music-icon { position: absolute; opacity: 0.05; font-size: 4rem; color: var(--text); user-select: none; }
-        .music-text { position: absolute; opacity: 0.03; font-family: 'Playfair Display', serif; font-size: 3rem; font-style: italic; color: var(--text); white-space: nowrap; user-select: none; }
-        
-        @media (max-width: 768px) { 
-            .site-header { padding: 1rem 0 !important; }
-            .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
-            .site-header .nav-brand { margin-right: auto !important; } 
-            .mobile-menu-btn { display: block; }
-            .site-header nav ul { display: none !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; background-color: #000000; } 
-            .site-header nav ul.show { display: flex !important; }
+        /* Variáveis de Tema */
+        :root {
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --text: #0a0a0a;
+            --border: #eeeeee;
+            --neon: #1E90FF;
+            --neon-dark: #0056b3;
+            --neon-dim: rgba(30, 144, 255, 0.15);
+            --header-bg: #ffffff;
         }
-        
-        .whatsapp-float { position: fixed; bottom: 25px; right: 25px; z-index: 999; transition: transform 0.3s ease; }
-        .whatsapp-float:hover { transform: scale(1.1); }
-        .whatsapp-float img { width: 50px; height: 50px; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
-        .modal-overlay.show { display: flex; }
-        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .close-btn { position: absolute; top: 12px; right: 18px; font-size: 1.6rem; cursor: pointer; color: var(--text); opacity: 0.6; background:none; border:none; }
-        .close-btn:hover { opacity: 1; }
+        body.dark-theme {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --text: #ffffff;
+            --border: #333333;
+            --neon: #1E90FF;
+            --neon-dark: #0056b3;
+            --neon-dim: rgba(30, 144, 255, 0.2);
+            --header-bg: #000000;
+        }
 
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        /* HEADER PADRÃO GLOBAL */
+        .site-header { background-color: var(--header-bg) !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; transition: top 0.3s ease-in-out, background-color 0.3s; } 
+        .site-header.hide { top: -100px; }
+        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
+        
+        .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; margin-right: 3rem; }
+        .nav-brand-logo { height: 30px; width: auto; object-fit: contain; }
+        body.dark-theme .nav-brand-logo { filter: brightness(0) invert(1); }
+        
+        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; transition: color 0.3s;}
+        
+        .logo-dropdown-content, .dropdown-content, .lang-content { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background-color: var(--surface) !important; border: 1px solid var(--border); 
+            min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px; margin-top: 5px;
+        } 
+        body.dark-theme .logo-dropdown-content, body.dark-theme .dropdown-content, body.dark-theme .lang-content { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .nav-brand-container.show-dropdown .logo-dropdown-content { display: block; }
+        .logo-dropdown-content a, .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-decoration: none; color: var(--text) !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; text-transform: none; letter-spacing: 0;}
+        .logo-dropdown-content a:hover, .dropdown-content a:hover { background-color: var(--bg) !important; color: var(--neon) !important; }
+        .logo-dropdown-content a.active { color: var(--neon) !important; font-weight: bold; background-color: var(--neon-dim);}
+
+        .nav-menu { display: flex; list-style: none; gap: 2.5rem; margin: 0; padding: 0; align-items: center; } 
+        .nav-menu > li > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
+        .nav-menu > li > a:hover { color: var(--neon); } 
+        .nav-menu a.home-active, .nav-item-dropdown > a.active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
+        
+        .nav-item-dropdown { position: relative; } 
+        .nav-item-dropdown.show-click .dropdown-content { display: block; }
+        .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
+
+        .header-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; justify-content: flex-end;}
+
+        /* Bandeiras */
+        .lang-dropdown { position: relative; display: inline-block; }
+        .lang-btn { background: transparent; border: 2px solid transparent; cursor: pointer; padding: 2px 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: border-color 0.2s;}
+        .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); }
+        .flag-split { display: flex; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; }
+        .flag-split img { width: 50%; height: 100%; object-fit: cover; }
+        .flag-split img:first-child { object-position: left; border-right: 0.5px solid rgba(0,0,0,0.1); }
+        .flag-split img:last-child { object-position: right; }
+        .lang-content { right: 0; left: auto; min-width: 150px; }
+        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
+        .lang-content a:hover { background-color: var(--bg); color: var(--neon); }
+        .lang-dropdown.show-lang .lang-content { display: block; }
+
+        .theme-toggle { width: 26px; height: 26px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
+        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
+        body.dark-theme .theme-toggle { filter: invert(1) brightness(2); }
+        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
+
+        /* Fundo Parallax */
+        .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
+        .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
+        .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
+        body.dark-theme .music-symbol { opacity: 0.03; }
+        body.dark-theme .violin-name { opacity: 0.02; }
+
+        /* MAIN CONTENT - COMPARADOR ESPECÍFICO */
+        .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
         
         .comparison-wrapper { margin-top: 2rem; }
         .selector-container { display: flex; gap: 2rem; margin-bottom: 2rem; background: var(--surface); padding: 1.5rem; border: 1px solid var(--border); border-radius: 8px; }
         .select-group { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
         .select-group label { font-size: 0.9rem; font-weight: 600; color: var(--text); opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
-        .select-group select { padding: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; cursor: pointer; }
-        .btn-report { align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; color: var(--neon); border: 1px solid var(--neon); border-radius: 4px; text-decoration: none; display: none; background: transparent; font-weight: 600; margin-top: 0.5rem; }
+        .select-group select { padding: 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; cursor: pointer; transition: border-color 0.2s;}
+        .select-group select:focus { border-color: var(--neon); }
+        
+        .btn-report { align-self: flex-start; padding: 6px 12px; font-size: 0.75rem; color: var(--neon); border: 1px solid var(--neon); border-radius: 4px; text-decoration: none; display: none; background: transparent; font-weight: 600; margin-top: 0.5rem; transition: background 0.2s; }
         .btn-report:hover { background: var(--neon); color: #000; }
+        
+        /* Tabela e Layout Mobile-First */
         .comparison-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; table-layout: fixed; }
         .comparison-table th, .comparison-table td { padding: 1rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; word-wrap: break-word;}
+        
+        /* Largura Fixa das Colunas Otimizada para Celular */
         .comparison-table th:nth-child(1), .comparison-table td:nth-child(1) { width: 50%; background: rgba(0,0,0,0.02); }
         .comparison-table th:nth-child(2), .comparison-table td:nth-child(2) { width: 25%; }
         .comparison-table th:nth-child(3), .comparison-table td:nth-child(3) { width: 25%; }
+
         .feature-container { display: flex; flex-direction: column; gap: 0.3rem; }
         .feature-name { font-weight: 600; color: var(--text); font-size: 0.95rem; }
         .feature-desc { font-size: 0.75rem; color: var(--text); opacity: 0.7; font-weight: 400; line-height: 1.3; }
+        
         .td-content { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; }
+
+        /* Sistema de Avaliação Thumbs Up/Down */
         .vote-system { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
         .btn-vote { background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 0.75rem; padding: 2px 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; opacity: 0.6; transition: all 0.2s; }
         .btn-vote:hover { opacity: 1; border-color: var(--text); }
         .btn-vote.active { opacity: 1; background-color: var(--neon-dim); border-color: var(--neon); color: var(--neon); font-weight: bold; }
+
         .col-header-container { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-start; }
-        .btn-affiliate { display: flex; align-items: center; justify-content: center; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #ffffff !important; background: var(--text); border: none; border-radius: 6px; text-decoration: none !important; width: 100%; text-align: center; transition: transform 0.2s; }
+        .btn-affiliate { 
+            display: flex; align-items: center; justify-content: center;
+            padding: 8px 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
+            color: var(--bg) !important; background: var(--text);
+            border: none; border-radius: 6px; text-decoration: none !important;
+            width: 100%; text-align: center; transition: transform 0.2s;
+        }
         .btn-affiliate:hover { transform: translateY(-2px); opacity: 0.9; }
-        body.dark-theme .btn-affiliate { color: #000000 !important; background: #ffffff; }
+        
+        /* Lojas Modal */
         .store-modal-content { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 1.5rem; }
-        .btn-store { padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; text-decoration: none; font-size: 1rem; color: #fff; display: block; border: none; cursor: pointer;}
+        .btn-store { padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; text-decoration: none; font-size: 1rem; color: #fff; display: block; border: none; cursor: pointer; box-sizing: border-box; min-height: 46px;}
         .store-ml { background-color: #FFE600; color: #2D3277; font-family: Arial, sans-serif; }
         .store-shopee { background-color: #EE4D2D; font-family: 'Helvetica Neue', sans-serif;}
         .store-amazon { background-color: #232F3E; font-family: Arial, sans-serif;}
         .store-ebay { background-color: #ffffff; color: #000; border: 1px solid #ccc; background-image: linear-gradient(to right, #E53238 25%, #0064D2 25%, #0064D2 50%, #F5AF02 50%, #F5AF02 75%, #86B817 75%); background-size: 100% 4px; background-repeat: no-repeat; background-position: bottom;}
+
+        .hidden { display: none !important; }
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text); opacity: 0.6; }
+
+        /* FOOTER & FORMSPREE */
+        .site-footer { background: var(--bg); color: var(--text); padding: 3rem 0 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem;}
+        
+        .footer-header { max-width: 1200px; margin: 0 auto 3rem auto; padding: 0 2rem; text-align: center; }
+        .footer-header h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 0.5rem 0; font-weight: normal;}
+        .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; }
+        
+        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto; }
+        .capture-input { padding: 0 15px; height: 46px; min-height: 46px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; box-sizing: border-box;}
+        .capture-input:focus { border-color: var(--neon); }
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{ -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important; -webkit-text-fill-color: var(--text) !important; }
+        .capture-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; min-height: 46px; padding: 0 25px; background: var(--text); color: var(--bg); font-weight: 600; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; font-family: 'Inter', sans-serif;}
+        .capture-btn:hover { filter: brightness(1.2); }
+
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; padding: 0 2rem; }
+        .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;}
+        .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600;}
+        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; line-height: 1.5;}
+        
+        .btn-outline { 
+            display: inline-flex; align-items: center; justify-content: center; 
+            height: 46px; padding: 0 15px; border: 1px solid var(--text); 
+            text-decoration: none; color: var(--text); background: transparent; 
+            border-radius: 4px; font-size: 0.85rem; font-weight: 500; 
+            transition: background 0.2s, color 0.2s; font-family: 'Inter', sans-serif; 
+            cursor: pointer; margin-top: 1rem; min-width: 120px;
+            box-sizing: border-box; line-height: 1;
+        }
+        .btn-outline:hover { background: var(--text); color: var(--bg); }
+        
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 400; opacity: 0.7;}
+
+        /* MODAIS */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 90%; text-align: center; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
+
         @media (max-width: 768px) { 
+            .site-header nav { padding: 0 1rem; flex-wrap: wrap; }
+            .nav-brand-container { margin-right: auto; }
+            #nav-menu { 
+                display: none !important; width: 100% !important; flex-direction: column !important; position: absolute !important; 
+                top: 100% !important; left: 0 !important; background: var(--header-bg) !important; border-top: 1px solid var(--border) !important; 
+                border-bottom: 1px solid var(--border) !important; margin: 0 !important; padding: 0 !important; 
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important; overflow: hidden !important; white-space: normal !important;
+            } 
+            #nav-menu > li { width: 100% !important; border-bottom: 1px solid var(--border) !important; text-align: left !important;}
+            #nav-menu > li:last-child { border-bottom: none !important; }
+            #nav-menu > li > a, .nav-item-dropdown > a { display: block !important; padding: 1rem 2rem !important; width: 100% !important; box-sizing: border-box !important;}
+            #nav-menu.show { display: flex !important; }
+            
+            .mobile-menu-btn { display: block; }
+            
+            /* Tabela e Seletores Responsivos */
             .selector-container { flex-direction: column; padding: 1rem; gap: 1rem;}
             .comparison-table th, .comparison-table td { padding: 0.5rem; font-size: 0.8rem; }
             .feature-name { font-size: 0.85rem; }
@@ -95,334 +210,469 @@
             .btn-affiliate { font-size: 0.7rem; padding: 6px; }
             .vote-system { flex-direction: column; align-items: flex-start; }
             .td-content { gap: 0.2rem; }
+
+            .capture-form { flex-direction: column; }
+            .capture-btn, .capture-input { width: 100%; }
+            .footer-grid { flex-direction: column; gap: 2.5rem; }
+            .footer-box { align-items: center; text-align: center;}
+            .footer-box > a, .footer-box > div { width: 100%; justify-content: center;}
+            .btn-outline { width: 100%; }
+            .header-controls { gap: 10px; }
         }
-        .hidden { display: none !important; }
-        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text); opacity: 0.6; }
-    
     </style>
 </head>
 <body class="dark-theme">
-    <div class="bg-music-decorations" aria-hidden="true">
-        <div class="music-icon" style="top: 10%; left: 5%;">𝄞</div>
-        <div class="music-icon" style="top: 40%; right: 10%;">𝄢</div>
-        <div class="music-icon" style="bottom: 20%; left: 15%;">♪</div>
-        <div class="music-icon" style="top: 70%; right: 25%;">♫</div>
-        <div class="music-text" style="top: 25%; left: 30%; transform: rotate(-10deg);">Stradivarius</div>
-        <div class="music-text" style="bottom: 15%; right: 5%; transform: rotate(5deg);">Guarneri del Gesù</div>
-        <div class="music-text" style="top: 60%; left: 5%; transform: rotate(-15deg);">Paganini</div>
+
+    <div class="parallax-bg" id="parallax-bg">
+        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
+        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
+        <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
+        <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
+        <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
+        <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
+        <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
+        <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
+        
+        <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
+        <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
+        <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
+        <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
+        <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
+        <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
+        <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
+        <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
+        <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
+        <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
     </div>
 
     <header id="site-header" class="site-header">
         <nav>
-            <div class="nav-brand">
-                <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
+            <div class="nav-brand-container" id="logo-dropdown-container">
+                <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
+                <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
+                <div class="logo-dropdown-content">
+                    <a href="#" class="active">Violino</a>
+                    <a href="#">Viola</a>
+                    <a href="#">Violoncelo</a>
+                </div>
             </div>
-            <ul id="nav-links">
+            
+            <ul class="nav-menu" id="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="importacao.html">Importação</a></li>
                 <li><a href="recomendados.html">Recomendados</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0);">Cordas▾</a>
+                <li class="nav-item-dropdown">
+                    <a href="javascript:void(0);" class="active">Cordas▾</a>
                     <div class="dropdown-content">
                         <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
+                        <a href="comparador-de-cordas.html" class="active">Comparar Cordas</a>
                     </div>
                 </li>
                 <li><a href="fisica-do-som.html">Física do Som</a></li>
                 <li><a href="contatos/index.html">Contatos</a></li>
             </ul>
-            <div style="display: flex; align-items: center;">
-                <div class="lang-dropdown">
-                    <button class="lang-btn">🇧🇷/🇵🇹</button>
+            
+            <div class="header-controls">
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
+                        <div class="flag-split">
+                            <img src="https://flagcdn.com/pt.svg" alt="PT">
+                            <img src="https://flagcdn.com/br.svg" alt="BR">
+                        </div>
+                    </button>
                     <div class="lang-content">
-                        <a href="#">🇧🇷/🇵🇹 Português</a>
-                        <a href="#">🇪🇸/🇦🇷 Español</a>
-                        <a href="#">🇺🇸/🇬🇧 English</a>
-                        <a href="#">🇷🇺 Русский</a>
-                        <a href="#">🇨🇳 中文</a>
-                        <a href="#">🇯🇵 日本語</a>
-                        <a href="#">🇰🇷 한국어</a>
+                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
+                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
+                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
+                        <a href="ru/index.html"><img src="https://flagcdn.com/ru.svg" width="24" style="border-radius:2px;"> Russo</a>
+                        <a href="zh/index.html"><img src="https://flagcdn.com/cn.svg" width="24" style="border-radius:2px;"> Chinês</a>
+                        <a href="ja/index.html"><img src="https://flagcdn.com/jp.svg" width="24" style="border-radius:2px;"> Japonês</a>
+                        <a href="ko/index.html"><img src="https://flagcdn.com/kr.svg" width="24" style="border-radius:2px;"> Coreano</a>
                     </div>
                 </div>
+
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+                <button id="mobile-menu-btn" class="mobile-menu-btn">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
             </div>
-            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
-                <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="28" color="#fff">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
         </nav>
     </header>
 
-    
-        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-            <section style="margin-bottom: 2rem; text-align: center;">
-                <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem;">Comparar Cordas</h1>
-                <p style="opacity: 0.8; font-size: 0.95rem;">Cruze os dados e descubra qual modelo encaixa melhor no seu instrumento.</p>
-            </section>
-            
-            <div class="comparison-wrapper">
-                <div class="selector-container">
-                    <div class="select-group">
-                        <label>Primeira Opção de Corda</label>
-                        <select id="corda1"><option value="">-- Selecione a primeira corda --</option></select>
-                        <a href="#" id="btn-report1" class="btn-report" target="_blank">Melhorar Dados</a>
-                    </div>
-                    <div class="select-group">
-                        <label>Segunda Opção de Corda</label>
-                        <select id="corda2"><option value="">-- Selecione a segunda corda --</option></select>
-                        <a href="#" id="btn-report2" class="btn-report" target="_blank">Melhorar Dados</a>
-                    </div>
+    <main class="main-content">
+        <section style="margin-bottom: 2rem; text-align: center;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem; color: var(--text);">Comparar Cordas</h1>
+            <p style="opacity: 0.8; font-size: 0.95rem;">Cruze os dados e descubra qual modelo encaixa melhor no seu instrumento.</p>
+        </section>
+        
+        <div class="comparison-wrapper">
+            <div class="selector-container">
+                <div class="select-group">
+                    <label>Primeira Opção de Corda</label>
+                    <select id="corda1"><option value="">-- Selecione a primeira corda --</option></select>
+                    <a href="#" id="btn-report1" class="btn-report" target="_blank">Melhorar Dados</a>
                 </div>
-                <div id="empty-state" class="empty-state">
-                    <p><i>Selecione duas cordas no menu acima para gerar o relatório comparativo.</i></p>
-                </div>
-                <div id="table-container" class="hidden">
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>Característica</th>
-                                <th id="th-corda1">Corda 1</th>
-                                <th id="th-corda2">Corda 2</th>
-                            </tr>
-                        </thead>
-                        <tbody id="comparison-body"></tbody>
-                    </table>
+                <div class="select-group">
+                    <label>Segunda Opção de Corda</label>
+                    <select id="corda2"><option value="">-- Selecione a segunda corda --</option></select>
+                    <a href="#" id="btn-report2" class="btn-report" target="_blank">Melhorar Dados</a>
                 </div>
             </div>
-        </main>
-        
-        <div id="store-modal" class="modal-overlay" onclick="closeStoreModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="close-btn" onclick="closeStoreModal()">&times;</button>
-                <h3 style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 0.5rem;" id="store-modal-title">Nome da Corda</h3>
-                <p style="text-align: center; opacity: 0.8; font-size: 0.85rem;">Escolha onde deseja verificar a oferta:</p>
-                <div class="store-modal-content">
-                    <a href="#" class="btn-store store-ml">Mercado Livre</a>
-                    <a href="#" class="btn-store store-shopee">Shopee</a>
-                    <a href="#" class="btn-store store-amazon">Amazon</a>
-                    <a href="#" class="btn-store store-ebay">eBay</a>
+
+            <div id="empty-state" class="empty-state">
+                <p><i>Selecione duas cordas no menu acima para gerar o relatório comparativo.</i></p>
+            </div>
+
+            <div id="table-container" class="hidden">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th id="th-corda1">Corda 1</th>
+                            <th id="th-corda2">Corda 2</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-header">
+            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
+            <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
+                <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
+                <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
+                <button type="submit" class="capture-btn">Confirmar</button>
+            </form>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-box">
+                <h4>Sua voz importa</h4>
+                <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
+                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+            </div>
+            <div class="footer-box">
+                <h4>Contato Direto</h4>
+                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
+                <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
+            </div>
+            <div class="footer-box">
+                 <h4>Apoie o Projeto</h4>
+                <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
+                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
                 </div>
             </div>
         </div>
-    
+        <div class="footer-bottom">
+            &copy; Copyright 2026    |    NKL  |    Todos direitos reservados
+        </div>
+    </footer>
+
+    <div id="store-modal" class="modal-overlay" onclick="closeStoreModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeStoreModal()">&times;</button>
+            <h3 style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 0.5rem; color: var(--text);" id="store-modal-title">Nome da Corda</h3>
+            <p style="text-align: center; opacity: 0.8; font-size: 0.85rem; color: var(--text);">Escolha onde deseja verificar a oferta:</p>
+            <div class="store-modal-content">
+                <a href="#" class="btn-store store-ml">Mercado Livre</a>
+                <a href="#" class="btn-store store-shopee">Shopee</a>
+                <a href="#" class="btn-store store-amazon">Amazon</a>
+                <a href="#" class="btn-store store-ebay">eBay</a>
+            </div>
+        </div>
+    </div>
 
     <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
             <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
         </div>
     </div>
 
-    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank"><img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy"></a>
-    
-    <footer class="site-footer">
-        <div class="footer-grid" style="max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-            <div class="footer-box">
-                <h4>Sua voz importa</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Queremos construir o melhor portal de lutheria do Brasil.</p>
-                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Deixar Feedback Rápido</a>
-            </div>
-            <div class="footer-box">
-                <h4>Contato Direto</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Dúvidas, parcerias ou projetos pessoais?</p>
-                <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--neon); font-weight: bold; text-decoration: none;">contato.nikoluthieria@gmail.com</a>
-            </div>
-            <div class="footer-box">
-                 <h4>Apoie o Projeto</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Todo o conteúdo gratuito do NKL exige tempo e pesquisa.</p>
-                <div style="display: flex; gap: 10px;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Apoiar NKL</a>
-                    <button onclick="handlePixSupport()" style="padding: 10px 15px; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 6px; cursor: pointer;">❖ PayPal</button>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom" style="text-align: center; padding: 2rem; border-top: 1px solid var(--border); opacity: 0.7; font-size: 0.85rem;">
-            <p>&copy; 2026 NKL Engenharia e Lutheria. O seu Portal Violinista de confiança.</p>
-        </div>
-    </footer>
-    
     <script>
-        function handlePixSupport() {
-            navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
-            alert('Endereço PayPal copiado com sucesso!');
-            document.getElementById('pix-modal').classList.add('show');
+        /* ==========================================
+           COLE AQUI O SEU ARRAY DE DADOS (const db = [ ... ];) 
+           DA VERSÃO ANTERIOR QUE VOCÊ BAIXOU!
+        ========================================== */
+        const db = []; // SUBSTITUA ESSA LINHA PELO SEU CÓDIGO GIGANTE const db = [{"nome": "Jargar Classic"...
+
+        const select1 = document.getElementById('corda1');
+        const select2 = document.getElementById('corda2');
+        
+        db.forEach((corda, index) => {
+            let option1 = document.createElement('option');
+            option1.value = index;
+            option1.text = corda.nome;
+            select1.appendChild(option1);
+
+            let option2 = document.createElement('option');
+            option2.value = index;
+            option2.text = corda.nome;
+            select2.appendChild(option2);
+        });
+
+        const keysMapping = [
+            { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota média baseada em relatos de musicistas (Escala: 0.0 a 10.0).' },
+            { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica da marca (Escala de notas: de A+ [Máxima] até E- [Mínima]).' },
+            { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre.<br><strong>Q</strong>uente (Sombrio/Macio) vs Brilhante.<br><strong>F</strong>ocada (Direto/Claro) vs Complexo.' },
+            { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro (Escala: de $ [~R$50] até $$$$$ [~R$1500+]).' },
+            { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas (Opções: Baixa, Média, Alta, Mista).' },
+            { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico (Opções: Suave, Moderada, Forte, Muito Forte).' },
+            { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural da corda (Opções: Tripa, Sintético/Perlon, Aço, Híbrido).' },
+            { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica ao toque inicial do arco (Opções: Lenta, Moderada, Rápida, Instantânea).' },
+            { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o aproveitamento acústico (Opções: Interno, Externo, Ambos).' },
+            { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período necessário para fixar a afinação e abrir o timbre (Opções: Minutos, Horas, Dias, Semanas).' },
+            { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que a corda perca o brilho elástico (Opções: Curta, Média, Longa).' },
+            { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações de temperatura e umidade (Opções: Baixa/Estável, Média, Alta).' },
+            { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal enrolado externamente sobre o núcleo (Opções: Alumínio, Prata, Ouro, Tungstênio, Cromo, etc).' },
+            { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado para o microafinador (Opções: Bolinha [Ball-end], Laço [Loop-end] ou Removível).' },
+            { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão sem produzir chiados ou ruídos (Opções: Baixa, Média, Alta).' }
+        ];
+
+        function gerarLink(corda) {
+            return "https://docs.google.com/forms/d/e/1FAIpQLSe_REPLACE_ME_LATER/viewform?usp=pp_url" +
+                   "&entry.1000001=" + encodeURIComponent(corda.nome) +
+                   "&entry.1000002=" + encodeURIComponent(corda.nota) +
+                   "&entry.1000003=" + encodeURIComponent(corda.qualidade) +
+                   "&entry.1000004=" + encodeURIComponent(corda.cor) +
+                   "&entry.1000006=" + encodeURIComponent(corda.preco) +
+                   "&entry.1000007=" + encodeURIComponent(corda.tensao);
         }
-        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+
+        function formatStringColor(rawString) {
+            if (!rawString || rawString === 'N/A') return 'N/A';
+            return rawString.replace(/W:/gi, 'Q:');
+        }
+
+        function showStoresModal(cordaName) {
+            document.getElementById('store-modal-title').innerText = cordaName;
+            document.getElementById('store-modal').classList.add('show');
+        }
+
+        function closeStoreModal() {
+            document.getElementById('store-modal').classList.remove('show');
+        }
+
+        function handleVote(el) {
+            const container = el.parentElement;
+            container.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function updateComparison() {
+            const val1 = select1.value;
+            const val2 = select2.value;
+            const tableContainer = document.getElementById('table-container');
+            const emptyState = document.getElementById('empty-state');
+            const tbody = document.getElementById('comparison-body');
+            
+            const btn1 = document.getElementById('btn-report1');
+            const btn2 = document.getElementById('btn-report2');
+
+            if(val1 !== "") {
+                btn1.style.display = "inline-block";
+                btn1.href = gerarLink(db[val1]);
+                document.getElementById('th-corda1').innerHTML = `
+                    <div class="col-header-container">
+                        <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val1].nome}</span>
+                        <button onclick="showStoresModal('${db[val1].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
+                    </div>`;
+            } else {
+                btn1.style.display = "none";
+                document.getElementById('th-corda1').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 1</span></div>';
+            }
+
+            if(val2 !== "") {
+                btn2.style.display = "inline-block";
+                btn2.href = gerarLink(db[val2]);
+                document.getElementById('th-corda2').innerHTML = `
+                    <div class="col-header-container">
+                        <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val2].nome}</span>
+                        <button onclick="showStoresModal('${db[val2].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
+                    </div>`;
+            } else {
+                btn2.style.display = "none";
+                document.getElementById('th-corda2').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 2</span></div>';
+            }
+
+            if(val1 === "" || val2 === "") {
+                tableContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            tableContainer.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            const corda1 = db[val1];
+            const corda2 = db[val2];
+
+            tbody.innerHTML = '';
+
+            keysMapping.forEach(item => {
+                let tr = document.createElement('tr');
+                
+                let tdFeature = document.createElement('td');
+                tdFeature.innerHTML = `
+                    <div class="feature-container">
+                        <span class="feature-name">${item.label}</span>
+                        <span class="feature-desc">${item.desc}</span>
+                    </div>`;
+
+                let rawVal1 = corda1[item.key];
+                let rawVal2 = corda2[item.key];
+
+                if (item.key === 'cor') {
+                    rawVal1 = formatStringColor(rawVal1);
+                    rawVal2 = formatStringColor(rawVal2);
+                }
+
+                let tdVal1 = document.createElement('td');
+                let html1 = `<div class="td-content"><span>${rawVal1}</span>`;
+                html1 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>14</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>2</span></button></div>`;
+                html1 += `</div>`;
+                tdVal1.innerHTML = html1;
+                if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') { tdVal1.style.color = 'var(--neon)'; tdVal1.style.fontWeight = '600'; }
+
+                let tdVal2 = document.createElement('td');
+                let html2 = `<div class="td-content"><span>${rawVal2}</span>`;
+                html2 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>45</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>3</span></button></div>`;
+                html2 += `</div>`;
+                tdVal2.innerHTML = html2;
+                if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') { tdVal2.style.color = 'var(--neon)'; tdVal2.style.fontWeight = '600'; }
+
+                tr.appendChild(tdFeature);
+                tr.appendChild(tdVal1);
+                tr.appendChild(tdVal2);
+                tbody.appendChild(tr);
+            });
+        }
+
+        if(select1 && select2) {
+            select1.addEventListener('change', updateComparison);
+            select2.addEventListener('change', updateComparison);
+        }
+
+        // === FORMSPREE SUBMISSION (Bloqueia ir pro outro site) ===
+        const formCaptura = document.getElementById('form-captura');
+        if(formCaptura) {
+            formCaptura.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const dados = new FormData(formCaptura);
+                fetch(formCaptura.action, {
+                    method: formCaptura.method,
+                    body: dados,
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Recebemos seu e-mail! O PDF será enviado em breve.');
+                        formCaptura.reset(); 
+                    } else {
+                        alert('Ops, houve um erro ao enviar. Tente novamente.');
+                    }
+                }).catch(error => {
+                    alert('Erro de conexão.');
+                });
+            });
+        }
+
+        // LÓGICA DE HEADER AUTO-HIDE
+        let lastScrollTop = 0;
+        const header = document.getElementById('site-header');
+        const navMenu = document.getElementById('nav-menu');
+        
+        window.addEventListener('scroll', function() {
+            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScroll > lastScrollTop && currentScroll > 100) {
+                header.classList.add('hide');
+                if(navMenu) navMenu.classList.remove('show');
+            } else {
+                header.classList.remove('hide');
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, false);
+
+        // PARALLAX BACKGROUND
+        document.addEventListener('mousemove', function(e) {
+            const bg = document.getElementById('parallax-bg');
+            if(bg) {
+                const x = (e.clientX * -0.15) + 'px';
+                const y = (e.clientY * -0.15) + 'px';
+                bg.style.transform = `translate(${x}, ${y})`;
+            }
+        });
+
+        // DROPDOWNS DO HEADER
+        const logoBtn = document.getElementById('logo-btn');
+        const logoContainer = document.getElementById('logo-dropdown-container');
+        if(logoBtn) {
+            logoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                logoContainer.classList.toggle('show-dropdown');
+                if(langDropdown) langDropdown.classList.remove('show-lang');
+            });
+        }
+        // Lógica de clique no Dropdown "Cordas"
+        const cordasItem = document.querySelector('.nav-item-dropdown');
+        const cordasBtn = cordasItem.querySelector('a');
+        
+        cordasBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cordasItem.classList.toggle('show-click');
+            
+            // Fecha os outros menus se estiverem abertos
+            if(logoContainer) logoContainer.classList.remove('show-dropdown');
+            if(langDropdown) langDropdown.classList.remove('show-lang');
+        });
+
+        const langBtn = document.getElementById('lang-btn');
+        const langDropdown = document.getElementById('lang-dropdown');
+        if(langBtn) {
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('show-lang');
+                if(logoContainer) logoContainer.classList.remove('show-dropdown');
+            });
+        }
+
+        document.addEventListener('click', () => {
+            if(logoContainer) logoContainer.classList.remove('show-dropdown');
+            if(langDropdown) langDropdown.classList.remove('show-lang');
+        });
+
+        // TEMA MOONSUN
         const themeToggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const savedTheme = localStorage.getItem('nkl_theme');
-        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { body.classList.add('dark-theme'); } else { body.classList.remove('dark-theme'); }
-        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light'); });
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        if(mobileBtn) { mobileBtn.addEventListener('click', () => { navLinks.classList.toggle('show'); }); }
-        
-        
-const db = [{"nome": "Alice A703", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Alice A708", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Alice A747", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Nylon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Corelli Alliance", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético (Kevlar)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.6", "amaciamento": "Lento (4+ dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Cantiga", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Corelli Crystal", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 75% | F: 40%", "nucleo": "Sintético (Stabalon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "D'Addario Ascenté", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Monel / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Helicore", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Amo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "D'Addario Kaplan Vivo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 90%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "D'Addario Prelude", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Pro-Arte", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "D'Addario Zyex", "tensao": "Alta", "projecao": "Forte", "cor": "W: 60% | F: 80%", "nucleo": "Sintético (Zyex)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Di Pietro Studio Uno", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Aço (Alemão)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Dogal Capriccio", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata / Ligas Cobre", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Dogal Green Label", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Bronze", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Bronze", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Dominante Orchestral", "tensao": "Média", "projecao": "Forte", "cor": "W: 70% | F: 60%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Aço", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Erudithus #01", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Aço (Inox)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo / Cobre", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "EuroString", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas / Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "For-Tune Charm", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 60%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Giannini GEAV", "tensao": "Média", "projecao": "Baixa", "cor": "W: 40% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "D+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Metálicas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Classic", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 70%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Jargar Evoke", "tensao": "Média", "projecao": "Forte", "cor": "W: 50% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Superior", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Jargar Young Talent", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Larsen Aurora", "tensao": "Média", "projecao": "Moderada", "cor": "W: 65% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.4", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Il Cannone", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Dir. Foc.", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 100%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 60% | F: 95%", "nucleo": "Sintético", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Prata / Alumínio", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Il Cannone Silver", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 70%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata (Fio Ext D/G)", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Larsen Il Cannone Solist", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 50% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Larsen Original", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Larsen Tzigane", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 10%", "nucleo": "Sintético (Nylon)", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Larsen Virtuoso", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A", "nota": "9.1", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Lenzner Goldbrokat (Só E)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço Nu / Banhada Ouro", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Mauro Calixto Padrão", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 60%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "9.6", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "NIG NVE804", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Hexagonal)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel Cromo (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Opal Titan", "tensao": "Alta", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Titânio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Orquezz PRO", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético (Nylon)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B-", "nota": "9.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Paganini PE950 (Aço)", "tensao": "Média", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Ligas", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Paganini PE980 (Perlon)", "tensao": "Média", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "N/A", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Cromo", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Aricore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 85% | F: 40%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Chorda", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 0%", "nucleo": "Tripa (Nua)", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.0", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Sem Revest. / Prata", "fixacao": "Tie-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Chromcor", "tensao": "Alta", "projecao": "Forte", "cor": "W: 5% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Eudoxa", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 5%", "nucleo": "Tripa", "preco": "$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A", "nota": "9.0", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 20% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.3", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Baixa (Estável)", "revestimento": "Aço / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Evah Pirazzi Gold", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 80%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Flexocor Permanent", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 85%", "nucleo": "Aço (Entrançado)", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Média"}, {"nome": "Pirastro Gold Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 80% | F: 50%", "nucleo": "Tripa", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A-", "nota": "8.8", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Obligato", "tensao": "Média", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A", "nota": "9.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Oliv", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 100%| F: 10%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.4", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Loop-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 95% | F: 30%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "A+", "nota": "9.1", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Pirastro Passione Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Tripa", "preco": "$$$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "A+", "nota": "9.2", "amaciamento": "Lento (4+ dias)", "durabilidade": "Curta (até 1 mês)", "clima": "Alta (Desafina)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Baixa"}, {"nome": "Pirastro Perpetual", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 95%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina / Prata / Aço", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Pirastro Piranito", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C+", "nota": "7.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Pirastro Synoxa", "tensao": "Média", "projecao": "Moderada", "cor": "W: 50% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Tonica", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B+", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Violino", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 95% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Pirastro Wondertone Solo", "tensao": "Média", "projecao": "Forte", "cor": "W: 40% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A-", "nota": "8.7", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Prim Heavy", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 5% | F: 95%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B+", "nota": "8.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Prim Medium", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 85%", "nucleo": "Aço (Sólido)", "preco": "$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "B", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Baixa"}, {"nome": "Ranghiere", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Smart", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Strinberg VS4", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 70%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "C-", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel (Níquel)", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Red Label", "tensao": "Média", "projecao": "Moderada", "cor": "W: 30% | F: 60%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "C", "nota": "7.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Níquel", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Super-Sensitive Sensicore", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 50%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B-", "nota": "8.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Alphayue", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 50%", "nucleo": "Sintético", "preco": "$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "C+", "nota": "8.1", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant", "tensao": "Média", "projecao": "Moderada", "cor": "W: 70% | F: 40%", "nucleo": "Sintético (Perlon)", "preco": "$$", "resposta": "Moderada", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.8", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball/Loop", "tolerancia": "Alta"}, {"nome": "Thomastik Dominant Pro", "tensao": "Alta", "projecao": "Forte", "cor": "W: 80% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.4", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio/Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Dynamo", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 40%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Dynamo Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 75% | F: 75%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Blue", "tensao": "Média", "projecao": "Moderada", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Infeld Red", "tensao": "Média", "projecao": "Moderada", "cor": "W: 90% | F: 30%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B+", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Peter Infeld (PI)", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 90%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.7", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Platina/Ouro/Estanho/Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Prazision", "tensao": "Alta", "projecao": "Forte", "cor": "W: 10% | F: 90%", "nucleo": "Aço (Sólido)", "preco": "$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "B", "nota": "8.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Rondo", "tensao": "Alta", "projecao": "Forte", "cor": "W: 85% | F: 80%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Rondo Gold", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 90% | F: 85%", "nucleo": "Sintético", "preco": "$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "N/A", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Ouro / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Spirit", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 70% | F: 40%", "nucleo": "Sintético", "preco": "$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B-", "nota": "8.0", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Spirocore", "tensao": "Alta", "projecao": "Forte", "cor": "W: 30% | F: 75%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.6", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio / Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Thomastik Superflexible", "tensao": "Média", "projecao": "Moderada", "cor": "W: 75% | F: 50%", "nucleo": "Aço (Entrançado)", "preco": "$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "B", "nota": "8.3", "amaciamento": "Rápido (minutos)", "durabilidade": "Longa (6+ meses)", "clima": "Baixa (Estável)", "revestimento": "Crómio / Alumínio", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Thomastik Ti", "tensao": "Média", "projecao": "Forte", "cor": "W: 80% | F: 60%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.1", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Estanho / Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Alta"}, {"nome": "Thomastik Vision", "tensao": "Média", "projecao": "Forte", "cor": "W: 20% | F: 80%", "nucleo": "Sintético", "preco": "$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "B+", "nota": "8.5", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Média"}, {"nome": "Thomastik Vision Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 40% | F: 85%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A-", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Alumínio / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Thomastik Vision Tit. Orq.", "tensao": "Média", "projecao": "Forte", "cor": "W: 60% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Média"}, {"nome": "Thomastik Vision Tit. Solo", "tensao": "Alta", "projecao": "Muito Forte", "cor": "W: 15% | F: 95%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Externo", "qualidade": "A", "nota": "9.2", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Titânio / Alumínio / Prata", "fixacao": "Ball (Titânio)", "tolerancia": "Baixa"}, {"nome": "Warchal Amber", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 60%", "nucleo": "Sintético (W-Core)", "preco": "$$$$", "resposta": "Rápida", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.6", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end (Helix)", "tolerancia": "Média"}, {"nome": "Warchal Ametyst", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 30% | F: 50%", "nucleo": "Sintético", "preco": "$$", "resposta": "Moderada", "ambiente": "Interno", "qualidade": "B", "nota": "8.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Brilliant", "tensao": "Baixa", "projecao": "Forte", "cor": "W: 30% | F: 70%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A", "nota": "9.0", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball Removível", "tolerancia": "Baixa"}, {"nome": "Warchal Brilliant Vintage", "tensao": "Baixa", "projecao": "Moderada", "cor": "W: 60% | F: 65%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A-", "nota": "8.9", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Loop-end", "tolerancia": "Média"}, {"nome": "Warchal Karneol", "tensao": "Baixa", "projecao": "Baixa", "cor": "W: 90% | F: 20%", "nucleo": "Sintético", "preco": "$$", "resposta": "Lenta", "ambiente": "Interno", "qualidade": "B", "nota": "8.5", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Hydronalium / Prata", "fixacao": "Ball-end", "tolerancia": "Alta"}, {"nome": "Warchal Russian A", "tensao": "Média", "projecao": "Forte", "cor": "W: 85% | F: 75%", "nucleo": "Sintético", "preco": "$$$", "resposta": "Rápida", "ambiente": "Interno", "qualidade": "A", "nota": "9.2", "amaciamento": "Médio (1-3 dias)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Ligas Prata", "fixacao": "Ball-end", "tolerancia": "Média"}, {"nome": "Warchal Timbre", "tensao": "Média", "projecao": "Muito Forte", "cor": "W: 95% | F: 65%", "nucleo": "Sintético (W-Core)", "preco": "$$$$$", "resposta": "Instantânea", "ambiente": "Ambos", "qualidade": "A+", "nota": "9.8", "amaciamento": "Rápido (minutos)", "durabilidade": "Média (2-4 meses)", "clima": "Baixa (Estável)", "revestimento": "Prata Pura", "fixacao": "Ball-end (Helix)", "tolerancia": "Baixa"}];
-
-const select1 = document.getElementById('corda1');
-const select2 = document.getElementById('corda2');
-
-db.forEach((corda, index) => {
-    let option1 = document.createElement('option');
-    option1.value = index;
-    option1.text = corda.nome;
-    select1.appendChild(option1);
-
-    let option2 = document.createElement('option');
-    option2.value = index;
-    option2.text = corda.nome;
-    select2.appendChild(option2);
-});
-
-const keysMapping = [
-    { key: 'nota', label: 'Nota de Avaliação', desc: 'Nota média baseada em relatos de musicistas (Escala: 0.0 a 10.0).' },
-    { key: 'qualidade', label: 'Nível de Qualidade Geral', desc: 'Classificação técnica mercadológica da marca (Escala de notas: de A+ [Máxima] até E- [Mínima]).' },
-    { key: 'cor', label: 'Cor do Som', desc: 'O balanço harmônico do timbre.<br><strong>Q</strong>uente (Sombrio/Macio) vs Brilhante.<br><strong>F</strong>ocada (Direto/Claro) vs Complexo.' },
-    { key: 'preco', label: 'Faixa de Preço', desc: 'Classificação do investimento financeiro (Escala: de $ [~R$50] até $$$$$ [~R$1500+]).' },
-    { key: 'tensao', label: 'Tensão/Peso nos Dedos', desc: 'A força que o dedo faz ao pressionar as cordas (Opções: Baixa, Média, Alta, Mista).' },
-    { key: 'projecao', label: 'Projeção de Volume', desc: 'A capacidade de expansão e preenchimento acústico (Opções: Suave, Moderada, Forte, Muito Forte).' },
-    { key: 'nucleo', label: 'Núcleo Base', desc: 'O material interno estrutural da corda (Opções: Tripa, Sintético/Perlon, Aço, Híbrido).' },
-    { key: 'resposta', label: 'Velocidade de Resposta', desc: 'A agilidade mecânica ao toque inicial do arco (Opções: Lenta, Moderada, Rápida, Instantânea).' },
-    { key: 'ambiente', label: 'Ambiente Recomendado', desc: 'O local ideal projetado para o aproveitamento acústico (Opções: Interno, Externo, Ambos).' },
-    { key: 'amaciamento', label: 'Tempo de Amaciamento', desc: 'O período necessário para fixar a afinação e abrir o timbre (Opções: Minutos, Horas, Dias, Semanas).' },
-    { key: 'durabilidade', label: 'Durabilidade Tonal', desc: 'O ciclo de vida útil até que a corda perca o brilho elástico (Opções: Curta, Média, Longa).' },
-    { key: 'clima', label: 'Sensibilidade Climática', desc: 'A tolerância estrutural às variações de temperatura e umidade (Opções: Baixa/Estável, Média, Alta).' },
-    { key: 'revestimento', label: 'Material do Revestimento', desc: 'A liga ou metal enrolado externamente sobre o núcleo (Opções: Alumínio, Prata, Ouro, Tungstênio, Cromo, etc).' },
-    { key: 'fixacao', label: 'Fixação da Corda Mi', desc: 'O terminal da corda Mi configurado para o microafinador (Opções: Bolinha [Ball-end], Laço [Loop-end] ou Removível).' },
-    { key: 'tolerancia', label: 'Tolerância a Erros de Arco', desc: 'O nível de absorção de falhas na pressão sem produzir chiados ou ruídos (Opções: Baixa, Média, Alta).' }
-];
-
-function gerarLink(corda) {
-    return "https://docs.google.com/forms/d/e/1FAIpQLSe_REPLACE_ME_LATER/viewform?usp=pp_url" +
-           "&entry.1000001=" + encodeURIComponent(corda.nome) +
-           "&entry.1000002=" + encodeURIComponent(corda.nota) +
-           "&entry.1000003=" + encodeURIComponent(corda.qualidade) +
-           "&entry.1000004=" + encodeURIComponent(corda.cor) +
-           "&entry.1000006=" + encodeURIComponent(corda.preco) +
-           "&entry.1000007=" + encodeURIComponent(corda.tensao);
-}
-
-function formatStringColor(rawString) {
-    if (!rawString || rawString === 'N/A') return 'N/A';
-    return rawString.replace(/W:/gi, 'Q:');
-}
-
-function showStoresModal(cordaName) {
-    document.getElementById('store-modal-title').innerText = cordaName;
-    document.getElementById('store-modal').classList.add('show');
-}
-
-function closeStoreModal() {
-    document.getElementById('store-modal').classList.remove('show');
-}
-
-function handleVote(el) {
-    const container = el.parentElement;
-    container.querySelectorAll('.btn-vote').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function updateComparison() {
-    const val1 = select1.value;
-    const val2 = select2.value;
-    const tableContainer = document.getElementById('table-container');
-    const emptyState = document.getElementById('empty-state');
-    const tbody = document.getElementById('comparison-body');
-    
-    const btn1 = document.getElementById('btn-report1');
-    const btn2 = document.getElementById('btn-report2');
-
-    if(val1 !== "") {
-        btn1.style.display = "inline-block";
-        btn1.href = gerarLink(db[val1]);
-        document.getElementById('th-corda1').innerHTML = `
-            <div class="col-header-container">
-                <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val1].nome}</span>
-                <button onclick="showStoresModal('${db[val1].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
-            </div>`;
-    } else {
-        btn1.style.display = "none";
-        document.getElementById('th-corda1').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 1</span></div>';
-    }
-
-    if(val2 !== "") {
-        btn2.style.display = "inline-block";
-        btn2.href = gerarLink(db[val2]);
-        document.getElementById('th-corda2').innerHTML = `
-            <div class="col-header-container">
-                <span class="string-name-label" style="font-weight: 700; color: var(--neon); font-size: 1.1rem;">${db[val2].nome}</span>
-                <button onclick="showStoresModal('${db[val2].nome}')" class="btn-affiliate" title="Ver ofertas desta corda">Ver Oferta</button>
-            </div>`;
-    } else {
-        btn2.style.display = "none";
-        document.getElementById('th-corda2').innerHTML = '<div class="col-header-container"><span class="string-name-label">Corda 2</span></div>';
-    }
-
-    if(val1 === "" || val2 === "") {
-        tableContainer.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        return;
-    }
-
-    tableContainer.classList.remove('hidden');
-    emptyState.classList.add('hidden');
-
-    const corda1 = db[val1];
-    const corda2 = db[val2];
-
-    tbody.innerHTML = '';
-
-    keysMapping.forEach(item => {
-        let tr = document.createElement('tr');
-        
-        let tdFeature = document.createElement('td');
-        tdFeature.innerHTML = `
-            <div class="feature-container">
-                <span class="feature-name">${item.label}</span>
-                <span class="feature-desc">${item.desc}</span>
-            </div>`;
-
-        let rawVal1 = corda1[item.key];
-        let rawVal2 = corda2[item.key];
-
-        if (item.key === 'cor') {
-            rawVal1 = formatStringColor(rawVal1);
-            rawVal2 = formatStringColor(rawVal2);
+        if (savedTheme === 'light' || (!savedTheme && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            body.classList.remove('dark-theme');
+        } else {
+            body.classList.add('dark-theme');
+        }
+        if(themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+            });
         }
 
-        // Col 1
-        let tdVal1 = document.createElement('td');
-        let html1 = `<div class="td-content"><span>${rawVal1}</span>`;
-        html1 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>14</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>2</span></button></div>`;
-        html1 += `</div>`;
-        tdVal1.innerHTML = html1;
-        if(corda1[item.key] === corda2[item.key] && corda1[item.key] !== 'N/A') { tdVal1.style.color = 'var(--neon)'; tdVal1.style.fontWeight = '600'; }
-
-        // Col 2
-        let tdVal2 = document.createElement('td');
-        let html2 = `<div class="td-content"><span>${rawVal2}</span>`;
-        html2 += `<div class="vote-system"><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> <span>45</span></button><button class="btn-vote" onclick="handleVote(this)"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg> <span>3</span></button></div>`;
-        html2 += `</div>`;
-        tdVal2.innerHTML = html2;
-        if(corda1[item.key] === corda2[item.key] && corda2[item.key] !== 'N/A') { tdVal2.style.color = 'var(--neon)'; tdVal2.style.fontWeight = '600'; }
-
-        tr.appendChild(tdFeature);
-        tr.appendChild(tdVal1);
-        tr.appendChild(tdVal2);
-        tbody.appendChild(tr);
-    });
-}
-
-select1.addEventListener('change', updateComparison);
-select2.addEventListener('change', updateComparison);
-
+        // MENU MOBILE
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        if(mobileBtn) {
+            mobileBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('show');
+            });
+        }
+        
+        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
     </script>
 </body>
 </html>
