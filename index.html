@@ -6,113 +6,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal NKL</title>
+    <meta name="description" content="Seja você iniciante ou profissional, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.">
     <link rel="icon" type="image/png" href="NKL/NKL.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        :root { --bg: #ffffff; --surface: #f5f5f5; --text: #0a0a0a; --border: #eeeeee; --neon: #4A90E2; --neon-dim: rgba(74, 144, 226, 0.15); }
-        body.dark-theme { --bg: #0a0a0a; --surface: #121212; --text: #ffffff; --border: #333333; --neon: #89CFF0; --neon-dim: rgba(137, 207, 240, 0.2); }
-        .site-header { font-family: 'Inter', sans-serif !important; background-color: #000000 !important; border-bottom: 1px solid var(--border); padding: 1.5rem 0 !important; position: sticky; top: 0; z-index: 1000; transition: padding 0.3s; } 
-        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 0 2rem; } 
-        .site-header .nav-brand { display: flex !important; align-items: center !important; gap: 12px !important; margin-right: 3rem !important; } 
-        .site-header .logo { font-family: 'Playfair Display', serif !important; font-size: 1.5rem; font-weight: 600; color: #ffffff !important; text-decoration: none; } 
-        .site-header nav ul { display: flex !important; flex-direction: row !important; list-style: none !important; gap: 2.5rem !important; margin: 0 auto !important; padding: 0 !important; align-items: center !important; } 
-        .site-header nav a { font-family: 'Inter', sans-serif !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: #ffffff !important; text-decoration: none; transition: color 0.3s; } 
-        .site-header nav a:hover, .site-header nav a.active { color: var(--neon) !important; font-weight: 700; } 
-        .site-header .dropdown { position: relative; } 
-        .site-header .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: #121212 !important; border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); } 
-        .site-header .dropdown:hover .dropdown-content { display: block; } 
-        .site-header .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; color: #ffffff !important; } 
-        .site-header .dropdown-content a:hover { background-color: #000000 !important; color: var(--neon) !important; } 
-        .lang-dropdown { position: relative; display: inline-block; margin-right: 15px; }
-        .lang-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
-        .lang-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--surface); min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
-        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: background 0.2s; }
-        .lang-content a:hover { background-color: var(--bg); }
-        .lang-dropdown:hover .lang-content { display: block; }
-        .theme-toggle { width: 32px; height: 32px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent !important; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); } 
-        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-        .dark-theme .theme-toggle { transform: rotate(360deg); } 
-        body.dark-theme .logo-img { filter: brightness(0) invert(1); } 
-        .mobile-menu-btn { display: none; background: transparent; border: none; color: #ffffff !important; cursor: pointer; padding: 0; margin-left: 1rem; }
-        .bg-music-decorations { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-        .music-icon { position: absolute; opacity: 0.05; font-size: 4rem; color: var(--text); user-select: none; }
-        .music-text { position: absolute; opacity: 0.03; font-family: 'Playfair Display', serif; font-size: 3rem; font-style: italic; color: var(--text); white-space: nowrap; user-select: none; }
-        
-        @media (max-width: 768px) { 
-            .site-header { padding: 1rem 0 !important; }
-            .site-header nav { flex-direction: row !important; flex-wrap: wrap; gap: 0; } 
-            .site-header .nav-brand { margin-right: auto !important; } 
-            .mobile-menu-btn { display: block; }
-            .site-header nav ul { display: none !important; width: 100%; flex-direction: column !important; margin: 1rem 0 0 0 !important; padding-top: 1rem !important; border-top: 1px solid var(--border); gap: 1rem !important; order: 3; background-color: #000000; } 
-            .site-header nav ul.show { display: flex !important; }
+        :root {
+            --bg: #ffffff;
+            --surface: #f5f5f5;
+            --text: #0a0a0a;
+            --border: #eeeeee;
+            --neon: #1E90FF; /* Azul 1E90FF */
+            --neon-dim: rgba(30, 144, 255, 0.15);
+        }
+        body.dark-theme {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --text: #ffffff;
+            --border: #333333;
+            --neon: #1E90FF; /* Azul 1E90FF */
+            --neon-dim: rgba(30, 144, 255, 0.2);
         }
         
-        .whatsapp-float { position: fixed; bottom: 25px; right: 25px; z-index: 999; transition: transform 0.3s ease; }
-        .whatsapp-float:hover { transform: scale(1.1); }
-        .whatsapp-float img { width: 50px; height: 50px; }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
-        .modal-overlay.show { display: flex; }
-        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 100%; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .close-btn { position: absolute; top: 12px; right: 18px; font-size: 1.6rem; cursor: pointer; color: var(--text); opacity: 0.6; background:none; border:none; }
-        .close-btn:hover { opacity: 1; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden;}
 
+        /* Header e Navbar Auto-hide */
+        .site-header { 
+            background-color: var(--bg); /* Fundo dinâmico baseado no tema */
+            border-bottom: 1px solid var(--border); 
+            padding: 1rem 0; 
+            position: fixed; /* Mudado para fixed para o auto-hide funcionar */
+            width: 100%;
+            top: 0; 
+            z-index: 1000; 
+            transition: top 0.3s ease-in-out, background-color 0.3s; 
+        } 
+        /* Classe aplicada via JS quando o scroll vai para baixo */
+        .site-header.hide { top: -100px; }
+
+        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
         
-        .home-container { display: flex; flex-direction: column; gap: 5rem; margin-top: 4rem; }
-        .showcase-section { display: flex; gap: 3rem; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 2.5rem; border-radius: 12px; transition: transform 0.3s, box-shadow 0.3s; }
-        .showcase-section:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
-        .showcase-section.reverse { flex-direction: row-reverse; }
-        .content-side { flex: 1.3; display: flex; flex-direction: column; gap: 1rem; }
-        .content-side h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary); margin: 0; }
-        .content-side p { font-size: 1rem; line-height: 1.6; color: var(--text); opacity: 0.85; margin: 0; }
-        .btn-home-cta { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; padding: 12px 24px; font-size: 0.9rem; font-weight: bold; color: #ffffff !important; background: var(--neon); border: none; border-radius: 6px; text-decoration: none !important; transition: transform 0.2s, filter 0.2s; margin-top: 0.5rem; }
-        .btn-home-cta:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        body.dark-theme .btn-home-cta { color: #000000 !important; }
-        .photo-side { flex: 0.7; display: flex; justify-content: center; align-items: center; }
-        .photo-box { width: 100%; max-width: 280px; height: 200px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center; transition: border-color 0.3s; }
-        .showcase-section:hover .photo-box { border-color: var(--neon); }
-        .home-photo-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s, transform 0.3s; }
-        body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
-        .img-top { object-position: top; }
-        .img-zoom-15 { transform: scale(1.15); }
-        .img-zoom-10 { transform: scale(1.10); }
-        .img-rotate-fill { transform: rotate(-90deg) scale(1.4); object-fit: cover; object-position: center; } 
-        .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
-        .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
-        .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
-        .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(1.45); }
-        @media (max-width: 768px) {
-            .home-container { gap: 3rem; }
-            .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
-            .photo-side { width: 100%; }
-            .photo-box { max-width: 100%; height: 160px; }
-            .content-side { text-align: center; }
-            .btn-home-cta { align-self: center; width: 100%; }
+        /* Dropdown Violino (Nav Brand) */
+        .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; }
+        .nav-brand-logo { height: 30px; width: auto; object-fit: contain; }
+        body.dark-theme .nav-brand-logo { filter: brightness(0) invert(1); }
+        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; gap: 5px; }
+        .logo-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface); border: 1px solid var(--border); min-width: 180px; padding: 0.5rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-radius: 8px; margin-top: 10px; }
+        .logo-dropdown-content a { display: block; padding: 0.8rem 1.5rem; text-decoration: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; }
+        .logo-dropdown-content a:hover { background-color: var(--bg); color: var(--neon); }
+        .logo-dropdown-content a.active { color: var(--neon); font-weight: bold; background-color: var(--neon-dim);}
+        .nav-brand-container.show-dropdown .logo-dropdown-content { display: block; }
+
+        .nav-menu { display: flex; list-style: none; gap: 2rem; margin: 0; padding: 0; align-items: center; } 
+        .nav-menu a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
+        .nav-menu a:hover { color: var(--neon); } 
+        /* Home ativa */
+        .nav-menu a.home-active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
+        
+        .nav-item-dropdown { position: relative; } 
+        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--surface); border: 1px solid var(--border); min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px;} 
+        .nav-item-dropdown:hover .dropdown-content { display: block; } 
+        .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-transform: none; letter-spacing: 0; } 
+        .dropdown-content a:hover { background-color: var(--bg); color: var(--neon); } 
+
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+
+        /* Dropdown Bandeiras no Clique */
+        .lang-dropdown { position: relative; display: inline-block; }
+        .lang-btn { background: transparent; border: 2px solid transparent; font-size: 1.5rem; cursor: pointer; padding: 4px 8px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: border-color 0.2s;}
+        .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); } /* Borda azul no hover e ativo */
+        
+        /* Nova bandeira metadinha via CSS linear-gradient com emojis (gambiarra visual funcional) ou texto */
+        .flag-split {
+            display: inline-block;
+            position: relative;
+            width: 32px;
+            height: 24px;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
-    
+        .flag-br { position: absolute; left: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: left; }
+        .flag-pt { position: absolute; right: 0; top: 0; width: 50%; height: 100%; object-fit: cover; object-position: right; }
+
+        .lang-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--surface); min-width: 150px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-top: 10px;}
+        .lang-content a { color: var(--text); padding: 12px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
+        .lang-content a:hover { background-color: var(--bg); color: var(--neon); }
+        .lang-dropdown.show-lang .lang-content { display: block; }
+
+        /* Botão Tema */
+        .theme-toggle { width: 28px; height: 28px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
+        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
+        .dark-theme .theme-toggle { transform: rotate(360deg); filter: brightness(0) invert(1);} 
+        
+        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
+
+        /* Fundo Parallax Violinos Famosos */
+        .parallax-bg {
+            position: fixed;
+            top: -10%; left: -10%; width: 120%; height: 120%;
+            pointer-events: none; z-index: -1;
+            transition: transform 0.1s ease-out; /* Suaviza o movimento do mouse */
+        }
+        .music-symbol { position: absolute; opacity: 0.04; font-size: 5rem; color: var(--text); }
+        .violin-name { position: absolute; opacity: 0.03; font-family: 'Playfair Display', serif; font-size: 3.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
+        
+        /* Ajuste do Main para não ficar escondido pelo header fixed */
+        .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
+
+        /* Showcase Cards */
+        .home-container { display: flex; flex-direction: column; gap: 4rem; }
+        .showcase-section { display: flex; gap: 3rem; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 2.5rem; border-radius: 12px; transition: transform 0.3s; }
+        .showcase-section:hover { transform: translateY(-3px); }
+        .showcase-section.reverse { flex-direction: row-reverse; }
+        .content-side { flex: 1.2; display: flex; flex-direction: column; gap: 1rem; }
+        .content-side h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text); margin: 0; }
+        .content-side p { font-size: 1rem; line-height: 1.6; color: var(--text); opacity: 0.85; margin: 0; }
+        .btn-home-cta { display: inline-flex; align-items: center; padding: 12px 24px; font-weight: bold; color: #ffffff !important; background: var(--neon); border-radius: 6px; text-decoration: none !important; margin-top: 0.5rem; align-self: flex-start;}
+        .btn-home-cta:hover { filter: brightness(1.1); }
+        .photo-side { flex: 0.8; }
+        .photo-box { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); overflow: hidden; }
+        .home-photo-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s; }
+        body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
+        .showcase-section:hover .home-photo-img { filter: grayscale(0%); }
+
+        /* Area de Captura de E-mail */
+        .email-capture-section {
+            max-width: 800px;
+            margin: 6rem auto 3rem;
+            padding: 3rem 2rem;
+            background: var(--surface);
+            border: 1px solid var(--neon);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px var(--neon-dim);
+        }
+        .email-capture-section h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 1.5rem 0;}
+        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;}
+        .capture-input { padding: 12px 15px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 1rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s;}
+        .capture-input:focus { border-color: var(--neon); }
+        .capture-btn { padding: 12px 25px; background: var(--neon); color: #fff; font-weight: bold; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: filter 0.2s;}
+        .capture-btn:hover { filter: brightness(1.1); }
+
+        /* Rodapé Reduzido e Monocromático */
+        .site-footer { 
+            border-top: 1px solid var(--border); 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 2rem 0 1rem; 
+        }
+        .footer-grid { 
+            max-width: 1200px; margin: 0 auto; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 1.5rem; /* Espaçamento pela metade */
+            padding: 0 2rem;
+        }
+        .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); text-shadow: none; font-weight: bold;}
+        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 0.8rem 0; line-height: 1.4;}
+        .btn-outline { display: inline-block; padding: 8px 12px; border: 1px solid var(--text); text-decoration: none; color: var(--text); border-radius: 4px; font-size: 0.85rem; transition: background 0.2s;}
+        .btn-outline:hover { background: var(--text); color: var(--bg); }
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.5px;}
+
+        /* Modais */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 90%; text-align: center; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
+
+        @media (max-width: 768px) { 
+            .site-header { padding: 1rem 0; }
+            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start;} 
+            .nav-menu.show { display: flex; }
+            .mobile-menu-btn { display: block; }
+            .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
+            .capture-form { flex-direction: column; }
+            .capture-btn { width: 100%; }
+        }
     </style>
 </head>
 <body class="dark-theme">
-    <div class="bg-music-decorations" aria-hidden="true">
-        <div class="music-icon" style="top: 10%; left: 5%;">𝄞</div>
-        <div class="music-icon" style="top: 40%; right: 10%;">𝄢</div>
-        <div class="music-icon" style="bottom: 20%; left: 15%;">♪</div>
-        <div class="music-icon" style="top: 70%; right: 25%;">♫</div>
-        <div class="music-text" style="top: 25%; left: 30%; transform: rotate(-10deg);">Stradivarius</div>
-        <div class="music-text" style="bottom: 15%; right: 5%; transform: rotate(5deg);">Guarneri del Gesù</div>
-        <div class="music-text" style="top: 60%; left: 5%; transform: rotate(-15deg);">Paganini</div>
+
+    <!-- Fundo Parallax -->
+    <div class="parallax-bg" id="parallax-bg">
+        <!-- Ícones -->
+        <span class="music-symbol" style="top: 15%; left: 10%;">𝄞</span>
+        <span class="music-symbol" style="top: 45%; right: 15%;">𝄢</span>
+        <span class="music-symbol" style="bottom: 25%; left: 20%;">♪</span>
+        <span class="music-symbol" style="top: 75%; right: 30%;">♫</span>
+        <span class="music-symbol" style="top: 85%; left: 40%;">𝄿</span>
+        <span class="music-symbol" style="top: 35%; left: 60%;">𝆕</span>
+        
+        <!-- Nomes Violinos Famosos -->
+        <span class="violin-name" style="top: 20%; left: 35%; transform: rotate(-5deg);">Il Cannone 1743</span>
+        <span class="violin-name" style="top: 55%; right: 10%; transform: rotate(3deg);">Le Messie 1716</span>
+        <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
+        <span class="violin-name" style="top: 10%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
+        <span class="violin-name" style="top: 40%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
+        <span class="violin-name" style="bottom: 40%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
+        <span class="violin-name" style="top: 70%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
+        <span class="violin-name" style="top: 85%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
+        <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
+        <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
     </div>
 
     <header id="site-header" class="site-header">
         <nav>
-            <div class="nav-brand">
-                <a href="index.html" class="logo">&nbsp;Violino&nbsp;</a>
-                <img src="NKL/NKL.png" class="logo-img" style="height: 30px; width: auto; object-fit: contain;" alt="Logo NKL">
+            <!-- Substituído Logo estático por Dropdown Violino -->
+            <div class="nav-brand-container" id="logo-dropdown-container">
+                <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
+                <button class="logo-dropdown-btn" id="logo-btn">Violino ▾</button>
+                <div class="logo-dropdown-content">
+                    <a href="#" class="active">Violino</a>
+                    <a href="#">Viola</a>
+                    <a href="#">Violoncelo</a>
+                </div>
             </div>
-            <ul id="nav-links">
-                <li><a href="index.html">Home</a></li>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="index.html" class="home-active">Home</a></li>
                 <li><a href="importacao.html">Importação</a></li>
                 <li><a href="recomendados.html">Recomendados</a></li>
-                <li class="dropdown">
+                <li class="nav-item-dropdown">
                     <a href="javascript:void(0);">Cordas▾</a>
                     <div class="dropdown-content">
                         <a href="guia-de-cordas.html">Gráfico de Cordas</a>
@@ -122,136 +235,213 @@
                 <li><a href="fisica-do-som.html">Física do Som</a></li>
                 <li><a href="contatos/index.html">Contatos</a></li>
             </ul>
-            <div style="display: flex; align-items: center;">
-                <div class="lang-dropdown">
-                    <button class="lang-btn">🇧🇷/🇵🇹</button>
+            
+            <div class="header-controls">
+                <!-- Dropdown de Idiomas Metadinha -->
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
+                        <!-- Imagens simuladas de bandeiras metadinhas, usando imagens reais online temporárias ou texto para estruturar -->
+                        <div class="flag-split">
+                            <img src="https://flagcdn.com/br.svg" class="flag-br" alt="BR">
+                            <img src="https://flagcdn.com/pt.svg" class="flag-pt" alt="PT">
+                        </div>
+                    </button>
                     <div class="lang-content">
-                        <a href="#">🇧🇷/🇵🇹 Português</a>
-                        <a href="#">🇪🇸/🇦🇷 Español</a>
-                        <a href="#">🇺🇸/🇬🇧 English</a>
-                        <a href="#">🇷🇺 Русский</a>
-                        <a href="#">🇨🇳 中文</a>
-                        <a href="#">🇯🇵 日本語</a>
-                        <a href="#">🇰🇷 한국어</a>
+                        <a href="#"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/br.svg" class="flag-br"><img src="https://flagcdn.com/pt.svg" class="flag-pt"></div> PT/BR</a>
+                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/es.svg" class="flag-br"><img src="https://flagcdn.com/ar.svg" class="flag-pt"></div> ES/AR</a>
+                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:18px;"><img src="https://flagcdn.com/us.svg" class="flag-br"><img src="https://flagcdn.com/gb.svg" class="flag-pt"></div> EN/UK</a>
+                        <a href="ru/index.html"><img src="https://flagcdn.com/ru.svg" width="24" style="border-radius:2px;"> Russo</a>
+                        <a href="zh/index.html"><img src="https://flagcdn.com/cn.svg" width="24" style="border-radius:2px;"> Chinês</a>
+                        <a href="ja/index.html"><img src="https://flagcdn.com/jp.svg" width="24" style="border-radius:2px;"> Japonês</a>
+                        <a href="ko/index.html"><img src="https://flagcdn.com/kr.svg" width="24" style="border-radius:2px;"> Coreano</a>
                     </div>
                 </div>
+
                 <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+                <button id="mobile-menu-btn" class="mobile-menu-btn">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
             </div>
-            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menu">
-                <svg viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="28" color="#fff">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
         </nav>
     </header>
 
-    
-        <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-            <section style="margin-bottom: 4rem; text-align: center;">
-                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Portal NKL</h1>
-                <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
-            </section>
-            <div class="home-container">
-                <div class="showcase-section">
-                    <div class="content-side">
-                        <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
-                        <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança. E se a grana estiver curta para começar, não se preocupe: use o cupom METODONKL e garanta o seu desconto especial agora mesmo.</p>
-                        <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação →</a>
-                    </div>
-                    <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.objectFit='contain';" class="home-photo-img img-top"></div></div>
+    <main class="main-content">
+        <section style="margin-bottom: 3rem; text-align: center;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">Portal NKL</h1>
+            <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
+        </section>
+        
+        <div class="home-container">
+            <div class="showcase-section">
+                <div class="content-side">
+                    <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
+                    <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
+                    <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
                 </div>
-                <div class="showcase-section reverse">
-                    <div class="content-side">
-                        <h2>Equipamentos Recomendados</h2>
-                        <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
-                        <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados →</a>
-                    </div>
-                    <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.objectFit='contain';" class="home-photo-img img-top img-zoom-15"></div></div>
-                </div>
-                <div class="showcase-section">
-                    <div class="content-side">
-                        <h2>Gráfico de Cordas</h2>
-                        <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
-                        <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas →</a>
-                    </div>
-                    <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.objectFit='contain';" class="home-photo-img img-zoom-10"></div></div>
-                </div>
-                <div class="showcase-section reverse">
-                    <div class="content-side">
-                        <h2>Diferencie inteiramente suas cordas</h2>
-                        <p>Ficou na dúvida entre duas ou mais opções para o seu violino? Escolha os encordoamentos que você está de olho — como a famosa Jargar Classic, a potente Jargar Superior, a Evah Pirazzi ou a Dominant — e veja lado a lado todas as diferenças de resposta, durabilidade e peso nos dedos antes de fechar o carrinho.</p>
-                        <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo →</a>
-                    </div>
-                    <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.objectFit='contain'; this.style.transform='none';" class="home-photo-img img-rotate-fill"></div></div>
-                </div>
-                <div class="showcase-section">
-                    <div class="content-side">
-                        <h2>O Caminho do Som</h2>
-                        <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do violino.</p>
-                        <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica →</a>
-                    </div>
-                    <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'; this.style.objectFit='contain';" class="home-photo-img img-zoom-15"></div></div>
-                </div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="object-position: top;"></div></div>
             </div>
-        </main>
-    
 
+            <div class="showcase-section reverse">
+                <div class="content-side">
+                    <h2>Equipamentos Recomendados</h2>
+                    <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
+                    <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
+                </div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.15);"></div></div>
+            </div>
+
+            <div class="showcase-section">
+                <div class="content-side">
+                    <h2>Gráfico de Cordas</h2>
+                    <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
+                    <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
+                </div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.10);"></div></div>
+            </div>
+
+            <div class="showcase-section reverse">
+                <div class="content-side">
+                    <h2>Diferencie inteiramente suas cordas</h2>
+                    <p>Ficou na dúvida entre duas ou mais opções para o seu violino? Escolha os encordoamentos que você está de olho e veja lado a lado todas as diferenças de resposta, durabilidade e peso nos dedos antes de fechar o carrinho.</p>
+                    <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo</a>
+                </div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: rotate(-90deg) scale(1.4); object-position: center;"></div></div>
+            </div>
+            
+            <div class="showcase-section">
+                <div class="content-side">
+                    <h2>O Caminho do Som</h2>
+                    <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do instrumento.</p>
+                    <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica</a>
+                </div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.15);"></div></div>
+            </div>
+        </div>
+
+        <!-- NOVO: Formulário de Captura de E-mail -->
+        <section class="email-capture-section">
+            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+            <form class="capture-form" onsubmit="event.preventDefault(); alert('E-mail cadastrado com sucesso!');">
+                <input type="text" class="capture-input" placeholder="Seu nome" required>
+                <input type="email" class="capture-input" placeholder="escreva o seu e-mail principal" required>
+                <button type="submit" class="capture-btn">Confirmar</button>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Modal PayPal otimizado sem brilhos -->
     <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 0.5rem;">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; color: var(--text); opacity: 0.7; margin-bottom: 1.2rem;">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
             <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
         </div>
     </div>
-
-    <a href="https://whatsapp.com/channel/0029VbC6D5K6GcG9mnlMuL2k" class="whatsapp-float" target="_blank"><img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy"></a>
     
     <footer class="site-footer">
-        <div class="footer-grid" style="max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        <div class="footer-grid">
             <div class="footer-box">
                 <h4>Sua voz importa</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Queremos construir o melhor portal de lutheria do Brasil.</p>
-                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Deixar Feedback Rápido</a>
+                <p>Queremos construir o melhor portal de lutheria do Brasil.</p>
+                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
             </div>
             <div class="footer-box">
                 <h4>Contato Direto</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Dúvidas, parcerias ou projetos pessoais?</p>
-                <a href="mailto:contato.nikoluthieria@gmail.com" style="color: var(--neon); font-weight: bold; text-decoration: none;">contato.nikoluthieria@gmail.com</a>
+                <p>Dúvidas, parcerias ou projetos pessoais?</p>
+                <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
             </div>
             <div class="footer-box">
                  <h4>Apoie o Projeto</h4>
-                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">Todo o conteúdo gratuito do NKL exige tempo e pesquisa.</p>
+                <p>Todo o conteúdo gratuito exige pesquisa. Apoie nossa estrutura.</p>
                 <div style="display: flex; gap: 10px;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" style="padding: 10px 15px; border: 1px solid var(--border); text-decoration: none; color: var(--text); border-radius: 6px;">Apoiar NKL</a>
-                    <button onclick="handlePixSupport()" style="padding: 10px 15px; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 6px; cursor: pointer;">❖ PayPal</button>
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline">Apoiar NKL</a>
+                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="cursor: pointer;">❖ PayPal</button>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom" style="text-align: center; padding: 2rem; border-top: 1px solid var(--border); opacity: 0.7; font-size: 0.85rem;">
-            <p>&copy; 2026 NKL Engenharia e Lutheria. O seu Portal Violinista de confiança.</p>
+        <div class="footer-bottom">
+            &copy; Copyright 2026    |    NKL  |    Todos direitos reservados
         </div>
     </footer>
-    
+
     <script>
-        function handlePixSupport() {
-            navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
-            alert('Endereço PayPal copiado com sucesso!');
-            document.getElementById('pix-modal').classList.add('show');
-        }
-        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+        // Logica Auto-Hide Header
+        let lastScrollTop = 0;
+        const header = document.getElementById('site-header');
+        
+        window.addEventListener('scroll', function() {
+            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            // Se rolar pra baixo e passou de 100px, oculta. Se subir, mostra.
+            if (currentScroll > lastScrollTop && currentScroll > 100) {
+                header.classList.add('hide');
+            } else {
+                header.classList.remove('hide');
+            }
+            // Fundo solidifica após scroll
+            if(currentScroll > 50) {
+                header.style.backgroundColor = 'var(--bg)';
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, false);
+
+        // Lógica Parallax Background
+        document.addEventListener('mousemove', function(e) {
+            const bg = document.getElementById('parallax-bg');
+            const x = (e.clientX * -0.02) + 'px';
+            const y = (e.clientY * -0.02) + 'px';
+            bg.style.transform = `translate(${x}, ${y})`;
+        });
+
+        // Dropdown Violino Logo (Clique)
+        const logoBtn = document.getElementById('logo-btn');
+        const logoContainer = document.getElementById('logo-dropdown-container');
+        logoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            logoContainer.classList.toggle('show-dropdown');
+            langDropdown.classList.remove('show-lang'); // Fecha o outro
+        });
+
+        // Dropdown Bandeiras (Clique)
+        const langBtn = document.getElementById('lang-btn');
+        const langDropdown = document.getElementById('lang-dropdown');
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.classList.toggle('show-lang');
+            logoContainer.classList.remove('show-dropdown'); // Fecha o outro
+        });
+
+        // Fechar dropdowns se clicar fora
+        document.addEventListener('click', () => {
+            logoContainer.classList.remove('show-dropdown');
+            langDropdown.classList.remove('show-lang');
+        });
+
+        // Tema
         const themeToggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         const savedTheme = localStorage.getItem('nkl_theme');
-        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { body.classList.add('dark-theme'); } else { body.classList.remove('dark-theme'); }
-        themeToggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light'); });
+        if (savedTheme === 'light' || (!savedTheme && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            body.classList.remove('dark-theme');
+        } else {
+            body.classList.add('dark-theme');
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        });
+
+        // Menu Mobile
         const mobileBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        if(mobileBtn) { mobileBtn.addEventListener('click', () => { navLinks.classList.toggle('show'); }); }
+        const navMenu = document.getElementById('nav-menu');
+        if(mobileBtn) {
+            mobileBtn.addEventListener('click', () => {
+                navMenu.classList.toggle('show');
+            });
+        }
         
-        
+        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
     </script>
 </body>
 </html>
