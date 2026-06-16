@@ -123,7 +123,7 @@
         .nav-menu a.home-active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
         
         .nav-item-dropdown { position: relative; } 
-        .nav-item-dropdown:hover .dropdown-content { display: block; } 
+        .nav-item-dropdown.show-click .dropdown-content { display: block; }
         .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
 
         .header-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; justify-content: flex-end;}
@@ -468,7 +468,11 @@
             const leftCurtain = document.getElementById('curtain-left');
             const rightCurtain = document.getElementById('curtain-right');
             const introBg = document.getElementById('intro-animation');
-
+            document.addEventListener('click', () => {
+                if(logoContainer) logoContainer.classList.remove('show-dropdown');
+                if(langDropdown) langDropdown.classList.remove('show-lang');
+                if(cordasItem) cordasItem.classList.remove('show-click'); // <-- Adicione apenas esta linha
+            });
             logo.classList.add('anim-dot-in');
 
             setTimeout(() => {
@@ -508,7 +512,18 @@
             const y = (e.clientY * -0.15) + 'px';
             bg.style.transform = `translate(${x}, ${y})`;
         });
-
+        // Lógica de clique no Dropdown "Cordas"
+        const cordasItem = document.querySelector('.nav-item-dropdown');
+        const cordasBtn = cordasItem.querySelector('a');
+        
+        cordasBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cordasItem.classList.toggle('show-click');
+            
+            // Fecha os outros menus se estiverem abertos
+            if(logoContainer) logoContainer.classList.remove('show-dropdown');
+            if(langDropdown) langDropdown.classList.remove('show-lang');
+        });
         const logoBtn = document.getElementById('logo-btn');
         const logoContainer = document.getElementById('logo-dropdown-container');
         logoBtn.addEventListener('click', (e) => {
