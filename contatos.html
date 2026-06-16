@@ -67,7 +67,6 @@
         .nav-menu a.active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
         
         .nav-item-dropdown { position: relative; } 
-        /* EVENTO DE CLIQUE AO INVÉS DE HOVER */
         .nav-item-dropdown.show-click .dropdown-content { display: block; } 
         .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
 
@@ -89,9 +88,10 @@
         .theme-toggle { width: 26px; height: 26px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
         .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
         body.dark-theme .theme-toggle { filter: invert(1) brightness(2); }
+        
         .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
 
-        /* Fundo Parallax (Ajustado) */
+        /* Fundo Parallax Otimizado */
         .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
         .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
         .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
@@ -99,30 +99,27 @@
         body.dark-theme .violin-name { opacity: 0.02; }
 
         /* CONTEÚDO PRINCIPAL - CONTATOS / LINKS */
-        .main-content { margin-top: 100px; max-width: 800px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
         
-        .profile { text-align: center; margin-bottom: 3rem; }
+        /* OVERRIDE: Garantindo que o Main seja transparente para o Parallax aparecer atrás */
+        .main-content, main { margin-top: 100px; max-width: 800px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative; background: transparent !important; }
+        
+        .profile { text-align: center; margin-bottom: 3rem; background: transparent !important; }
+        
         .avatar { 
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%; 
-            object-fit: contain; 
-            background: transparent !important; /* Remove o fundo do círculo */
-            padding: 10px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            width: 100px; height: 100px; border-radius: 50%; object-fit: contain; 
+            background: transparent !important; /* Sem fundo para ver o parallax */
+            padding: 10px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            transition: filter 0.3s;
         }
-        /* Força a imagem NKL.png a inverter de cor no tema escuro para ficar branca */
-        body.dark-theme .avatar { 
-            filter: brightness(0) invert(1); 
-        }
+        body.dark-theme .avatar { filter: brightness(0) invert(1); } /* Inverte a NKL.png no tema escuro */
+
         .display-name { font-family: 'Playfair Display', serif; color: var(--text); margin: 1rem 0 0.5rem 0; font-size: 2rem; }
         .bio { color: var(--text); opacity: 0.8; font-size: 1rem; margin-bottom: 2rem; }
         
         .divider { display: flex; align-items: center; justify-content: center; color: var(--neon); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 2rem; }
         .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); margin: 0 15px; }
 
-        .links-list { display: flex; flex-direction: column; gap: 1rem; }
+        .links-list { display: flex; flex-direction: column; gap: 1rem; background: transparent !important;}
         .link-card { 
             display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); 
             border-radius: 8px; padding: 1.2rem; text-decoration: none; color: var(--text); 
@@ -208,6 +205,10 @@
         <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
         <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
         <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
+        <!-- Elementos Extras Centralizados para preencher o centro atrás do Perfil -->
+        <span class="music-symbol" style="top: 45%; left: 45%; font-size: 5rem; opacity: 0.05;">𝄢</span>
+        <span class="violin-name" style="top: 55%; left: 35%; transform: rotate(-2deg); opacity: 0.04;">Guarneri 1742</span>
+        
         <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
         <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
         <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
@@ -271,9 +272,9 @@
         </nav>
     </header>
 
-    <main class="main-content">
+    <main class="main-content container">
         <header class="profile">
-            <!-- Atualizado para NKL.png puramente sem fundos adicionais -->
+            <!-- NKL Logo sem cor de fundo extra -->
             <img src="NKL/NKL.png" alt="NKL Logo" class="avatar" typeof="image/png">
             <h1 class="display-name">NKL_oficial</h1>
             <p class="bio">Engenheiro · Criador de conteúdo</p>
@@ -469,7 +470,7 @@
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
 
-        // PARALLAX BACKGROUND
+        // PARALLAX BACKGROUND (-0.15)
         document.addEventListener('mousemove', function(e) {
             const bg = document.getElementById('parallax-bg');
             if(bg) {
