@@ -71,11 +71,10 @@
             opacity: 0;
             filter: grayscale(100%);
         }
-        body.dark-theme .intro-logo { filter: grayscale(100%) invert(1); }
 
         /* Animation Classes */
         .anim-dot-in { animation: dotPopIn 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .anim-show-lines::after { opacity: 1; } /* Mostra as linhas brancas */
+        .anim-show-lines::after { opacity: 1; }
         .anim-curtain-open-l { transform: scaleX(0); transition-delay: 0.2s; }
         .anim-curtain-open-r { transform: scaleX(0); transition-delay: 0.2s; }
         .anim-logo-fade { animation: logoFadeOut 0.5s forwards 0.2s; }
@@ -133,7 +132,6 @@
         .lang-btn { background: transparent; border: 2px solid transparent; cursor: pointer; padding: 2px 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: border-color 0.2s;}
         .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); }
         
-        /* Correção das Bandeiras */
         .flag-split { display: flex; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; }
         .flag-split img { width: 50%; height: 100%; object-fit: cover; }
         .flag-split img:first-child { object-position: left; border-right: 0.5px solid rgba(0,0,0,0.1); }
@@ -150,15 +148,13 @@
         
         .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
 
+        /* Fundo Parallax Otimizado (+10% no Claro, Soft no Dark) */
         .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
-        /* Opacidade aumentada em +10% para o tema Claro */
         .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
         .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
+        body.dark-theme .music-symbol { opacity: 0.03; }
+        body.dark-theme .violin-name { opacity: 0.02; }
         
-        /* Garante que no tema Escuro continue bem apagado (5%) para não atrapalhar a leitura */
-        body.dark-theme .music-symbol { opacity: 0.05; }
-        body.dark-theme .violin-name { opacity: 0.05; }
-                
         .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
 
         .home-container { display: flex; flex-direction: column; gap: 4rem; }
@@ -178,48 +174,55 @@
         body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
         .showcase-section:hover .home-photo-img { filter: grayscale(0%); }
 
-        .img-top { object-position: top; }
+        /* Ajuste Foto 1: Encostada no topo com -5% de zoom */
+        .img-foto1 { object-position: top; transform: scale(0.95); }
+        .showcase-section:hover .img-foto1 { transform: scale(1.0); }
+
         .img-zoom-15 { transform: scale(1.15); }
         .img-zoom-10 { transform: scale(1.10); }
         
-        /* The fix for Image 4 (Zoom Extra 25% solicitado) */
+        /* Ajuste Foto 4 com Zoom expandido */
         .img-rotate-fill { 
             width: auto; height: 180%; 
             transform: rotate(-90deg) scale(1.15); 
             object-fit: cover;
         } 
         
-        .showcase-section:hover .home-photo-img:not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
+        .showcase-section:hover .home-photo-img:not(.img-foto1):not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
         .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
         .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
         .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(1.20); }
 
-        .site-footer { background: var(--bg); color: var(--text); padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem;}
+        .site-footer { background: var(--bg); color: var(--text); padding: 3rem 0 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem;}
         
-        /* Header do Footer contendo a Form */
+        /* Form Integrado sem fundo diferente */
         .footer-header { max-width: 1200px; margin: 0 auto 3rem auto; padding: 0 2rem; text-align: center; }
         .footer-header h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 0.5rem 0; font-weight: normal;}
-        .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1rem 0; }
+        .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; }
         
         .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto; }
-        .capture-input { padding: 0 15px; height: 42px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; box-sizing: border-box;}
+        
+        /* Altura rigorosamente padronizada para Botão e Caixas de texto */
+        .capture-input { padding: 0 15px; height: 46px; min-height: 46px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; box-sizing: border-box;}
         .capture-input:focus { border-color: var(--neon); }
-        .capture-btn { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 25px; background: var(--text); color: var(--bg); font-weight: 600; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; font-family: 'Inter', sans-serif;}
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{ -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important; -webkit-text-fill-color: var(--text) !important; }
+        
+        .capture-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; min-height: 46px; padding: 0 25px; background: var(--text); color: var(--bg); font-weight: 600; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; font-family: 'Inter', sans-serif;}
         .capture-btn:hover { filter: brightness(1.2); }
 
         .footer-grid { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; padding: 0 2rem; }
-        .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start;}
+        .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;}
         .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600;}
-        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1rem 0; line-height: 1.5;}
+        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; line-height: 1.5;}
         
-        /* Botões padronizados no mesmo tamanho e altura perfeitamente exatos */
+        /* Botões perfeitamente padronizados */
         .btn-outline { 
             display: inline-flex; align-items: center; justify-content: center; 
             height: 42px; padding: 0 15px; border: 1px solid var(--text); 
             text-decoration: none; color: var(--text); background: transparent; 
             border-radius: 4px; font-size: 0.85rem; font-weight: 500; 
             transition: background 0.2s, color 0.2s; font-family: 'Inter', sans-serif; 
-            cursor: pointer; margin-top: auto; min-width: 120px;
+            cursor: pointer; margin-top: 1rem; min-width: 120px;
             box-sizing: border-box; line-height: 1;
         }
         .btn-outline:hover { background: var(--text); color: var(--bg); }
@@ -232,13 +235,31 @@
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
 
         @media (max-width: 768px) { 
-            .site-header nav { padding: 0 1rem; }
+            .site-header nav { padding: 0 1rem; flex-wrap: wrap; }
             .nav-brand-container { margin-right: auto; }
-            .nav-menu { display: none; width: 100%; flex-direction: column; gap: 0; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; align-items: flex-start; background: var(--header-bg); position: absolute; top: 100%; left: 0; border-bottom: 1px solid var(--border);} 
-            .nav-menu > li { width: 100%; border-bottom: 1px solid var(--border); }
-            .nav-menu > li:last-child { border-bottom: none; }
-            .nav-menu > li > a, .nav-item-dropdown > a { display: block; padding: 1rem 2rem; width: 100%; }
-            .nav-menu.show { display: flex; }
+            
+            /* Correção FORTE para anular o style.css externo no mobile */
+            #nav-menu { 
+                display: none !important; 
+                width: 100% !important; 
+                flex-direction: column !important; 
+                position: absolute !important; 
+                top: 100% !important; 
+                left: 0 !important; 
+                background: var(--header-bg) !important; 
+                border-top: 1px solid var(--border) !important; 
+                border-bottom: 1px solid var(--border) !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+                overflow: hidden !important;
+                white-space: normal !important;
+            } 
+            #nav-menu > li { width: 100% !important; border-bottom: 1px solid var(--border) !important; text-align: left !important;}
+            #nav-menu > li:last-child { border-bottom: none !important; }
+            #nav-menu > li > a, .nav-item-dropdown > a { display: block !important; padding: 1rem 2rem !important; width: 100% !important; box-sizing: border-box !important;}
+            #nav-menu.show { display: flex !important; }
+            
             .mobile-menu-btn { display: block; }
             .showcase-section, .showcase-section.reverse { flex-direction: column-reverse; padding: 1.5rem; gap: 1.5rem; }
             .capture-form { flex-direction: column; }
@@ -260,7 +281,7 @@
         <img src="NKL/logo-violino.png" alt="Violino" class="intro-logo" id="intro-logo" onerror="this.src='NKL/NKL.png';">
     </div>
 
-    <!-- Fundo Parallax Expandido -->
+    <!-- Fundo Parallax -->
     <div class="parallax-bg" id="parallax-bg">
         <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
         <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
@@ -350,7 +371,8 @@
                     <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
                     <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
                 </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="object-position: top;"></div></div>
+                <!-- Foto 1 Ajustada (-5% zoom e fixada no topo) -->
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-foto1"></div></div>
             </div>
 
             <div class="showcase-section reverse">
@@ -359,7 +381,7 @@
                     <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
                     <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
                 </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.15);"></div></div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15"></div></div>
             </div>
 
             <div class="showcase-section">
@@ -368,7 +390,7 @@
                     <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
                     <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
                 </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.10);"></div></div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10"></div></div>
             </div>
 
             <div class="showcase-section reverse">
@@ -386,13 +408,12 @@
                     <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do instrumento.</p>
                     <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica</a>
                 </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img" style="transform: scale(1.15);"></div></div>
+                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15"></div></div>
             </div>
         </div>
     </main>
     
     <footer class="site-footer">
-        <!-- Formulário embutido no topo do rodapé, combinando o espaçamento exato -->
         <div class="footer-header">
             <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
             <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
@@ -411,15 +432,15 @@
             </div>
             <div class="footer-box">
                 <h4>Contato Direto</h4>
-                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande de nos um email.</p>
+                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
                 <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
             </div>
             <div class="footer-box">
                  <h4>Apoie o Projeto</h4>
                 <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
-                <div style="display: flex; gap: 10px;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline">Apoiar NKL</a>
-                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline">❖ PayPal</button>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
+                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
                 </div>
             </div>
         </div>
@@ -439,34 +460,29 @@
     </div>
 
     <script>
-        // === ANIMAÇÃO DE ENTRADA OTIMIZADA PARA CARREGAMENTO RÁPIDO ===
+        // === ANIMAÇÃO DE ENTRADA OTIMIZADA ===
         document.addEventListener('DOMContentLoaded', () => {
             const logo = document.getElementById('intro-logo');
             const leftCurtain = document.getElementById('curtain-left');
             const rightCurtain = document.getElementById('curtain-right');
             const introBg = document.getElementById('intro-animation');
 
-            // 1. Pingo/Logo aparece rapidamente
             logo.classList.add('anim-dot-in');
 
-            // 2. Linhas brancas surgem instantaneamente nas cortinas (espera de 0.8s para não conflitar com a logo)
             setTimeout(() => {
                 leftCurtain.classList.add('anim-show-lines');
                 rightCurtain.classList.add('anim-show-lines');
                 
-                // 3. Cortinas abrem e Logo faz fade out
                 leftCurtain.classList.add('anim-curtain-open-l');
                 rightCurtain.classList.add('anim-curtain-open-r');
                 logo.classList.add('anim-logo-fade');
                 introBg.classList.add('anim-bg-fade');
             }, 800);
 
-            // Remove o elemento visualmente para liberar interação
             setTimeout(() => {
                 introBg.style.display = 'none';
             }, 2000);
         });
-        // ============================
 
         let lastScrollTop = 0;
         const header = document.getElementById('site-header');
@@ -483,10 +499,11 @@
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
 
+        // Lógica Parallax definida para -0.15
         document.addEventListener('mousemove', function(e) {
             const bg = document.getElementById('parallax-bg');
-            const x = (e.clientX * -0.05) + 'px';
-            const y = (e.clientY * -0.05) + 'px';
+            const x = (e.clientX * -0.15) + 'px';
+            const y = (e.clientY * -0.15) + 'px';
             bg.style.transform = `translate(${x}, ${y})`;
         });
 
