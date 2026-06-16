@@ -412,29 +412,6 @@
             </div>
         </div>
                 <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
-    <!-- seus inputs continuam normais aqui -->
-            const formCaptura = document.getElementById('form-captura');
-            
-            formCaptura.addEventListener('submit', function(event) {
-                event.preventDefault(); // <-- É isso aqui que bloqueia a viagem para o site do Formspree
-            
-                const dados = new FormData(formCaptura);
-            
-                fetch(formCaptura.action, {
-                    method: formCaptura.method,
-                    body: dados,
-                    headers: { 'Accept': 'application/json' }
-                }).then(response => {
-                    if (response.ok) {
-                        alert('Recebemos seu e-mail! O PDF será enviado em breve.');
-                        formCaptura.reset(); // Limpa os campos digitados
-                    } else {
-                        alert('Ops, houve um erro ao enviar. Tente novamente.');
-                    }
-                }).catch(error => {
-                    alert('Erro de conexão.');
-                });
-            });
 
     </main>
     
@@ -574,6 +551,32 @@
         }
         
         function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+            <!-- seus inputs continuam normais aqui -->
+            const formCaptura = document.getElementById('form-captura');
+            
+            formCaptura.addEventListener('submit', function(event) {
+                event.preventDefault(); // <-- É isso aqui que bloqueia a viagem para o site do Formspree
+            
+                const dados = new FormData(formCaptura);
+            
+                fetch(formCaptura.action, {
+                    method: formCaptura.method,
+                    body: dados,
+                    headers: { 'Accept': 'application/json' }
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Recebemos seu e-mail! O PDF será enviado em breve.');
+                        formCaptura.reset(); // Limpa os campos digitados
+                    } else {
+                        alert('Ops, houve um erro ao enviar. Tente novamente.');
+                    }
+                }).catch(error => {
+                    alert('Erro de conexão.');
+                });
+            });
+
     </script>
+
+
 </body>
 </html>
