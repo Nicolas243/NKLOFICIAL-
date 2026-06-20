@@ -1,541 +1,211 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal NKL</title>
-    <meta name="description" content="Seja você iniciante ou profissional, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.">
-    <link rel="icon" type="image/png" href="NKL/NKL.png">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Variables */
-        :root {
-            --bg: #ffffff;
-            --surface: #f5f5f5;
-            --text: #0a0a0a;
-            --border: #eeeeee;
-            --neon: #1E90FF;
-            --neon-dark: #0056b3;
-            --header-bg: #ffffff;
-        }
-        body.dark-theme {
-            --bg: #0a0a0a;
-            --surface: #121212;
-            --text: #ffffff;
-            --border: #333333;
-            --neon: #1E90FF;
-            --neon-dark: #0056b3;
-            --header-bg: #000000; /* Fundo do Cabeçalho forçado a preto no tema escuro */
-        }
-
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; }
-
-        /* ==========================================
-           ANIMAÇÃO DE ENTRADA (CORTINA E VIOLINO)
-        ========================================== */
-        #intro-animation {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: var(--bg);
-            z-index: 99999; display: flex; align-items: center; justify-content: center;
-        }
-        .curtain {
-            position: absolute; top: 0; width: 50vw; height: 100vh;
-            background-color: var(--bg); z-index: 99998;
-            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-        /* Linhas Brancas (ou Pretas dependendo do tema) simulando o corte */
-        .curtain::after {
-            content: ''; position: absolute; top: 0; width: 2px; height: 100vh; 
-            background-color: var(--text); opacity: 0; transition: opacity 0.2s;
-        }
-        .curtain-left { left: 0; transform-origin: left; }
-        .curtain-left::after { right: 0; }
-        .curtain-right { right: 0; transform-origin: right; }
-        .curtain-right::after { left: 0; }
-
-        /* Pingo (Logo do Violino) */
-        .intro-logo {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 80px; height: auto; z-index: 100000; opacity: 0;
-            filter: grayscale(100%);
-        }
-        body.dark-theme .intro-logo { filter: grayscale(100%) invert(1); }
-
-        /* Gatilhos de Animação chamados via JS */
-        .anim-dot-in { animation: dotPopIn 0.8s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .anim-show-lines::after { opacity: 1; }
-        .anim-curtain-open-l { transform: scaleX(0); transition-delay: 0.2s; }
-        .anim-curtain-open-r { transform: scaleX(0); transition-delay: 0.2s; }
-        .anim-logo-fade { animation: logoFadeOut 0.5s forwards 0.2s; }
-        .anim-bg-fade { animation: bgFadeOut 0.5s forwards 0.7s; }
-
-        @keyframes dotPopIn { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-        @keyframes logoFadeOut { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
-        @keyframes bgFadeOut { 0% { opacity: 1; visibility: visible; } 100% { opacity: 0; visibility: hidden; } }
-
-        /* ---------------------------------------------------- */
-
-        /* Header */
-        .site-header { background-color: var(--header-bg) !important; border-bottom: 1px solid var(--border); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; transition: top 0.3s ease-in-out, background-color 0.3s; } 
-        .site-header.hide { top: -100px; }
-        .site-header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; } 
-        
-        .nav-brand-container { display: flex; align-items: center; gap: 12px; position: relative; margin-right: 3rem; }
-        .nav-brand-logo { height: 30px; width: auto; object-fit: contain; }
-        body.dark-theme .nav-brand-logo { filter: brightness(0) invert(1); }
-        
-        .logo-dropdown-btn { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--text); background: transparent; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; transition: color 0.3s;}
-        
-        .logo-dropdown-content, .dropdown-content, .lang-content { 
-            display: none; position: absolute; top: 100%; left: 0; 
-            background-color: var(--surface) !important; border: 1px solid var(--border); 
-            min-width: 200px; padding: 1rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px; margin-top: 5px;
-        } 
-        body.dark-theme .logo-dropdown-content, body.dark-theme .dropdown-content, body.dark-theme .lang-content { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .nav-brand-container.show-dropdown .logo-dropdown-content { display: block; }
-        .logo-dropdown-content a, .dropdown-content a { display: block; padding: 0.5rem 1.5rem; text-decoration: none; color: var(--text) !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 500; text-transform: none; letter-spacing: 0;}
-        .logo-dropdown-content a:hover, .dropdown-content a:hover { background-color: var(--bg) !important; color: var(--neon) !important; }
-        .logo-dropdown-content a.active { color: var(--neon) !important; font-weight: bold; background-color: rgba(30, 144, 255, 0.15);}
-
-        .nav-menu { display: flex; list-style: none; gap: 2.5rem; margin: 0; padding: 0; align-items: center; } 
-        .nav-menu > li > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.3s; } 
-        .nav-menu > li > a:hover { color: var(--neon); } 
-        .nav-menu a.home-active { color: var(--neon) !important; text-decoration: underline; text-underline-offset: 6px; font-weight: 700; }
-        
-        .nav-item-dropdown { position: relative; } 
-        .nav-item-dropdown.show-click .dropdown-content { display: block; } 
-        .nav-item-dropdown > a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; color: var(--text); text-decoration: none; cursor: pointer;}
-
-        .header-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; justify-content: flex-end;}
-
-        /* Bandeiras */
-        .lang-dropdown { position: relative; display: inline-block; }
-        .lang-btn { background: transparent; border: 2px solid transparent; cursor: pointer; padding: 2px 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: border-color 0.2s;}
-        .lang-btn:hover, .lang-dropdown.show-lang .lang-btn { border-color: var(--neon); }
-        
-        .flag-split { display: flex; width: 32px; height: 20px; overflow: hidden; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; }
-        .flag-split img { width: 50%; height: 100%; object-fit: cover; }
-        .flag-split img:first-child { object-position: left; border-right: 0.5px solid rgba(0,0,0,0.1); }
-        .flag-split img:last-child { object-position: right; }
-
-        .lang-content { right: 0; left: auto; min-width: 150px; }
-        .lang-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; transition: background 0.2s; }
-        .lang-content a:hover { background-color: var(--bg); color: var(--neon); }
-        .lang-dropdown.show-lang .lang-content { display: block; }
-
-        /* Botão Tema */
-        .theme-toggle { width: 26px; height: 26px; background-image: url('NKL/moonsun.png'); background-repeat: no-repeat; background-color: transparent; border: none; cursor: pointer; flex-shrink: 0; background-size: contain; background-position: center; transition: transform 0.6s; } 
-        .theme-toggle:hover { transform: scale(1.15) rotate(15deg); } 
-        body.dark-theme .theme-toggle { filter: invert(1) brightness(2); }
-        
-        .mobile-menu-btn { display: none; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; margin-left: 10px; }
-
-        /* Fundo Parallax Otimizado */
-        .parallax-bg { position: fixed; top: -15%; left: -15%; width: 130%; height: 130%; pointer-events: none; z-index: -1; transition: transform 0.05s linear; }
-        .music-symbol { position: absolute; opacity: 0.13; font-size: 4rem; color: var(--text); }
-        .violin-name { position: absolute; opacity: 0.12; font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; color: var(--text); white-space: nowrap; font-weight: bold;}
-        body.dark-theme .music-symbol { opacity: 0.03; }
-        body.dark-theme .violin-name { opacity: 0.02; }
-        
-        .main-content { margin-top: 100px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
-
-        /* Showcase Cards */
-        .home-container { display: flex; flex-direction: column; gap: 4rem; }
-        .showcase-section { display: flex; gap: 3rem; align-items: center; background: var(--surface); border: 1px solid var(--border); padding: 2.5rem; border-radius: 12px; transition: transform 0.3s; }
-        .showcase-section:hover { transform: translateY(-3px); }
-        .showcase-section.reverse { flex-direction: row-reverse; }
-        .content-side { flex: 1.2; display: flex; flex-direction: column; gap: 1rem; }
-        .content-side h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text); margin: 0; }
-        .content-side p { font-size: 1rem; line-height: 1.6; color: var(--text); opacity: 0.85; margin: 0; }
-        
-        .btn-home-cta { display: inline-flex; align-items: center; padding: 12px 24px; font-weight: bold; color: #ffffff !important; background: var(--neon-dark); border-radius: 6px; text-decoration: none !important; margin-top: 0.5rem; align-self: flex-start;}
-        .btn-home-cta:hover { filter: brightness(1.1); }
-        
-        .photo-side { flex: 0.8; }
-        .photo-box { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 8px; background-color: var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center;}
-        .home-photo-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); transition: filter 0.3s, transform 0.3s; }
-        body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
-        .showcase-section:hover .home-photo-img { filter: grayscale(0%); }
-
-        .img-foto1 { object-position: top; transform: scale(0.95); }
-        .showcase-section:hover .img-foto1 { transform: scale(1.0); }
-
-        .img-zoom-15 { transform: scale(1.15); }
-        .img-zoom-10 { transform: scale(1.10); }
-        
-        /* Foto 4 com Zoom Menor (50%) solicitado */
-        .img-rotate-fill { 
-            width: 100%; height: 100%; 
-            transform: rotate(-90deg) scale(0.5); 
-            object-fit: contain; /* Garante que ela inteira caberá sem cortes */
-        } 
-        
-        .showcase-section:hover .home-photo-img:not(.img-foto1):not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
-        .showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
-        .showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
-        .showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(0.55); }
-
-        /* FOOTER & FORMSPREE */
-        .site-footer { background: var(--bg); color: var(--text); padding: 3rem 0 2rem 0; border-top: 1px solid var(--border); margin-top: 2rem;}
-        
-        .footer-header { max-width: 1200px; margin: 0 auto 3rem auto; padding: 0 2rem; text-align: center; }
-        .footer-header h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 0.5rem 0; font-weight: normal;}
-        .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; }
-        
-        .capture-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 600px; margin: 0 auto; }
-        .capture-input { padding: 0 15px; height: 46px; min-height: 46px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; flex: 1; min-width: 200px; transition: border-color 0.2s; box-sizing: border-box;}
-        .capture-input:focus { border-color: var(--neon); }
-        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{ -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important; -webkit-text-fill-color: var(--text) !important; }
-        
-        .capture-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; min-height: 46px; padding: 0 25px; background: var(--text); color: var(--bg); font-weight: 600; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; font-family: 'Inter', sans-serif;}
-        .capture-btn:hover { filter: brightness(1.2); }
-
-        .footer-grid { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; padding: 0 2rem; }
-        .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;}
-        .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600;}
-        .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; line-height: 1.5;}
-        
-        /* Botões perfeitamente gêmeos (PayPal e Apoiar NKL) */
-        .btn-outline { 
-            display: inline-flex; align-items: center; justify-content: center; 
-            height: 42px; padding: 0 15px; border: 1px solid var(--text); 
-            text-decoration: none; color: var(--text); background: transparent; 
-            border-radius: 4px; font-size: 0.85rem; font-weight: 500; 
-            transition: background 0.2s, color 0.2s; font-family: 'Inter', sans-serif; 
-            cursor: pointer; margin-top: auto; min-width: 120px;
-            box-sizing: border-box; line-height: 1;
-        }
-        .btn-outline:hover { background: var(--text); color: var(--bg); }
-        
-        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid var(--border); font-size: 0.8rem; font-weight: 400; opacity: 0.7;}
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .modal-overlay.show { display: flex; }
-        .modal-content { background: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 12px; max-width: 340px; width: 90%; text-align: center; position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text); background:none; border:none; }
-
-        /* OVERRIDE FORTE NO MOBILE */
-        @media (max-width: 768px) { 
-            .site-header nav { padding: 0 1rem; flex-wrap: wrap; }
-            .nav-brand-container { margin-right: auto; }
-            
-            #nav-menu { 
-                display: none !important; width: 100% !important; flex-direction: column !important; position: absolute !important; 
-                top: 100% !important; left: 0 !important; background: var(--header-bg) !important; border-top: 1px solid var(--border) !important; 
-                border-bottom: 1px solid var(--border) !important; margin: 0 !important; padding: 0 !important; 
-                box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important; overflow: hidden !important; white-space: normal !important;
-            } 
-            #nav-menu > li { width: 100% !important; border-bottom: 1px solid var(--border) !important; text-align: left !important;}
-            #nav-menu > li:last-child { border-bottom: none !important; }
-            #nav-menu > li > a, .nav-item-dropdown > a { display: block !important; padding: 1rem 2rem !important; width: 100% !important; box-sizing: border-box !important;}
-            #nav-menu.show { display: flex !important; }
-            
-            .mobile-menu-btn { display: block; }
-            
-            .capture-form { flex-direction: column; }
-            .capture-btn, .capture-input { width: 100%; }
-            .footer-grid { flex-direction: column; gap: 2.5rem; }
-            .footer-box { align-items: center; text-align: center;}
-            .footer-box > a, .footer-box > div { width: 100%; justify-content: center;}
-            .btn-outline { width: 100%; }
-            .header-controls { gap: 10px; }
-        }
-    </style>
-</head>
-<body class="dark-theme">
-
-    <div id="intro-animation">
-        <div class="curtain curtain-left" id="curtain-left"></div>
-        <div class="curtain curtain-right" id="curtain-right"></div>
-        <img src="NKL/logo-violino.png" alt="Violino" class="intro-logo" id="intro-logo" onerror="this.src='NKL/NKL.png';">
-    </div>
-
-    <div class="parallax-bg" id="parallax-bg">
-        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
-        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
-        <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
-        <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
-        <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
-        <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
-        <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
-        <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
-        
-        <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
-        <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
-        <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
-        <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
-        <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
-        <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
-        <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
-        <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
-        <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
-        <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
-    </div>
-
-    <header id="site-header" class="site-header">
-        <nav>
-            <div class="nav-brand-container" id="logo-dropdown-container">
-                <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
-                <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
-                <div class="logo-dropdown-content">
-                    <a href="#" class="active">Violino</a>
-                    <a href="#">Viola</a>
-                    <a href="#">Violoncelo</a>
-                </div>
-            </div>
-            
-            <ul class="nav-menu" id="nav-menu">
-                <li><a href="index.html" class="home-active">Home</a></li>
-                <li><a href="importacao.html">Importação</a></li>
-                <li><a href="recomendados.html">Recomendados</a></li>
-                <li class="nav-item-dropdown">
-                    <a href="javascript:void(0);">Cordas▾</a>
-                    <div class="dropdown-content">
-                        <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
-                    </div>
-                </li>
-                <li><a href="fisica-do-som.html">Física do Som</a></li>
-                <li><a href="contatos.html">Contatos</a></li>
-            </ul>
-            
-            <div class="header-controls">
-                <div class="lang-dropdown" id="lang-dropdown">
-                    <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
-                        <div class="flag-split">
-                            <img src="https://flagcdn.com/pt.svg" alt="PT">
-                            <img src="https://flagcdn.com/br.svg" alt="BR">
-                        </div>
-                    </button>
-                    <div class="lang-content">
-                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
-                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
-                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
-                        <a href="ru/index.html"><img src="https://flagcdn.com/ru.svg" width="24" style="border-radius:2px;"> Russo</a>
-                        <a href="zh/index.html"><img src="https://flagcdn.com/cn.svg" width="24" style="border-radius:2px;"> Chinês</a>
-                        <a href="ja/index.html"><img src="https://flagcdn.com/jp.svg" width="24" style="border-radius:2px;"> Japonês</a>
-                        <a href="ko/index.html"><img src="https://flagcdn.com/kr.svg" width="24" style="border-radius:2px;"> Coreano</a>
-                    </div>
-                </div>
-
-                <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                <button id="mobile-menu-btn" class="mobile-menu-btn">
-                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <main class="main-content">
-        <section style="margin-bottom: 3rem; text-align: center;">
-            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">Portal NKL</h1>
-            <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
-        </section>
-        
-        <div class="home-container">
-            <div class="showcase-section">
-                <div class="content-side">
-                    <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
-                    <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
-                    <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
-                </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto1.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-foto1"></div></div>
-            </div>
-
-            <div class="showcase-section reverse">
-                <div class="content-side">
-                    <h2>Equipamentos Recomendados</h2>
-                    <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
-                    <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
-                </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto2.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15"></div></div>
-            </div>
-
-            <div class="showcase-section">
-                <div class="content-side">
-                    <h2>Gráfico de Cordas</h2>
-                    <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
-                    <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
-                </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto3.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10"></div></div>
-            </div>
-
-            <div class="showcase-section reverse">
-                <div class="content-side">
-                    <h2>Diferencie inteiramente suas cordas</h2>
-                    <p>Ficou na dúvida entre duas ou mais opções para o seu violino? Escolha os encordoamentos que você está de olho e veja lado a lado todas as diferenças de resposta, durabilidade e peso nos dedos antes de fechar o carrinho.</p>
-                    <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo</a>
-                </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto4.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-rotate-fill"></div></div>
-            </div>
-            
-            <div class="showcase-section">
-                <div class="content-side">
-                    <h2>O Caminho do Som</h2>
-                    <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do instrumento.</p>
-                    <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica</a>
-                </div>
-                <div class="photo-side"><div class="photo-box"><img src="NKL/home-foto5.png" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15"></div></div>
-            </div>
-        </div>
-    </main>
-    
-    <footer class="site-footer">
-        <div class="footer-header">
-            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
-            <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
-                <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
-                <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
-                <button type="submit" class="capture-btn">Confirmar</button>
-            </form>
-        </div>
-
-        <div class="footer-grid">
-            <div class="footer-box">
-                <h4>Sua voz importa</h4>
-                <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
-                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
-            </div>
-            <div class="footer-box">
-                <h4>Contato Direto</h4>
-                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
-                <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
-            </div>
-            <div class="footer-box">
-                 <h4>Apoie o Projeto</h4>
-                <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
-                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1; cursor: pointer;">❖ PayPal</button>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; Copyright 2026    |    NKL  |    Todos direitos reservados
-        </div>
-    </footer>
-
-    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-            <img src="NKL/1000343886.png" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
-        </div>
-    </div>
-
-    <script>
-        // === ANIMAÇÃO DE ENTRADA ===
-        document.addEventListener('DOMContentLoaded', () => {
-            const logo = document.getElementById('intro-logo');
-            const leftCurtain = document.getElementById('curtain-left');
-            const rightCurtain = document.getElementById('curtain-right');
-            const introBg = document.getElementById('intro-animation');
-
-            logo.classList.add('anim-dot-in');
-
-            setTimeout(() => {
-                leftCurtain.classList.add('anim-show-lines');
-                rightCurtain.classList.add('anim-show-lines');
-                
-                leftCurtain.classList.add('anim-curtain-open-l');
-                rightCurtain.classList.add('anim-curtain-open-r');
-                logo.classList.add('anim-logo-fade');
-                introBg.classList.add('anim-bg-fade');
-            }, 800);
-
-            setTimeout(() => {
-                introBg.style.display = 'none';
-            }, 2000);
-        });
-
-        let lastScrollTop = 0;
-        const header = document.getElementById('site-header');
-        const navMenu = document.getElementById('nav-menu');
-        
-        window.addEventListener('scroll', function() {
-            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-            if (currentScroll > lastScrollTop && currentScroll > 100) {
-                header.classList.add('hide');
-                navMenu.classList.remove('show');
-            } else {
-                header.classList.remove('hide');
-            }
-            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-        }, false);
-
-        // Lógica Parallax definida para -0.15
-        document.addEventListener('mousemove', function(e) {
-            const bg = document.getElementById('parallax-bg');
-            const x = (e.clientX * -0.15) + 'px';
-            const y = (e.clientY * -0.15) + 'px';
-            bg.style.transform = `translate(${x}, ${y})`;
-        });
-
-        // Controle Dropdowns Click
-        const logoBtn = document.getElementById('logo-btn');
-        const logoContainer = document.getElementById('logo-dropdown-container');
-        logoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            logoContainer.classList.toggle('show-dropdown');
-            langDropdown.classList.remove('show-lang');
-            if(cordasItem) cordasItem.classList.remove('show-click');
-        });
-
-        const langBtn = document.getElementById('lang-btn');
-        const langDropdown = document.getElementById('lang-dropdown');
-        langBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            langDropdown.classList.toggle('show-lang');
-            logoContainer.classList.remove('show-dropdown');
-            if(cordasItem) cordasItem.classList.remove('show-click');
-        });
-
-        const cordasItem = document.querySelector('.nav-item-dropdown');
-        if (cordasItem) {
-            const cordasBtn = cordasItem.querySelector('a');
-            cordasBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                cordasItem.classList.toggle('show-click');
-                logoContainer.classList.remove('show-dropdown');
-                langDropdown.classList.remove('show-lang');
-            });
-        }
-
-        document.addEventListener('click', () => {
-            logoContainer.classList.remove('show-dropdown');
-            langDropdown.classList.remove('show-lang');
-            if(cordasItem) cordasItem.classList.remove('show-click');
-        });
-
-        // Controle de Tema
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        const savedTheme = localStorage.getItem('nkl_theme');
-        if (savedTheme === 'light' || (!savedTheme && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            body.classList.remove('dark-theme');
-        } else {
-            body.classList.add('dark-theme');
-        }
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        });
-
-        // Menu Mobile
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        if(mobileBtn) {
-            mobileBtn.addEventListener('click', () => {
-                navMenu.classList.toggle('show');
-            });
-        }
-        
-        function closePixModal() { document.getElementById('pix-modal').classList.remove('show'); }
+    <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+        <script>
+        window.dataLayer=window.dataLayer||[];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js',new Date());
+        gtag('config','G-QD0HQJFWVW');
     </script>
-</body>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Portal NKL</title>
+        <meta name="description" content="Seja você iniciante ou profissional, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.">
+        <link rel="icon" type="image/png" href="NKL/NKL.png">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body class="dark-theme">
+        <!-- ANIMAÇÃO DE ENTRADA -->
+        <div id="intro-animation">
+            <div class="curtain curtain-left" id="curtain-left"></div>
+            <div class="curtain curtain-right" id="curtain-right"></div>
+            <!-- Logos e ícones mantemos em PNG para garantir transparência perfeita -->
+            <img src="NKL/logo-violino.png" alt="Violino" class="intro-logo" id="intro-logo" onerror="this.src='NKL/NKL.png';">
+        </div>
+        <!-- CABEÇALHO PADRONIZADO -->
+        <header id="site-header" class="site-header">
+            <nav>
+                <div class="nav-brand-container" id="logo-dropdown-container">
+                    <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
+                    <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
+                    <div class="logo-dropdown-content">
+                        <a href="#" class="active">Violino</a>
+                        <a href="#">Viola</a>
+                        <a href="#">Violoncelo</a>
+                    </div>
+                </div>
+                <ul class="nav-menu" id="nav-menu">
+                    <li>
+                        <a href="index.html" class="home-active">Home</a>
+                    </li>
+                    <li>
+                        <a href="importacao.html">Importação</a>
+                    </li>
+                    <li>
+                        <a href="recomendados.html">Recomendados</a>
+                    </li>
+                    <li class="nav-item-dropdown">
+                        <a href="javascript:void(0);">Cordas▾</a>
+                        <div class="dropdown-content">
+                            <a href="guia-de-cordas.html">Gráfico de Cordas</a>
+                            <a href="comparador-de-cordas.html">Comparar Cordas</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="fisica-do-som.html">Física do Som</a>
+                    </li>
+                    <li>
+                        <a href="contatos.html">Contatos</a>
+                    </li>
+                </ul>
+                <div class="header-controls">
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
+                            <div class="flag-split">
+                                <img src="https://flagcdn.com/pt.svg" alt="PT">
+                                <img src="https://flagcdn.com/br.svg" alt="BR">
+                            </div>
+                        </button>
+                        <div class="lang-content">
+                            <a href="#"><div class="flag-split" style="width:24px;height:16px;">
+                                    <img src="https://flagcdn.com/pt.svg">
+                                    <img src="https://flagcdn.com/br.svg">
+                                </div> PT/BR</a>
+                            <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;">
+                                    <img src="https://flagcdn.com/es.svg">
+                                    <img src="https://flagcdn.com/ar.svg">
+                                </div> ES/AR</a>
+                            <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;">
+                                    <img src="https://flagcdn.com/gb.svg">
+                                    <img src="https://flagcdn.com/us.svg">
+                                </div> EN/US</a>
+                        </div>
+                    </div>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+                    <button id="mobile-menu-btn" class="mobile-menu-btn">
+                        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+        </header>
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+            <section style="margin-bottom: 3rem; text-align: center;">
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">Portal NKL</h1>
+                <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
+            </section>
+            <div class="home-container">
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
+                        <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
+                        <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto1.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-foto1" alt="Método NKL">
+                        </div>
+                    </div>
+                </div>
+                <div class="showcase-section reverse">
+                    <div class="content-side">
+                        <h2>Equipamentos Recomendados</h2>
+                        <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
+                        <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto2.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15" alt="Recomendados">
+                        </div>
+                    </div>
+                </div>
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Gráfico de Cordas</h2>
+                        <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
+                        <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto3.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10" alt="Gráfico de Cordas">
+                        </div>
+                    </div>
+                </div>
+                <div class="showcase-section reverse">
+                    <div class="content-side">
+                        <h2>Diferencie inteiramente suas cordas</h2>
+                        <p>Ficou na dúvida entre duas ou mais opções para o seu violino? Escolha os encordoamentos que você está de olho e veja lado a lado todas as diferenças de resposta, durabilidade e peso nos dedos antes de fechar o carrinho.</p>
+                        <a href="comparador-de-cordas.html" class="btn-home-cta">Comparar Cordas ao Vivo</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box" style="background-size: contain;">
+                            <img src="NKL/home-foto4.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" width="100%" height="100%" class="home-photo-img img-zoom-15" style="vertical-align: top; box-sizing: inherit; object-fit: scale-down;" alt="Comparador de Cordas">
+                        </div>
+                    </div>
+                </div>
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>O Caminho do Som</h2>
+                        <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do instrumento.</p>
+                        <a href="fisica-do-som.html" class="btn-home-cta">Desvendar Física Acústica</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto5.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15" alt="Física do Som">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- RODAPÉ PADRONIZADO -->
+        <footer class="site-footer">
+            <div class="footer-header">
+                <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+                <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
+                <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
+                    <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
+                    <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
+                    <button type="submit" class="capture-btn">Confirmar</button>
+                </form>
+            </div>
+            <div class="footer-grid">
+                <div class="footer-box">
+                    <h4>Sua voz importa</h4>
+                    <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
+                    <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Contato Direto</h4>
+                    <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
+                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Apoie o Projeto</h4>
+                    <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
+                        <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; Copyright 2026 | NKL | Todos direitos reservados
+</div>
+        </footer>
+        <!-- MODAL PAYPAL (WEBP) -->
+        <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="close-btn" onclick="closePixModal()">&times;</button>
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
+                <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+                <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
 </html>
