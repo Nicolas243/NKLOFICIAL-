@@ -1,24 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
+        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
-        <script>
-        window.dataLayer=window.dataLayer||[];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js',new Date());
-        gtag('config','G-QD0HQJFWVW');
-    </script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>O Guia de Cordas | Violino NKL</title>
         <meta name="description" content="Aprenda a ler as especificações de qualquer encordoamento do mundo e descubra o que seu violino precisa.">
         <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, Nicolas Da Costa Santos, cordas de violino, física do som">
         <meta name="author" content="Nicolas Da Costa Santos">
+        <meta property="og:title" content="O Guia de Cordas | Violino NKL"/>
+        <meta property="og:image" content="NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png"/>
         <link rel="icon" type="image/png" href="NKL/NKL.png">
-        <!-- CSS Centralizado -->
+        <!-- CSS GLOBAL -->
         <link rel="stylesheet" href="style.css">
+        <style>/* ==========================================
+           BOTAO WHATSAPP (BLINDADO NO HTML)
+        ========================================== */.whatsapp-float { position: fixed !important; bottom: 20px !important; right: 20px !important; width: 60px !important; height: 60px !important; z-index: 9999 !important; transition: transform 0.3s ease; } .whatsapp-float img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); } .whatsapp-float:hover { transform: scale(1.1); } @media (max-width: 768px) { .whatsapp-float {  width: 50px !important;  height: 50px !important;  bottom: 15px !important;  right: 15px !important; } }</style>
     </head>
     <body class="dark-theme">
+        <!-- FUNDO PARALLAX -->
+        <div class="parallax-bg" id="parallax-bg">
+            <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
+            <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
+            <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
+            <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
+            <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
+            <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
+            <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
+            <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
+            <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
+            <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
+            <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
+            <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
+            <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
+            <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
+            <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
+            <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
+            <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
+            <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
+        </div>
         <!-- CABEÇALHO PADRONIZADO -->
         <header id="site-header" class="site-header">
             <nav>
@@ -42,9 +64,8 @@
                         <a href="recomendados.html">Recomendados</a>
                     </li>
                     <li class="nav-item-dropdown">
-                        <a href="javascript:void(0);">Cordas▾</a>
+                        <a href="javascript:void(0);" class="active">Cordas▾</a>
                         <div class="dropdown-content">
-                            <!-- CLASSE ACTIVE AQUI -->
                             <a href="guia-de-cordas.html" class="active">Gráfico de Cordas</a>
                             <a href="comparador-de-cordas.html">Comparar Cordas</a>
                         </div>
@@ -96,17 +117,17 @@
                 <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">O Guia Definitivo das Cordas</h1>
                 <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Aprenda a ler as especificações de qualquer encordoamento do mundo e descubra exatamente o que o seu violino está pedindo.</p>
             </section>
-            <!-- SEÇÃO DO LEITOR ONLINE -->
+            <!-- SEÇÃO DO GRÁFICO DO CANVA INCORPORADO -->
+            <h1 style="color: #ff0000;">[EM BREVE COMPLETO]</h1>
             <section class="section-card">
-                <h2>[EM BREVE COMPLETO e CLICÁVEL] Gráfico de Timbres e Cores</h2>
-                <!-- Simulador de Leitor de PDF (Usa a Imagem para garantir a visualização inline) -->
-                <div style="height: 600px; width: 100%; border-radius: 8px; border: 1px solid var(--border); overflow: auto; margin-bottom: 1.5rem; background: #e0e0e0; cursor: grab;">
-                    <img src="NKL/Grafico de Cordas.png" alt="Prévia do Gráfico de Cordas" style="width: 100%; min-width: 900px; display: block; margin: 0 auto;" onerror="this.style.display='none';">
+                <h2>Gráfico Interativo de Timbres e Cores</h2>
+                <div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%; box-shadow: 0 2px 8px 0 rgba(0,0,0,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+                    <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0;" src="https://www.canva.com/design/DAHNLJTnvC0/ss6Pg-5X2i_MW8Oi6fS5mg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+</iframe>
                 </div>
-                <!-- Botão para Baixar o PDF Real -->
                 <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <a href="NKL/Grafico de Cordas.pdf" target="_blank" download class="btn-home-cta" style="margin-top: 0; padding: 15px 30px; font-size: 1.1rem;">
-                📥 Baixar grafico em Alta Resolução </a>
+                    <a href="https://www.canva.com/design/DAHNLJTnvC0/ss6Pg-5X2i_MW8Oi6fS5mg/view" target="_blank" rel="noopener" class="btn-home-cta" style="margin-top: 0; padding: 15px 30px; font-size: 1.1rem;">
+                    🔗 Abrir Gráfico em Tela Cheia  </a>
                 </div>
                 <p style="font-size: 0.95rem; margin-top: 1rem;"><em style="font-weight: 600;">Como ler o mapa:</em> O eixo vertical mostra o poder de projeção (Som Focado vs Som Complexo). O eixo horizontal mostra a "temperatura" da voz da corda (Sons Quentes vs Sons Brilhantes).</p>
             </section>
@@ -202,6 +223,8 @@
                 </table>
             </section>
         </main>
+        <!-- BOTÃO DO WHATSAPP BLINDADO -->
+        <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" class="whatsapp-float" target="_blank" aria-label="Comunidade VIP WhatsApp"> <img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy" alt="WhatsApp"> </a>
         <!-- RODAPÉ PADRONIZADO -->
         <footer class="site-footer">
             <div class="footer-header">
@@ -229,7 +252,7 @@
                     <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
                     <div style="display: flex; gap: 10px; width: 100%;">
                         <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
-                        <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-paypal" style="flex: 1;">❖ PayPal</button>
+                        <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
                     </div>
                 </div>
             </div>
@@ -246,7 +269,7 @@
                 <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
             </div>
         </div>
-        <!-- SCRIPT CENTRALIZADO -->
+        <!-- JS GLOBAL -->
         <script src="script.js"></script>
     </body>
 </html>

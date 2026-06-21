@@ -37,6 +37,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Solução Global: Evita imagens esticadas (efeito palito) */
+img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
 /* ==========================================
    CABEÇALHO / HEADER
 ========================================== */
@@ -44,8 +51,6 @@ body {
     background-color: var(--header-bg) !important;
     border-bottom: 1px solid var(--border);
     padding: 1.5rem 0;
-
-    /* Respiro original */
     position: fixed;
     width: 100%;
     top: 0;
@@ -416,69 +421,28 @@ body.dark-theme .intro-logo {
 }
 
 @keyframes dotPopIn {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
 @keyframes logoFadeOut {
-    0% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8);
-    }
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 }
 
 @keyframes bgFadeOut {
-    0% {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    100% {
-        opacity: 0;
-        visibility: hidden;
-    }
+    0% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
 }
 
 @keyframes organicShake {
-    0% {
-        transform: scale(1) translate(0, 0) rotate(0deg);
-    }
-
-    15% {
-        transform: scale(1.02) translate(-6px, 6px) rotate(0.8deg);
-    }
-
-    30% {
-        transform: scale(1.01) translate(6px, -4px) rotate(-0.8deg);
-    }
-
-    45% {
-        transform: scale(1.03) translate(-4px, -6px) rotate(0.5deg);
-    }
-
-    60% {
-        transform: scale(1.01) translate(5px, 5px) rotate(-0.5deg);
-    }
-
-    80% {
-        transform: scale(1.005) translate(-2px, 2px) rotate(0.2deg);
-    }
-
-    100% {
-        transform: scale(1) translate(0, 0) rotate(0deg);
-    }
+    0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+    15% { transform: scale(1.02) translate(-6px, 6px) rotate(0.8deg); }
+    30% { transform: scale(1.01) translate(6px, -4px) rotate(-0.8deg); }
+    45% { transform: scale(1.03) translate(-4px, -6px) rotate(0.5deg); }
+    60% { transform: scale(1.01) translate(5px, 5px) rotate(-0.5deg); }
+    80% { transform: scale(1.005) translate(-2px, 2px) rotate(0.2deg); }
+    100% { transform: scale(1) translate(0, 0) rotate(0deg); }
 }
 
 .anim-shake {
@@ -517,13 +481,8 @@ body.dark-theme .intro-logo {
     font-weight: bold;
 }
 
-body.dark-theme .music-symbol {
-    opacity: 0.03;
-}
-
-body.dark-theme .violin-name {
-    opacity: 0.02;
-}
+body.dark-theme .music-symbol { opacity: 0.03; }
+body.dark-theme .violin-name { opacity: 0.02; }
 
 /* ==========================================
    MAIN CONTENT & SHOWCASE CARDS (HOME)
@@ -566,26 +525,6 @@ body.dark-theme .violin-name {
     line-height: 1.8;
     opacity: 0.9;
     margin-bottom: 1rem;
-}
-
-/* Estilo de listas usado nos guias */
-.list-styled {
-    list-style-type: none;
-    padding: 0;
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    opacity: 0.9;
-    line-height: 1.6;
-}
-
-.list-styled li strong {
-    color: var(--text);
-    font-weight: 700;
-    font-size: 1.05rem;
-    display: block;
-    margin-bottom: 0.2rem;
 }
 
 .showcase-section {
@@ -678,45 +617,16 @@ body.dark-theme .home-photo-img {
     filter: grayscale(0%);
 }
 
-.img-foto1 {
-    object-position: top;
-    transform: scale(0.95);
-}
+.img-foto1 { object-position: top; transform: scale(0.95); }
+.showcase-section:hover .img-foto1 { transform: scale(1.0); }
+.img-zoom-15 { transform: scale(1.15); }
+.img-zoom-10 { transform: scale(1.10); }
+.img-rotate-fill { width: 100%; height: 100%; transform: rotate(-90deg) scale(2); object-fit: contain; }
 
-.showcase-section:hover .img-foto1 {
-    transform: scale(1.0);
-}
-
-.img-zoom-15 {
-    transform: scale(1.15);
-}
-
-.img-zoom-10 {
-    transform: scale(1.10);
-}
-
-.img-rotate-fill {
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg) scale(2);
-    object-fit: contain;
-}
-
-.showcase-section:hover .home-photo-img:not(.img-foto1):not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) {
-    transform: scale(1.03);
-}
-
-.showcase-section:hover .img-zoom-15 {
-    transform: scale(1.18);
-}
-
-.showcase-section:hover .img-zoom-10 {
-    transform: scale(1.13);
-}
-
-.showcase-section:hover .img-rotate-fill {
-    transform: rotate(-90deg) scale(0.55);
-}
+.showcase-section:hover .home-photo-img:not(.img-foto1):not(.img-zoom-15):not(.img-zoom-10):not(.img-rotate-fill) { transform: scale(1.03); }
+.showcase-section:hover .img-zoom-15 { transform: scale(1.18); }
+.showcase-section:hover .img-zoom-10 { transform: scale(1.13); }
+.showcase-section:hover .img-rotate-fill { transform: rotate(-90deg) scale(0.55); }
 
 /* ==========================================
    PÁGINA DE IMPORTAÇÃO - GALERIA FOLHA A4
@@ -810,9 +720,7 @@ body.dark-theme .home-photo-img {
     justify-content: center;
 }
 
-.carousel-modal.active {
-    display: flex;
-}
+.carousel-modal.active { display: flex; }
 
 .carousel-wrapper {
     position: relative;
@@ -833,9 +741,7 @@ body.dark-theme .home-photo-img {
     scroll-behavior: smooth;
 }
 
-.carousel-container::-webkit-scrollbar {
-    display: none;
-}
+.carousel-container::-webkit-scrollbar { display: none; }
 
 .carousel-item {
     flex: 0 0 100%;
@@ -888,19 +794,9 @@ body.dark-theme .home-photo-img {
     transition: background 0.3s;
 }
 
-.carousel-nav:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.carousel-prev {
-    left: 15px;
-    right: auto;
-}
-
-.carousel-next {
-    right: 15px;
-    left: auto !important;
-}
+.carousel-nav:hover { background: rgba(255, 255, 255, 0.4); }
+.carousel-prev { left: 15px; right: auto; }
+.carousel-next { right: 15px; left: auto !important; }
 
 .carousel-ig-link {
     text-align: center;
@@ -969,9 +865,7 @@ body.dark-theme .home-photo-img {
     box-sizing: border-box;
 }
 
-.capture-input:focus {
-    border-color: var(--neon);
-}
+.capture-input:focus { border-color: var(--neon); }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -1000,9 +894,7 @@ input:-webkit-autofill:active {
     font-family: 'Inter', sans-serif;
 }
 
-.capture-btn:hover {
-    filter: brightness(1.2);
-}
+.capture-btn:hover { filter: brightness(1.2); }
 
 .footer-grid {
     max-width: 1200px;
@@ -1085,9 +977,7 @@ input:-webkit-autofill:active {
     backdrop-filter: blur(3px);
 }
 
-.modal-overlay.show {
-    display: flex;
-}
+.modal-overlay.show { display: flex; }
 
 .modal-content {
     background: var(--surface);
@@ -1109,126 +999,6 @@ input:-webkit-autofill:active {
     color: var(--text);
     background: none;
     border: none;
-}
-
-/* ==========================================
-   MOBILE E MEDIA QUERIES (TODOS AQUI)
-========================================== */
-@media (max-width: 768px) {
-    /* Header & Nav */
-    .site-header nav {
-        padding: 0 1rem;
-        flex-wrap: wrap;
-    }
-
-    .nav-brand-container {
-        margin-right: auto;
-    }
-
-    #nav-menu {
-        display: none !important;
-        width: 100% !important;
-        flex-direction: column !important;
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-        background: var(--header-bg) !important;
-        border-top: 1px solid var(--border) !important;
-        border-bottom: 1px solid var(--border) !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
-        overflow: hidden !important;
-        white-space: normal !important;
-    }
-
-    #nav-menu > li {
-        width: 100% !important;
-        border-bottom: 1px solid var(--border) !important;
-        text-align: left !important;
-    }
-
-    #nav-menu > li:last-child {
-        border-bottom: none !important;
-    }
-
-    #nav-menu > li > a,
-    .nav-item-dropdown > a {
-        display: block !important;
-        padding: 1rem 2rem !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    #nav-menu.show {
-        display: flex !important;
-    }
-
-    .mobile-menu-btn {
-        display: block;
-    }
-
-    .header-controls {
-        gap: 10px;
-    }
-
-    /* Forms & Rodapé */
-    .capture-form {
-        flex-direction: column;
-    }
-
-    .capture-btn,
-    .capture-input {
-        width: 100%;
-    }
-
-    .footer-grid {
-        flex-direction: column;
-        gap: 2.5rem;
-    }
-
-    .footer-box {
-        align-items: center;
-        text-align: center;
-    }
-
-    .footer-box > a,
-    .footer-box > div {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .btn-outline {
-        width: 100%;
-    }
-
-    /* Galeria A4 de Importação */
-    .gallery-a4-container {
-        flex-direction: column;
-        aspect-ratio: auto;
-        height: 600px;
-    }
-
-    .gallery-left {
-        width: 100%;
-        height: 50%;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .gallery-right {
-        width: 100%;
-        height: 50%;
-    }
-
-    .carousel-nav {
-        display: none;
-    }
-
-    .carousel-close {
-        top: 10px;
-        right: 10px;
-    }
 }
 
 /* ==========================================
@@ -1328,25 +1098,10 @@ input:-webkit-autofill:active {
     text-align: center;
 }
 
-.product-btn:hover {
-    filter: brightness(1.1);
-}
-
-.btn-shopee {
-    background: #EE4D2D;
-    color: white;
-}
-
-.btn-ml {
-    background: #FFF159;
-    color: #333;
-    border: 1px solid #e6d83e;
-}
-
-.btn-aliexpress {
-    background: #FF4747;
-    color: white;
-}
+.product-btn:hover { filter: brightness(1.1); }
+.btn-shopee { background: #EE4D2D; color: white; }
+.btn-ml { background: #FFF159; color: #333; border: 1px solid #e6d83e; }
+.btn-aliexpress { background: #FF4747; color: white; }
 
 .category-filters {
     display: flex;
@@ -1369,14 +1124,12 @@ input:-webkit-autofill:active {
     text-decoration: none;
 }
 
-.filter-btn:hover,
-.filter-btn.active {
+.filter-btn:hover, .filter-btn.active {
     border-color: var(--neon);
     background: var(--neon);
     color: #000;
 }
 
-/* Botões âncora vazados */
 .filter-btn.outline {
     background: transparent;
     border-color: var(--text);
@@ -1421,7 +1174,7 @@ input:-webkit-autofill:active {
 }
 
 /* ==========================================
-   PÁGINA: GUIA DE CORDAS (TABELAS E LISTAS)
+   PÁGINA: GUIA E COMPARADOR DE CORDAS
 ========================================== */
 .list-styled {
     list-style-type: none;
@@ -1459,12 +1212,16 @@ input:-webkit-autofill:active {
     text-align: left;
 }
 
+/* Proporção 50 / 25 / 25 para a tabela do Comparador */
+.comparison-table th:nth-child(1), .comparison-table td:nth-child(1) { width: 50%; }
+.comparison-table th:nth-child(2), .comparison-table td:nth-child(2) { width: 25%; }
+.comparison-table th:nth-child(3), .comparison-table td:nth-child(3) { width: 25%; }
+
 .comparison-table th {
     background: var(--surface);
     color: var(--neon);
     font-family: 'Playfair Display', serif;
     font-size: 1.1rem;
-    width: 30%;
     vertical-align: top;
 }
 
@@ -1481,17 +1238,143 @@ input:-webkit-autofill:active {
     border-bottom: none;
 }
 
+/* Botão Whatsapp Global */
 .whatsapp-button {
     position: fixed;
-
-    /* Mantém o botão fixo na tela ao rolar a página */
     bottom: 20px;
-
-    /* Distância do botão até o final da página (ajuste como quiser) */
     left: 20px;
-
-    /* Coloca o botão no canto esquerdo (substitua o 'right' por 'left') */
     z-index: 9999;
+}
 
-    /* Garante que o botão fique na frente de outros elementos do site */
+/* ==========================================
+   MOBILE E MEDIA QUERIES (REVISADO)
+========================================== */
+@media (max-width: 768px) {
+    /* 1. Redução de 20% na fonte geral para encaixe perfeito */
+    html {
+        font-size: 80%; 
+    }
+
+    /* Header & Nav */
+    .site-header nav {
+        padding: 0 1rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-brand-container {
+        margin-right: auto;
+    }
+    
+    /* 2. Força a exibição da logo NKL no Mobile */
+    .nav-brand-logo {
+        display: block !important;
+        flex-shrink: 0;
+    }
+
+    /* 3. Previne corte do Menu na Horizontal (overflow + max-height) */
+    #nav-menu {
+        display: none !important;
+        width: 100% !important;
+        flex-direction: column !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        background: var(--header-bg) !important;
+        border-top: 1px solid var(--border) !important;
+        border-bottom: 1px solid var(--border) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        white-space: normal !important;
+    }
+
+    #nav-menu > li {
+        width: 100% !important;
+        border-bottom: 1px solid var(--border) !important;
+        text-align: left !important;
+    }
+
+    #nav-menu > li:last-child {
+        border-bottom: none !important;
+    }
+
+    #nav-menu > li > a,
+    .nav-item-dropdown > a {
+        display: block !important;
+        padding: 1rem 2rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #nav-menu.show {
+        display: flex !important;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .header-controls {
+        gap: 10px;
+    }
+
+    /* Forms & Rodapé */
+    .capture-form {
+        flex-direction: column;
+    }
+
+    .capture-btn,
+    .capture-input {
+        width: 100%;
+    }
+
+    .footer-grid {
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .footer-box {
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-box > a,
+    .footer-box > div {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-outline {
+        width: 100%;
+    }
+
+    /* Galeria A4 de Importação */
+    .gallery-a4-container {
+        flex-direction: column;
+        aspect-ratio: auto;
+        height: 600px;
+    }
+
+    .gallery-left {
+        width: 100%;
+        height: 50%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .gallery-right {
+        width: 100%;
+        height: 50%;
+    }
+
+    .carousel-nav {
+        display: none;
+    }
+
+    .carousel-close {
+        top: 10px;
+        right: 10px;
+    }
 }
