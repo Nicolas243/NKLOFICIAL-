@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Catálogo Avançado de Cordas | Violino NKL</title>
+        <link rel="stylesheet" href="style.css">
+        <style>.main-content { margin-top: 100px; max-width: 1400px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative; z-index: 2; display: flex; gap: 2rem; align-items: flex-start; } /* ==========================================
+           CABEÇALHO AJUSTADO (TEMA E IDIOMAS)
+        ========================================== */.header-actions { display: flex; align-items: center; gap: 15px; margin-left: auto; } .theme-toggle-btn { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; } .theme-toggle-btn:hover { border-color: var(--neon); color: var(--neon); } .lang-selector { display: flex; gap: 5px; font-size: 0.85rem; font-weight: bold; color: var(--text); opacity: 0.8; } .lang-selector span { cursor: pointer; transition: 0.2s; } .lang-selector span:hover, .lang-selector span.active { color: var(--neon); opacity: 1; } /* ==========================================
+           PAINEL LATERAL DE FILTROS (ASIDE)
+        ========================================== *//* ==========================================
+           PAINEL LATERAL DE FILTROS (ASIDE)
+        ========================================== */.filters-sidebar { width: 320px; background: var(--surface); padding: 1.5rem; border: 1px solid var(--border); border-radius: 8px; flex-shrink: 0; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; z-index: 10; box-sizing: border-box;  /* MÁGICA 1: O padding não estoura mais a tela */ display: flex;  /* MÁGICA 2: Transforma a div num esqueleto inteligente */ flex-direction: column; } .filters-sidebar::-webkit-scrollbar { width: 6px; } .filters-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; } .filter-section-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; } .filter-group { margin-bottom: 1.5rem; } .filter-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; } /* SLIDERS DUPLOS */.dual-slider-wrapper { position: relative; width: 100%; height: 40px; margin-top: 10px; } .slider-track { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; z-index: 1; } .slider-range-fill { position: absolute; top: 50%; transform: translateY(-50%); height: 6px; background: var(--neon); z-index: 2; } .dual-slider-wrapper input[type="range"] { position: absolute; width: 100%; top: 50%; transform: translateY(-50%); -webkit-appearance: none; background: transparent; z-index: 3; pointer-events: none; } .dual-slider-wrapper input[type="range"]::-webkit-slider-thumb { pointer-events: all; width: 18px; height: 18px; -webkit-appearance: none; border-radius: 50%; background: var(--text); border: 2px solid var(--neon); cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); } .dual-inputs-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 5px; } .dual-inputs-row input { width: 45%; padding: 8px; border: 1px solid rgba(255,255,255,0.15);  /* Borda bem suave */ background: transparent !important;  /* Deixa transparente como você pediu */ color: var(--text); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.9rem; text-align: center; outline: none; } /* MATA O TRILHO CINZA NATIVO DO NAVEGADOR QUE CAUSA O DESALINHAMENTO */.dual-slider-wrapper input[type="range"]::-webkit-slider-runnable-track { background: transparent !important; border: transparent !important; } .dual-inputs-row span { color: var(--text); font-size: 0.8rem; opacity: 0.6; } /* SELECTS DINÂMICOS E CHECKBOX */.filter-select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.9rem; cursor: pointer; outline: none; transition: 0.3s; } .filter-select:focus { border-color: var(--neon); } .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 5px 0; } .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text); cursor: pointer; opacity: 0.9; transition: 0.2s; white-space: nowrap; } .checkbox-group label:hover { opacity: 1; color: var(--neon); } .checkbox-group input[type="checkbox"] { accent-color: var(--neon); width: 16px; height: 16px; cursor: pointer; margin: 0; } /* ==========================================
+           ÁREA PRINCIPAL (CATÁLOGO)
+        ========================================== */.catalog-area { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; } .top-controls { display: flex; gap: 15px; background: var(--surface); padding: 1rem; border: 1px solid var(--border); border-radius: 8px; align-items: center; } .search-input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; } .sort-select { padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; cursor: pointer; min-width: 200px; } .strings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; } .string-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; transition: 0.3s; position: relative; container-type: inline-size;  /* LIGA O MOTOR DE PROPORÇÃO DA CAIXA */ } .string-card:hover { transform: translateY(-3px); border-color: var(--neon); box-shadow: 0 8px 25px rgba(0,0,0,0.15); } .card-header { margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; } .card-title-btn { background: transparent; border: none; padding: 0; text-align: left; cursor: pointer; width: 100%; display: flex; justify-content: space-between; align-items: flex-start;  /* Alinha pelo topo se quebrar a linha */ gap: 10px; transition: 0.2s; } .card-title-btn:hover .card-title { color: var(--neon); } .card-title { font-family: 'Playfair Display', serif; font-size: clamp(0.9rem, 8cqw, 1.3rem);  /* MÁGICA AQUI: O máximo é 1.3rem, mas se apertar ele desce até 0.9rem (-30%) */ color: var(--text); font-weight: 700; margin: 0; line-height: 1.2; flex: 1; word-wrap: break-word;  /* Se mesmo encolhendo 30% não couber, ele quebra a linha em vez de empurrar as ofertas */ } .btn-improve-data { background: rgba(255,255,255,0.05); border: 1px dashed var(--border); color: var(--text); font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 8px; transition: 0.2s; } .btn-improve-data:hover { background: var(--text); color: var(--bg); border-style: solid; } .ofertas-box { display: none; margin-top: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; } .ofertas-box.show { display: block; } .ofertas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; } .btn-oferta { padding: 8px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold; color: #fff; text-align: center; } .btn-ml { background: #FFF159; color: #333; } .btn-shopee { background: #EE4D2D; } .btn-amazon { background: #232F3E; color: #FF9900; } .btn-ebay { background: #E53238; } .card-badges { display: flex; gap: 8px; margin-bottom: 1rem; } .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; } .badge.score { background: var(--neon); color: #000; } .badge.price { background: transparent; border: 1px solid var(--neon); color: var(--neon); } .card-body { flex: 1; display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; } .card-info-row { display: flex; justify-content: space-between; font-size: 0.85rem; border-bottom: 1px dotted rgba(255,255,255,0.1); padding-bottom: 5px; } .card-info-row span:first-child { opacity: 0.7; } .card-info-row span:last-child { font-weight: 600; text-align: right; } /* MÁGICA 3: Botão de Restaurar flutuando dentro do painel */.filters-sidebar .btn-compare { margin-top: auto !important;  /* Empurra o botão pro fundo se sobrar espaço */ position: sticky; bottom: -5px;  /* Prende no fundo da rolagem interna */ background: var(--surface);  /* Fundo sólido para esconder os itens rolando atrás */ box-shadow: 0 -15px 15px var(--surface);  /* Cria um degradê para disfarçar o corte */ z-index: 15; padding: 12px; } .btn-compare:hover { background: var(--neon); color: #000; border-color: var(--neon); } /* ==========================================
+           MODAL DE VOTAÇÃO (IDÊNTICO AO COMPARADOR)
+        ========================================== */.vote-modal-content { max-width: 650px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 0; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.5); } .vote-header { position: sticky; top: 0; background: var(--surface); padding: 1.5rem; border-bottom: 1px solid var(--border); z-index: 10; display: flex; justify-content: space-between; align-items: center; } .vote-header h3 { font-family: 'Playfair Display', serif; margin: 0; color: var(--text); font-size: 1.4rem; } .vote-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; } .form-row { display: flex; flex-direction: column; gap: 0.5rem; } .form-row label { font-weight: 600; font-size: 0.9rem; color: var(--text); } .form-row select, .form-row input[type="text"] { padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter', sans-serif; } .slider-container { background: var(--surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); } .slider-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600; color: var(--text); opacity: 0.8; } input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; } input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--neon); cursor: pointer; margin-top: -8px; box-shadow: 0 0 5px rgba(0,0,0,0.3); } input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--border); border-radius: 3px; } .val-display { font-size: 1.1rem; font-weight: bold; color: var(--neon); text-align: center; margin-top: 10px; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; } .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } @media (max-width: 600px) { .grid-2 {  grid-template-columns: 1fr; } } .vote-footer { position: sticky; bottom: 0; background: var(--surface); padding: 1.5rem; border-top: 1px solid var(--border); text-align: center; } .btn-enviar-voto { width: 100%; padding: 15px; background: var(--text); color: var(--bg); font-weight: bold; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; } .btn-enviar-voto:hover { opacity: 0.8; } @media (max-width: 900px) { .catalog-layout {  flex-direction: column; }  .filters-sidebar {  width: 100%;  position: static;  max-height: none; }  .top-controls {  flex-direction: column; }  .sort-select {  width: 100%; } }</style>
+    </head>
+    <body class="dark-theme">
+        <main class="main-content catalog-layout">
+            <aside class="filters-sidebar">
+                <h2 class="filter-section-title">Filtros Dinâmicos</h2>
+                <div class="filter-group">
+                    <label class="filter-label">Nota da Comunidade</label>
+                    <div class="dual-inputs-row">
+                        <input type="number" id="nota-min-input" value="0.0" min="0" max="10" step="0.1">
+                        <span>até</span>
+                        <input type="number" id="nota-max-input" value="10.0" min="0" max="10" step="0.1">
+                    </div>
+                    <div class="dual-slider-wrapper">
+                        <div class="slider-track"></div>
+                        <div class="slider-range-fill" id="nota-fill"></div>
+                        <input type="range" id="nota-min-slider" min="0" max="10" value="0" step="0.1">
+                        <input type="range" id="nota-max-slider" min="0" max="10" value="10" step="0.1">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Preço Estimado (R$)</label>
+                    <div class="dual-inputs-row">
+                        <input type="number" id="preco-min-input" value="0" step="10">
+                        <span>até</span>
+                        <input type="number" id="preco-max-input" value="1000" step="10">
+                    </div>
+                    <div class="dual-slider-wrapper">
+                        <div class="slider-track"></div>
+                        <div class="slider-range-fill" id="preco-fill"></div>
+                        <input type="range" id="preco-min-slider" value="0" step="10">
+                        <input type="range" id="preco-max-slider" value="1000" step="10">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Nível de Qualidade</label>
+                    <select id="filtro-nivel" class="filter-select">
+                        <option value="Todos">Todos os Níveis (A ao E)</option>
+                        <option value="A">Nível A (Profissional / Solo)</option>
+                        <option value="B">Nível B (Avançado)</option>
+                        <option value="C">Nível C (Intermediário)</option>
+                        <option value="D">Nível D (Estudante)</option>
+                        <option value="E">Nível E (Iniciante)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Material do Núcleo (Lá, Ré e Sol)</label>
+                    <select id="filtro-nucleo" class="filter-select">
+                        <option value="Todos">Todos os Materiais</option>
+                        <option value="Aço">Aço (Sólido / Entrançado)</option>
+                        <option value="Sintético">Sintético (Nylon / Perlon)</option>
+                        <option value="Tripa">Tripa Natural</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Cor Principal do Som (> 50%)</label>
+                    <div class="checkbox-group" id="filtro-som">
+                        <label>
+                            <input type="checkbox" value="Quente"> Quentes
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Brilhante"> Brilhantes
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Focado"> Focados
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Complexo"> Complexos
+                        </label>
+                    </div>
+                    <span style="font-size: 0.75rem; opacity: 0.6; margin-top: 5px; display: block;">*Deixe vazio para mostrar todos</span>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Projeção de Volume</label>
+                    <select id="filtro-projecao" class="filter-select">
+                        <option value="Todos">Todas as Projeções</option>
+                        <option value="Suave">Suave</option>
+                        <option value="Moderada">Moderada</option>
+                        <option value="Forte">Forte</option>
+                        <option value="Muito Forte">Muito Forte</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Velocidade de Resposta</label>
+                    <select id="filtro-resposta" class="filter-select">
+                        <option value="Todos">Todas as Velocidades</option>
+                        <option value="Lenta">Lenta</option>
+                        <option value="Moderada">Moderada</option>
+                        <option value="Rápida">Rápida</option>
+                        <option value="Instantânea">Instantânea</option>
+                    </select>
+                </div>
+                <button onclick="limparFiltros()" class="btn-compare" style="margin-top: 20px; border-color: var(--text); color: var(--text);">Restaurar Filtros</button>
+            </aside>
+            <div class="catalog-area">
+                <div class="top-controls">
+                    <input type="text" id="search-input" class="search-input" placeholder="Pesquise por marca, modelo, material...">
+                    <select id="sort-select" class="sort-select">
+                        <option value="alfabetico_az">Nome (A a Z)</option>
+                        <option value="alfabetico_za">Nome (Z a A)</option>
+                        <option value="avaliacao_maior">Maior Nota da Comunidade</option>
+                        <option value="avaliacao_menor">Menor Nota da Comunidade</option>
+                        <option value="preco_menor">Menor Preço Real</option>
+                        <option value="preco_maior">Maior Preço Real</option>
+                        <option value="nivel_maior">Maior Nível Técnico (A ao E)</option>
+                        <option value="nivel_menor">Menor Nível Técnico (E ao A)</option>
+                    </select>
+                </div>
+                <section class="strings-grid" id="strings-grid"></section>
+            </div>
+        </main>
+        <!-- MODAL DE VOTAÇÃO COMPLETO -->
+        <div id="vote-modal" class="modal-overlay" onclick="closeVoteModal()">
+            <div class="modal-content vote-modal-content" onclick="event.stopPropagation()">
+                <div class="vote-header">
+                    <h3>Avaliar: <span id="nome-corda-voto" style="color: var(--neon);">Nome da Corda</span></h3>
+                    <button class="close-btn" onclick="closeVoteModal()" style="position: static;">&times;</button>
+                </div>
+                <div class="vote-body" id="form-votacao">
+                    <div class="slider-container">
+                        <label style="font-weight: 600; display: block; margin-bottom: 10px;">1. Nota Geral de Avaliação (0 a 10)</label>
+                        <input type="range" id="voto-nota" min="0" max="10" step="0.1" value="5.0" oninput="document.getElementById('val-nota').innerText = this.value">
+                        <div class="val-display" id="val-nota">5.0</div>
+                    </div>
+                    <div class="slider-container">
+                        <label style="font-weight: 600; display: block; margin-bottom: 10px;">2. Cor do Som (Quente vs Brilhante)</label>
+                        <div class="slider-header">
+                            <span>🔥 Quente</span>
+                            <span>Brilhante ✨</span>
+                        </div>
+                        <input type="range" id="voto-quente-brilhante" min="0" max="100" value="50" oninput="document.getElementById('val-qb').innerText = 'QUENTE: ' + (100 - this.value) + '% | BRILHANTE: ' + this.value + '%'">
+                        <div class="val-display" id="val-qb">QUENTE: 50% | BRILHANTE: 50%</div>
+                    </div>
+                    <div class="slider-container">
+                        <label style="font-weight: 600; display: block; margin-bottom: 10px;">3. Cor do Som (Focada vs Complexo)</label>
+                        <div class="slider-header">
+                            <span>🎯 Focada</span>
+                            <span>Complexa 🌌</span>
+                        </div>
+                        <input type="range" id="voto-foco-complexo" min="0" max="100" value="50" oninput="document.getElementById('val-fc').innerText = 'FOCADA: ' + (100 - this.value) + '% | COMPLEXA: ' + this.value + '%'">
+                        <div class="val-display" id="val-fc">FOCADA: 50% | COMPLEXA: 50%</div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>4. Nível de Qualidade Geral</label>
+                            <select id="voto-qualidade">
+                                <option value="A+">A+ (Obra Prima / Solo)</option>
+                                <option value="A">A (Profissional)</option>
+                                <option value="A-">A- (Avançado)</option>
+                                <option value="B+">B+ (Excelente Intermediário)</option>
+                                <option value="B" selected>B (Intermediário Padrão)</option>
+                                <option value="B-">B- (Intermediário Entrada)</option>
+                                <option value="C+">C+ (Estudante Bom)</option>
+                                <option value="C">C (Estudante Padrão)</option>
+                                <option value="C-">C- (Estudante Básico)</option>
+                                <option value="D">D (Ruim)</option>
+                                <option value="E">E (Descartável)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>5. Faixa de Preço</label>
+                            <select id="voto-preco">
+                                <option value="$">$ (~R$50 a R$150)</option>
+                                <option value="$$" selected>$$ (~R$150 a R$300)</option>
+                                <option value="$$$">$$$ (~R$300 a R$600)</option>
+                                <option value="$$$$">$$$$ (~R$600 a R$1000)</option>
+                                <option value="$$$$$">$$$$$ (Mais de R$1000)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>6. Tensão/Peso nos Dedos</label>
+                            <select id="voto-tensao">
+                                <option value="Baixa">Baixa (Macio / Leve)</option>
+                                <option value="Média" selected>Média (Padrão)</option>
+                                <option value="Alta">Alta (Duro / Pesado)</option>
+                                <option value="Mista">Mista</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>7. Projeção de Volume</label>
+                            <select id="voto-projecao">
+                                <option value="Suave">Suave</option>
+                                <option value="Moderada" selected>Moderada</option>
+                                <option value="Forte">Forte</option>
+                                <option value="Muito Forte">Muito Forte</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>8. Velocidade de Resposta</label>
+                            <select id="voto-resposta">
+                                <option value="Lenta">Lenta</option>
+                                <option value="Moderada" selected>Moderada</option>
+                                <option value="Rápida">Rápida</option>
+                                <option value="Instantânea">Instantânea</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>9. Ambiente Recomendado</label>
+                            <select id="voto-ambiente">
+                                <option value="Interno">Interno (Estúdio/Quarto)</option>
+                                <option value="Externo">Externo (Igreja/Salão)</option>
+                                <option value="Ambos" selected>Ambos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>10. Tempo de Amaciamento</label>
+                            <select id="voto-amaciamento">
+                                <option value="Minutos">Rápido (Minutos)</option>
+                                <option value="Horas">Médio (Algumas Horas)</option>
+                                <option value="Dias" selected>Médio (Dias 1 a 3)</option>
+                                <option value="Semanas">Lento (Semanas)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>11. Durabilidade Tonal</label>
+                            <select id="voto-durabilidade">
+                                <option value="Curta">Curta (Até 1 mês)</option>
+                                <option value="Média" selected>Média (2 a 4 meses)</option>
+                                <option value="Longa">Longa (6+ meses)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>12. Sensibilidade Climática</label>
+                            <select id="voto-clima">
+                                <option value="Baixa" selected>Baixa (Estável)</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta (Desafina fácil)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>13. Tolerância a Erros de Arco</label>
+                            <select id="voto-tolerancia">
+                                <option value="Baixa">Baixa (Apita/Chia fácil)</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta (Perdoa erros)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label>14. Núcleo Base</label>
+                        <select id="voto-nucleo">
+                            <option value="Tripa">Tripa</option>
+                            <option value="Sintético">Sintético / Nylon / Perlon</option>
+                            <option value="Aço Sólido">Aço Sólido</option>
+                            <option value="Aço Entrançado">Aço Entrançado (Cabo)</option>
+                            <option value="Híbrido">Híbrido</option>
+                            <option value="Não Sei" selected>Não Sei / Padrão da marca</option>
+                        </select>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-row">
+                            <label>15. Revestimento</label>
+                            <select id="voto-revestimento">
+                                <option value="Alumínio">Alumínio</option>
+                                <option value="Prata">Prata</option>
+                                <option value="Ouro">Ouro</option>
+                                <option value="Tungstênio">Tungstênio</option>
+                                <option value="Cromo">Cromo</option>
+                                <option value="Ligas/Níquel">Ligas / Níquel</option>
+                                <option value="Não Sei" selected>Não Sei</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label>16. Fixação (Corda Mi)</label>
+                            <select id="voto-fixacao">
+                                <option value="Ball-end" selected>Bolinha (Ball-end)</option>
+                                <option value="Loop-end">Laço (Loop-end)</option>
+                                <option value="Removível">Removível</option>
+                                <option value="Tie-end">Amarrar (Tie-end)</option>
+                                <option value="Não Sei">Não Sei</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="vote-footer">
+                    <button class="btn-enviar-voto" onclick="enviarVoto()">Publicar Avaliação da Comunidade</button>
+                </div>
+            </div>
+        </div>
+        <!-- 1. ARQUIVOS DE DADOS E LINKS -->
+        <script src="banco-cordas.js"></script>
+        <script src="links-afiliados.js"></script>         
+        <script src="links-ver-mais.js"></script>         
+        <!-- 2. SCRIPTS GLOBAIS E FIREBASE -->
+        <script src="script.js"></script>
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkkc-71i2ZCTAHLD6oF53SsD_yUe6kR6w",
+            authDomain: "nkl-comparador-de-cordas.firebaseapp.com",
+            projectId: "nkl-comparador-de-cordas",
+            storageBucket: "nkl-comparador-de-cordas.firebasestorage.app",
+            messagingSenderId: "960426431432",
+            appId: "1:960426431432:web:9af4c4ae2c3b8f0553a6fd",
+            measurementId: "G-2RQX95N7TW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const dbFirestore = getFirestore(app);
+        
+        window.dbFirestore = dbFirestore; 
+        window.firebaseAddDoc = addDoc;
+        window.firebaseCollection = collection;
+    </script>
+        <!-- 3. MOTOR DA LISTA E MODAL -->
+        <script>
+        const pesoNivel = { "A+":10, "A":9, "A-":8, "B+":7, "B":6, "B-":5, "C+":4, "C":3, "C-":2, "D+":1, "D":0, "E":-1 };
+        let dadosAtuais = [];
+        let cordaSendoVotada = ""; // Controle do Firebase
+
+        function parseCor(str) {
+            let w = 50, f = 50;
+            if(str && str.includes('W:')) {
+                let parts = str.split('|');
+                w = parseInt(parts[0].replace('W:', '').trim()) || 50;
+                f = parseInt(parts[1].replace('F:', '').trim()) || 50;
+            }
+            return { quente: w, brilhante: 100 - w, focada: f, complexa: 100 - f };
+        }
+
+        // ==========================================
+        // LÓGICA DO MODAL DE VOTAÇÃO
+        // ==========================================
+        function abrirModalVotacao(nomeCorda) {
+            cordaSendoVotada = nomeCorda;
+            document.getElementById('nome-corda-voto').innerText = nomeCorda;
+            
+            if(localStorage.getItem('votou_' + nomeCorda)) {
+                alert("Você já enviou uma avaliação para a corda " + nomeCorda + " recentemente. Muito obrigado por contribuir com a comunidade NKL!");
+                return;
+            }
+            
+            document.getElementById('vote-modal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVoteModal() {
+            document.getElementById('vote-modal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function enviarVoto() {
+            if(!window.dbFirestore) {
+                alert("Erro: O Firebase não respondeu.\nVerifique se o Firestore está ativado e as regras configuradas.");
+                return;
+            }
+
+            const btn = document.querySelector('.btn-enviar-voto');
+            const originalText = btn.innerText;
+            btn.innerText = "Registrando avaliação...";
+            btn.disabled = true;
+
+            const voto = {
+                corda: cordaSendoVotada,
+                data: new Date().toISOString(),
+                origem: 'lista_cordas',
+                nota: parseFloat(document.getElementById('voto-nota').value),
+                cor_quente_brilhante: parseInt(document.getElementById('voto-quente-brilhante').value),
+                cor_foco_complexo: parseInt(document.getElementById('voto-foco-complexo').value),
+                qualidade: document.getElementById('voto-qualidade').value,
+                tensao: document.getElementById('voto-tensao').value,
+                projecao: document.getElementById('voto-projecao').value,
+                resposta: document.getElementById('voto-resposta').value,
+                ambiente: document.getElementById('voto-ambiente').value,
+                amaciamento: document.getElementById('voto-amaciamento').value,
+                durabilidade: document.getElementById('voto-durabilidade').value,
+                tolerancia: document.getElementById('voto-tolerancia').value,
+                clima: document.getElementById('voto-clima').value,
+                nucleo: document.getElementById('voto-nucleo').value,
+                preco: document.getElementById('voto-preco').value,
+                revestimento: document.getElementById('voto-revestimento').value,
+                fixacao: document.getElementById('voto-fixacao').value
+            };
+
+            try {
+                const docRef = window.firebaseCollection(window.dbFirestore, "avaliacoes_cordas");
+                const addPromise = window.firebaseAddDoc(docRef, voto);
+                
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT_FIREBASE")), 8000));
+                await Promise.race([addPromise, timeoutPromise]);
+                
+                localStorage.setItem('votou_' + cordaSendoVotada, "sim");
+                alert("Sua avaliação foi publicada com sucesso! Os dados atualizarão a base global em breve.");
+                closeVoteModal();
+            } catch (e) {
+                if(e.message === "TIMEOUT_FIREBASE") {
+                    alert("⚠️ Conexão interrompida.\nO servidor do Google rejeitou a entrada devido a bloqueio nas 'Regras de Segurança' do Firestore.");
+                } else {
+                    console.error("Erro ao salvar no Firebase: ", e);
+                    alert("Houve um erro de conexão. Tente novamente mais tarde.");
+                }
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DO CATÁLOGO E FILTROS
+        // ==========================================
+        function inicializarCatalogo() {
+            db.forEach(c => {
+                if(!c.preco_real) c.preco_real = c.preco_min || 100;
+                c.qualidade = c.qualidade || "C";
+                c.nota = parseFloat(c.nota) || 0.0;
+            });
+
+            const maxPreco = Math.max(...db.map(c => c.preco_real));
+            
+            document.getElementById('preco-max-input').value = maxPreco;
+            document.getElementById('preco-max-input').max = maxPreco;
+            document.getElementById('preco-min-input').max = maxPreco;
+            
+            const precoSliderMax = document.getElementById('preco-max-slider');
+            const precoSliderMin = document.getElementById('preco-min-slider');
+            precoSliderMax.max = maxPreco;
+            precoSliderMax.value = maxPreco;
+            precoSliderMin.max = maxPreco;
+
+            dadosAtuais = [...db];
+            
+            configDualSlider('nota-min-slider', 'nota-max-slider', 'nota-min-input', 'nota-max-input', 'nota-fill');
+            configDualSlider('preco-min-slider', 'preco-max-slider', 'preco-min-input', 'preco-max-input', 'preco-fill');
+            
+            aplicarFiltrosEOrdenacao();
+        }
+
+        function configDualSlider(minId, maxId, inMinId, inMaxId, fillId) {
+            const slMin = document.getElementById(minId);
+            const slMax = document.getElementById(maxId);
+            const inMin = document.getElementById(inMinId);
+            const inMax = document.getElementById(inMaxId);
+            const fill = document.getElementById(fillId);
+
+            function updateUI() {
+                let valMin = parseFloat(slMin.value);
+                let valMax = parseFloat(slMax.value);
+                if (valMin > valMax) { let tmp = valMin; valMin = valMax; valMax = tmp; }
+                
+                inMin.value = valMin; inMax.value = valMax;
+                
+                let percentMin = (valMin / slMin.max) * 100;
+                let percentMax = (valMax / slMax.max) * 100;
+                fill.style.left = percentMin + "%";
+                fill.style.width = (percentMax - percentMin) + "%";
+                
+                aplicarFiltrosEOrdenacao(); 
+            }
+
+            slMin.addEventListener('input', () => { if(parseFloat(slMin.value) > parseFloat(slMax.value)) slMin.value = slMax.value; updateUI(); });
+            slMax.addEventListener('input', () => { if(parseFloat(slMax.value) < parseFloat(slMin.value)) slMax.value = slMin.value; updateUI(); });
+            inMin.addEventListener('change', () => { slMin.value = inMin.value; updateUI(); });
+            inMax.addEventListener('change', () => { slMax.value = inMax.value; updateUI(); });
+        }
+
+        function aplicarFiltrosEOrdenacao() {
+            const termoBusca = document.getElementById('search-input').value.toLowerCase();
+            const notaMin = parseFloat(document.getElementById('nota-min-input').value);
+            const notaMax = parseFloat(document.getElementById('nota-max-input').value);
+            const precoMin = parseFloat(document.getElementById('preco-min-input').value);
+            const precoMax = parseFloat(document.getElementById('preco-max-input').value);
+            
+            const fNivel = document.getElementById('filtro-nivel').value;
+            const fNucleo = document.getElementById('filtro-nucleo').value;
+            const fProjecao = document.getElementById('filtro-projecao').value;
+            const fResposta = document.getElementById('filtro-resposta').value;
+            
+            const coresSelecionadas = Array.from(document.querySelectorAll('#filtro-som input:checked')).map(cb => cb.value);
+
+            let filtrados = db.filter(c => {
+                let passaTexto = c.nome.toLowerCase().includes(termoBusca) || (c.nucleo && c.nucleo.toLowerCase().includes(termoBusca));
+                let passaNota = c.nota >= notaMin && c.nota <= notaMax;
+                let passaPreco = c.preco_real >= precoMin && c.preco_real <= precoMax;
+                
+                let passaNivel = (fNivel === 'Todos') || c.qualidade.startsWith(fNivel);
+                let passaNucleo = (fNucleo === 'Todos') || (c.nucleo && c.nucleo.includes(fNucleo));
+                let passaProjecao = (fProjecao === 'Todos') || c.projecao === fProjecao;
+                let passaResposta = (fResposta === 'Todos') || c.resposta === fResposta;
+                
+                let passaSom = true;
+                if(coresSelecionadas.length > 0) {
+                    const corObj = parseCor(c.cor);
+                    passaSom = coresSelecionadas.every(cor => {
+                        if(cor === 'Quente') return corObj.quente > 50;
+                        if(cor === 'Brilhante') return corObj.brilhante > 50;
+                        if(cor === 'Focado') return corObj.focada > 50;
+                        if(cor === 'Complexo') return corObj.complexa > 50;
+                        return true;
+                    });
+                }
+
+                return passaTexto && passaNota && passaPreco && passaNivel && passaNucleo && passaProjecao && passaResposta && passaSom;
+            });
+
+            const sortBy = document.getElementById('sort-select').value;
+            filtrados.sort((a, b) => {
+                switch(sortBy) {
+                    case 'alfabetico_az': return a.nome.localeCompare(b.nome);
+                    case 'alfabetico_za': return b.nome.localeCompare(a.nome);
+                    case 'avaliacao_maior': return b.nota - a.nota;
+                    case 'avaliacao_menor': return a.nota - b.nota;
+                    case 'preco_menor': return a.preco_real - b.preco_real;
+                    case 'preco_maior': return b.preco_real - a.preco_real;
+                    case 'nivel_maior': return (pesoNivel[b.qualidade] || 0) - (pesoNivel[a.qualidade] || 0);
+                    case 'nivel_menor': return (pesoNivel[a.qualidade] || 0) - (pesoNivel[b.qualidade] || 0);
+                    default: return 0;
+                }
+            });
+
+            renderizarCordas(filtrados);
+        }
+
+        document.getElementById('search-input').addEventListener('input', aplicarFiltrosEOrdenacao);
+        document.querySelectorAll('.filter-select').forEach(sel => sel.addEventListener('change', aplicarFiltrosEOrdenacao));
+        document.querySelectorAll('#filtro-som input').forEach(cb => cb.addEventListener('change', aplicarFiltrosEOrdenacao));
+        document.getElementById('sort-select').addEventListener('change', aplicarFiltrosEOrdenacao);
+
+        function limparFiltros() {
+            document.getElementById('search-input').value = "";
+            document.getElementById('filtro-nivel').value = "Todos";
+            document.getElementById('filtro-nucleo').value = "Todos";
+            document.getElementById('filtro-projecao').value = "Todos";
+            document.getElementById('filtro-resposta').value = "Todos";
+            document.querySelectorAll('#filtro-som input').forEach(cb => cb.checked = false);
+            
+            const maxP = document.getElementById('preco-max-input').max;
+            document.getElementById('nota-min-input').value = 0.0; 
+            document.getElementById('nota-max-input').value = 10.0;
+            document.getElementById('preco-min-input').value = 0; 
+            document.getElementById('preco-max-input').value = maxP;
+            
+            document.getElementById('nota-min-input').dispatchEvent(new Event('change'));
+            document.getElementById('preco-min-input').dispatchEvent(new Event('change'));
+        }
+
+        function renderizarCordas(lista) {
+            const grid = document.getElementById('strings-grid');
+            grid.innerHTML = '';
+
+            if(lista.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; opacity: 0.6;">Nenhuma corda encontrada com estas combinações. Tente limpar os filtros.</div>';
+                return;
+            }
+
+            lista.forEach((corda, index) => {
+                const corObj = parseCor(corda.cor);
+                
+                const txtEixo1 = corObj.quente >= 50 ? `Quente ${corObj.quente}%` : `Brilhante ${corObj.brilhante}%`;
+                const txtEixo2 = corObj.focada >= 50 ? `Focado ${corObj.focada}%` : `Complexo ${corObj.complexa}%`;
+
+                const linkML = typeof obterLinkAfiliado === 'function' ? obterLinkAfiliado(corda.nome, 'ml') : '#';
+                const linkShopee = typeof obterLinkAfiliado === 'function' ? obterLinkAfiliado(corda.nome, 'shopee') : '#';
+                const linkAmazon = typeof obterLinkAfiliado === 'function' ? obterLinkAfiliado(corda.nome, 'amazon') : '#';
+                const linkEbay = typeof obterLinkAfiliado === 'function' ? obterLinkAfiliado(corda.nome, 'ebay') : '#';
+                const linkMais = typeof obterLinkVerMais === 'function' ? obterLinkVerMais(corda.nome) : '#';
+
+                const card = document.createElement('div');
+                card.className = 'string-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <button class="card-title-btn" onclick="document.getElementById('ofertas-box-${index}').classList.toggle('show')">
+                            <h3 class="card-title">${corda.nome}</h3>
+                            <span class="icon-cart">🛒 Ofertas</span>
+                        </button>
+                        
+                        <div class="ofertas-box" id="ofertas-box-${index}">
+                            <div class="ofertas-grid">
+                                <a href="${linkML}" target="_blank" class="btn-oferta btn-ml">Mercado Livre</a>
+                                <a href="${linkShopee}" target="_blank" class="btn-oferta btn-shopee">Shopee</a>
+                                <a href="${linkAmazon}" target="_blank" class="btn-oferta btn-amazon">Amazon</a>
+                                <a href="${linkEbay}" target="_blank" class="btn-oferta btn-ebay">eBay</a>
+                                <a href="${linkMais}" target="_blank" class="btn-oferta" style="background:#444; grid-column: span 2;">+ Ver Mais Lojas</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-badges">
+                        <span class="badge score">${corda.nota} ⭐</span>
+                        <span class="badge price">~ R$ ${corda.preco_real},00</span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="card-info-row"><span>Nível Técnico:</span><span>${corda.qualidade}</span></div>
+                        <div class="card-info-row"><span>Resposta:</span><span>${corda.resposta}</span></div>
+                        <div class="card-info-row"><span>Projeção:</span><span>${corda.projecao}</span></div>
+                        <div class="card-info-row"><span>Timbre:</span><span>${txtEixo1} | ${txtEixo2}</span></div>
+                    </div>
+                    
+                    <button class="btn-improve-data" onclick="abrirModalVotacao('${corda.nome}')" style="margin-bottom:10px; width:100%;">✏️ Melhorar dados (Votar)</button>
+                    <a href="comparador-de-cordas.html?corda=${encodeURIComponent(corda.nome)}" class="btn-compare">Comparar este Modelo</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', inicializarCatalogo);
+    </script>
+    </body>
+</html>

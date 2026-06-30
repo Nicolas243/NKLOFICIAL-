@@ -2,6 +2,7 @@
 <html lang="pt-BR">
     <head>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
         <script>
         window.dataLayer=window.dataLayer||[];
         function gtag(){dataLayer.push(arguments);}
@@ -16,126 +17,33 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body class="dark-theme">
-        <!-- ANIMAÇÃO DE ENTRADA -->
         <div id="intro-animation">
             <div class="curtain curtain-left" id="curtain-left"></div>
             <div class="curtain curtain-right" id="curtain-right"></div>
-            <!-- Logos e ícones mantemos em PNG para garantir transparência perfeita -->
             <img src="NKL/logo-violino.png" alt="Violino" class="intro-logo" id="intro-logo" onerror="this.src='NKL/NKL.png';">
         </div>
-        <!-- CABEÇALHO PADRONIZADO -->
-        <header id="site-header" class="site-header">
-            <nav>
-                <div class="nav-brand-container" id="logo-dropdown-container">
-                    <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
-                    <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
-                    <div class="logo-dropdown-content">
-                        <a href="#" class="active">Violino</a>
-                        <a href="#">Viola</a>
-                        <a href="#">Violoncelo</a>
-                    </div>
-                </div>
-                <ul class="nav-menu" id="nav-menu">
-                    <li>
-                        <a href="index.html" class="home-active">Home</a>
-                    </li>
-                    <li>
-                        <a href="importacao.html">Importação</a>
-                    </li>
-                    <li>
-                        <a href="recomendados.html">Recomendados</a>
-                    </li>
-                    <li class="nav-item-dropdown">
-                        <a href="javascript:void(0);">Cordas▾</a>
-                        <div class="dropdown-content">
-                            <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                            <a href="comparador-de-cordas.html">Comparar Cordas</a>
-                        </div>
-                    </li>
-                    <li>
-                        <a href="fisica-do-som.html">Física do Som</a>
-                    </li>
-                    <li>
-                        <a href="contatos.html">Contatos</a>
-                    </li>
-                </ul>
-                <div class="header-controls">
-                    <div class="lang-dropdown" id="lang-dropdown">
-                        <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
-                            <div class="flag-split">
-                                <img src="https://flagcdn.com/pt.svg" alt="PT">
-                                <img src="https://flagcdn.com/br.svg" alt="BR">
-                            </div>
-                        </button>
-                        <div class="lang-content">
-                            <a href="#"><div class="flag-split" style="width:24px;height:16px;">
-                                    <img src="https://flagcdn.com/pt.svg">
-                                    <img src="https://flagcdn.com/br.svg">
-                                </div> PT/BR</a>
-                            <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;">
-                                    <img src="https://flagcdn.com/es.svg">
-                                    <img src="https://flagcdn.com/ar.svg">
-                                </div> ES/AR</a>
-                            <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;">
-                                    <img src="https://flagcdn.com/gb.svg">
-                                    <img src="https://flagcdn.com/us.svg">
-                                </div> EN/US</a>
-                        </div>
-                    </div>
-                    <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                    <button id="mobile-menu-btn" class="mobile-menu-btn">
-                        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2">
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-            </nav>
-        </header>
-        <!-- CONTEÚDO PRINCIPAL -->
         <main class="main-content">
-            <section style="margin-bottom: 3rem; text-align: center;">
-                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">Portal NKL</h1>
+            <section style="margin-bottom: 2rem; text-align: center;"> 
+                <!-- Margem inferior reduzida de 3rem para 2rem -->
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-top: 0; margin-bottom: 0.5rem; color: var(--text);">Portal NKL</h1>
                 <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seja você iniciante dando os primeiros passos ou profissional ajustando os mínimos detalhes, aqui você encontra respostas claras, sem enrolação e com base real para cuidar do seu som.</p>
             </section>
             <div class="home-container">
+                <!-- 1. CORDAS: Catálogo (NOVO) -->
                 <div class="showcase-section">
                     <div class="content-side">
-                        <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
-                        <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
-                        <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
+                        <h2>Catálogo Avançado de Cordas</h2>
+                        <p>Explore nossa lista completa com todas as especificações técnicas, tensões, materiais e projeção de som. Filtre, pesquise e encontre o encordoamento ideal para o seu violino e para o seu bolso.</p>
+                        <a href="lista-de-cordas.html" class="btn-home-cta">Acessar Catálogo Completo</a>
                     </div>
                     <div class="photo-side">
                         <div class="photo-box">
-                            <img src="NKL/home-foto1.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-foto1" alt="Método NKL">
+                            <!-- Criei uma foto fake "home-foto6.webp", mas coloquei o NKL Transparente como backup até você subir a imagem real na pasta -->
+                            <img src="NKL/home-foto6.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10" alt="Catálogo de Cordas">
                         </div>
                     </div>
                 </div>
-                <div class="showcase-section reverse">
-                    <div class="content-side">
-                        <h2>Equipamentos Recomendados</h2>
-                        <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
-                        <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
-                    </div>
-                    <div class="photo-side">
-                        <div class="photo-box">
-                            <img src="NKL/home-foto2.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15" alt="Recomendados">
-                        </div>
-                    </div>
-                </div>
-                <div class="showcase-section">
-                    <div class="content-side">
-                        <h2>Gráfico de Cordas</h2>
-                        <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
-                        <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
-                    </div>
-                    <div class="photo-side">
-                        <div class="photo-box">
-                            <img src="NKL/home-foto3.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10" alt="Gráfico de Cordas">
-                        </div>
-                    </div>
-                </div>
+                <!-- 2. CORDAS: Comparar -->
                 <div class="showcase-section reverse">
                     <div class="content-side">
                         <h2>Diferencie inteiramente suas cordas</h2>
@@ -148,7 +56,21 @@
                         </div>
                     </div>
                 </div>
+                <!-- 3. CORDAS: Gráfico -->
                 <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Gráfico de Cordas</h2>
+                        <p>Quer entender a diferença entre uma corda e outra sem precisar gastar uma nota testando todas? Neste gráfico visual, você consegue ver o mapa de timbre de várias marcas e entender de forma rápida quais são as mais brilhantes, focadas ou aveludadas.</p>
+                        <a href="guia-de-cordas.html" class="btn-home-cta">Explorar Gráfico de Cordas</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto3.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-10" alt="Gráfico de Cordas">
+                        </div>
+                    </div>
+                </div>
+                <!-- 4. FÍSICA DO SOM -->
+                <div class="showcase-section reverse">
                     <div class="content-side">
                         <h2>O Caminho do Som</h2>
                         <p>Você já parou para pensar em como o som realmente nasce? Aqui nós explicamos de um jeito bem simples e prático toda a jornada do áudio: desde o exato momento em que a crina do arco toca a corda, passando pela vibração do cavalete, até o som se espalhar por completo pelo corpo do instrumento.</p>
@@ -160,52 +82,34 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-        <!-- RODAPÉ PADRONIZADO -->
-        <footer class="site-footer">
-            <div class="footer-header">
-                <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-                <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
-                <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
-                    <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
-                    <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
-                    <button type="submit" class="capture-btn">Confirmar</button>
-                </form>
-            </div>
-            <div class="footer-grid">
-                <div class="footer-box">
-                    <h4>Sua voz importa</h4>
-                    <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
-                    <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+                <!-- 5. IMPORTAÇÃO -->
+                <div class="showcase-section">
+                    <div class="content-side">
+                        <h2>Importação Direta na Fonte! MÉTODO NKL</h2>
+                        <p>Quer parar de pagar uma fortuna por instrumentos e acessórios aqui no Brasil? Eu montei um passo a passo simples para você aprender a comprar violinos de oficina e peças direto das fábricas internacionais com até 40% de economia e total segurança.</p>
+                        <a href="importacao.html" class="btn-home-cta">Acessar Método de Importação</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto1.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-foto1" alt="Método NKL">
+                        </div>
+                    </div>
                 </div>
-                <div class="footer-box">
-                    <h4>Contato Direto</h4>
-                    <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
-                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
-                </div>
-                <div class="footer-box">
-                    <h4>Apoie o Projeto</h4>
-                    <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
-                    <div style="display: flex; gap: 10px; width: 100%;">
-                        <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
-                        <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
+                <!-- 6. RECOMENDADOS -->
+                <div class="showcase-section reverse">
+                    <div class="content-side">
+                        <h2>Equipamentos Recomendados</h2>
+                        <p>Chega de gastar dinheiro testando acessórios no escuro. Aqui eu separei uma lista com os arcos, breus e espalheiras que realmente funcionam e entregam o melhor custo-benefício para o seu dia a dia.</p>
+                        <a href="recomendados.html" class="btn-home-cta">Ver Vitrine de Recomendados</a>
+                    </div>
+                    <div class="photo-side">
+                        <div class="photo-box">
+                            <img src="NKL/home-foto2.webp" onerror="this.src='NKL/NKLPREOT-FUNDO%20TRANSPARRENTE.png'" class="home-photo-img img-zoom-15" alt="Recomendados">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                &copy; Copyright 2026 | NKL | Todos direitos reservados
-</div>
-        </footer>
-        <!-- MODAL PAYPAL (WEBP) -->
-        <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="close-btn" onclick="closePixModal()">&times;</button>
-                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
-                <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-                <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
-            </div>
-        </div>
+        </main>
         <script src="script.js"></script>
     </body>
 </html>

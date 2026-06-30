@@ -4,6 +4,7 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NKL_oficial | Contatos</title>
@@ -17,70 +18,115 @@
     <!-- CSS GLOBAL -->
     <link rel="stylesheet" href="style.css">
     
+    <!-- CSS ESPECÍFICO DA PÁGINA DE CONTATOS -->
     <style>
-        /* ==========================================
-           BOTAO WHATSAPP (BLINDADO NO HTML)
-        ========================================== */
-        .whatsapp-float {
-            position: fixed !important;
-            bottom: 20px !important;
-            right: 20px !important;
-            width: 60px !important;
-            height: 60px !important;
-            z-index: 9999 !important;
-            transition: transform 0.3s ease;
-        }
-        .whatsapp-float img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-        }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
+        .main-content { 
+            max-width: 800px; 
+            background: transparent !important; 
+            margin-top: 100px; 
+            position: relative; 
+            z-index: 2; 
+            padding: 2rem 1rem;
         }
         
-        @media (max-width: 768px) {
-            .whatsapp-float {
-                width: 50px !important;
-                height: 50px !important;
-                bottom: 15px !important;
-                right: 15px !important;
-            }
+        .profile { 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            background: transparent !important; 
+            transition: all 0.4s ease; 
         }
-
-        /* ==========================================
-           CSS ESPECÍFICO EXCLUSIVO DE CONTATOS
-        ========================================== */
-        .main-content { max-width: 800px; background: transparent !important; }
         
-        .profile { text-align: center; margin-bottom: 3rem; background: transparent !important; transition: all 0.4s ease; }
-        .profile.esconder { opacity: 0; visibility: hidden; transform: translateY(-30px); }
+        .profile.esconder { 
+            opacity: 0; 
+            visibility: hidden; 
+            transform: translateY(-30px); 
+        }
         
         .avatar { 
-            width: 100px; height: 100px; border-radius: 50%; object-fit: contain; 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            object-fit: contain; 
             background: transparent !important;
-            padding: 10px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            padding: 10px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
             transition: filter 0.3s;
         }
-        body.dark-theme .avatar { filter: brightness(0) invert(1); }
         
-        .display-name { font-family: 'Playfair Display', serif; color: var(--text); margin: 1rem 0 0.5rem 0; font-size: 2rem; }
-        .bio { color: var(--text); opacity: 0.8; font-size: 1rem; margin-bottom: 2rem; }
+        body.dark-theme .avatar { 
+            filter: brightness(0) invert(1); 
+        }
         
-        .divider { display: flex; align-items: center; justify-content: center; color: var(--neon); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 2rem; }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); margin: 0 15px; }
+        .display-name { 
+            font-family: 'Playfair Display', serif; 
+            color: var(--text); 
+            margin: 1rem 0 0.5rem 0; 
+            font-size: 2rem; 
+        }
+        
+        .bio { 
+            color: var(--text); 
+            opacity: 0.8; 
+            font-size: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .divider { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--neon); 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            font-size: 0.85rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .divider::before, .divider::after { 
+            content: ''; 
+            flex: 1; 
+            height: 1px; 
+            background: var(--border); 
+            margin: 0 15px; 
+        }
 
-        .links-list { display: flex; flex-direction: column; gap: 1rem; background: transparent !important;}
+        .links-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+            background: transparent !important;
+        }
         
         .link-card { 
-            display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); 
-            border-radius: 8px; padding: 1.2rem; text-decoration: none; color: var(--text); 
+            display: flex; 
+            align-items: center; 
+            background: var(--surface); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 1.2rem; 
+            text-decoration: none; 
+            color: var(--text); 
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; 
         }
-        .link-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--neon); }
         
-        .link-icon { font-size: 1.8rem; margin-right: 1.5rem; width: 40px; text-align: center; display: flex; align-items: center; justify-content: center;}
+        .link-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            border-color: var(--neon); 
+        }
+        
+        .link-icon { 
+            font-size: 1.8rem; 
+            margin-right: 1.5rem; 
+            width: 40px; 
+            text-align: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
         .link-content { display: flex; flex-direction: column; }
         .link-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; color: var(--text); }
         .link-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.4; color: var(--text); }
@@ -88,79 +134,7 @@
 </head>
 <body class="dark-theme">
 
-    <!-- FUNDO PARALLAX -->
-    <div class="parallax-bg" id="parallax-bg">
-        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
-        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
-        <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
-        <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
-        <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
-        <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
-        <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
-        <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
-        <span class="music-symbol" style="top: 45%; left: 45%; font-size: 5rem; opacity: 0.05;">𝄢</span>
-        <span class="violin-name" style="top: 55%; left: 35%; transform: rotate(-2deg); opacity: 0.04;">Guarneri 1742</span>
-        <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
-        <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
-        <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
-        <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
-        <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
-        <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
-        <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
-        <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
-        <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
-        <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
-    </div>
-
-    <!-- CABEÇALHO PADRONIZADO -->
-    <header id="site-header" class="site-header">
-        <nav>
-            <div class="nav-brand-container" id="logo-dropdown-container">
-                <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
-                <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
-                <div class="logo-dropdown-content">
-                    <a href="#" class="active">Violino</a>
-                    <a href="#">Viola</a>
-                    <a href="#">Violoncelo</a>
-                </div>
-            </div>
-            
-            <ul class="nav-menu" id="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="importacao.html">Importação</a></li>
-                <li><a href="recomendados.html">Recomendados</a></li>
-                <li class="nav-item-dropdown">
-                    <a href="javascript:void(0);">Cordas▾</a>
-                    <div class="dropdown-content">
-                        <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
-                    </div>
-                </li>
-                <li><a href="fisica-do-som.html">Física do Som</a></li>
-                <li><a href="contatos.html" class="active">Contatos</a></li>
-            </ul>
-            
-            <div class="header-controls">
-                <div class="lang-dropdown" id="lang-dropdown">
-                    <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
-                        <div class="flag-split"><img src="https://flagcdn.com/pt.svg" alt="PT"><img src="https://flagcdn.com/br.svg" alt="BR"></div>
-                    </button>
-                    <div class="lang-content">
-                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
-                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
-                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
-                    </div>
-                </div>
-
-                <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                <button id="mobile-menu-btn" class="mobile-menu-btn">
-                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- CONTEÚDO PRINCIPAL (PERFIL E LINKS) -->
+    <!-- CONTEÚDO PRINCIPAL (Header, Background e Footer são injetados pelo script.js) -->
     <main class="main-content">
         <header class="profile">
             <img src="NKL/NKL.png" alt="NKL Logo" class="avatar" typeof="image/png">
@@ -212,7 +186,6 @@
                 </span> 
             </a>
 
-            <!-- COMPRAS E IMPORTAÇÕES -->
             <a href="https://ebay.us/ea99Iy" target="_blank" class="link-card">
                 <span class="link-icon">🛒</span>
                 <span class="link-content">
@@ -271,59 +244,6 @@
         </section>
     </main>
 
-    <!-- BOTÃO DO WHATSAPP BLINDADO -->
-    <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" class="whatsapp-float" target="_blank" aria-label="Comunidade VIP WhatsApp">
-        <img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy" alt="WhatsApp">
-    </a>
-
-    <!-- RODAPÉ PADRONIZADO -->
-    <footer class="site-footer">
-        <div class="footer-header">
-            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
-            <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
-                <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
-                <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
-                <button type="submit" class="capture-btn">Confirmar</button>
-            </form>
-        </div>
-
-        <div class="footer-grid">
-            <div class="footer-box">
-                <h4>Sua voz importa</h4>
-                <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
-                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
-            </div>
-            <div class="footer-box">
-                <h4>Contato Direto</h4>
-                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
-                <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
-            </div>
-            <div class="footer-box">
-                 <h4>Apoie o Projeto</h4>
-                <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
-                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; Copyright 2026 | NKL | Todos direitos reservados
-        </div>
-    </footer>
-
-    <!-- MODAL PAYPAL -->
-    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-            <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
-        </div>
-    </div>
-
-    <!-- JS GLOBAL -->
     <script src="script.js"></script>
 
 </body>

@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,130 +19,92 @@
     
     <style>
         /* ==========================================
-           BOTAO WHATSAPP (BLINDADO NO HTML)
-        ========================================== */
-        .whatsapp-float {
-            position: fixed !important;
-            bottom: 20px !important;
-            right: 20px !important;
-            width: 60px !important;
-            height: 60px !important;
-            z-index: 9999 !important;
-            transition: transform 0.3s ease;
-        }
-        .whatsapp-float img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-        }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-        }
-        
-        /* ==========================================
            CSS ESPECÍFICO DE FÍSICA DO SOM
         ========================================== */
-        .main-content { margin-top: 100px; max-width: 1000px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative;}
+        .main-content { 
+            margin-top: 100px; 
+            max-width: 1000px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            padding: 2rem 1rem; 
+            position: relative; 
+            z-index: 2; /* Para ficar acima do fundo animado global */
+        } 
         
-        .section-card { background: var(--surface); padding: 2.5rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2.5rem; transition: transform 0.3s, box-shadow 0.3s; }
-        .section-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .section-card h2, .section-card h3 { font-family: 'Playfair Display', serif; color: var(--text); margin-bottom: 1.5rem; font-size: 1.8rem; }
-        .section-card p { line-height: 1.8; opacity: 0.9; margin-bottom: 1.5rem; }
+        .section-card { 
+            background: var(--surface); 
+            padding: 2.5rem; 
+            border-radius: 8px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 2.5rem; 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        } 
         
+        .section-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            border-color: var(--neon);
+        } 
+        
+        .section-card h2, .section-card h3 { 
+            font-family: 'Playfair Display', serif; 
+            color: var(--neon); 
+            margin-top: 0;
+            margin-bottom: 1.5rem; 
+            font-size: 1.8rem; 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        } 
+        
+        .section-card p { 
+            line-height: 1.8; 
+            font-size: 1rem;
+            opacity: 0.9; 
+            margin-bottom: 1.5rem; 
+        } 
+
         /* Moldura das Imagens */
         .image-placeholder { 
-            width: 100%; height: auto; min-height: 250px; background: #f4f4f4; border: 1px dashed var(--border); 
-            border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;
-            margin: 2rem 0; color: var(--text); font-style: italic; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;
-        }
-        .image-placeholder img { width: 100%; height: 100%; max-height: 400px; object-fit: contain; background: var(--surface); }
-        .image-placeholder span { padding: 1rem; font-size: 0.85rem; opacity: 0.7;}
-        body.dark-theme .image-placeholder { background: #1e1e1e; border-color: #444; }
-
+            width: 100%; 
+            height: auto; 
+            min-height: 250px; 
+            background: rgba(0,0,0,0.2); 
+            border: 1px dashed var(--border); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            flex-direction: column; 
+            margin: 2rem 0; 
+            color: var(--text); 
+            font-style: italic; 
+            overflow: hidden; 
+            text-align: center; 
+        } 
+        
+        .image-placeholder img { 
+            width: 100%; 
+            height: 100%; 
+            max-height: 400px; 
+            object-fit: contain; 
+            background: transparent; 
+        } 
+        
+        .image-placeholder span { 
+            padding: 1rem; 
+            font-size: 0.85rem; 
+            opacity: 0.7; 
+        } 
+        
         @media (max-width: 768px) {
-            .whatsapp-float {
-                width: 50px !important;
-                height: 50px !important;
-                bottom: 15px !important;
-                right: 15px !important;
-            }
+            .section-card { padding: 1.5rem; }
         }
     </style>
 </head>
 <body class="dark-theme">
 
-    <!-- FUNDO PARALLAX -->
-    <div class="parallax-bg" id="parallax-bg">
-        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
-        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
-        <span class="music-symbol" style="bottom: 20%; left: 20%;">♪</span>
-        <span class="music-symbol" style="top: 60%; right: 30%;">♫</span>
-        <span class="music-symbol" style="top: 80%; left: 40%;">𝄿</span>
-        <span class="music-symbol" style="top: 40%; left: 60%;">𝆕</span>
-        <span class="music-symbol" style="top: 15%; right: 40%;">♬</span>
-        <span class="music-symbol" style="bottom: 10%; right: 10%;">♯</span>
-        <span class="violin-name" style="top: 15%; left: 30%; transform: rotate(-5deg);">Il Cannone 1743</span>
-        <span class="violin-name" style="top: 45%; right: 5%; transform: rotate(3deg);">Le Messie 1716</span>
-        <span class="violin-name" style="bottom: 15%; left: 5%; transform: rotate(-8deg);">Lord Wilton 1742</span>
-        <span class="violin-name" style="top: 5%; right: 25%; transform: rotate(6deg);">Vieuxtemps 1741</span>
-        <span class="violin-name" style="top: 35%; left: 5%; transform: rotate(-4deg);">Alard 1715</span>
-        <span class="violin-name" style="bottom: 35%; right: 20%; transform: rotate(2deg);">Kochanski 1741</span>
-        <span class="violin-name" style="top: 65%; left: 15%; transform: rotate(-7deg);">Betts 1704</span>
-        <span class="violin-name" style="top: 80%; right: 5%; transform: rotate(4deg);">Soil 1714</span>
-        <span class="violin-name" style="top: 5%; left: 50%; transform: rotate(-2deg);">Ole Bull 1744</span>
-        <span class="violin-name" style="bottom: 5%; left: 50%; transform: rotate(5deg);">Kiesewetter 1723</span>
-    </div>
-
-    <!-- CABEÇALHO PADRONIZADO -->
-    <header id="site-header" class="site-header">
-        <nav>
-            <div class="nav-brand-container" id="logo-dropdown-container">
-                <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
-                <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
-                <div class="logo-dropdown-content">
-                    <a href="#" class="active">Violino</a>
-                    <a href="#">Viola</a>
-                    <a href="#">Violoncelo</a>
-                </div>
-            </div>
-            
-            <ul class="nav-menu" id="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="importacao.html">Importação</a></li>
-                <li><a href="recomendados.html">Recomendados</a></li>
-                <li class="nav-item-dropdown">
-                    <a href="javascript:void(0);">Cordas▾</a>
-                    <div class="dropdown-content">
-                        <a href="guia-de-cordas.html">Gráfico de Cordas</a>
-                        <a href="comparador-de-cordas.html">Comparar Cordas</a>
-                    </div>
-                </li>
-                <li><a href="fisica-do-som.html" class="active">Física do Som</a></li>
-                <li><a href="contatos.html">Contatos</a></li>
-            </ul>
-            
-            <div class="header-controls">
-                <div class="lang-dropdown" id="lang-dropdown">
-                    <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
-                        <div class="flag-split"><img src="https://flagcdn.com/pt.svg" alt="PT"><img src="https://flagcdn.com/br.svg" alt="BR"></div>
-                    </button>
-                    <div class="lang-content">
-                        <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
-                        <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
-                        <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
-                    </div>
-                </div>
-
-                <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
-                <button id="mobile-menu-btn" class="mobile-menu-btn">
-                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- CONTEÚDO PRINCIPAL (Header, Background e Footer são injetados pelo script.js) -->
     <main class="main-content">
         <section class="hero" style="margin-bottom: 3rem; text-align: center;">
             <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">A Jornada da Vibração</h1>
@@ -151,86 +114,40 @@
         <section class="section-card">
             <h2>1. O Gatilho: A Crina e o Breu</h2>
             <p>Tudo começa no nível microscópico. Diferente de um fio de nylon liso, a crina do cavalo é repleta de minúsculas "escamas" ao longo de sua estrutura. Quando passamos o breu (que é uma resina sólida), os pequenos grãos desse pó se alojam sob essas escamas, agindo como verdadeiras <strong>cunhas</strong> que as deixam eriçadas, quase na vertical.</p>
+            
             <div class="image-placeholder">
                 <span>[Espaço para Imagem: Visão microscópica da crina do arco cheia de breu]</span>
             </div>
+            
             <p>Quando você passa o arco, essas escamas "esbarram" e agarram a corda, puxando-a para o lado. A corda resiste até não aguentar mais e escorrega de volta. É esse ciclo frenético de agarrar e soltar (efeito <em>Stick-Slip</em>) que faz a corda pular como se estivesse em uma brincadeira de "pular corda" em câmera hiper lenta.</p>
         </section>
 
         <section class="section-card">
             <h2>2. O Filtro Mecânico: O Cavalete</h2>
             <p>A corda vibrando no ar faz um som muito fraco. É aqui que entra a engenharia do cavalete. Ele absorve a vibração caótica da corda e a "filtra" através do seu formato esculpido (os corações e os rins cortados na madeira não são só enfeite, eles regulam frequências!).</p>
+            
             <div class="image-placeholder">
                 <img src="NKL/f-holes-sound.jpg" alt="F-holes e propagação sonora" onerror="this.style.display='none';">
                 <span>[Espaço para Imagem: Visão explodida das ondas de som descendo pelo cavalete]</span>
             </div>
+            
             <p>O cavalete atua como um pistão, transferindo toda essa energia limpa e organizada diretamente para o tampo superior do violino.</p>
         </section>
 
         <section class="section-card">
             <h2>3. A Caixa Torácica e o Sopro de Vida</h2>
             <p>Com o tampo, as laterais (faixas) e o fundo do violino vibrando violentamente, o corpo do instrumento começa a funcionar como o cone de um alto-falante. Essa madeira pulsante faz com que a <strong>massa de ar interna</strong> do violino também vibre.</p>
+            
             <div class="image-placeholder">
                 <img src="NKL/arco-camera-lenta.gif" alt="Arco em câmera lenta" onerror="this.style.display='none';">
                 <span>[Espaço para Imagem: Arco em movimento de câmera lenta / Gráfico térmico]</span>
             </div>
+            
             <p>Esse ar pressurizado e cheio de energia acústica precisa escapar. É aí que ele é ejetado pelos orifícios em formato de "f" (os <em>F-holes</em>, que evoluíram matematicamente durante séculos de lutheria para projetar o som com a máxima eficiência aerodinâmica). Esse ar vibrante atinge seus tímpanos, e você ouve a música.</p>
         </section>
     </main>
 
-    <!-- BOTÃO DO WHATSAPP BLINDADO -->
-    <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" class="whatsapp-float" target="_blank" aria-label="Comunidade VIP WhatsApp">
-        <img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy" alt="WhatsApp">
-    </a>
-
-    <!-- RODAPÉ PADRONIZADO -->
-    <footer class="site-footer">
-        <div class="footer-header">
-            <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
-            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
-            <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
-                <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
-                <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
-                <button type="submit" class="capture-btn">Confirmar</button>
-            </form>
-        </div>
-
-        <div class="footer-grid">
-            <div class="footer-box">
-                <h4>Sua voz importa</h4>
-                <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
-                <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
-            </div>
-            <div class="footer-box">
-                <h4>Contato Direto</h4>
-                <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
-                <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
-            </div>
-            <div class="footer-box">
-                 <h4>Apoie o Projeto</h4>
-                <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
-                    <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; Copyright 2026 | NKL | Todos direitos reservados
-        </div>
-    </footer>
-
-    <!-- MODAL PAYPAL -->
-    <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-btn" onclick="closePixModal()">&times;</button>
-            <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
-            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
-            <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
-        </div>
-    </div>
-
-    <!-- JS GLOBAL -->
+    <!-- JS GLOBAL PARA INJEÇÃO DOS COMPONENTES (Header/Footer/etc) -->
     <script src="script.js"></script>
 
 </body>
