@@ -1,3 +1,512 @@
+/**
+ * =======================================================================
+ * ARQUIVO CENTRAL DE JAVASCRIPT - PORTAL NKL
+ * Contém todas as lógicas de interface, animações e interações do site.
+ * =======================================================================
+ */
+
+// =======================================================================
+// 0. INJEÇÃO GLOBAL DE LAYOUT (HEADER, FOOTER, MODAIS)
+// =======================================================================
+function injectGlobalLayout() {
+    // 1. Constrói o Header
+    const headerHTML = `
+        <header id="site-header" class="site-header">
+            <nav>
+                <div class="nav-brand-container" id="logo-dropdown-container">
+                    <img src="NKL/NKL.png" class="nav-brand-logo" alt="Logo NKL">
+                    <button class="logo-dropdown-btn" id="logo-btn">Violino▾</button>
+                    <div class="logo-dropdown-content">
+                        <a href="#" class="active">Violino</a>
+                        <a href="#">Viola</a>
+                        <a href="#">Violoncelo</a>
+                    </div>
+                </div>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    
+                    <li class="nav-item-dropdown">
+                        <a href="javascript:void(0);">Cordas▾</a>
+                        <div class="dropdown-content">
+                            <a href="lista-de-cordas.html">Catálogo (Lista)</a>
+                            <a href="comparador-de-cordas.html">Comparar Cordas</a>
+                            <a href="guia-de-cordas.html">Gráfico de Cordas</a>
+                        </div>
+                    </li>
+                    
+                    <li><a href="fisica-do-som.html">Física do Som</a></li>
+                    <li><a href="importacao.html">Importação</a></li>
+                    <li><a href="recomendados.html">Recomendados</a></li>
+                    <li><a href="contatos.html">Contatos</a></li>
+                </ul>
+                <div class="header-controls">
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <button class="lang-btn" id="lang-btn" aria-label="Mudar idioma">
+                            <div class="flag-split">
+                                <img src="https://flagcdn.com/pt.svg" alt="PT">
+                                <img src="https://flagcdn.com/br.svg" alt="BR">
+                            </div>
+                        </button>
+                        <div class="lang-content">
+                            <a href="#"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/pt.svg"><img src="https://flagcdn.com/br.svg"></div> PT/BR</a>
+                            <a href="es/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/es.svg"><img src="https://flagcdn.com/ar.svg"></div> ES/AR</a>
+                            <a href="en/index.html"><div class="flag-split" style="width:24px;height:16px;"><img src="https://flagcdn.com/gb.svg"><img src="https://flagcdn.com/us.svg"></div> EN/US</a>
+                        </div>
+                    </div>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Mudar tema"></button>
+                    <button id="mobile-menu-btn" class="mobile-menu-btn">
+                        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+        </header>
+    `;
+
+    // 2. Constrói o Footer
+    const footerHTML = `
+        <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" class="whatsapp-float" target="_blank" aria-label="Comunidade VIP WhatsApp"> 
+            <img src="NKL/wpplogo.w70-h70-c1.png" loading="lazy" alt="WhatsApp"> 
+        </a>
+        <footer class="site-footer">
+            <div class="footer-header">
+                <h3>Receba o PDF completo em Alta Resolução do Gráfico de Cordas</h3>
+                <p>Deixe o seu contato para enviarmos o material de estudo diretamente para você.</p>
+                <form id="form-captura" class="capture-form" action="https://formspree.io/f/maqzkwwb" method="POST">
+                    <input type="text" name="name" class="capture-input" placeholder="Seu nome" required>
+                    <input type="email" name="email" class="capture-input" placeholder="Escreva o seu e-mail principal" required>
+                    <button type="submit" class="capture-btn">Confirmar</button>
+                </form>
+            </div>
+            <div class="footer-grid">
+                <div class="footer-box">
+                    <h4>Sua voz importa</h4>
+                    <p>Ajude a construir o melhor<br>portal de violino do Brasil.</p>
+                    <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" class="btn-outline">Deixar Feedback Rápido</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Contato Direto</h4>
+                    <p>Dúvidas, parcerias ou projetos pessoais?<br>Mande-nos um e-mail.</p>
+                    <a href="mailto:contato.nikoluthieria@gmail.com" class="btn-outline">contato.nikoluthieria@gmail.com</a>
+                </div>
+                <div class="footer-box">
+                    <h4>Apoie o Projeto</h4>
+                    <p>Todo o conteúdo gratuito exige pesquisa.<br>Apoie nossa estrutura.</p>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" class="btn-outline" style="flex: 1;">Apoiar NKL</a>
+                        <button onclick="document.getElementById('pix-modal').classList.add('show')" class="btn-outline" style="flex: 1;">❖ PayPal</button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; Copyright 2026 | NKL | Todos direitos reservados
+            </div>
+        </footer>
+        <div id="pix-modal" class="modal-overlay" onclick="closePixModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="close-btn" onclick="closePixModal()">&times;</button>
+                <h4 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">Apoiar o NKL pelo PayPal</h4>
+                <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 1.2rem; color: var(--text);">Escaneie o código abaixo para apoiar a manutenção do nosso Portal.</p>
+                <img src="NKL/1000343886.webp" style="width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" alt="QR Code PayPal">
+            </div>
+        </div>
+    `;
+
+    // 3. Injeta no DOM
+    document.body.insertAdjacentHTML('afterbegin', headerHTML);
+    document.body.insertAdjacentHTML('beforeend', footerHTML);
+
+    // 4. Lógica de "Menu Ativo" Inteligente
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-menu a');
+
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+        link.classList.remove('active'); 
+
+        if (linkPath === currentPath) {
+            link.classList.add('active'); 
+            const parentDropdown = link.closest('.nav-item-dropdown');
+            if (parentDropdown) {
+                const dropBtn = parentDropdown.querySelector('a');
+                if (dropBtn) dropBtn.classList.add('active');
+            }
+        }
+    });
+}
+injectGlobalLayout();
+
+// =======================================================================
+// 1. ANIMAÇÃO DE ENTRADA
+// =======================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const logo = document.getElementById('intro-logo');
+    const leftCurtain = document.getElementById('curtain-left');
+    const rightCurtain = document.getElementById('curtain-right');
+    const introBg = document.getElementById('intro-animation');
+
+    if (logo && leftCurtain && rightCurtain && introBg) {
+        logo.classList.add('anim-dot-in');
+        setTimeout(() => {
+            leftCurtain.classList.add('anim-show-lines');
+            rightCurtain.classList.add('anim-show-lines');
+            leftCurtain.classList.add('anim-curtain-open-l');
+            rightCurtain.classList.add('anim-curtain-open-r');
+            logo.classList.add('anim-logo-fade');
+            introBg.classList.add('anim-bg-fade');
+        }, 800);
+
+        setTimeout(() => {
+            introBg.style.display = 'none';
+            const dynamicBg = document.getElementById('parallax-bg-dynamic');
+            if (dynamicBg) {
+                dynamicBg.classList.add('anim-shake');
+                setTimeout(() => { dynamicBg.classList.remove('anim-shake'); }, 1300);
+            }
+        }, 2000);
+    }
+});
+
+// =======================================================================
+// 2. FUNDO ANIMADO PARALLAX
+// =======================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const oldBg = document.getElementById('parallax-bg');
+    if (oldBg) oldBg.remove();
+
+    const luthiersAndViolins = [
+        "Antonio Stradivari", "Messiah 1716", "Soil 1714", "Betts 1704",
+        "Giuseppe Guarneri", "Il Cannone 1743", "Lord Wilton 1742", "Vieuxtemps 1741",
+        "Nicolò Amati", "Alard 1649", "King Henry IV 1595", "Hammerle 1658",
+        "Andrea Amati", "Charles IX 1564", "The King 1572", "Kurtz 1560",
+        "Gasparo da Salò", "Kievman 1590", "Treasury 1580", "Hussey 1585",
+        "G.P. Maggini", "Dumas 1615", "De Bériot 1620", "Sainte Cecile 1625",
+        "Jacob Stainer", "Stainer 1658", "Stainer 1668", "Stainer 1679",
+        "Carlo Bergonzi", "Kreisler 1740", "Baron Knoop 1733", "Perlman 1735",
+        "G.B. Guadagnini", "Ex-Vieuxtemps 1750", "Wieniawski 1753", "Grumiaux 1773",
+        "J.B. Vuillaume", "Evangéliste 1845", "Ysaÿe 1865", "Carrodus 1850"
+    ];
+
+    const musicSymbols = [
+        "𝄞", "𝄡", "𝄢", "♩", "♪", "♫", "♬", "𝄾", "𝄿", "𝅀", "♯", "♭", "♮", "𝄆", "𝄇", "𝄐", "𝄪"
+    ];
+
+    const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+    let poolLuthiers = shuffle([...luthiersAndViolins]);
+    let poolSymbols = shuffle([...musicSymbols]);
+
+    function getNextRandomItem() {
+        if (poolLuthiers.length === 0) poolLuthiers = shuffle([...luthiersAndViolins]);
+        if (poolSymbols.length === 0) poolSymbols = shuffle([...musicSymbols]);
+        if (Math.random() < 0.75) {
+            return { item: poolLuthiers.pop(), isSymbol: false };
+        } else {
+            return { item: poolSymbols.pop(), isSymbol: true };
+        }
+    }
+
+    const minWidth = window.innerWidth * 2; 
+    const minHeight = window.innerHeight * 2;
+    const cellWidth = 360;  
+    const cellHeight = 110; 
+
+    const cols = Math.ceil(minWidth / cellWidth) + 1;
+    const rows = Math.ceil(minHeight / cellHeight);
+
+    const layerWidth = cols * cellWidth;
+    const layerHeight = rows * cellHeight;
+
+    let htmlContent = '';
+
+    for (let r = 0; r < rows; r++) {
+        let isOddRow = (r % 2 === 1); 
+        let rowCols = isOddRow ? cols - 1 : cols; 
+
+        for (let c = 0; c < rowCols; c++) {
+            const { item, isSymbol } = getNextRandomItem();
+            let offsetX = (Math.random() * 30) - 15;
+            let offsetY = (Math.random() * 20) - 10;
+            let rotate = Math.floor(Math.random() * 20) - 10;
+            let className = isSymbol ? 'music-symbol' : 'violin-name';
+            let left = (c * cellWidth) + (cellWidth / 2);
+            let top = (r * cellHeight) + (cellHeight / 2);
+            if (isOddRow) left += (cellWidth / 2);
+            left += offsetX;
+            top += offsetY;
+            htmlContent += `<span class="${className}" style="position: absolute; left: ${left}px; top: ${top}px; transform: translate(-50%, -50%) rotate(${rotate}deg); white-space: nowrap;">${item}</span>`;
+        }
+    }
+
+    const bg = document.createElement('div');
+    bg.id = 'parallax-bg-dynamic';
+    bg.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; z-index: -1; pointer-events: none;';
+
+    const layer1 = document.createElement('div');
+    layer1.style.cssText = `position: absolute; width: ${layerWidth}px; height: ${layerHeight}px; left: 50%; margin-left: -${layerWidth / 2}px;`;
+    layer1.innerHTML = htmlContent;
+
+    const layer2 = document.createElement('div');
+    layer2.style.cssText = `position: absolute; width: ${layerWidth}px; height: ${layerHeight}px; left: 50%; margin-left: -${layerWidth / 2}px;`;
+    layer2.innerHTML = htmlContent;
+
+    bg.appendChild(layer1);
+    bg.appendChild(layer2);
+    document.body.insertBefore(bg, document.body.firstChild);
+
+    let currentY = 0;
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = (window.innerWidth / 2 - e.clientX) * 0.4;
+        mouseY = (window.innerHeight / 2 - e.clientY) * 0.4;
+        updateTransform();
+    });
+
+    window.addEventListener('scroll', () => {
+        let sc = window.scrollY || document.documentElement.scrollTop;
+        currentY = sc * 1.55;
+        updateTransform();
+    });
+
+    function updateTransform() {
+        let moveY = (currentY % layerHeight);
+        layer1.style.transform = `translate(${mouseX}px, calc(${moveY}px + ${mouseY}px))`;
+        layer2.style.transform = `translate(${mouseX}px, calc(${moveY - layerHeight}px + ${mouseY}px))`;
+    }
+    updateTransform();
+});
+
+// =======================================================================
+// 3. SMART HEADER (Esconde ao descer, mostra ao subir)
+// =======================================================================
+let lastScrollTop = 0;
+const scrollDelta = 5;
+
+window.addEventListener('scroll', function () {
+    const header = document.getElementById('site-header');
+    const navMenu = document.getElementById('nav-menu');
+    const profile = document.querySelector('.profile'); 
+
+    if (!header) return;
+
+    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (profile) {
+        currentScroll > 50 ? profile.classList.add('esconder') : profile.classList.remove('esconder');
+    }
+
+    if (Math.abs(lastScrollTop - currentScroll) <= scrollDelta) return;
+
+    if (currentScroll > lastScrollTop && currentScroll > 80) {
+        header.classList.add('hide');
+        if (navMenu) navMenu.classList.remove('show');
+    }
+    else if (currentScroll < lastScrollTop) {
+        header.classList.remove('hide');
+    }
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}, { passive: true }); 
+
+// =======================================================================
+// 4. CONTROLES DE CLIQUES (MENUS E DROPDOWNS)
+// =======================================================================
+const logoBtn = document.getElementById('logo-btn');
+const logoContainer = document.getElementById('logo-dropdown-container');
+const langBtn = document.getElementById('lang-btn');
+const langDropdown = document.getElementById('lang-dropdown');
+const cordasItem = document.querySelector('.nav-item-dropdown');
+
+if (logoBtn) {
+    logoBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        logoContainer.classList.toggle('show-dropdown');
+        if (langDropdown) langDropdown.classList.remove('show-lang');
+        if (cordasItem) cordasItem.classList.remove('show-click');
+    });
+}
+
+if (langBtn) {
+    langBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        langDropdown.classList.toggle('show-lang');
+        if (logoContainer) logoContainer.classList.remove('show-dropdown');
+        if (cordasItem) cordasItem.classList.remove('show-click');
+    });
+}
+
+if (cordasItem) {
+    const cordasBtn = cordasItem.querySelector('a');
+    cordasBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cordasItem.classList.toggle('show-click');
+        if (logoContainer) logoContainer.classList.remove('show-dropdown');
+        if (langDropdown) langDropdown.classList.remove('show-lang');
+    });
+}
+
+document.addEventListener('click', () => {
+    if (logoContainer) logoContainer.classList.remove('show-dropdown');
+    if (langDropdown) langDropdown.classList.remove('show-lang');
+    if (cordasItem) cordasItem.classList.remove('show-click');
+});
+
+// =======================================================================
+// 5. CONTROLE DE TEMA (CLARO / ESCURO)
+// =======================================================================
+const themeToggleBtn = document.getElementById('theme-toggle');
+const body = document.body;
+const savedTheme = localStorage.getItem('nkl_theme');
+
+if (savedTheme === 'light' || (!savedTheme && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    body.classList.remove('dark-theme');
+} else {
+    body.classList.add('dark-theme');
+}
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        localStorage.setItem('nkl_theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+    });
+}
+
+// =======================================================================
+// 6. MENU MOBILE (BOTÃO HAMBÚRGUER) - BUG CORRIGIDO!
+// =======================================================================
+const mobileBtn = document.getElementById('mobile-menu-btn');
+if (mobileBtn) {
+    mobileBtn.addEventListener('click', () => {
+        const navMenuEl = document.getElementById('nav-menu'); // Agora ele sabe quem procurar!
+        if (navMenuEl) navMenuEl.classList.toggle('show');
+    });
+}
+
+// =======================================================================
+// 7. MODAIS (POP-UPS DE PAYPAL E OUTROS)
+// =======================================================================
+function closePixModal() {
+    const pixModal = document.getElementById('pix-modal');
+    if (pixModal) pixModal.classList.remove('show');
+}
+
+// =======================================================================
+// 8. ENVIO DE E-MAIL (FORMSPREE + SISTEMA ANTI-SPAM)
+// =======================================================================
+const formCaptura = document.getElementById('form-captura');
+
+if (formCaptura) {
+    formCaptura.addEventListener('submit', function (event) {
+        event.preventDefault(); 
+        const btn = formCaptura.querySelector('.capture-btn');
+        if (btn.disabled) return;
+        btn.disabled = true;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Enviando...";
+        const dados = new FormData(formCaptura);
+
+        fetch(formCaptura.action, {
+            method: formCaptura.method,
+            body: dados,
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                alert('Recebemos seu e-mail! O PDF será enviado em breve.');
+                formCaptura.reset(); 
+                btn.innerHTML = "Enviado ✓";
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }, 60000);
+            } else {
+                alert('Ops, houve um erro ao enviar. Tente novamente.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }).catch(error => {
+            alert('Erro de conexão. Verifique a internet e tente novamente.');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    });
+}
+
+// =======================================================================
+// 9. GALERIA E CARROSSEL DE IMAGENS (PÁGINA IMPORTAÇÃO)
+// =======================================================================
+function openCarousel(modalId, startIndex) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; 
+    const container = modal.querySelector('.carousel-container');
+    const items = container.querySelectorAll('.carousel-item');
+    if (items[startIndex]) {
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = items[startIndex].offsetLeft;
+        setTimeout(() => { container.style.scrollBehavior = 'smooth'; }, 50);
+    }
+}
+
+function closeCarousel(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto'; 
+    const videos = modal.querySelectorAll('video');
+    videos.forEach(v => v.pause());
+}
+
+function scrollCarousel(containerId, direction, instaLink) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const scrollAmount = container.clientWidth;
+    if (direction === -1 && container.scrollLeft <= 5) {
+        if (instaLink) window.open(instaLink, '_blank');
+        return;
+    }
+    if (direction === 1 && (container.scrollLeft + container.clientWidth >= container.scrollWidth - 5)) {
+        if (instaLink) window.open(instaLink, '_blank');
+        return;
+    }
+    container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+}
+
+// =======================================================================
+// 10. FILTRO DE EQUIPAMENTOS RECOMENDADOS
+// =======================================================================
+function filterCategory(category, btn) {
+    const filterContainer = btn.parentElement;
+    filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.product-card').forEach(card => {
+        const inst = card.getAttribute('data-inst');
+        if (category === 'todos' || inst === 'geral' || inst === category) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    document.querySelectorAll('.product-grid').forEach(grid => {
+        const visibleCards = Array.from(grid.querySelectorAll('.product-card')).some(c => c.style.display !== 'none');
+        const divider = grid.previousElementSibling;
+        if (divider && divider.classList.contains('subcategory-divider')) {
+            if (!visibleCards) {
+                grid.style.display = 'none';
+                divider.style.display = 'none';
+            } else {
+                grid.style.display = 'grid';
+                divider.style.display = 'block';
+            }
+        }
+    });
+}
+```eof
+
+```css:style.css
 /* ==========================================
    IMPORTAÇÃO DAS FONTES OFICIAIS
 ========================================== */
@@ -1812,14 +2321,24 @@ input:-webkit-autofill:active {
 /* ==========================================
    MOBILE E MEDIA QUERIES (REVISADO)
 ========================================== */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* 1. Redução de 20% na fonte geral para encaixe perfeito */
     html {
         font-size: 80%;
     }
 
+    /* Header flex wrap (Garante que não vaze da tela) */
+    .site-header nav {
+        flex-wrap: wrap;
+        padding: 0 1rem;
+    }
+
     /* Header & Nav */
     /* 2. Força a exibição da logo NKL no Mobile */
+    .nav-brand-container {
+        margin-right: auto; /* Empurra os botões pra direita */
+    }
+
     .nav-brand-logo {
         display: block !important;
         flex-shrink: 0;
@@ -1934,7 +2453,7 @@ input:-webkit-autofill:active {
 }
 
 /* ==========================================
-   TRANSIÇÃO ORGÂNICA FAKE-SPA (RÁPIDO E FLUIDO)
+   TRANSIÇÃO ORGÂNICA FAKE-SPA (REMOVIDA)
 ========================================== */
 body {
     overflow-x: hidden !important;
@@ -1964,117 +2483,6 @@ body {
     will-change: transform;
 }
 
-/* --- DIREÇÃO: INDO PARA A DIREITA (Avançando no menu) --- */
-/* SAÍDA (Página Antiga vai pra Esquerda, Fundo vai pra Direita) */
-html.is-exiting-right .main-content {
-    animation: contentExitLeft 0.35s ease-in forwards;
-}
-
-html.is-exiting-right #parallax-bg {
-    animation: bgExitRight 0.35s ease-in forwards;
-}
-
-/* ENTRADA (Página Nova vem da Direita, Fundo continua vindo da Esquerda) */
-html.is-entering-right .main-content {
-    animation: contentEnterLeft 0.4s ease-out forwards;
-}
-
-html.is-entering-right #parallax-bg {
-    animation: bgEnterRight 0.4s ease-out forwards;
-}
-
-/* --- DIREÇÃO: INDO PARA A ESQUERDA (Voltando no menu) --- */
-/* SAÍDA */
-html.is-exiting-left .main-content {
-    animation: contentExitRight 0.35s ease-in forwards;
-}
-
-html.is-exiting-left #parallax-bg {
-    animation: bgExitLeft 0.35s ease-in forwards;
-}
-
-/* ENTRADA */
-html.is-entering-left .main-content {
-    animation: contentEnterRight 0.4s ease-out forwards;
-}
-
-html.is-entering-left #parallax-bg {
-    animation: bgEnterLeft 0.4s ease-out forwards;
-}
-
-/* ================= ANIMAÇÕES ================= */
-/* Conteúdo */
-@keyframes contentExitLeft {
-    to {
-        transform: translateX(-100vw);
-        opacity: 0;
-    }
-}
-
-@keyframes contentExitRight {
-    to {
-        transform: translateX(100vw);
-        opacity: 0;
-    }
-}
-
-@keyframes contentEnterLeft {
-    from {
-        transform: translateX(100vw);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes contentEnterRight {
-    from {
-        transform: translateX(-100vw);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Fundo: O Truque Mágico do Movimento Contínuo (move apenas 30vw para dar sensação de profundidade) */
-@keyframes bgExitRight {
-    to {
-        transform: translateX(30vw);
-    }
-}
-
-@keyframes bgExitLeft {
-    to {
-        transform: translateX(-30vw);
-    }
-}
-
-@keyframes bgEnterRight {
-    from {
-        transform: translateX(-30vw);
-    }
-
-    to {
-        transform: translateX(0);
-    }
-}
-
-@keyframes bgEnterLeft {
-    from {
-        transform: translateX(30vw);
-    }
-
-    to {
-        transform: translateX(0);
-    }
-}
-
 /* Cabeçalho do Cartão (Clicável para Ofertas) */
 .card-header {
     margin-bottom: 1rem;
@@ -2094,15 +2502,11 @@ html.is-entering-left #parallax-bg {
     align-items: center;
     transition: 0.2s;
     color: var(--text);
-
-    /* <-- ISTO CORRIGE O TEXTO PRETO */
 }
 
 .card-title-btn:hover .card-title,
 .card-title-btn:hover .icon-cart {
     color: var(--neon);
-
-    /* Ambos acendem ao passar o mouse */
     opacity: 1;
 }
 
@@ -2194,3 +2598,4 @@ body.dark-theme .image-placeholder {
         right: 15px !important;
     }
 }
+```eof
