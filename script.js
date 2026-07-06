@@ -458,16 +458,29 @@ if (themeToggleBtn) {
 
 
 // =======================================================================
-// 6. MENU MOBILE (BOTÃO HAMBÚRGUER)
+// 6. MENU MOBILE (BOTÃO HAMBÚRGUER) - 100% BLINDADO
 // =======================================================================
-const mobileBtn = document.getElementById('mobile-menu-btn');
-if (mobileBtn) {
-    mobileBtn.addEventListener('click', () => {
-        // Mostra ou oculta a lista de links quando a tela for menor que 768px
-        if (navMenu) navMenu.classList.toggle('show');
-    });
-}
+document.addEventListener('click', (e) => {
+    // Verifica se o elemento clicado foi o botão ou o desenho (svg) dentro dele
+    const btnMobile = e.target.closest('#mobile-menu-btn');
+    const navMenuEl = document.getElementById('nav-menu');
 
+    // Se o usuário clicou EXATAMENTE no botão hambúrguer
+    if (btnMobile) {
+        e.preventDefault(); 
+        e.stopPropagation(); // Trava o clique para não acionar bugs
+        
+        if (navMenuEl) {
+            navMenuEl.classList.toggle('show');
+        }
+    } 
+    // Se o menu estiver aberto e o usuário clicar FORA dele na tela (Bônus de UX)
+    else if (navMenuEl && navMenuEl.classList.contains('show')) {
+        if (!e.target.closest('#nav-menu')) {
+            navMenuEl.classList.remove('show');
+        }
+    }
+});
 
 // =======================================================================
 // 7. MODAIS (POP-UPS DE PAYPAL E OUTROS)
