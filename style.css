@@ -859,8 +859,13 @@ body.dark-theme .lang-content {
     cursor: pointer;
     padding: 0;
     margin-left: 10px;
+    position: relative;
+    z-index: 2000; /* Escudo: Garante que o botão fique no topo absoluto */
 }
-
+/* Evita que o navegador ache que o usuário clicou na linha do desenho em vez do botão */
+.mobile-menu-btn svg {
+    pointer-events: none;
+}
 /* ==========================================
    ANIMAÇÃO DE ENTRADA (CORTINA E VIOLINO)
 ========================================== */
