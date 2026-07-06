@@ -1220,7 +1220,27 @@ body.dark-theme .home-photo-img {
 .img-zoom-15 {
     transform: scale(1.15);
 }
+/* Comportamento inteligente da Foto 4 (Comparador) */
+.img-foto4 {
+    object-fit: contain; /* Na horizontal (PC/Celular deitado): ajusta sem cortar */
+    transform: scale(1.15); /* Mantém o seu zoom de 15% */
+}
 
+.showcase-section:hover .img-foto4 {
+    transform: scale(1.18);
+}
+
+/* Quando a tela for vertical (Celular em pé) */
+@media (max-width: 1024px) {
+    .img-foto4 {
+        object-fit: cover; /* Na vertical: preenche a caixa inteira sem deixar bordas vazias */
+        transform: scale(1); /* Remove o zoom base para a imagem não ficar gigantesca */
+    }
+    
+    .showcase-section:hover .img-foto4 {
+        transform: scale(1.05); /* Zoom mais suave no celular */
+    }
+}
 .img-zoom-10 {
     transform: scale(1.10);
 }
