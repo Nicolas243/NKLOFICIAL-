@@ -1,4 +1,5 @@
 import { getLuthiersDirectory } from '@/actions/directory';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Diretório de Luthiers | Portal NKL',
@@ -28,7 +29,11 @@ export default async function LuthiersPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-playfair font-bold text-lg">{luthier.name}</h3>
+                <h3 className="font-playfair font-bold text-lg">
+                  <Link href={`/luthiers/${luthier.id}`} className="hover:text-neon transition-colors">
+                    {luthier.name}
+                  </Link>
+                </h3>
                 <p className="text-sm opacity-80">
                   {luthier.city && luthier.state
                     ? `${luthier.city} · ${luthier.state}`
@@ -46,20 +51,28 @@ export default async function LuthiersPage() {
               </span>
             </div>
 
-            {luthier.whatsapp ? (
-              <a
-                href={buildWhatsAppUrl(luthier.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-auto inline-flex justify-center py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+            <div className="mt-auto flex flex-col gap-3">
+              <Link
+                href={`/luthiers/${luthier.id}`}
+                className="inline-flex justify-center py-3 border border-neon text-neon rounded-md font-bold transition-all hover:bg-neon hover:text-black"
               >
-                Falar no WhatsApp
-              </a>
-            ) : (
-              <p className="mt-auto text-center text-sm opacity-60 border border-dashed border-border rounded-md py-3">
-                WhatsApp não disponível
-              </p>
-            )}
+                Ver perfil
+              </Link>
+              {luthier.whatsapp ? (
+                <a
+                  href={buildWhatsAppUrl(luthier.whatsapp)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex justify-center py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+                >
+                  Falar no WhatsApp
+                </a>
+              ) : (
+                <p className="text-center text-sm opacity-60 border border-dashed border-border rounded-md py-3">
+                  WhatsApp não disponível
+                </p>
+              )}
+            </div>
           </article>
         ))}
       </section>

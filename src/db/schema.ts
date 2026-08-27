@@ -46,7 +46,7 @@ export const newsEvents = pgTable('news_events', {
 
 export const businessDirectory = pgTable('business_directory', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  userId: uuid('user_id').references(() => userProfiles.id).notNull(),
   businessName: text('business_name').notNull(),
   city: text('city').notNull(),
   state: text('state').notNull(),
@@ -71,6 +71,7 @@ export const userProfiles = pgTable('user_profiles', {
   businessName: varchar('business_name', { length: 255 }),
   city: varchar('city', { length: 150 }),
   state: varchar('state', { length: 2 }),
+  bio: text('bio'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

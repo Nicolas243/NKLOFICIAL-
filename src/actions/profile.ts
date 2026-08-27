@@ -19,6 +19,7 @@ export async function upsertLuthierProfile(formData: FormData) {
   const businessName = formData.get('businessName') as string;
   const city = formData.get('city') as string;
   const state = formData.get('state') as string;
+  const bio = formData.get('bio') as string;
 
   await db
     .insert(userProfiles)
@@ -30,6 +31,7 @@ export async function upsertLuthierProfile(formData: FormData) {
       businessName,
       city,
       state,
+      bio: bio.trim() || null,
     })
     .onConflictDoUpdate({
       target: userProfiles.email,
@@ -39,6 +41,7 @@ export async function upsertLuthierProfile(formData: FormData) {
         city,
         state,
         role: 'luthier',
+        bio: bio.trim() || null,
       },
     });
 

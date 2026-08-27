@@ -65,6 +65,13 @@ export default async function PerfilPage() {
           maxLength={2}
           className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
         />
+        <textarea
+          name="bio"
+          defaultValue={profile?.bio ?? ''}
+          placeholder="Conte um pouco sobre seu trabalho (biografia pública)"
+          rows={4}
+          className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none resize-none"
+        />
         <button
           type="submit"
           className="py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
