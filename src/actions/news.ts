@@ -55,3 +55,12 @@ export async function submitNews(formData: FormData) {
 export async function getNewsFeed() {
   return await db.select().from(newsFeed).orderBy(desc(newsFeed.createdAt));
 }
+
+export async function getRecentNewsFeed(limit: number = 3) {
+  const rows = await db
+    .select()
+    .from(newsFeed)
+    .orderBy(desc(newsFeed.createdAt))
+    .limit(limit);
+  return rows;
+}
