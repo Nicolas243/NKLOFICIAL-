@@ -1,5 +1,6 @@
 import { getNewsFeed } from '@/actions/news';
 import { createClient } from '@/lib/supabase/server';
+import Image from 'next/image';
 import NewsForm from './news-form';
 
 export const metadata = {
@@ -28,7 +29,13 @@ export default async function NoticiasPage() {
         {news.map((item) => (
           <article key={item.id} className="news-card">
             <div className="news-img-box">
-              <img src={item.imageUrl} alt={item.title} className="news-img" loading="lazy" />
+              <Image
+                src={item.imageUrl}
+                alt={item.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 300px"
+                className="news-img"
+              />
             </div>
             <div className="news-content">
               <div className="news-tags">

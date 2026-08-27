@@ -808,7 +808,7 @@ body.dark-theme .image-placeholder { background: #1e1e1e; border-color: #444; }
 .news-feed { display: flex; flex-direction: column; gap: 1.5rem; max-width: 900px; margin: 0 auto; }
 .news-card { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; }
 .news-card:hover { transform: translateY(-2px); border-color: var(--neon); }
-.news-img-box { width: 300px; flex-shrink: 0; }
+.news-img-box { position: relative; width: 300px; flex-shrink: 0; }
 .news-img { width: 100%; height: 100%; object-fit: cover; }
 .news-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
 .news-tags { display: flex; gap: 10px; margin-bottom: 10px; }

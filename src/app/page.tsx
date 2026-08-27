@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getRecentNewsFeed } from '@/actions/news';
 import { getLuthiersDirectory } from '@/actions/directory';
 
@@ -48,11 +49,14 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="flex-1">
-          <div className="bg-surface border border-border rounded-xl overflow-hidden">
-            <img
-              src="/NKL/violinfoto1.jpg"
+          <div className="bg-surface border border-border rounded-xl overflow-hidden relative h-72">
+            <Image
+              src="/NKL/Violino_foto_princial.webp"
               alt="Violino"
-              className="w-full h-72 object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+              className="object-cover"
             />
           </div>
         </div>
