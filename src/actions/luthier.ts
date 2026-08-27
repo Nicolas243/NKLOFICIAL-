@@ -3,6 +3,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { userProfiles, businessDirectory } from '@/db/schema';
+import { isUuid } from '@/lib/uuid';
 
 export type LuthierDetails = {
   id: string;
@@ -16,7 +17,8 @@ export type LuthierDetails = {
 };
 
 export async function getLuthierDetails(id: string): Promise<LuthierDetails | null> {
-  if (!id) return null;
+  // Fronteira de injeção: UUID malformado nunca deve atingir o Postgres.
+  if (!isUuid(id)) return null;
 
   const [row] = await db
     .select({

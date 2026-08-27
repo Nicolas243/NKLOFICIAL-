@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useTransition, useState, useEffect } from 'react';
 
 type StringItem = {
@@ -55,7 +56,11 @@ export function CatalogClient({ initialData, initialQuery }: { initialData: Stri
       <section className="flex-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {initialData.map((item) => (
           <article key={item.id} className="p-6 bg-surface border border-border rounded-lg hover:border-neon transition-colors">
-            <h3 className="font-playfair font-bold text-lg mb-2">{item.name}</h3>
+            <h3 className="font-playfair font-bold text-lg mb-2">
+              <Link href={`/catalogo/${item.id}`} className="hover:text-neon transition-colors">
+                {item.name}
+              </Link>
+            </h3>
             <div className="flex justify-between text-sm opacity-80 mb-4">
               <span>Nível: {item.qualityLevel || 'N/A'}</span>
               <span>Nota: {item.communityScore || 'N/A'}</span>
