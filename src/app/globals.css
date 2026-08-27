@@ -685,8 +685,8 @@ input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--surface) inset !im
 .dual-slider-wrapper { position: relative; width: 100%; height: 40px; margin-top: 10px; }
 .slider-track { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; height: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; z-index: 1; }
 .slider-range-fill { position: absolute; top: 50%; transform: translateY(-50%); height: 6px; background: var(--neon); z-index: 2; }
-.dual-slider-wrapper input[type="range"] { position: absolute; width: 100%; top: 50%; transform: translateY(-50%); -webkit-appearance: none; background: transparent; z-index: 3; pointer-events: none; }
-.dual-slider-wrapper input[type="range"]::-webkit-slider-thumb { pointer-events: all; width: 18px; height: 18px; -webkit-appearance: none; border-radius: 50%; background: var(--text); border: 2px solid var(--neon); cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+.dual-slider-wrapper input[type="range"] { position: absolute; width: 100%; top: 50%; transform: translateY(-50%); -webkit-appearance: none; appearance: none; background: transparent; z-index: 3; pointer-events: none; }
+.dual-slider-wrapper input[type="range"]::-webkit-slider-thumb { pointer-events: all; width: 18px; height: 18px; -webkit-appearance: none; appearance: none; border-radius: 50%; background: var(--text); border: 2px solid var(--neon); cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
 .dual-inputs-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 5px; }
 .dual-inputs-row input { width: 45%; padding: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.9rem; text-align: center; }
