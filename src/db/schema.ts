@@ -1,4 +1,5 @@
-﻿import { pgTable, text, timestamp, numeric, integer, boolean, uuid, varchar } from 'drizzle-orm/pg-core';
+﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -72,3 +73,14 @@ export const userProfiles = pgTable('user_profiles', {
   state: varchar('state', { length: 2 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
+  businessDirectory: many(businessDirectory),
+}));
+
+export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [businessDirectory.userId],
+    references: [userProfiles.id],
+  }),
+}));

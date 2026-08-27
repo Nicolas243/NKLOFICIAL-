@@ -50,6 +50,7 @@ export function Header() {
         <ul className="hidden md:flex items-center gap-8 font-medium text-sm uppercase tracking-wider">
           <li><Link href="/" className="hover:text-neon transition-colors">Home</Link></li>
           <li><Link href="/catalogo" className="hover:text-neon transition-colors">Cordas</Link></li>
+          <li><Link href="/luthiers" className="hover:text-neon transition-colors">Luthiers</Link></li>
           <li><Link href="/fisica-do-som" className="hover:text-neon transition-colors">Física do Som</Link></li>
           <li><Link href="/importacao" className="hover:text-neon transition-colors">Importação</Link></li>
           <li><Link href="/recomendados" className="hover:text-neon transition-colors">Recomendados</Link></li>
