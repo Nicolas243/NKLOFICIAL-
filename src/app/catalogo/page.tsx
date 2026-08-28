@@ -5,18 +5,15 @@ export const metadata = {
   title: 'Catálogo de Cordas | Portal NKL',
 };
 
-type Params = Promise<{ [key: string]: string | string[] | undefined }>;
-
-export default async function CatalogoPage(props: { searchParams: Params }) {
-  const searchParams = await props.searchParams;
-  const query = typeof searchParams.q === 'string' ? searchParams.q : '';
-  
-  const catalogData = await getStringsCatalog(query);
+export default async function CatalogoPage() {
+  // Primeiro paint vem do servidor (sem filtros); o drill-down de filtros
+  // acontece no cliente acionando a Server Action de forma assíncrona.
+  const catalogData = await getStringsCatalog();
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-8">
       <h1 className="font-playfair text-3xl font-bold mb-6">Catálogo Avançado de Cordas</h1>
-      <CatalogClient initialData={catalogData} initialQuery={query} />
+      <CatalogClient initialData={catalogData} />
     </div>
   );
 }
