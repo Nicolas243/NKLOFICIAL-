@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useOptimistic, useTransition } from 'react';
 
 type FavoriteButtonProps = {
   action: (targetId: string) => Promise<void>;
@@ -17,14 +17,18 @@ export function FavoriteButton({
   savedLabel = 'Salvo no Meu Setup',
   unsavedLabel = 'Salvar no Meu Setup',
 }: FavoriteButtonProps) {
-  const [saved, setSaved] = useState(initialSaved);
   const [isPending, startTransition] = useTransition();
+  const [optimisticSaved, setOptimisticSaved] = useOptimistic(
+    initialSaved,
+    (_, newSaved: boolean) => newSaved
+  );
 
   const handleToggle = () => {
+    const nextState = !optimisticSaved;
     startTransition(async () => {
+      setOptimisticSaved(nextState);
       try {
         await action(targetId);
-        setSaved((prev) => !prev);
       } catch (error) {
         alert(
           error instanceof Error
@@ -35,7 +39,7 @@ export function FavoriteButton({
     });
   };
 
-  const styles = saved
+  const styles = optimisticSaved
     ? 'bg-text text-bg hover:opacity-90'
     : 'border border-neon text-neon hover:bg-neon hover:text-black';
 
@@ -46,7 +50,7 @@ export function FavoriteButton({
       disabled={isPending}
       className={`inline-flex justify-center py-3 rounded-md font-bold transition-all disabled:opacity-50 ${styles}`}
     >
-      {isPending ? 'Atualizando...' : saved ? savedLabel : unsavedLabel}
+      {optimisticSaved ? savedLabel : unsavedLabel}
     </button>
   );
 }
