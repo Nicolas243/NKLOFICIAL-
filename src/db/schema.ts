@@ -97,6 +97,12 @@ export const stringReviews = pgTable(
 
 export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   businessDirectory: many(businessDirectory),
+  stringReviews: many(stringReviews),
+  favoriteStrings: many(favoriteStrings),
+  favoriteLuthiersAsUser: many(favoriteLuthiers, { relationName: 'favoritedByUser' }),
+  savedLuthiers: many(favoriteLuthiers, { relationName: 'savedLuthier' }),
+  luthierReviewsAsAuthor: many(luthierReviews, { relationName: 'reviewAuthor' }),
+  luthierReviewsAsTarget: many(luthierReviews, { relationName: 'reviewedLuthier' }),
 }));
 
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
@@ -104,6 +110,11 @@ export const businessDirectoryRelations = relations(businessDirectory, ({ one })
     fields: [businessDirectory.userId],
     references: [userProfiles.id],
   }),
+}));
+
+export const stringsCatalogRelations = relations(stringsCatalog, ({ many }) => ({
+  reviews: many(stringReviews),
+  favorites: many(favoriteStrings),
 }));
 
 export const stringReviewsRelations = relations(stringReviews, ({ one }) => ({
@@ -170,10 +181,12 @@ export const favoriteLuthiersRelations = relations(favoriteLuthiers, ({ one }) =
   user: one(userProfiles, {
     fields: [favoriteLuthiers.userId],
     references: [userProfiles.id],
+    relationName: 'favoritedByUser',
   }),
   luthier: one(userProfiles, {
     fields: [favoriteLuthiers.luthierId],
     references: [userProfiles.id],
+    relationName: 'savedLuthier',
   }),
 }));
 
@@ -202,9 +215,11 @@ export const luthierReviewsRelations = relations(luthierReviews, ({ one }) => ({
   luthier: one(userProfiles, {
     fields: [luthierReviews.luthierId],
     references: [userProfiles.id],
+    relationName: 'reviewedLuthier',
   }),
   user: one(userProfiles, {
     fields: [luthierReviews.userId],
     references: [userProfiles.id],
+    relationName: 'reviewAuthor',
   }),
 }));

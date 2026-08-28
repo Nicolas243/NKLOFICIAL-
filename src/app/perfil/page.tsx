@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
@@ -31,6 +32,13 @@ export default async function PerfilPage() {
       <p className="text-sm opacity-70 mb-8">
         Cadastre seus dados para se habilitar como luthier no mercado.
       </p>
+
+      <Link
+        href="/perfil/avaliacoes"
+        className="inline-flex items-center gap-2 text-sm font-bold text-neon hover:underline mb-8"
+      >
+        → Minhas Avaliações
+      </Link>
 
       <form
         action={upsertLuthierProfile}
