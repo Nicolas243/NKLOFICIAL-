@@ -1,4 +1,4 @@
-﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar } from 'drizzle-orm/pg-core';
+﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -75,6 +75,26 @@ export const userProfiles = pgTable('user_profiles', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const stringReviews = pgTable(
+  'string_reviews',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    stringId: uuid('string_id')
+      .references(() => stringsCatalog.id)
+      .notNull(),
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    rating: integer('rating').notNull(),
+    comment: text('comment'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    // Impossibilita duplicidade estrutural: um usuário, uma avaliação por corda.
+    unique('string_reviews_string_id_user_id_unique').on(table.stringId, table.userId),
+  ]
+);
+
 export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   businessDirectory: many(businessDirectory),
 }));
@@ -82,6 +102,17 @@ export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
   user: one(userProfiles, {
     fields: [businessDirectory.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
+export const stringReviewsRelations = relations(stringReviews, ({ one }) => ({
+  string: one(stringsCatalog, {
+    fields: [stringReviews.stringId],
+    references: [stringsCatalog.id],
+  }),
+  user: one(userProfiles, {
+    fields: [stringReviews.userId],
     references: [userProfiles.id],
   }),
 }));
