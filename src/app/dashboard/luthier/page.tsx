@@ -136,15 +136,19 @@ export default async function DashboardLuthierPage() {
 
         <form
           action={addPortfolioItem}
+          encType="multipart/form-data"
           className="flex flex-col gap-4 bg-surface border border-border rounded-xl p-6 shadow-sm mb-8"
         >
-          <input
-            type="text"
-            name="imageUrl"
-            placeholder="URL da imagem (https://...) — obrigatório"
-            required
-            className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-          />
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-medium opacity-80">Imagem do trabalho</span>
+            <input
+              type="file"
+              name="image"
+              accept="image/png, image/jpeg, image/webp"
+              required
+              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-text file:text-bg file:font-bold file:cursor-pointer"
+            />
+          </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               type="text"

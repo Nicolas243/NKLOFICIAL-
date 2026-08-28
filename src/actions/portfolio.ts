@@ -7,6 +7,9 @@ import { db } from '@/db';
 import { userProfiles, luthierPortfolio } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
 
+const PORTFOLIO_BUCKET = 'public-assets';
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
+
 async function requireLuthierId(): Promise<string> {
   const supabase = await createClient();
   const {
@@ -41,13 +44,45 @@ export type PortfolioItem = {
 export async function addPortfolioItem(formData: FormData): Promise<void> {
   const luthierId = await requireLuthierId();
 
-  const imageUrl = trimValue(formData.get('imageUrl'));
+  const raw = formData.get('image');
+  const file = raw instanceof File ? raw : null;
+
+  // Validação de imagem (Inversion Thinking): qualquer condição inválida
+  // interrompe a execução sem tocar no banco nem no storage.
+  if (!file || file.size === 0) {
+    throw new Error('Envie um arquivo de imagem válido.');
+  }
+  if (!file.type.startsWith('image/')) {
+    throw new Error('O arquivo precisa ser uma imagem (JPEG, PNG ou WebP).');
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error('A imagem excede o limite de 5MB.');
+  }
+
+  const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
   const title = trimValue(formData.get('title'));
   const description = trimValue(formData.get('description'));
 
-  if (!imageUrl) {
-    throw new Error('A URL da imagem é obrigatória.');
+  const supabase = await createClient();
+
+  // Caminho único para evitar colisões e o reuse de mesmo nome de arquivo.
+  const safeExt = ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(ext) ? ext : 'png';
+  const objectKey = `luthiers/${luthierId}/${crypto.randomUUID()}.${safeExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(PORTFOLIO_BUCKET)
+    .upload(objectKey, file, { contentType: file.type });
+
+  if (uploadError) {
+    console.error('Falha no upload de storage:', uploadError.message);
+    throw new Error('Não foi possível enviar a imagem. Tente novamente.');
   }
+
+  const { data: publicUrlData } = supabase.storage
+    .from(PORTFOLIO_BUCKET)
+    .getPublicUrl(objectKey);
+
+  const imageUrl = publicUrlData.publicUrl;
 
   await db.insert(luthierPortfolio).values({
     luthierId,

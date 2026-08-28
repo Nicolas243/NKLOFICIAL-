@@ -39,10 +39,10 @@ export default function CompararPage() {
   useEffect(() => {
     let cancelled = false;
 
-    getStringsCatalog()
-      .then((rows) => {
+    getStringsCatalog({ page: 1, limit: 100 })
+      .then((result) => {
         if (cancelled) return;
-        const mapped: StringItem[] = rows.map((row) => ({
+        const mapped: StringItem[] = result.data.map((row) => ({
           id: row.id,
           name: row.name,
           qualityLevel: row.qualityLevel,
