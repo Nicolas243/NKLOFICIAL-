@@ -60,6 +60,12 @@ export function Header() {
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
               <Link
+                href="/meu-setup"
+                className="text-sm font-medium hover:text-neon transition-colors"
+              >
+                Meu Setup
+              </Link>
+              <Link
                 href="/perfil"
                 className="text-sm font-medium hover:text-neon transition-colors"
               >

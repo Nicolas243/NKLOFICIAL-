@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getStringDetails } from '@/actions/strings';
 import { getReviewsByStringId, submitReview } from '@/actions/reviews';
+import { isStringFavorite, toggleFavoriteString } from '@/actions/favorites';
+import { FavoriteButton } from '@/components/favorite-button';
 import { createClient } from '@/lib/supabase/server';
 
 type Params = Promise<{ id: string }>;
@@ -25,6 +27,7 @@ export default async function StringDetailsPage(props: { params: Params }) {
     data: { user },
   } = await supabase.auth.getUser();
   const reviews = await getReviewsByStringId(id);
+  const isFavorite = user?.id ? await isStringFavorite(user.id, id) : false;
 
   const specs: { label: string; value: string | null }[] = [
     { label: 'Material do Núcleo', value: stringData.coreMaterial },
@@ -102,6 +105,14 @@ export default async function StringDetailsPage(props: { params: Params }) {
               Faixa de mercado: {formatPrice(stringData.priceMin)} – {formatPrice(stringData.priceMax)}
             </div>
           </div>
+
+          {user && (
+            <FavoriteButton
+              action={toggleFavoriteString}
+              targetId={stringData.id}
+              initialSaved={isFavorite}
+            />
+          )}
 
           <Link
             href="/comparar"
