@@ -103,6 +103,9 @@ export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   savedLuthiers: many(favoriteLuthiers, { relationName: 'savedLuthier' }),
   luthierReviewsAsAuthor: many(luthierReviews, { relationName: 'reviewAuthor' }),
   luthierReviewsAsTarget: many(luthierReviews, { relationName: 'reviewedLuthier' }),
+  leadsForLuthier: many(luthierLeads, { relationName: 'leadsForLuthier' }),
+  leadsReferedByMe: many(luthierLeads, { relationName: 'leadReferrer' }),
+  portfolioItems: many(luthierPortfolio, { relationName: 'portfolioOfLuthier' }),
 }));
 
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
@@ -221,5 +224,47 @@ export const luthierReviewsRelations = relations(luthierReviews, ({ one }) => ({
     fields: [luthierReviews.userId],
     references: [userProfiles.id],
     relationName: 'reviewAuthor',
+  }),
+}));
+
+export const luthierLeads = pgTable('luthier_leads', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  luthierId: uuid('luthier_id')
+    .references(() => userProfiles.id)
+    .notNull(),
+  userId: uuid('user_id').references(() => userProfiles.id),
+  actionType: varchar('action_type', { length: 50 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const luthierPortfolio = pgTable('luthier_portfolio', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  luthierId: uuid('luthier_id')
+    .references(() => userProfiles.id)
+    .notNull(),
+  imageUrl: text('image_url').notNull(),
+  title: varchar('title', { length: 255 }),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const luthierLeadsRelations = relations(luthierLeads, ({ one }) => ({
+  luthier: one(userProfiles, {
+    fields: [luthierLeads.luthierId],
+    references: [userProfiles.id],
+    relationName: 'leadsForLuthier',
+  }),
+  user: one(userProfiles, {
+    fields: [luthierLeads.userId],
+    references: [userProfiles.id],
+    relationName: 'leadReferrer',
+  }),
+}));
+
+export const luthierPortfolioRelations = relations(luthierPortfolio, ({ one }) => ({
+  luthier: one(userProfiles, {
+    fields: [luthierPortfolio.luthierId],
+    references: [userProfiles.id],
+    relationName: 'portfolioOfLuthier',
   }),
 }));

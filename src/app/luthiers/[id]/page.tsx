@@ -1,17 +1,15 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getLuthierDetails } from '@/actions/luthier';
 import { isLuthierFavorite, toggleFavoriteLuthier } from '@/actions/favorites';
 import { getReviewsByLuthierId, submitLuthierReview } from '@/actions/reviews';
+import { getLuthierPortfolio } from '@/actions/portfolio';
 import { FavoriteButton } from '@/components/favorite-button';
+import { WhatsAppLeadButton } from '@/components/whatsapp-lead-button';
 import { createClient } from '@/lib/supabase/server';
 
 type Params = Promise<{ id: string }>;
-
-function buildWhatsAppUrl(whatsapp: string): string {
-  const digits = whatsapp.replace(/\D/g, '');
-  return `https://wa.me/${digits}`;
-}
 
 export default async function LuthierDetailsPage(props: { params: Params }) {
   const { id } = await props.params;
@@ -27,6 +25,7 @@ export default async function LuthierDetailsPage(props: { params: Params }) {
   } = await supabase.auth.getUser();
   const isFavorite = user?.id ? await isLuthierFavorite(user.id, id) : false;
   const reviews = await getReviewsByLuthierId(id);
+  const portfolio = await getLuthierPortfolio(id);
 
   const displayName = luthier.businessName ?? luthier.fullName ?? 'Luthier';
   const location =
@@ -83,14 +82,7 @@ export default async function LuthierDetailsPage(props: { params: Params }) {
             )}
 
             {luthier.whatsapp ? (
-              <a
-                href={buildWhatsAppUrl(luthier.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex justify-center py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
-              >
-                Contatar via WhatsApp
-              </a>
+              <WhatsAppLeadButton luthierId={luthier.id} whatsapp={luthier.whatsapp} />
             ) : (
               <p className="text-center text-sm opacity-60 border border-dashed border-border rounded-md py-3">
                 WhatsApp não disponível
@@ -99,6 +91,37 @@ export default async function LuthierDetailsPage(props: { params: Params }) {
           </aside>
         </div>
       </div>
+
+      {/* Trabalhos Recentes (Portfólio) */}
+      {portfolio.length > 0 && (
+        <section className="mt-12">
+          <h2 className="font-playfair text-2xl font-bold mb-6">Trabalhos Recentes</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {portfolio.map((item) => (
+              <figure
+                key={item.id}
+                className="bg-surface border border-border rounded-xl overflow-hidden flex flex-col"
+              >
+                <div className="relative aspect-square bg-border/40">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title ?? 'Trabalho de luthier'}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
+                <figcaption className="p-3">
+                  <div className="font-bold text-sm">{item.title || 'Sem título'}</div>
+                  {item.description && (
+                    <p className="text-xs opacity-70 mt-1 line-clamp-2">{item.description}</p>
+                  )}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Avaliações de Clientes */}
       <section className="mt-12">
