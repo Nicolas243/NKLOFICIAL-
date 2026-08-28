@@ -1,4 +1,4 @@
-﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique } from 'drizzle-orm/pg-core';
+﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -113,6 +113,98 @@ export const stringReviewsRelations = relations(stringReviews, ({ one }) => ({
   }),
   user: one(userProfiles, {
     fields: [stringReviews.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
+export const favoriteStrings = pgTable(
+  'favorite_strings',
+  {
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    stringId: uuid('string_id')
+      .references(() => stringsCatalog.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'favorite_strings_user_id_string_id_pk',
+      columns: [table.userId, table.stringId],
+    }),
+  ]
+);
+
+export const favoriteLuthiers = pgTable(
+  'favorite_luthiers',
+  {
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    luthierId: uuid('luthier_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'favorite_luthiers_user_id_luthier_id_pk',
+      columns: [table.userId, table.luthierId],
+    }),
+  ]
+);
+
+export const favoriteStringsRelations = relations(favoriteStrings, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [favoriteStrings.userId],
+    references: [userProfiles.id],
+  }),
+  string: one(stringsCatalog, {
+    fields: [favoriteStrings.stringId],
+    references: [stringsCatalog.id],
+  }),
+}));
+
+export const favoriteLuthiersRelations = relations(favoriteLuthiers, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [favoriteLuthiers.userId],
+    references: [userProfiles.id],
+  }),
+  luthier: one(userProfiles, {
+    fields: [favoriteLuthiers.luthierId],
+    references: [userProfiles.id],
+  }),
+}));
+
+// Reputação B2B: músicos avaliam luthiers. A unicidade composta impede que um
+// mesmo autor avalie um mesmo profissional mais de uma vez a nível de banco.
+export const luthierReviews = pgTable(
+  'luthier_reviews',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    luthierId: uuid('luthier_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    rating: integer('rating').notNull(),
+    comment: text('comment'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    unique('luthier_reviews_luthier_id_user_id_unique').on(table.luthierId, table.userId),
+  ]
+);
+
+export const luthierReviewsRelations = relations(luthierReviews, ({ one }) => ({
+  luthier: one(userProfiles, {
+    fields: [luthierReviews.luthierId],
+    references: [userProfiles.id],
+  }),
+  user: one(userProfiles, {
+    fields: [luthierReviews.userId],
     references: [userProfiles.id],
   }),
 }));
