@@ -1,33 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useSyncExternalStore } from 'react'
+import { useTheme } from 'next-themes'
+import { Moon, Sun } from 'lucide-react'
 
 export function ThemeToggle() {
-  const [, setTick] = useState(0)
+  const { theme, setTheme } = useTheme()
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
 
-  const toggle = () => {
-    const root = document.documentElement
-    if (root.classList.contains('light')) {
-      root.classList.remove('light')
-      root.classList.add('dark')
-    } else {
-      root.classList.add('light')
-      root.classList.remove('dark')
-    }
-    setTick(t => t + 1)
+  if (!mounted) {
+    return (
+      <button className="p-2 rounded-full hover:bg-accent transition-colors" aria-label="Alternar tema">
+        <span className="w-5 h-5 block" />
+      </button>
+    )
   }
 
-  const isDark = typeof window !== 'undefined'
-    ? !document.documentElement.classList.contains('light')
-    : true
+  const isDark = theme === 'dark'
 
   return (
     <button
-      onClick={toggle}
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className="p-2 rounded-full hover:bg-accent transition-colors"
       aria-label="Alternar tema"
     >
-      {isDark ? '☀️' : '🌙'}
+      {isDark ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   )
 }

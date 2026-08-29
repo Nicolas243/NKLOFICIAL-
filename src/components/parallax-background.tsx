@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 const LUTHIERS = [
   'Antonio Stradivari','Messiah 1716','Soil 1714','Betts 1704',
@@ -23,17 +23,17 @@ const SYMBOLS = [
 
 interface Cell { left: number; top: number; rotate: number; text: string; isSymbol: boolean }
 
-function sh<T>(a: T[]): T[] { return [...a].sort(() => Math.random() - 0.5) }
+function sh<T>(a: readonly T[]): T[] { return [...a].sort(() => Math.random() - 0.5) }
 
 function buildGrid(): Cell[] {
-  const W = window.innerWidth * 2
-  const H = window.innerHeight * 2
-  const cw = 360; const ch = 110
-  const cols = Math.ceil(W / cw) + 1; const rows = Math.ceil(H / ch)
-  let poolL = sh([...LUTHIERS]); let poolS = sh([...SYMBOLS])
+  const W = window.innerWidth * 3
+  const H = window.innerHeight * 3
+  const cw = 280; const ch = 90
+  const cols = Math.ceil(W / cw) + 2; const rows = Math.ceil(H / ch) + 1
+  let poolL = sh(LUTHIERS); let poolS = sh(SYMBOLS)
   const next = (): { t: string; s: boolean } => {
-    if (!poolL.length) poolL = sh([...LUTHIERS])
-    if (!poolS.length) poolS = sh([...SYMBOLS])
+    if (!poolL.length) poolL = sh(LUTHIERS)
+    if (!poolS.length) poolS = sh(SYMBOLS)
     return Math.random() < 0.75 ? { t: poolL.pop()!, s: false } : { t: poolS.pop()!, s: true }
   }
   const cells: Cell[] = []
@@ -43,13 +43,21 @@ function buildGrid(): Cell[] {
       const { t, s } = next()
       let left = c * cw + cw / 2 + (Math.random() * 30 - 15)
       if (odd) left += cw / 2
-      cells.push({ left, top: r * ch + ch / 2 + (Math.random() * 20 - 10), rotate: Math.floor(Math.random() * 20) - 10, text: t, isSymbol: s })
+      cells.push({
+        left,
+        top: r * ch + ch / 2 + (Math.random() * 20 - 10),
+        rotate: Math.floor(Math.random() * 20) - 10,
+        text: t,
+        isSymbol: s,
+      })
     }
   }
   return cells
 }
 
 export function ParallaxBackground() {
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
+  // Lazily build grid on first render (client-only via typeof guard; SSR returns empty)
   const [grid] = useState<Cell[]>(() =>
     typeof window !== 'undefined' ? buildGrid() : []
   )
@@ -57,14 +65,15 @@ export function ParallaxBackground() {
   const l2 = useRef<HTMLDivElement>(null)
   const mx = useRef(0)
 
-  // Mouse tracking
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => { mx.current = (e.clientX - window.innerWidth / 2) * 0.4 }
-    window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
+  const onMove = useCallback((e: MouseEvent) => {
+    mx.current = (e.clientX - window.innerWidth / 2) * 0.4
   }, [])
 
-  // rAF loop para parallax (60fps suave, nao depende de scroll event)
+  useEffect(() => {
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [onMove])
+
   useEffect(() => {
     let raf = 0
     const loop = () => {
@@ -78,35 +87,29 @@ export function ParallaxBackground() {
     return () => cancelAnimationFrame(raf)
   }, [])
 
-  if (!grid.length) return null
+  if (!mounted || !grid.length) return null
 
   return (
     <>
-      {/* Camada do parallax: fundo animado */}
       <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none">
-        <div ref={l1} className="absolute" style={{ width: '200vw', height: '200vh', left: '50%', marginLeft: '-100vw' }}>
+        <div ref={l1} className="absolute" style={{ width: '300vw', height: '300vh', left: '50%', marginLeft: '-150vw' }}>
           {grid.map((c, i) => (
             <span key={`p1-${i}`}
-              className={c.isSymbol
-                ? 'parallax-music-symbol font-playfair opacity-15 text-neon'
-                : 'parallax-violin-name font-playfair italic font-bold opacity-12 text-neon text-2xl'}
+              className={c.isSymbol ? 'font-playfair opacity-10 text-neon' : 'font-playfair italic font-bold opacity-8 text-neon text-3xl'}
               style={{ position: 'absolute', left: c.left, top: c.top, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
             >{c.text}</span>
           ))}
         </div>
-        <div ref={l2} className="absolute" style={{ width: '200vw', height: '200vh', left: '50%', marginLeft: '-100vw' }}>
+        <div ref={l2} className="absolute" style={{ width: '300vw', height: '300vh', left: '50%', marginLeft: '-150vw' }}>
           {grid.map((c, i) => (
             <span key={`p2-${i}`}
-              className={c.isSymbol
-                ? 'parallax-music-symbol font-playfair opacity-15 text-neon'
-                : 'parallax-violin-name font-playfair italic font-bold opacity-12 text-neon text-2xl'}
+              className={c.isSymbol ? 'font-playfair opacity-10 text-neon' : 'font-playfair italic font-bold opacity-8 text-neon text-3xl'}
               style={{ position: 'absolute', left: c.left, top: c.top, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
             >{c.text}</span>
           ))}
         </div>
       </div>
-      {/* Overlay translucido entre o parallax e o conteudo */}
-      <div className="fixed inset-0 bg-surface/80 backdrop-blur-[2px] z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-surface/60 backdrop-blur-sm z-[-1] pointer-events-none" />
     </>
   )
 }
