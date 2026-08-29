@@ -7,8 +7,10 @@ import { useState, useEffect, useSyncExternalStore } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { signout } from '@/actions/auth';
 import { NotificationBell } from '@/components/notification-bell';
+import { useSmartHeader } from '@/components/use-smart-header';
 
 export function Header() {
+  useSmartHeader('#site-header');
   const { theme, setTheme } = useTheme();
   // Detecta montagem no cliente sem chamar setState dentro de effects,
   // evitando mismatch de hidratação no botão de tema.
@@ -40,7 +42,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header id="site-header" className="site-header fixed top-0 w-full z-50 bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="font-playfair font-bold text-xl tracking-tight">
@@ -55,6 +57,9 @@ export function Header() {
           <li><Link href="/fisica-do-som" className="hover:text-neon transition-colors">Física do Som</Link></li>
           <li><Link href="/importacao" className="hover:text-neon transition-colors">Importação</Link></li>
           <li><Link href="/recomendados" className="hover:text-neon transition-colors">Recomendados</Link></li>
+          <li><Link href="/guia-de-cordas" className="hover:text-neon transition-colors">Guia</Link></li>
+          <li><Link href="/clinica" className="hover:text-neon transition-colors">Clinica</Link></li>
+          <li><Link href="/contatos" className="hover:text-neon transition-colors">Contatos</Link></li>
         </ul>
 
         <div className="flex items-center gap-4">

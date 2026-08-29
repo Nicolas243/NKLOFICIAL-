@@ -77,7 +77,7 @@ return (
           <div className="flex flex-wrap gap-4 pt-2">
             <Link
               href="/catalogo"
-              className="px-8 py-4 bg-text text-bg rounded-md font-bold text-lg transition-all hover:opacity-90 shadow-lg"
+              className="inline-flex px-8 py-4 bg-neon text-black rounded-md font-bold text-lg transition-all hover:scale-105 hover:shadow-lg hover:shadow-neon/30"
             >
               Explorar Catalogo
             </Link>
