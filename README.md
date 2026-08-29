@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal NKL
 
-## Getting Started
+**Marketplace B2B que conecta músicos a luthiers** — catálogo técnico de cordas com avaliações da comunidade, diretório de profissionais, dashboard comercial com assinaturas Premium e ecossistema de favoritos ("Meu Setup").
 
-First, run the development server:
+## Stack Tecnológica
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | Next.js 15 (App Router, Turbopack, Server Actions) + React 19 (Optimistic UI) |
+| ORM | Drizzle ORM (PostgreSQL) |
+| Banco / Auth / Storage | Supabase |
+| Estilo | Tailwind CSS v4 |
+| Qualidade | TypeScript strict (sem `any`), ESLint `--max-warnings=0` |
+
+## Arquitetura de Dados
+
+O schema Drizzle (`src/db/schema.ts`) é organizado em domínios:
+
+- **Catálogo** — `strings_catalog` (encordoados com métricas técnicas) e `string_reviews` (avaliações com upsert anti-duplicidade via unique composta `string_id + user_id`).
+- **B2B Directory** — `user_profiles` (RBAC: `user` / `luthier` / `admin`) e `business_directory` (dados comerciais: WhatsApp, plano, bio, FK estrita para `user_profiles`).
+- **Assinaturas / Paywall** — `subscriptions` (espelho do gateway: status, período) sincronizada com `plan_type`; recursos premium (portfólio, métricas de leads) bloqueados no plano gratuito.
+- **Notificações** — `notifications` in-app com gatilhos silenciosos (leads, avaliações) e badge no header.
+- **Analytics** — `luthier_leads` (rastreamento de cliques no WhatsApp) alimentando o MRR/leads do dashboard admin.
+- **Favoritos** — tabelas associativas com PK composta (`favorite_strings`, `favorite_luthiers`).
+- **Conteúdo** — `news_feed` gerenciado pelo CMS de admin.
+
+### Fronteiras de Integração
+
+| Endpoint | Segurança | Função |
+|---|---|---|
+| `POST /api/webhooks/gateway` | `x-gateway-signature` (`GATEWAY_WEBHOOK_SECRET`) | Recebe eventos do gateway, atualiza `subscriptions` e sincroniza `plan_type` |
+| `GET /api/cron/sync-subscriptions` | `Authorization: Bearer` (`CRON_SECRET`) | Rebaixa assinaturas expiradas (`active` + período vencido → `past_due` + plano `free`) |
+
+## Setup Local
 
 ```bash
+# 1. Instalar dependências
+npm install
+
+# 2. Configurar o ambiente
+cp .env.example .env.local
+#    Preencha DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY
+#    (obtidos no painel do Supabase).
+
+# 3. Rodar em desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O Supabase Storage requer o bucket **público `public-assets`** (uploads de portfólio, capas de notícias e avatares, pastas `luthiers/`, `news/`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Comandos de Verificação (Metodologia Zero-Defeitos)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Todo commit **deve** passar pela tríade de homologação — o pipeline `.github/workflows/production.yml` (Node 20, `ubuntu-latest`) aplica os mesmos gates em `push`/`pull_request` para `main`:
 
-## Learn More
+```bash
+npx eslint src/ --max-warnings=0   # 0 warnings tolerados
+npx tsc --noEmit                   # tipagem estrita, sem asserções soltas
+npm run build                      # build de produção (Turbopack)
+```
 
-To learn more about Next.js, take a look at the following resources:
+Utilitários de manutenção:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx drizzle-kit push    # sincroniza o schema com o Postgres (usar com cautela)
+npm run seed            # popula dados de demonstração (src/db/seed.ts)
+```

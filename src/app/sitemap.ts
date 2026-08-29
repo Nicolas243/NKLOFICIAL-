@@ -10,15 +10,25 @@ const BASE_URL =
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Consultas leves: apenas os campos necessários (id e updatedAt).
-  const [strings, luthiers] = await Promise.all([
-    db
-      .select({ id: stringsCatalog.id, updatedAt: stringsCatalog.updatedAt })
-      .from(stringsCatalog),
-    db
-      .select({ id: userProfiles.id, updatedAt: userProfiles.createdAt })
-      .from(userProfiles)
-      .where(eq(userProfiles.role, 'luthier')),
-  ]);
+  // Em caso de indisponibilidade do banco (ex: build em CI sem DATABASE_URL),
+  // o sitemap degrada graciosamente para as rotas estáticas — o deploy nunca
+  // deve falhar por causa do mapa de SEO.
+  let strings: { id: string; updatedAt: Date | null }[] = [];
+  let luthiers: { id: string; updatedAt: Date | null }[] = [];
+
+  try {
+    [strings, luthiers] = await Promise.all([
+      db
+        .select({ id: stringsCatalog.id, updatedAt: stringsCatalog.updatedAt })
+        .from(stringsCatalog),
+      db
+        .select({ id: userProfiles.id, updatedAt: userProfiles.createdAt })
+        .from(userProfiles)
+        .where(eq(userProfiles.role, 'luthier')),
+    ]);
+  } catch (error) {
+    console.error('[sitemap] Falha ao consultar o banco, usando apenas rotas estáticas:', error);
+  }
 
   const staticRoutes = ['', '/catalogo', '/luthiers', '/noticias', '/comparar'];
 
