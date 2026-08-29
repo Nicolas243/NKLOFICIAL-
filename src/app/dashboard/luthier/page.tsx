@@ -37,6 +37,9 @@ export default async function DashboardLuthierPage() {
     .where(eq(businessDirectory.userId, user.id))
     .limit(1);
 
+  // Paywall: recursos premium (métricas detalhadas + portfólio) só para planType premium.
+  const isPremium = profile.planType === 'premium';
+
   // Mitigação de nulos: quando não há registro comercial,
   // o formulário pré-popula com os dados públicos do perfil de luthier.
   const businessName = business?.businessName ?? profile.businessName ?? '';
@@ -65,20 +68,34 @@ export default async function DashboardLuthierPage() {
       {/* Métricas de Sucesso */}
       <section className="bg-surface border border-border rounded-xl p-6 shadow-sm">
         <h2 className="font-playfair text-xl font-bold mb-4">Métricas de Sucesso</h2>
-        <div className="flex items-center gap-6">
-          <div>
-            <div className="text-3xl font-bold text-neon">{leadCount}</div>
-            <div className="text-xs uppercase tracking-wider opacity-70 mt-1 font-medium">
-              Contatos via WhatsApp
+        {isPremium ? (
+          <div className="flex items-center gap-6">
+            <div>
+              <div className="text-3xl font-bold text-neon">{leadCount}</div>
+              <div className="text-xs uppercase tracking-wider opacity-70 mt-1 font-medium">
+                Contatos via WhatsApp
+              </div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-neon">{portfolio.length}</div>
+              <div className="text-xs uppercase tracking-wider opacity-70 mt-1 font-medium">
+                Trabalhos publicados
+              </div>
             </div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-neon">{portfolio.length}</div>
-            <div className="text-xs uppercase tracking-wider opacity-70 mt-1 font-medium">
-              Trabalhos publicados
-            </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 py-4 text-center">
+            <p className="text-sm opacity-80">
+              As métricas detalhadas de conversão são exclusivas do plano Premium.
+            </p>
+            <a
+              href="/dashboard/luthier/planos"
+              className="px-4 py-2 text-xs font-bold bg-neon text-black rounded-md hover:opacity-90 transition-opacity"
+            >
+              Conhecer o Premium
+            </a>
           </div>
-        </div>
+        )}
       </section>
 
       <section>
@@ -134,67 +151,85 @@ export default async function DashboardLuthierPage() {
       <section>
         <h2 className="font-playfair text-2xl font-bold mb-6">Gerenciar Portfólio</h2>
 
-        <form
-          action={addPortfolioItem}
-          encType="multipart/form-data"
-          className="flex flex-col gap-4 bg-surface border border-border rounded-xl p-6 shadow-sm mb-8"
-        >
-          <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium opacity-80">Imagem do trabalho</span>
-            <input
-              type="file"
-              name="image"
-              accept="image/png, image/jpeg, image/webp"
-              required
-              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-text file:text-bg file:font-bold file:cursor-pointer"
-            />
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="title"
-              placeholder="Título do trabalho"
-              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-            />
-            <input
-              type="text"
-              name="description"
-              placeholder="Breve descrição"
-              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-            />
-          </div>
-          <button
-            type="submit"
-            className="py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
-          >
-            Adicionar ao portfólio
-          </button>
-        </form>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {portfolio.map((item) => (
-            <div
-              key={item.id}
-              className="bg-surface border border-border rounded-xl overflow-hidden flex flex-col"
-            >
-              <div className="p-3 text-sm font-bold">{item.title || 'Sem título'}</div>
-              <form action={deletePortfolioItem} className="p-3 border-t border-border mt-auto">
-                <input type="hidden" name="itemId" value={item.id} />
-                <button
-                  type="submit"
-                  className="w-full py-2 text-sm font-bold border border-red-500/50 text-red-500 rounded-md transition-all hover:bg-red-500/10"
-                >
-                  Excluir
-                </button>
-              </form>
-            </div>
-          ))}
-          {portfolio.length === 0 && (
-            <p className="col-span-full text-center opacity-60 py-8 border border-dashed border-border rounded-lg">
-              Nenhum trabalho publicado ainda. Adicione seu primeiro item acima.
+        {!isPremium ? (
+          <div className="p-8 bg-surface border border-border rounded-xl text-center space-y-4">
+            <p className="font-playfair text-xl font-bold">Recurso Premium 🔒</p>
+            <p className="text-sm opacity-80 max-w-md mx-auto">
+              Publique fotos dos seus trabalhos e encante clientes com uma vitrine visual.
+              Esse recurso é exclusivo para assinantes do plano Premium.
             </p>
-          )}
-        </div>
+            <a
+              href="/dashboard/luthier/planos"
+              className="inline-block px-6 py-3 bg-neon text-black font-bold rounded-md hover:opacity-90 transition-opacity"
+            >
+              Desbloquear com Premium
+            </a>
+          </div>
+        ) : (
+          <>
+            <form
+              action={addPortfolioItem}
+              encType="multipart/form-data"
+              className="flex flex-col gap-4 bg-surface border border-border rounded-xl p-6 shadow-sm mb-8"
+            >
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium opacity-80">Imagem do trabalho</span>
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/png, image/jpeg, image/webp"
+                  required
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-text file:text-bg file:font-bold file:cursor-pointer"
+                />
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Título do trabalho"
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+                />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Breve descrição"
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+              >
+                Adicionar ao portfólio
+              </button>
+            </form>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {portfolio.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-surface border border-border rounded-xl overflow-hidden flex flex-col"
+                >
+                  <div className="p-3 text-sm font-bold">{item.title || 'Sem título'}</div>
+                  <form action={deletePortfolioItem} className="p-3 border-t border-border mt-auto">
+                    <input type="hidden" name="itemId" value={item.id} />
+                    <button
+                      type="submit"
+                      className="w-full py-2 text-sm font-bold border border-red-500/50 text-red-500 rounded-md transition-all hover:bg-red-500/10"
+                    >
+                      Excluir
+                    </button>
+                  </form>
+                </div>
+              ))}
+              {portfolio.length === 0 && (
+                <p className="col-span-full text-center opacity-60 py-8 border border-dashed border-border rounded-lg">
+                  Nenhum trabalho publicado ainda. Adicione seu primeiro item acima.
+                </p>
+              )}
+            </div>
+          </>
+        )}
       </section>
     </div>
   );

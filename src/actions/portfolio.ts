@@ -44,6 +44,17 @@ export type PortfolioItem = {
 export async function addPortfolioItem(formData: FormData): Promise<void> {
   const luthierId = await requireLuthierId();
 
+  // Paywall: portfólio é recurso exclusivo do plano Premium.
+  const [profile] = await db
+    .select({ planType: userProfiles.planType })
+    .from(userProfiles)
+    .where(eq(userProfiles.id, luthierId))
+    .limit(1);
+
+  if (!profile || profile.planType !== 'premium') {
+    throw new Error('O portfólio é um recurso Premium. Assine o plano para liberar.');
+  }
+
   const raw = formData.get('image');
   const file = raw instanceof File ? raw : null;
 

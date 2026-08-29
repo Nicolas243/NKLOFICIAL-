@@ -72,6 +72,7 @@ export const userProfiles = pgTable('user_profiles', {
   city: varchar('city', { length: 150 }),
   state: varchar('state', { length: 2 }),
   bio: text('bio'),
+  planType: varchar('plan_type', { length: 20 }).notNull().default('free'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -95,8 +96,29 @@ export const stringReviews = pgTable(
   ]
 );
 
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .references(() => userProfiles.id)
+    .notNull(),
+  gatewayProvider: varchar('gateway_provider', { length: 30 }).notNull().default('mercadopago'),
+  gatewaySubscriptionId: varchar('gateway_subscription_id', { length: 100 }).notNull().unique(),
+  status: varchar('status', { length: 20 }).notNull().default('active'),
+  currentPeriodEnd: timestamp('current_period_end'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [subscriptions.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
 export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   businessDirectory: many(businessDirectory),
+  subscriptions: many(subscriptions),
   stringReviews: many(stringReviews),
   favoriteStrings: many(favoriteStrings),
   favoriteLuthiersAsUser: many(favoriteLuthiers, { relationName: 'favoritedByUser' }),
