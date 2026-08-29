@@ -6,6 +6,7 @@ import { Moon, Sun, Menu } from 'lucide-react';
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { signout } from '@/actions/auth';
+import { NotificationBell } from '@/components/notification-bell';
 
 export function Header() {
   const { theme, setTheme } = useTheme();
@@ -59,6 +60,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <Link
                 href="/meu-setup"
                 className="text-sm font-medium hover:text-neon transition-colors"

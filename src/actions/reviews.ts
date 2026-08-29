@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { stringReviews, luthierReviews, userProfiles } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
+import { createNotificationQuietly } from '@/actions/notifications';
 
 const RATING_MIN = 1;
 const RATING_MAX = 10;
@@ -133,6 +134,15 @@ export async function submitLuthierReview(formData: FormData) {
         comment: comment || null,
       },
     });
+
+  // Notificação silenciosa ao luthier: uma falha aqui não interrompe a avaliação.
+  await createNotificationQuietly({
+    userId: luthierId,
+    type: 'review_received',
+    title: 'Você recebeu uma nova avaliação',
+    message: `Um cliente avaliou seu trabalho com nota ${rating}/10.`,
+    relatedId: luthierId,
+  });
 
   revalidatePath(`/luthiers/${luthierId}`);
 }

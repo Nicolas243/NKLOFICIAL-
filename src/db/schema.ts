@@ -1,4 +1,4 @@
-﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey } from 'drizzle-orm/pg-core';
+﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -116,9 +116,30 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }));
 
+export const notifications = pgTable('notifications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .references(() => userProfiles.id)
+    .notNull(),
+  type: varchar('type', { length: 30 }).notNull().default('system_alert'),
+  title: varchar('title', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  isRead: boolean('is_read').notNull().default(false),
+  relatedId: uuid('related_id'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [notifications.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
 export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   businessDirectory: many(businessDirectory),
   subscriptions: many(subscriptions),
+  notifications: many(notifications),
   stringReviews: many(stringReviews),
   favoriteStrings: many(favoriteStrings),
   favoriteLuthiersAsUser: many(favoriteLuthiers, { relationName: 'favoritedByUser' }),
