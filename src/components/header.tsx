@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Menu, X } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { signout } from '@/actions/auth'
 import { NotificationBell } from '@/components/notification-bell'
@@ -15,62 +15,80 @@ type DropdownGroup = {
 }
 
 const groups: DropdownGroup[] = [
-  {
-    label: 'Cordas',
-    items: [
-      { href: '/catalogo', label: 'Catalogo' },
-      { href: '/comparar', label: 'Comparar' },
-      { href: '/guia-de-cordas', label: 'Grafico de Cordas' },
-    ],
-  },
-  {
-    label: 'Conteudo',
-    items: [
-      { href: '/fisica-do-som', label: 'Fisica do Som' },
-      { href: '/clinica', label: 'Clinica de Lutheria' },
-    ],
-  },
-  {
-    label: 'Luthiers & Mercado',
-    items: [
-      { href: '/importacao', label: 'Importacao' },
-      { href: '/recomendados', label: 'Recomendados' },
-      { href: '/luthiers', label: 'Diretorio B2B' },
-    ],
-  },
+  { label: 'Cordas', items: [
+    { href: '/catalogo', label: 'Catalogo' },
+    { href: '/comparar', label: 'Comparar' },
+    { href: '/guia-de-cordas', label: 'Grafico' },
+    { href: '/recomendados', label: 'Encontre uma Loja' },
+  ]},
+  { label: 'Luteria', items: [
+    { href: '/fisica-do-som', label: 'Fisica do Som' },
+    { href: '/clinica', label: 'Clinica de Lutheria' },
+    { href: '/luthiers', label: 'Encontre um Luthier' },
+  ]},
+]
+
+const LANGUAGES = [
+  { code: 'pt', flag: '🇧🇷', label: 'PT/BR' },
+  { code: 'es', flag: '🇪🇸', label: 'ES/AR' },
+  { code: 'en', flag: '🇺🇸', label: 'EN/US' },
 ]
 
 function DropdownDesktop({ group }: { group: DropdownGroup }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', fn)
+    return () => document.removeEventListener('mousedown', fn)
+  }, [])
+
   return (
-    <li className="relative group">
-      <span className="cursor-pointer text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">{group.label}</span>
-      <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-        <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px]">
-          {group.items.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className="block px-4 py-2 text-sm rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap">{item.label}</Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </li>
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen((v) => !v)}
+        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1">
+        {group.label} <span className="text-xs">▾</span>
+      </button>
+      {open && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[220px]">
+            {group.items.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="block px-4 py-2 text-sm rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                  onClick={() => setOpen(false)}>{item.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 
 function DropdownMobile({ group }: { group: DropdownGroup }) {
+  const [open, setOpen] = useState(false)
   return (
     <li>
-      <span className="block px-4 py-2 text-sm font-bold uppercase tracking-wider opacity-60">{group.label}</span>
-      <ul className="pl-4 border-l-2 border-border ml-4 mb-2">
-        {group.items.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href} className="block px-3 py-1.5 text-sm hover:text-neon transition-colors">{item.label}</Link>
-          </li>
-        ))}
-      </ul>
+      <button type="button" onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold uppercase tracking-wider opacity-60">
+        {group.label} <span className={`transition-transform ${open ? 'rotate-180' : ''}`}>▾</span>
+      </button>
+      {open && (
+        <ul className="pl-4 border-l-2 border-border ml-4 mb-2">
+          {group.items.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href} className="block px-3 py-1.5 text-sm hover:text-neon transition-colors">{item.label}</Link>
+            </li>
+          ))}
+                </ul>
+      )}
     </li>
   )
 }
+
 export function Header() {
   useSmartHeader('#site-header')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -89,12 +107,15 @@ export function Header() {
   return (
     <header id="site-header" className="site-header fixed top-0 w-full z-50 bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-playfair font-bold text-xl tracking-tight shrink-0">NKL Portal</Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <img src="/NKL/NKL.png" alt="NKL" className="w-8 h-8 object-contain" />
+          <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal NKL</Link>
+        </div>
 
-        {/* Desktop */}
         <ul className="hidden lg:flex items-center gap-6">
           <li><Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Home</Link></li>
-          {groups.map((g) => <DropdownDesktop key={g.label} group={g} />)}
+          {groups.map((g) => <li key={g.label}><DropdownDesktop group={g} /></li>)}
+          <li><Link href="/noticias" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Noticias</Link></li>
           <li><Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Contatos</Link></li>
         </ul>
 
@@ -109,17 +130,22 @@ export function Header() {
           ) : (
             <Link href="/login" className="hidden sm:inline-flex px-4 py-2 text-sm font-bold bg-text text-bg rounded-md transition-all hover:opacity-90">Entrar</Link>
           )}
+          <div className="hidden sm:flex items-center gap-1">
+            {LANGUAGES.map((l) => <span key={l.code} className="text-sm cursor-pointer hover:scale-110 transition-transform" title={l.label}>{l.flag}</span>)}
+          </div>
           <ThemeToggle />
-          <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMobileOpen((v) => !v)}><Menu size={24} /></button>
+          <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMobileOpen((v) => !v)}>
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </nav>
 
-      {/* Mobile */}
       {mobileOpen && (
         <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur pb-4">
           <ul className="flex flex-col py-2">
             <li><Link href="/" className="block px-4 py-2 text-sm hover:text-neon transition-colors" onClick={() => setMobileOpen(false)}>Home</Link></li>
             {groups.map((g) => <DropdownMobile key={g.label} group={g} />)}
+            <li><Link href="/noticias" className="block px-4 py-2 text-sm hover:text-neon transition-colors" onClick={() => setMobileOpen(false)}>Noticias</Link></li>
             <li><Link href="/contatos" className="block px-4 py-2 text-sm hover:text-neon transition-colors" onClick={() => setMobileOpen(false)}>Contatos</Link></li>
             {isLoggedIn ? (
               <>

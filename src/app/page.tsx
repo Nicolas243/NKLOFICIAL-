@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { db } from '@/db';
 import { stringsCatalog, userProfiles, businessDirectory, newsFeed } from '@/db/schema';
 import { desc, eq } from 'drizzle-orm';
+import { RadialMenu } from '@/components/radial-menu';
 
 type TopStringRow = Pick<
   typeof stringsCatalog.$inferSelect,
@@ -98,7 +99,17 @@ return (
             priority
             className="object-cover"
           />
-        </div>
+                </div>
+      </section>
+
+      {/* Radial Menu interativo */}
+      <section className="flex flex-col items-center text-center">
+        <h2 className="font-playfair text-3xl font-bold mb-4">Explorar o Portal NKL</h2>
+        <p className="text-sm opacity-60 mb-8 max-w-lg">
+          O ecossistema da lutheria em um clique. Passe o mouse sobre uma fatia para descobrir tudo
+          o que o Portal NKL oferece — dedicado a musicos, luthiers e amantes do som.
+        </p>
+        <RadialMenu />
       </section>
 
       {/* ICEBERG 1: As Melhores Cordas */}

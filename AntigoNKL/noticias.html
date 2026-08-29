@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-QD0HQJFWVW');</script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mural de Notícias | Violino NKL</title>
+    <link rel="icon" type="image/png" href="NKL/NKL.png">
+    
+    <!-- CSS e JS GLOBAIS (Carrega Menu, Fundo e Rodapé) -->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body class="dark-theme">
+
+    <div class="parallax-bg" id="parallax-bg">
+        <span class="music-symbol" style="top: 10%; left: 10%;">𝄞</span>
+        <span class="music-symbol" style="top: 30%; right: 15%;">𝄢</span>
+    </div>
+
+    <!-- O Header é injetado aqui pelo script.js -->
+    <header id="site-header" class="site-header"></header>
+
+    <main class="main-content">
+        <section class="hero" style="text-align: center; margin-bottom: 2.5rem;">
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-top: 0; margin-bottom: 0.5rem; color: var(--text);">Mural de Notícias</h1>
+            <p style="opacity: 0.85; margin-top: 0; font-size: 1.1rem;">Eventos, Masterclasses, Promoções e Oportunidades do mundo das cordas.</p>
+            <button class="btn-home-cta" id="btn-open-modal" style="margin-top: 1rem; cursor: pointer;">📢 Anunciar Evento / Notícia</button>
+        </section>
+
+        <div class="category-filters">
+            <button class="filter-btn active">Todos</button>
+            <button class="filter-btn outline">🎭 Eventos Culturais</button>
+            <button class="filter-btn outline">🛒 Lojas & Promoções</button>
+            <button class="filter-btn outline">🛠️ Serviços de Luthieria</button>
+        </div>
+
+        <div class="news-feed" id="news-feed">
+            <!-- Card Estático de Teste -->
+            <article class="news-card">
+                <div class="news-img-box">
+                    <img src="NKL/home-foto2.webp" alt="Imagem Notícia" class="news-img" onerror="this.src='NKL/NKL.png'; this.style.objectFit='contain';">
+                </div>
+                <div class="news-content">
+                    <div class="news-tags">
+                        <span class="news-tag highlight">Eventos</span>
+                        <span class="news-tag">📍 Curitiba, PR</span>
+                    </div>
+                    <h2 class="news-title">Masterclass: O Caminho do Arco</h2>
+                    <p class="news-desc">Aperfeiçoe a sua técnica de arco com foco na distribuição de peso e ponto de contacto. Entrada gratuita para alunos ouvintes na UTFPR.</p>
+                    <div class="news-footer">
+                        <span class="news-date">📅 15 Nov 2026</span>
+                        <button class="btn-util">👏 Útil <span class="util-count">42</span></button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <!-- MODAL DE CRIAÇÃO DE NOTÍCIAS BLINDADO -->
+    <div id="modal-postar" class="modal-overlay">
+        <div class="modal-content news-modal" id="modal-box">
+            <button class="close-btn" id="btn-close-modal">&times;</button>
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--text); margin-top: 0;">Criar Anúncio / Notícia</h3>
+            
+            <form id="form-noticia" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Título Principal *</label>
+                    <input type="text" id="post-title" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); outline: none;" placeholder="Ex: Masterclass Gratuita..." required>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Descrição Detalhada *</label>
+                    <textarea id="post-desc" rows="4" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'Inter'; outline: none;" placeholder="Descreva os detalhes, horários e requisitos..." required></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Categoria *</label>
+                        <select id="post-category" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); outline: none;" required>
+                            <option value="">Selecione...</option>
+                            <option value="Eventos">🎭 Evento / Cultural (Grátis)</option>
+                            <option value="Lojas">🛒 Loja / Promoção (Pago)</option>
+                            <option value="Luthiers">🛠️ Serviços / Luthieria (Pago)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Localização</label>
+                        <input type="text" id="post-location" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); outline: none;" placeholder="Ex: Curitiba, PR">
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: var(--text);">Imagem (Será comprimida automaticamente)</label>
+                    <div class="upload-area" id="upload-area">
+                        <p id="upload-text" style="margin: 0; color: var(--text); font-weight: 600; opacity: 0.8;">📸 Clique para escolher uma foto</p>
+                        <input type="file" id="post-image" accept="image/*" style="display: none;">
+                        <img id="image-preview" style="display: none; width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <button type="submit" style="width: 100%; padding: 15px; background: var(--text); color: var(--bg); font-weight: bold; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 0.5rem;">Enviar para Aprovação</button>
+                <p style="font-size: 0.75rem; opacity: 0.6; text-align: center; margin: 0; color: var(--text);">A sua submissão será avaliada pela equipa NKL para garantir a segurança da comunidade.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- LÓGICA EXCLUSIVA DAS NOTÍCIAS (Isolada para não quebrar o site) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const modalPostar = document.getElementById('modal-postar');
+            const btnOpen = document.getElementById('btn-open-modal');
+            const btnClose = document.getElementById('btn-close-modal');
+            const formNoticia = document.getElementById('form-noticia');
+            
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('post-image');
+            const imgPreview = document.getElementById('image-preview');
+            const uploadText = document.getElementById('upload-text');
+            
+            let imagemWebPBase64 = null;
+
+            // Abrir
+            btnOpen.addEventListener('click', () => {
+                modalPostar.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Fechar com proteção anti-fechamento acidental
+            const checkAndCloseModal = () => {
+                const title = document.getElementById('post-title').value.trim();
+                const desc = document.getElementById('post-desc').value.trim();
+                
+                if (title !== '' || desc !== '') {
+                    if (!confirm("Tem certeza que deseja fechar? Os dados digitados serão perdidos.")) return;
+                }
+                
+                formNoticia.reset();
+                imgPreview.style.display = 'none';
+                uploadText.style.display = 'block';
+                imagemWebPBase64 = null;
+                modalPostar.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            };
+
+            btnClose.addEventListener('click', checkAndCloseModal);
+            modalPostar.addEventListener('click', (e) => {
+                if (e.target === modalPostar) checkAndCloseModal();
+            });
+
+            // Motor de Upload e Compressão WebP
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const MAX_SIZE = 1080;
+
+                        if (width > height && width > MAX_SIZE) {
+                            height *= MAX_SIZE / width; width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height; height = MAX_SIZE;
+                        }
+
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        imagemWebPBase64 = canvas.toDataURL('image/webp', 0.8);
+                        
+                        imgPreview.src = imagemWebPBase64;
+                        imgPreview.style.display = 'block';
+                        uploadText.style.display = 'none';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Simulação de Envio
+            formNoticia.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btnSubmit = formNoticia.querySelector('button[type="submit"]');
+                const originalText = btnSubmit.innerText;
+                
+                btnSubmit.innerText = "Processando...";
+                btnSubmit.style.opacity = '0.5';
+                btnSubmit.disabled = true;
+                
+                // Simula 1.5s de envio para o Firebase
+                setTimeout(() => {
+                    alert("Enviado com sucesso! A notícia irá para o ar após aprovação.");
+                    
+                    // Limpa os campos para burlar a proteção de fechar
+                    document.getElementById('post-title').value = '';
+                    document.getElementById('post-desc').value = '';
+                    
+                    checkAndCloseModal();
+                    
+                    btnSubmit.innerText = originalText;
+                    btnSubmit.style.opacity = '1';
+                    btnSubmit.disabled = false;
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"></script>
+        <script>
+        window.dataLayer=window.dataLayer||[];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js',new Date());
+        gtag('config','G-QD0HQJFWVW');
+    </script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Equipamentos Recomendados | Violino NKL</title>
+        <meta name="keywords" content="Violino, NKL Oficial, Método NKL, lutheria, equipamentos, arcos, breu, espalheira, cavalete">
+        <meta name="author" content="Nicolas Da Costa Santos">
+        <meta property="og:title" content="Equipamentos Recomendados | Violino NKL"/>
+        <meta property="og:description" content="Seleção criteriosa de acessórios e arcos testados na bancada e aprovados por alunos."/>
+        <link rel="icon" type="image/png" href="NKL/NKL.png">
+        <!-- CSS Centralizado -->
+        <link rel="stylesheet" href="style.css">
+        <style>
+        /* CORREÇÃO DE VAZAMENTO DA MINIATURA (THUMB) */
+        .product-card {
+            overflow: hidden; /* Mágica 1: Corta qualquer elemento que tente sair da borda do cartão */
+            box-sizing: border-box;
+        }
+        
+        .product-thumb {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box; /* Mágica 2: Impede que o preenchimento (padding) estique a caixa */
+            word-wrap: break-word; /* Mágica 3: Força a quebra do texto se ele for gigante */
+            overflow-wrap: break-word;
+            white-space: normal; /* Autoriza o texto a ir para a linha de baixo */
+        }
+    </style>
+    </head>
+    <body class="dark-theme">
+        <main class="main-content" style="margin-top: 100px; max-width: 1400px; margin-left: auto; margin-right: auto; padding: 2rem 1rem; position: relative; z-index: 2;">
+            <section class="hero" style="margin-bottom: 3rem; text-align: center;">
+                <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--text);">Equipamentos Recomendados</h1>
+                <p style="font-size: 1.1rem; opacity: 0.85; max-width: 800px; margin: 0 auto;">Seleção criteriosa de acessórios e arcos testados na bancada e aprovados por alunos. Links limpos e diretos para as melhores ofertas do mercado.</p>
+                <!-- FILTROS DE INSTRUMENTOS -->
+                <div class="category-filters" style="margin-top: 2.5rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="filter-btn active" onclick="filtrarEquipamentos('todos', this)">Todos</button>
+                    <button class="filter-btn" onclick="filtrarEquipamentos('violino', this)">🎻 Violino</button>
+                    <button class="filter-btn" onclick="filtrarEquipamentos('viola', this)">🎵 Viola</button>
+                    <button class="filter-btn" onclick="filtrarEquipamentos('cello', this)">🎼 Cello</button>
+                </div>
+                <!-- LINKS RÁPIDOS PARA AS SEÇÕES -->
+                <div class="category-filters anchors" style="margin-top: 1rem; gap: 0.5rem; display: flex; justify-content: center; flex-wrap: wrap;">
+                    <a href="#arcos" class="filter-btn outline">🏹 Arcos</a>
+                    <a href="#breus" class="filter-btn outline">🪨 Breus</a>
+                    <a href="#espalheiras" class="filter-btn outline">🛋️ Espalheiras</a>
+                    <a href="#cavaletes" class="filter-btn outline">🌉 Cavaletes</a>
+                </div>
+            </section>
+            <!-- CONTAINER ONDE OS PRODUTOS SERÃO INJETADOS AUTOMATICAMENTE -->
+            <div id="recomendados-root"></div>
+            <p style="font-size: 0.85rem; color: var(--text); opacity: 0.6; text-align: center; margin-top: 2rem;">Nota: Cavaletes considerados inferiores (Teller Germany 3, 2, 1 estrela e Despiau Ecolier) não estão listados intencionalmente nesta seleção.</p>
+        </main>
+        <!-- 1. ARQUIVO DO BANCO DE DADOS -->
+        <script src="banco-recomendados.js"></script>
+        <!-- 2. SCRIPT DE INJEÇÃO GLOBAL (MENU/FOOTER) -->
+        <script src="script.js"></script>
+        <!-- 3. MOTOR DE RENDERIZAÇÃO DA PÁGINA -->
+        <script>
+        // Configuração mestre das Seções Principais da página
+        const secoesSpecs = [
+            { id: 'arcos', titulo: 'Arcos Recomendados', subtitulo: '(Do mais barato ao mais caro)', desc: '' },
+            { id: 'breus', titulo: 'Breus (Resinas - Já testados)', subtitulo: '', desc: '' },
+            { id: 'espalheiras', titulo: 'Espalheiras (Ergonomia)', subtitulo: '', desc: '' },
+            { id: 'cavaletes', titulo: 'Cavaletes (Transmissão de Frequência)', subtitulo: '', desc: 'Quanto melhor o cavalete, melhor ele irá passar a vibração das cordas para a caixa do instrumento. Um bom cavalete requer uma boa corda.' }
+        ];
+
+        let filtroAtual = 'todos';
+
+        // Atualiza a classe 'active' nos botões e chama o motor visual
+        function filtrarEquipamentos(instrumento, btnElement) {
+            document.querySelectorAll('.category-filters button').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            filtroAtual = instrumento;
+            renderizarPelaCategoria();
+        }
+
+        // Motor Inteligente que constrói o HTML lendo o banco-recomendados.js
+        function renderizarPelaCategoria() {
+            const root = document.getElementById('recomendados-root');
+            root.innerHTML = '';
+
+            secoesSpecs.forEach(secaoSpec => {
+                // Filtra apenas os produtos que pertencem a esta seção (ex: só arcos)
+                let produtosSecao = dbRecomendados.filter(p => p.secao === secaoSpec.id);
+                
+                // Se o usuário clicou num botão, esconde os de outros instrumentos (Mantém 'geral' sempre visível)
+                if (filtroAtual !== 'todos') {
+                    produtosSecao = produtosSecao.filter(p => p.instrumento === filtroAtual || p.instrumento === 'geral');
+                }
+
+                // Se a seção não tiver nenhum produto após o filtro, pula ela
+                if (produtosSecao.length === 0) return;
+
+                // 1. Cria o Título e a Descrição da Seção
+                const secElement = document.createElement('div');
+                let titleHTML = `<h2 id="${secaoSpec.id}" class="category-title" style="scroll-margin-top: 120px;">${secaoSpec.titulo}`;
+                if (secaoSpec.subtitulo) {
+                    titleHTML += ` <span style="font-size: 1rem; font-weight: normal; opacity: 0.6;">${secaoSpec.subtitulo}</span>`;
+                }
+                titleHTML += `</h2>`;
+                
+                if (secaoSpec.desc) {
+                    titleHTML += `<p style="margin-bottom: 2rem; color: var(--text); opacity: 0.9;">${secaoSpec.desc}</p>`;
+                }
+                secElement.innerHTML = titleHTML;
+
+                // 2. Agrupa os produtos por Sub-categoria (Violino, Viola) e pelos Badges (EXCELENTE, BOM)
+                const gruposMap = new Map();
+                produtosSecao.forEach(p => {
+                    const key = `${p.grupo}|${p.badge}`;
+                    if (!gruposMap.has(key)) gruposMap.set(key, []);
+                    gruposMap.get(key).push(p);
+                });
+
+                // 3. Monta o Divisor e a Grelha para cada grupo
+                gruposMap.forEach((produtos, key) => {
+                    const [nomeGrupo, badge] = key.split('|');
+                    
+                    let dividerHTML = `<div class="subcategory-divider">&#9632; ${nomeGrupo}`;
+                    if (badge) {
+                        let bgCor = badge === 'EXCELENTE' ? 'var(--neon)' : (badge === 'MUITO BOM' ? '#555' : '#888');
+                        let txtCor = badge === 'EXCELENTE' ? '#000' : '#fff';
+                        dividerHTML += ` <span class="sub-badge" style="background:${bgCor}; color:${txtCor}">${badge}</span>`;
+                    }
+                    dividerHTML += `</div>`;
+                    
+                    secElement.innerHTML += dividerHTML;
+
+                    // Caixa Grid
+                    const grid = document.createElement('div');
+                    grid.className = 'product-grid';
+
+                    // Cards dos Produtos
+                    produtos.forEach(p => {
+                        let botoesHTML = p.botoes.map(b => `<a href="${b.link}" target="_blank" class="product-btn ${b.classe}">${b.texto}</a>`).join('');
+                        let commentHTML = p.comentario ? `<p class="product-comment">${p.comentario}</p>` : `<p class="product-comment" style="opacity:0;">&nbsp;</p>`;
+
+                        grid.innerHTML += `
+                            <div class="product-card" data-inst="${p.instrumento}">
+                                <div class="product-thumb">${p.thumb}</div>
+                                <h3 class="product-title">${p.titulo}</h3>
+                                ${commentHTML}
+                                <div class="product-price">${p.preco}</div>
+                                <div class="button-group">
+                                    ${botoesHTML}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    secElement.appendChild(grid);
+                });
+
+                // Injeta a Seção Inteira na Página
+                root.appendChild(secElement);
+            });
+        }
+
+        // Executa ao carregar a tela
+        window.addEventListener('DOMContentLoaded', () => renderizarPelaCategoria());
+    </script>
+    </body>
+</html>

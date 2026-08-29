@@ -21,15 +21,17 @@ const SYMBOLS = [
   '\u{1D106}','\u{1D107}','\u{1D110}','\u{1D12A}',
 ]
 
-interface Cell { left: number; top: number; rotate: number; text: string; isSymbol: boolean }
+interface Cell {
+  x: number; y: number; rotate: number; text: string; isSymbol: boolean
+}
 
 function sh<T>(a: readonly T[]): T[] { return [...a].sort(() => Math.random() - 0.5) }
 
 function buildGrid(): Cell[] {
-  const W = window.innerWidth * 3
-  const H = window.innerHeight * 3
-  const cw = 280; const ch = 90
-  const cols = Math.ceil(W / cw) + 2; const rows = Math.ceil(H / ch) + 1
+  const W = window.innerWidth * 4
+  const H = window.innerHeight * 4
+  const cw = 320; const ch = 100
+  const cols = Math.ceil(W / cw) + 3; const rows = Math.ceil(H / ch) + 2
   let poolL = sh(LUTHIERS); let poolS = sh(SYMBOLS)
   const next = (): { t: string; s: boolean } => {
     if (!poolL.length) poolL = sh(LUTHIERS)
@@ -41,15 +43,9 @@ function buildGrid(): Cell[] {
     const odd = r % 2 === 1; const rc = odd ? cols - 1 : cols
     for (let c = 0; c < rc; c++) {
       const { t, s } = next()
-      let left = c * cw + cw / 2 + (Math.random() * 30 - 15)
-      if (odd) left += cw / 2
-      cells.push({
-        left,
-        top: r * ch + ch / 2 + (Math.random() * 20 - 10),
-        rotate: Math.floor(Math.random() * 20) - 10,
-        text: t,
-        isSymbol: s,
-      })
+      let x = c * cw + cw / 2 + (Math.random() * 30 - 15)
+      if (odd) x += cw / 2
+      cells.push({ x, y: r * ch + ch / 2 + (Math.random() * 20 - 10), rotate: Math.floor(Math.random() * 20) - 10, text: t, isSymbol: s })
     }
   }
   return cells
@@ -57,12 +53,8 @@ function buildGrid(): Cell[] {
 
 export function ParallaxBackground() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
-  // Lazily build grid on first render (client-only via typeof guard; SSR returns empty)
-  const [grid] = useState<Cell[]>(() =>
-    typeof window !== 'undefined' ? buildGrid() : []
-  )
-  const l1 = useRef<HTMLDivElement>(null)
-  const l2 = useRef<HTMLDivElement>(null)
+  const [grid] = useState<Cell[]>(() => (typeof window !== 'undefined' ? buildGrid() : []))
+  const layerRef = useRef<HTMLDivElement>(null)
   const mx = useRef(0)
 
   const onMove = useCallback((e: MouseEvent) => {
@@ -74,13 +66,17 @@ export function ParallaxBackground() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [onMove])
 
+  // rAF loop — modular wrapping para movimento infinito sem bordas visiveis
   useEffect(() => {
     let raf = 0
+    const cw = 320; const ch = 100
     const loop = () => {
-      const y = window.scrollY * 1.55
-      const t = `translate(${mx.current}px, ${-y}px)`
-      if (l1.current) l1.current.style.transform = t
-      if (l2.current) l2.current.style.transform = t
+      // Wrap via modulo no espaco de uma celula — nunca bate em limite
+      const ox = ((mx.current % cw) + cw) % cw
+      const oy = ((-window.scrollY * 1.55 % ch) + ch) % ch
+      if (layerRef.current) {
+        layerRef.current.style.transform = `translate(${ox}px, ${oy}px)`
+      }
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
@@ -89,27 +85,26 @@ export function ParallaxBackground() {
 
   if (!mounted || !grid.length) return null
 
+  const totalW = window.innerWidth * 4 + 320 * 3
+  const totalH = window.innerHeight * 4 + 100 * 2
+
   return (
     <>
+      {/* Fundo nitido sem blur — overlay escuro para legibilidade do conteudo frontal */}
       <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none">
-        <div ref={l1} className="absolute" style={{ width: '300vw', height: '300vh', left: '50%', marginLeft: '-150vw' }}>
+        <div ref={layerRef} className="absolute" style={{ width: totalW, height: totalH, left: -320, top: -100 }}>
           {grid.map((c, i) => (
-            <span key={`p1-${i}`}
-              className={c.isSymbol ? 'font-playfair opacity-10 text-neon' : 'font-playfair italic font-bold opacity-8 text-neon text-3xl'}
-              style={{ position: 'absolute', left: c.left, top: c.top, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
-            >{c.text}</span>
-          ))}
-        </div>
-        <div ref={l2} className="absolute" style={{ width: '300vw', height: '300vh', left: '50%', marginLeft: '-150vw' }}>
-          {grid.map((c, i) => (
-            <span key={`p2-${i}`}
-              className={c.isSymbol ? 'font-playfair opacity-10 text-neon' : 'font-playfair italic font-bold opacity-8 text-neon text-3xl'}
-              style={{ position: 'absolute', left: c.left, top: c.top, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
+            <span key={`p-${i}`}
+              className={c.isSymbol
+                ? 'font-playfair text-3xl font-bold text-text/15'
+                : 'font-playfair italic text-3xl font-bold text-text/20'}
+              style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
             >{c.text}</span>
           ))}
         </div>
       </div>
-      <div className="fixed inset-0 bg-surface/60 backdrop-blur-sm z-[-1] pointer-events-none" />
+      {/* Overlay escuro sem blur — fundo nitido mas texto frontal legivel */}
+      <div className="fixed inset-0 bg-background/85 z-[-1] pointer-events-none" />
     </>
   )
 }
