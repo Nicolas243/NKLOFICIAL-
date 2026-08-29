@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
 import { publishNews, deleteNews } from '@/actions/news-admin';
 import { promoteToAdmin } from '@/actions/admin-setup';
+import { getPlatformMetrics } from '@/actions/admin-analytics';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -22,7 +23,22 @@ export default async function AdminDashboardPage() {
     .limit(1);
 
   const isAdmin = profile?.role === 'admin';
-  const news = isAdmin ? await getNewsFeed() : [];
+  const [news, metrics] = await Promise.all([
+    isAdmin ? getNewsFeed() : Promise.resolve([]),
+    isAdmin ? getPlatformMetrics() : Promise.resolve(null),
+  ]);
+
+  const metricCards: { label: string; value: string }[] = metrics
+    ? [
+        { label: 'Membros', value: String(metrics.totalUsers) },
+        { label: 'Assinantes Premium', value: String(metrics.activePremiumLuthiers) },
+        { label: 'Leads Gerados', value: String(metrics.totalLeadsGenerated) },
+        {
+          label: 'MRR Estimado',
+          value: metrics.mrr.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        },
+      ]
+    : [];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -52,6 +68,21 @@ export default async function AdminDashboardPage() {
         </div>
       ) : (
         <div className="space-y-12">
+          <section aria-label="Visão Geral da Plataforma">
+            <h2 className="font-playfair text-xl font-bold mb-4">Visão Geral da Plataforma</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {metricCards.map((card) => (
+                <div
+                  key={card.label}
+                  className="p-5 bg-surface border border-border rounded-xl flex flex-col gap-1"
+                >
+                  <span className="text-xs uppercase tracking-wide opacity-60">{card.label}</span>
+                  <span className="font-playfair text-2xl font-bold text-neon">{card.value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <section className="p-6 bg-surface border border-border rounded-xl">
             <h2 className="font-playfair text-xl font-bold mb-6">Publicar Nova Notícia</h2>
             <form action={publishNews} className="space-y-4">

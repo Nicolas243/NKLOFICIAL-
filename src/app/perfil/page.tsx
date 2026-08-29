@@ -33,12 +33,26 @@ export default async function PerfilPage() {
         Cadastre seus dados para se habilitar como luthier no mercado.
       </p>
 
-      <Link
-        href="/perfil/avaliacoes"
-        className="inline-flex items-center gap-2 text-sm font-bold text-neon hover:underline mb-8"
-      >
-        → Minhas Avaliações
-      </Link>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-8">
+        <Link
+          href="/perfil/avaliacoes"
+          className="inline-flex items-center gap-2 text-sm font-bold text-neon hover:underline"
+        >
+          → Minhas Avaliações
+        </Link>
+        <Link
+          href="/perfil/notificacoes"
+          className="inline-flex items-center gap-2 text-sm font-bold text-neon hover:underline"
+        >
+          → Notificações
+        </Link>
+        <Link
+          href="/perfil/privacidade"
+          className="inline-flex items-center gap-2 text-sm font-bold text-neon hover:underline"
+        >
+          → Privacidade e Dados
+        </Link>
+      </div>
 
       <form
         action={upsertLuthierProfile}
