@@ -8,6 +8,7 @@ import 'dotenv/config'
 import path from 'path'
 import fs from 'fs'
 import vm from 'vm'
+import { pathToFileURL } from 'url'
 import { db } from '../db'
 import { stringsCatalog } from '../db/schema'
 
@@ -25,7 +26,7 @@ function loadLegacyModule<T>(filePath: string, varName: string): T {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CordaRecord = Record<string, any>
 
-async function main() {
+export function loadAndMapRows() {
   const baseDir = path.resolve(process.cwd(), 'AntigoNKL')
 
   const cordas: CordaRecord[] = loadLegacyModule(path.join(baseDir, 'banco-cordas.js'), 'db')
@@ -34,7 +35,7 @@ async function main() {
     'linksAfiliados'
   )
 
-  const rows = cordas.map((c) => {
+  return cordas.map((c) => {
     const l = links[c.nome] ?? {}
     return {
       name: c.nome,
@@ -56,6 +57,10 @@ async function main() {
       affiliateLinks: l && Object.keys(l).length > 0 ? l : null,
     }
   })
+}
+
+async function main() {
+  const rows = loadAndMapRows()
 
   console.log(`Inserindo ${rows.length} cordas no strings_catalog...`)
   for (const row of rows) {
@@ -67,7 +72,11 @@ async function main() {
   console.log('Seed concluido com sucesso!')
 }
 
-main().catch((err) => {
-  console.error('Falha no seed:', err)
-  process.exit(1)
-})
+// Executa apenas quando invocado diretamente (não quando importado como módulo)
+const invokedDirectly = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (invokedDirectly) {
+  main().catch((err) => {
+    console.error('Falha no seed:', err)
+    process.exit(1)
+  })
+}
