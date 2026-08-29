@@ -1,4 +1,4 @@
-﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean } from 'drizzle-orm/pg-core';
+﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -28,6 +28,7 @@ export const stringsCatalog = pgTable('strings_catalog', {
   coating: text('coating'),
   fixation: text('fixation'),
   arcTolerance: text('arc_tolerance'),
+  affiliateLinks: jsonb('affiliate_links').$type<Record<string, string>>(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 

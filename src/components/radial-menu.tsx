@@ -5,12 +5,12 @@ import { useState } from 'react'
 
 // 6 fatias da pizza interativa
 const SLICES = [
-  { label: 'Cordas', href: '/catalogo', desc: 'Catalogo completo de encordoamentos com metricas tecnicas e avaliacoes da comunidade.', color: '#1E90FF' },
-  { label: 'Luteria', href: '/luthiers', desc: 'Diretorio de luthiers profissionais com portfolio e dados de contato.', color: '#0056b3' },
-  { label: 'Noticias', href: '/noticias', desc: 'Artigos, tutoriais e novidades do universo da lutheria.', color: '#3B82F6' },
+  { label: 'Catálogo', href: '/catalogo', desc: 'Catálogo completo de encordoamentos com métricas técnicas e avaliações da comunidade.', color: '#1E90FF' },
+  { label: 'Luteria', href: '/luthiers', desc: 'Diretório de luthiers profissionais com portfólio e dados de contato.', color: '#0056b3' },
+  { label: 'Notícias', href: '/noticias', desc: 'Últimas notícias, artigos e tutoriais do universo da lutheria.', color: '#3B82F6' },
   { label: 'Contatos', href: '/contatos', desc: 'Links oficiais, redes sociais e canais de atendimento.', color: '#60A5FA' },
-  { label: 'Importacao', href: '/importacao', desc: 'Guia completo para importar instrumentos com seguranca.', color: '#2563EB' },
-  { label: 'Comparar', href: '/comparar', desc: 'Compare duas cordas lado a lado e tome a melhor decisao.', color: '#93C5FD' },
+  { label: 'Importação', href: '/importacao', desc: 'Guia completo para importar instrumentos com segurança.', color: '#2563EB' },
+  { label: 'Comparar', href: '/comparar', desc: 'Use o comparador NKL para descobrir qual é a melhor corda para o seu violino.', color: '#93C5FD' },
 ]
 
 function describeArc(

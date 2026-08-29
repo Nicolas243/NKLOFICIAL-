@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 
@@ -19,7 +20,7 @@ export function ThemeToggle() {
       className="p-1 rounded-full hover:bg-accent transition-all duration-300"
       aria-label="Alternar tema"
     >
-      <img
+      <Image
         src="/NKL/moonsun.png"
         alt="Alternar tema"
         width={28} height={28}

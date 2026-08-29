@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
@@ -16,14 +17,14 @@ type DropdownGroup = {
 
 const groups: DropdownGroup[] = [
   { label: 'Cordas', items: [
-    { href: '/catalogo', label: 'Catalogo' },
+    { href: '/catalogo', label: 'Catálogo' },
     { href: '/comparar', label: 'Comparar' },
-    { href: '/guia-de-cordas', label: 'Grafico' },
+    { href: '/guia-de-cordas', label: 'Gráfico' },
     { href: '/recomendados', label: 'Encontre uma Loja' },
   ]},
   { label: 'Luteria', items: [
-    { href: '/fisica-do-som', label: 'Fisica do Som' },
-    { href: '/clinica', label: 'Clinica de Lutheria' },
+    { href: '/fisica-do-som', label: 'Física do Som' },
+    { href: '/clinica', label: 'Clínica de Lutheria' },
     { href: '/luthiers', label: 'Encontre um Luthier' },
   ]},
 ]
@@ -108,14 +109,14 @@ export function Header() {
     <header id="site-header" className="site-header fixed top-0 w-full z-50 bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
-          <img src="/NKL/NKL.png" alt="NKL" className="w-8 h-8 object-contain" />
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal NKL</Link>
         </div>
 
         <ul className="hidden lg:flex items-center gap-6">
           <li><Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Home</Link></li>
           {groups.map((g) => <li key={g.label}><DropdownDesktop group={g} /></li>)}
-          <li><Link href="/noticias" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Noticias</Link></li>
+          <li><Link href="/noticias" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Notícias</Link></li>
           <li><Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Contatos</Link></li>
         </ul>
 

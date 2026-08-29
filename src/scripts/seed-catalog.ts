@@ -53,6 +53,7 @@ async function main() {
       coating: c.revestimento ?? '',
       fixation: c.fixacao ?? '',
       arcTolerance: c.tolerancia ?? '',
+      affiliateLinks: l && Object.keys(l).length > 0 ? l : null,
     }
   })
 
