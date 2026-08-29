@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, lt } from 'drizzle-orm';
 import { db } from '@/db';
-import { subscriptions, userProfiles } from '@/db/schema';
+import { businessDirectory, subscriptions, userProfiles } from '@/db/schema';
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -43,6 +43,12 @@ export async function GET(request: NextRequest) {
         .update(userProfiles)
         .set({ planType: 'free' })
         .where(eq(userProfiles.id, sub.userId));
+
+      // Sincroniza também a vitrine pública (paridade com o webhook de gateway).
+      await db
+        .update(businessDirectory)
+        .set({ planType: 'free' })
+        .where(eq(businessDirectory.userId, sub.userId));
 
       demotedCount += 1;
     }
