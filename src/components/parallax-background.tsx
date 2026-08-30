@@ -109,8 +109,8 @@ export function ParallaxBackground() {
     grid.map((c, i) => (
       <span key={`${kp}-${i}`}
         className={c.isSymbol
-          ? 'font-playfair text-6xl font-bold text-foreground/8'
-          : 'font-playfair italic text-3xl font-bold text-foreground/12'}
+          ? 'font-playfair text-6xl font-bold text-foreground/10'
+          : 'font-playfair italic text-3xl font-bold text-foreground/10'}
         style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
       >{c.text}</span>
     ))
@@ -125,7 +125,7 @@ export function ParallaxBackground() {
           {renderCells('b')}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/80 z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/90 z-[-1] pointer-events-none" />
     </>
   )
 }

@@ -3,14 +3,13 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-// 6 fatias da pizza interativa
+// 5 fatias da pizza interativa — sem texto embutido, descricao no card lateral
 const SLICES = [
-  { label: 'Catálogo', href: '/catalogo', desc: 'Catálogo completo de encordoamentos com métricas técnicas e avaliações da comunidade.', color: '#1E90FF' },
-  { label: 'Luteria', href: '/luthiers', desc: 'Diretório de luthiers profissionais com portfólio e dados de contato.', color: '#0056b3' },
-  { label: 'Notícias', href: '/noticias', desc: 'Últimas notícias, artigos e tutoriais do universo da lutheria.', color: '#3B82F6' },
-  { label: 'Contatos', href: '/contatos', desc: 'Links oficiais, redes sociais e canais de atendimento.', color: '#60A5FA' },
-  { label: 'Importação', href: '/importacao', desc: 'Guia completo para importar instrumentos com segurança.', color: '#2563EB' },
-  { label: 'Comparar', href: '/comparar', desc: 'Use o comparador NKL para descobrir qual é a melhor corda para o seu violino.', color: '#93C5FD' },
+  { label: 'Comparar', href: '/comparar', desc: 'Use o comparador NKL para descobrir qual é a melhor corda para o seu violino.', color: '#1E90FF' },
+  { label: 'Catálogo', href: '/catalogo', desc: 'Lista completa das melhores cordas com métricas técnicas e avaliações reais.', color: '#0056b3' },
+  { label: 'Notícias', href: '/noticias', desc: 'Últimas notícias, lançamentos e tutoriais do universo da lutheria.', color: '#3B82F6' },
+  { label: 'Luteria', href: '/luthiers', desc: 'Diretório de luthiers profissionais com portfólio e dados de contato.', color: '#2563EB' },
+  { label: 'Importação', href: '/importacao', desc: 'Guia completo para importar instrumentos e acessórios com segurança.', color: '#60A5FA' },
 ]
 
 function describeArc(
@@ -37,9 +36,10 @@ export function RadialMenu() {
       <svg viewBox="0 0 500 500" className="w-full max-w-[500px] h-auto">
         {/* Circulo central */}
         <circle cx={cx} cy={cy} r={80} className="fill-surface stroke-border stroke-2" />
-        <text x={cx} y={cy - 12} textAnchor="middle" className="fill-text text-[11px] font-bold font-playfair">Tudo o que o</text>
-        <text x={cx} y={cy + 8} textAnchor="middle" className="fill-text text-[11px] font-bold font-playfair">Portal NKL</text>
-        <text x={cx} y={cy + 26} textAnchor="middle" className="fill-text text-[11px] font-bold font-playfair">oferece</text>
+        <text x={cx} y={cy - 15} textAnchor="middle" className="fill-text text-[10px] font-bold font-playfair">Tudo o que o</text>
+        <text x={cx} y={cy + 2} textAnchor="middle" className="fill-text text-[10px] font-bold font-playfair">Portal NKL tem</text>
+        <text x={cx} y={cy + 20} textAnchor="middle" className="fill-text text-[10px] font-bold font-playfair">para oferecer</text>
+        <text x={cx} y={cy + 36} textAnchor="middle" className="fill-text text-[10px] font-bold font-playfair">pra você</text>
 
         {SLICES.map((slice, i) => {
           const startAngle = i * sliceAngle - Math.PI / 2
@@ -56,15 +56,6 @@ export function RadialMenu() {
               style={{ transition: 'transform 0.2s', transform: isActive ? 'scale(1.05)' : 'scale(1)', transformOrigin: `${cx}px ${cy}px` }}
             >
               <path d={d} fill={slice.color} fillOpacity={isActive ? 0.9 : 0.7} stroke="#fff" strokeWidth={1.5} />
-              <text
-                x={cx + (r - 40) * Math.cos(startAngle + sliceAngle / 2)}
-                y={cy + (r - 40) * Math.sin(startAngle + sliceAngle / 2)}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="fill-white text-xs font-bold font-playfair pointer-events-none"
-              >
-                {slice.label}
-              </text>
             </g>
           )
         })}
