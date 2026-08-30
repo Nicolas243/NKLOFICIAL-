@@ -56,11 +56,13 @@ export function ParallaxBackground() {
   const layerA = useRef<HTMLDivElement>(null)
   const layerB = useRef<HTMLDivElement>(null)
   const pointer = useRef({ x: 0, y: 0 })
+  const accum = useRef({ x: 0, y: 0 })
+  const prevScroll = useRef(0)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const w = window.innerWidth * 3
-    const h = window.innerHeight * 3
+    const w = window.innerWidth * 2.5   // 250vw
+    const h = window.innerHeight * 1.5  // 150vh
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({ grid: buildGrid(w, h), w, h })
   }, [])
@@ -75,42 +77,52 @@ export function ParallaxBackground() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [onMove])
 
-  // rAF loop — wraps position within grid bounds for infinite scroll
+  // rAF loop — acumula posição com delta suave, wrap modular sem janks
   useEffect(() => {
     let raf = 0
+    prevScroll.current = window.scrollY
+
     const loop = () => {
-      const w = window.innerWidth * 3
-      const h = window.innerHeight * 3
-      if (!w || !h) { raf = requestAnimationFrame(loop); return }
+      if (!layerA.current || !layerB.current || !state) {
+        raf = requestAnimationFrame(loop)
+        return
+      }
+      const { w, h } = state
 
-      const sY = window.scrollY * 0.35
-      const bx = pointer.current.x
-      const by = pointer.current.y - sY
+      // Delta de scroll acumulado (evita janks de % negativo)
+      const currentScroll = window.scrollY
+      const scrollDelta = (currentScroll - prevScroll.current) * 0.35
+      prevScroll.current = currentScroll
 
-      const tx = `translate3d(${((bx % w) + w) % w - w}px, ${((by % h) + h) % h - h}px, 0)`
-      if (layerA.current) layerA.current.style.transform = tx
-      if (layerB.current) layerB.current.style.transform = tx
+      // Acumula mouse + scroll suavizados
+      accum.current.x += pointer.current.x * 0.05
+      accum.current.y += pointer.current.y * 0.05 - scrollDelta
+
+      // Wrap positivo: ((val % max) + max) % max evita saltos com nº negativos
+      const px = ((accum.current.x % w) + w) % w
+      const py = ((accum.current.y % h) + h) % h
+
+      // Layer A: posição no tile corrente; Layer B: offset por w,h (telha infinita)
+      layerA.current.style.transform = `translate3d(${-px}px, ${-py}px, 0)`
+      layerB.current.style.transform = `translate3d(${-px + w}px, ${-py + h}px, 0)`
 
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
-  }, [])
+  }, [state])
 
   if (!state) return null
 
   const { grid, w, h } = state
   if (!grid.length) return null
 
-  const totalW = w * 2
-  const totalH = h * 2
-
   const renderCells = (kp: string) =>
     grid.map((c, i) => (
       <span key={`${kp}-${i}`}
         className={c.isSymbol
-          ? 'font-playfair text-6xl font-bold text-foreground/10'
-          : 'font-playfair italic text-3xl font-bold text-foreground/10'}
+          ? 'font-playfair text-6xl font-bold text-neutral-600/30 dark:text-neutral-400/20'
+          : 'font-playfair italic text-3xl font-bold text-neutral-600/30 dark:text-neutral-400/20'}
         style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
       >{c.text}</span>
     ))
@@ -118,14 +130,14 @@ export function ParallaxBackground() {
   return (
     <>
       <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none">
-        <div ref={layerA} className="absolute will-change-transform" style={{ width: totalW, height: totalH, left: 0, top: 0 }}>
+        <div ref={layerA} className="absolute will-change-transform" style={{ width: w * 2, height: h * 2, left: 0, top: 0 }}>
           {renderCells('a')}
         </div>
-        <div ref={layerB} className="absolute will-change-transform" style={{ width: totalW, height: totalH, left: -w, top: -h }}>
+        <div ref={layerB} className="absolute will-change-transform" style={{ width: w * 2, height: h * 2, left: 0, top: 0 }}>
           {renderCells('b')}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/90 z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/55 z-[-1] pointer-events-none" />
     </>
   )
 }

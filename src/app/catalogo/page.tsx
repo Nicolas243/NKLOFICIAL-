@@ -8,7 +8,7 @@ export const metadata = {
 export default async function CatalogoPage() {
   // Primeiro paint vem do servidor (sem filtros); o drill-down de filtros
   // e a paginação acontecem no cliente acionando a Server Action.
-  const catalog = await getStringsCatalog({ page: 1, limit: 12 });
+  const catalog = await getStringsCatalog({ page: 1, limit: 100 });
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-8">

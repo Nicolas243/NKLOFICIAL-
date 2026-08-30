@@ -48,7 +48,7 @@ function DropdownDesktop({ group }: { group: DropdownGroup }) {
   }, [])
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative z-[999]">
       <button type="button" onClick={() => setOpen((v) => !v)}
         className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1">
         {group.label} <span className="text-xs">▾</span>
@@ -106,11 +106,11 @@ export function Header() {
   }, [])
 
   return (
-    <header id="site-header" className="site-header fixed top-0 w-full z-50 bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header id="site-header" className="site-header fixed top-0 w-full z-[100] bg-background/95 border-b border-border backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain" />
-          <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal NKL</Link>
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:brightness-0 dark:invert" />
+          <Link href="/" className="font-playfair font-bold text-lg tracking-tight">NKL</Link>
         </div>
 
         <ul className="hidden lg:flex items-center gap-6">
@@ -129,7 +129,7 @@ export function Header() {
               <form action={signout}><button type="submit" className="text-sm font-medium hover:text-neon transition-colors">Sair</button></form>
             </div>
           ) : (
-            <Link href="/login" className="hidden sm:inline-flex px-4 py-2 text-sm font-bold bg-text text-bg rounded-md transition-all hover:opacity-90">Entrar</Link>
+            <Link href="/login" className="hidden sm:inline-flex px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90">Entrar</Link>
           )}
           <div className="hidden sm:flex items-center gap-1">
             {LANGUAGES.map((l) => <span key={l.code} className="text-sm cursor-pointer hover:scale-110 transition-transform" title={l.label}>{l.flag}</span>)}
@@ -155,7 +155,7 @@ export function Header() {
                 <li><form action={signout}><button type="submit" className="block w-full text-left px-4 py-2 text-sm hover:text-neon transition-colors">Sair</button></form></li>
               </>
             ) : (
-              <li className="border-t border-border mt-2 pt-2 px-4"><Link href="/login" className="inline-block px-4 py-2 text-sm font-bold bg-text text-bg rounded-md transition-all hover:opacity-90" onClick={() => setMobileOpen(false)}>Entrar</Link></li>
+              <li className="border-t border-border mt-2 pt-2 px-4"><Link href="/login" className="inline-block px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90" onClick={() => setMobileOpen(false)}>Entrar</Link></li>
             )}
           </ul>
         </div>

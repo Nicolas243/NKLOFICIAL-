@@ -82,6 +82,11 @@ export const userProfiles = pgTable('user_profiles', {
   state: varchar('state', { length: 2 }),
   bio: text('bio'),
   planType: varchar('plan_type', { length: 20 }).notNull().default('free'),
+  // Onboarding metadata (FASE 130)
+  papel: varchar('papel', { length: 50 }),          // Músico, Lojista, Luthier, Professor, Aluno
+  instrumento: varchar('instrumento', { length: 100 }), // instrumento principal
+  anosExperiencia: integer('anos_experiencia'),       // anos de experiência
+  newsletterOptIn: boolean('newsletter_opt_in').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

@@ -1,7 +1,7 @@
 'use client'
 
-import { submitNewsSuggestion } from '@/actions/news-public'
 import { useRef, useState, useTransition } from 'react'
+import { submitNewsSuggestion } from '@/actions/news-public'
 
 export default function SuggestNewsModal() {
   const [open, setOpen] = useState(false)
@@ -50,8 +50,10 @@ export default function SuggestNewsModal() {
             <form ref={formRef} action={action} className="flex flex-col gap-4">
               <input type="text" name="title" placeholder="Título da notícia" required maxLength={255}
                 className="p-3 bg-background border border-border rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40" />
-              <textarea name="contentOrLink" placeholder="Conteúdo ou link da notícia (mín. 10 caracteres)" required rows={4}
+              <textarea name="contentOrLink" placeholder="Conteúdo ou resumo da notícia (mín. 10 caracteres)" required rows={4}
                 className="p-3 bg-background border border-border rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40 resize-none" />
+              <input type="url" name="sourceUrl" placeholder="Link da fonte ou foto (URL)" 
+                className="p-3 bg-background border border-border rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40" />
               <input type="text" name="suggestedBy" placeholder="Seu nome (opcional)"
                 className="p-3 bg-background border border-border rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40" />
               <button type="submit" disabled={isPending}

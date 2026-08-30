@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import Image from 'next/image';
 import NewsForm from './news-form';
 import SuggestNewsModal from './suggest-news-modal';
+import { SuggestNewsBannerButton } from './suggest-news-banner-button';
 
 export const metadata = {
   title: 'Mural de Notícias | Portal NKL',
@@ -21,13 +22,7 @@ export default async function NoticiasPage() {
       {!user && (
         <div className="mb-8 p-4 bg-neon/5 border border-neon/20 rounded-xl flex items-center justify-between flex-wrap gap-3">
           <p className="text-sm opacity-80">Viu algo interessante? Envie uma sugestão de notícia para a comunidade.</p>
-          <button
-            type="button"
-            className="px-4 py-2 bg-neon/10 border border-neon/30 text-neon rounded-lg font-semibold text-sm hover:bg-neon/20 transition-colors"
-            onClick={() => { const modalBtn = document.querySelector<HTMLButtonElement>('[data-suggest-news]'); modalBtn?.click() }}
-          >
-            Quero noticiar algo
-          </button>
+          <SuggestNewsBannerButton />
         </div>
       )}
 

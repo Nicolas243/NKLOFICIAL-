@@ -24,7 +24,7 @@ export function ThemeToggle() {
         src="/NKL/moonsun.png"
         alt="Alternar tema"
         width={28} height={28}
-        className={`transition-transform duration-500 ${isDark ? 'rotate-0 brightness-100' : 'rotate-180 brightness-75 hue-rotate-180'}`}
+        className={`transition-transform duration-500 ${isDark ? 'rotate-0 brightness-100 dark:brightness-0 dark:invert' : 'rotate-180 brightness-75 hue-rotate-180'}`}
       />
     </button>
   )
