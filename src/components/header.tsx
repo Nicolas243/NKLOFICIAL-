@@ -39,7 +39,7 @@ const LANG_OPTIONS = [
 
 function FlagPair({ top, bottom }: { top: string; bottom: string }) {
   return (
-    <div className="flex w-8 h-5 rounded-[2px] overflow-hidden border border-border/50 shrink-0">
+    <div className="flex w-11 h-[30px] rounded-[2px] overflow-hidden border border-border/50 shrink-0">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={top} className="w-1/2 object-cover object-left" alt="" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -62,9 +62,8 @@ function LangDropdown() {
         <FlagPair top="/flags/pt.svg" bottom="/flags/br.svg" />
       </button>
       {open && (
-        <div className="fixed mt-2 z-[99999]">
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-2 flex flex-col gap-1"
-            style={{ marginLeft: '-8px' }}>
+        <div className="absolute top-full right-0 mt-2 z-[99999]">
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-2 flex flex-col gap-1">
             {LANG_OPTIONS.map((opt) => (
               <li key={opt.label}>
                 <a href="#" className="block cursor-pointer hover:opacity-80"
@@ -83,6 +82,7 @@ function LangDropdown() {
 function Dropdown({ label, items }: { label: string; items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const alignRight = label === 'Notícias' || label === 'Encontre um...'
   useEffect(() => {
     const fn = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
     document.addEventListener('mousedown', fn)
@@ -95,12 +95,11 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
         {label} <span className="text-xs">▾</span>
       </button>
       {open && (
-        <div className="fixed mt-2 z-[99999]"
-          style={{ transform: 'translateX(-50%)', left: 'auto' }}>
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[280px] w-max">
+        <div className={`absolute top-full pt-2 z-[99999] ${alignRight ? 'right-0' : 'left-0'}`}>
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="text-[20px] font-medium leading-relaxed block px-5 py-3 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -113,6 +112,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
 function DropdownCompact({ label, items }: { label: string; items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const alignRight = label === 'Notícias' || label === 'Encontre um...'
   useEffect(() => {
     const fn = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
     document.addEventListener('mousedown', fn)
@@ -127,12 +127,11 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
         <span className="text-xs max-[480px]:text-[9px]">▾</span>
       </button>
       {open && (
-        <div className="fixed mt-2 z-[99999]"
-          style={{ transform: 'translateX(-50%)', left: 'auto' }}>
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[280px] w-max">
+        <div className={`absolute top-full pt-2 z-[99999] ${alignRight ? 'right-0' : 'left-0'}`}>
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="text-[20px] font-medium leading-relaxed block px-5 py-3 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -170,7 +169,7 @@ export function Header() {
 
   const authBtn = (
     <Link href={isLoggedIn ? '/perfil' : '/login'}
-      className="px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90 active:scale-95">
+      className="inline-flex items-center justify-center h-[30px] px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-all hover:opacity-90 active:scale-95 shrink-0">
       {isLoggedIn ? 'Perfil' : 'Entrar'}
     </Link>
   )
@@ -199,7 +198,7 @@ export function Header() {
   return (
     <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0">
+      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-start pt-5 justify-between min-w-0">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert shrink-0" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
@@ -213,8 +212,8 @@ export function Header() {
           <span className="inline-flex shrink-0">{authBtn}</span>
           <LangDropdown />
           <ThemeToggle />
-          <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          <button className="lg:hidden w-[30px] h-[30px] p-0 flex items-center justify-center rounded-[3px] transition-colors hover:bg-accent" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
@@ -222,7 +221,7 @@ export function Header() {
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
         <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border">
-          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
+          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-start pt-5 justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>
         </div>
