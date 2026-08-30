@@ -1,10 +1,23 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useCallback, type FormEvent } from 'react';
 import Image from 'next/image';
 
 export function Footer() {
   const [pixOpen, setPixOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const copyEmail = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
+      setToast('Email copiado');
+      setTimeout(() => setToast(null), 2000);
+    } catch {
+      // fallback para navegadores antigos
+      setToast('contato.nikoluthieria@gmail.com');
+      setTimeout(() => setToast(null), 3000);
+    }
+  }, []);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     // Captura Formspree - fetch nativo
@@ -22,6 +35,12 @@ export function Footer() {
         <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
       </a>
       <footer className="site-footer">
+        {/* Toast de email copiado */}
+        {toast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-6 py-3 bg-foreground text-background rounded-xl shadow-2xl font-bold text-sm animate-[fadeInUp_0.3s_ease-out]">
+            {toast}
+          </div>
+        )}
         <div className="footer-header">
           <h3 className="text-neon font-bold">Receba o PDF completo em Alta Resolucao do Grafico de Cordas</h3>
           <p>Deixe o seu contato para enviarmos o material de estudo diretamente para voce.</p>
@@ -40,7 +59,7 @@ export function Footer() {
           <div className="footer-box">
             <h4>Contato Direto</h4>
             <p>Duvidas, parcerias ou projetos pessoais? Mande-nos um e-mail.</p>
-            <a href="mailto:contato.nikoluthieria@gmail.com" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">contato.nikoluthieria@gmail.com</a>
+            <button type="button" onClick={copyEmail} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200 w-full text-left">contato.nikoluthieria@gmail.com</button>
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>

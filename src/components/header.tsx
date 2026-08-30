@@ -148,12 +148,11 @@ export function Header() {
   )
 
   return (
-    <header className={`fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
+    <header className={`fixed top-0 w-full z-[100] !bg-white dark:!bg-black border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between">
+      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:hidden" />
-          <Image src="/NKL/nklbranco.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain hidden dark:block" />
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal</Link>
         </div>
 
@@ -173,7 +172,7 @@ export function Header() {
 
       {/* Row 2 — mobile */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-border bg-white dark:bg-black pb-4">
+        <div className="lg:hidden border-t border-border !bg-white dark:!bg-black pb-4">
           <div className="flex flex-col px-4 py-2 gap-3">
             {navLinks}
             <div className="sm:hidden pt-2 border-t border-border">{authBtn}</div>
