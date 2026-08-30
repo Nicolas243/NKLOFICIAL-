@@ -880,11 +880,11 @@ body.dark-theme .image-placeholder { background: #1e1e1e; border-color: #444; }
     0% { opacity: 1; visibility: visible; }
     100% { opacity: 0; visibility: hidden; }
 }
-@keyframes organicShake {
 @keyframes fadeInUp {
     from { opacity: 0; transform: translate(-50%, 20px); }
     to { opacity: 1; transform: translate(-50%, 0); }
 }
+@keyframes organicShake {
     0% { transform: scale(1) translate(0,0) rotate(0deg); }
     15% { transform: scale(1.02) translate(-6px,6px) rotate(0.8deg); }
     30% { transform: scale(1.01) translate(6px,-4px) rotate(-0.8deg); }
