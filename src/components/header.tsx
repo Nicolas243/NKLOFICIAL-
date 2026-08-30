@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { MoreVertical, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const groups = [
@@ -110,6 +111,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
 }
 
 export function Header() {
+  const { resolvedTheme } = useTheme()
   const pathname = usePathname()
   const isHome = pathname === '/'
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -147,8 +149,10 @@ export function Header() {
     </>
   )
 
+  const bgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
+
   return (
-    <header style={{ backgroundColor: '#ffffff' }} className={`fixed top-0 w-full z-[100] dark:bg-black border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
+    <header style={{ backgroundColor: bgColor }} className={`fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
       {/* Row 1 */}
       <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
@@ -172,7 +176,7 @@ export function Header() {
 
       {/* Row 2 — mobile */}
       {menuOpen && (
-        <div style={{ backgroundColor: '#ffffff' }} className="lg:hidden border-t border-border dark:bg-black pb-4">
+        <div style={{ backgroundColor: bgColor }} className="lg:hidden border-t border-border pb-4">
           <div className="flex flex-col px-4 py-2 gap-3">
             {navLinks}
             <div className="sm:hidden pt-2 border-t border-border">{authBtn}</div>
