@@ -59,7 +59,7 @@ function LangDropdown() {
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)} className="cursor-pointer">
-        <FlagPair top="/flags/br.svg" bottom="/flags/pt.svg" />
+        <FlagPair top="/flags/pt.svg" bottom="/flags/br.svg" />
       </button>
       {open && (
         <div className="fixed mt-2 z-[99999]">
@@ -110,6 +110,36 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
     </div>
   )
 }
+function DropdownCompact({ label, items }: { label: string; items: { href: string; label: string }[] }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const fn = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', fn)
+    return () => document.removeEventListener('mousedown', fn)
+  }, [])
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen((v) => !v)}
+        className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95">
+        {label} <span className="text-[0.6rem] sm:text-xs">▾</span>
+      </button>
+      {open && (
+        <div className="fixed mt-2 z-[99999]"
+          style={{ transform: 'translateX(-50%)', left: 'auto' }}>
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[160px]">
+            {items.map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="block px-3 py-1.5 text-xs rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                  onClick={() => setOpen(false)}>{item.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function Header() {
   const { resolvedTheme } = useTheme()
@@ -151,6 +181,14 @@ export function Header() {
     </>
   )
 
+  const navLinksCompact = (
+    <>
+      <Link href="/" className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Home</Link>
+      {groups.map((g) => <DropdownCompact key={g.label} label={g.label} items={g.items} />)}
+      <Link href="/contatos" className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Contatos</Link>
+    </>
+  )
+
   const rawBgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
   const bgColor = mounted ? rawBgColor : undefined
 
@@ -168,7 +206,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <span className="hidden sm:inline-flex">{authBtn}</span>
+          <span className="inline-flex shrink-0">{authBtn}</span>
           <LangDropdown />
           <ThemeToggle />
           <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
@@ -179,10 +217,9 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border py-2 flex items-center justify-center px-4">
-          <div className="flex items-center gap-x-6 gap-y-1 overflow-x-auto flex-nowrap w-full justify-center">
-            {navLinks}
-            <span className="sm:hidden shrink-0">{authBtn}</span>
+        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center justify-center px-2">
+          <div className="flex items-center gap-x-2 sm:gap-x-4 flex-nowrap w-full justify-center">
+            {navLinksCompact}
           </div>
         </div>
       )}
