@@ -91,7 +91,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95">
+        className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95">
         {label} <span className="text-xs">▾</span>
       </button>
       {open && (
@@ -121,7 +121,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors flex items-center gap-1 max-[480px]:gap-0.5 active:scale-95 whitespace-nowrap">
+        className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors gap-1 max-[480px]:gap-0.5 active:scale-95 whitespace-nowrap">
         <span className={label === 'Encontre um...' ? 'max-[480px]:hidden' : ''}>{label}</span>
         {label === 'Encontre um...' && <span className="hidden max-[480px]:inline">Encontre</span>}
         <span className="text-xs max-[480px]:text-[9px]">▾</span>
@@ -176,13 +176,13 @@ export function Header() {
 
   const navLinks = (
     <>
-      <Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link href="/" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Home</Link>
       {groups.map((g) => <Dropdown key={g.label} label={g.label} items={g.items} />)}
-      <Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Contatos</Link>
+      <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Contatos</Link>
     </>
   )
 
-  const navLinkCls = 'text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
+  const navLinkCls = 'inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
 
   const navLinksCompact = (
     <>
@@ -198,9 +198,9 @@ export function Header() {
   return (
     <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-start pt-5 justify-between min-w-0">
+      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert shrink-0" />
+          <Image src="/NKL/NKL.png" alt="NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
         </div>
 
@@ -221,7 +221,7 @@ export function Header() {
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
         <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border">
-          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-start pt-5 justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
+          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>
         </div>
