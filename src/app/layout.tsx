@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CurtainIntro />
           <ParallaxBackground />
           <Header />
-          <main className="min-h-screen pt-20 pb-12 flex flex-col relative z-10">
+          <main className="min-h-screen lg:pt-[72px] pb-12 flex flex-col relative z-10">
             {children}
           </main>
           <Footer />

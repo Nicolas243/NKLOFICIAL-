@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -112,6 +113,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
 
 export function Header() {
   const { resolvedTheme } = useTheme()
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
   const isHome = pathname === '/'
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -149,10 +151,11 @@ export function Header() {
     </>
   )
 
-  const bgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
+  const rawBgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
+  const bgColor = mounted ? rawBgColor : undefined
 
   return (
-    <header style={{ backgroundColor: bgColor }} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
+    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
       <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
@@ -174,12 +177,12 @@ export function Header() {
         </div>
       </div>
 
-      {/* Row 2 — mobile (empurra o corpo do site pra baixo, nao flutua por cima) */}
+      {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div style={{ backgroundColor: bgColor }} className="lg:hidden border-t border-border h-[72px] flex items-center justify-center px-4">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
+        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 w-full">
             {navLinks}
-            <span className="sm:hidden">{authBtn}</span>
+            <span className="sm:hidden shrink-0">{authBtn}</span>
           </div>
         </div>
       )}
