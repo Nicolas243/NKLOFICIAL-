@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { MoreVertical, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useTheme } from 'next-themes'
@@ -169,7 +169,7 @@ export function Header() {
           <LangDropdown />
           <ThemeToggle />
           <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
-            {menuOpen ? <X size={24} /> : <MoreVertical size={24} />}
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -177,7 +177,7 @@ export function Header() {
       {/* Row 2 — mobile */}
       {menuOpen && (
         <div style={{ backgroundColor: bgColor }} className="lg:hidden border-t border-border pb-4">
-          <div className="flex flex-col px-4 py-2 gap-3">
+          <div className="flex flex-wrap items-center justify-center px-4 py-2 gap-x-6 gap-y-2">
             {navLinks}
             <div className="sm:hidden pt-2 border-t border-border">{authBtn}</div>
           </div>
