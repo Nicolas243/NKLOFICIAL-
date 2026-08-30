@@ -152,7 +152,7 @@ export function Header() {
   const bgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
 
   return (
-    <header style={{ backgroundColor: bgColor }} className={`fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
+    <header style={{ backgroundColor: bgColor }} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
       <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
@@ -174,12 +174,12 @@ export function Header() {
         </div>
       </div>
 
-      {/* Row 2 — mobile */}
+      {/* Row 2 — mobile (empurra o corpo do site pra baixo, nao flutua por cima) */}
       {menuOpen && (
-        <div style={{ backgroundColor: bgColor }} className="lg:hidden border-t border-border pb-4">
-          <div className="flex flex-wrap items-center justify-center px-4 py-2 gap-x-6 gap-y-2">
+        <div style={{ backgroundColor: bgColor }} className="lg:hidden border-t border-border h-[72px] flex items-center justify-center px-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
             {navLinks}
-            <div className="sm:hidden pt-2 border-t border-border">{authBtn}</div>
+            <span className="sm:hidden">{authBtn}</span>
           </div>
         </div>
       )}
