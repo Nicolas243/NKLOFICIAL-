@@ -97,10 +97,10 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
       {open && (
         <div className="fixed mt-2 z-[99999]"
           style={{ transform: 'translateX(-50%)', left: 'auto' }}>
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px]">
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[280px] w-max">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="block px-4 py-2 text-sm rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="text-[20px] font-medium leading-relaxed block px-5 py-3 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -121,16 +121,18 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-[clamp(0.7rem,2.5vw,0.875rem)] font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95 whitespace-nowrap">
-        {label} <span className="text-[0.6rem] sm:text-xs">▾</span>
+        className="text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors flex items-center gap-1 max-[480px]:gap-0.5 active:scale-95 whitespace-nowrap">
+        <span className={label === 'Encontre um...' ? 'max-[480px]:hidden' : ''}>{label}</span>
+        {label === 'Encontre um...' && <span className="hidden max-[480px]:inline">Encontre</span>}
+        <span className="text-xs max-[480px]:text-[9px]">▾</span>
       </button>
       {open && (
         <div className="fixed mt-2 z-[99999]"
           style={{ transform: 'translateX(-50%)', left: 'auto' }}>
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[160px]">
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[280px] w-max">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="block px-3 py-1.5 text-xs rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="text-[20px] font-medium leading-relaxed block px-5 py-3 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -181,7 +183,7 @@ export function Header() {
     </>
   )
 
-  const navLinkCls = 'text-[clamp(0.7rem,2.5vw,0.875rem)] font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
+  const navLinkCls = 'text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
 
   const navLinksCompact = (
     <>
@@ -219,10 +221,10 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center px-[25px]">
-          <div className="flex items-center justify-between flex-nowrap w-full">
+        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border">
+          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
-          </div>
+          </nav>
         </div>
       )}
     </header>
