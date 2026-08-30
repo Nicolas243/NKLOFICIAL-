@@ -87,6 +87,7 @@ export const userProfiles = pgTable('user_profiles', {
   instrumento: varchar('instrumento', { length: 100 }), // instrumento principal
   anosExperiencia: integer('anos_experiencia'),       // anos de experiência
   newsletterOptIn: boolean('newsletter_opt_in').default(false),
+  birthDate: varchar('birth_date', { length: 10 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

@@ -17,14 +17,15 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="p-1 rounded-full hover:bg-accent transition-all duration-300"
+      className="p-1 rounded-full transition-all duration-300"
       aria-label="Alternar tema"
+      style={{ backgroundColor: isDark ? '#000' : '#fff' }}
     >
       <Image
         src="/NKL/moonsun.png"
         alt="Alternar tema"
         width={28} height={28}
-        className={`transition-transform duration-500 ${isDark ? 'rotate-0 brightness-100 dark:brightness-0 dark:invert' : 'rotate-180 brightness-75 hue-rotate-180'}`}
+        className="transition-transform duration-500"
       />
     </button>
   )

@@ -42,9 +42,12 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const fullName = formData.get('fullName') as string;
-  const papel = formData.get('papel') as string;
-  const instrumento = formData.get('instrumento') as string;
+  const firstName = (formData.get('firstName') as string) || '';
+  const lastName = (formData.get('lastName') as string) || '';
+  const fullName = (formData.get('fullName') as string) || `${firstName} ${lastName}`.trim();
+  const birthDate = formData.get('birthDate') as string;
+  const papel = (formData.get('papel') as string) || 'user';
+  const instrumento = (formData.get('instrumento') as string) || '';
   const anosExperiencia = Number(formData.get('anosExperiencia')) || 0;
   const newsletterOptIn = formData.get('newsletterOptIn') === 'on';
 
@@ -73,6 +76,7 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
         instrumento,
         anosExperiencia,
         newsletterOptIn,
+        birthDate: birthDate || null,
       });
     } catch (profileError) {
       console.error('[registerWithProfile] Falha ao gravar perfil:', profileError);

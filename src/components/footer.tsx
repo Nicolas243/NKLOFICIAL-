@@ -28,26 +28,26 @@ export function Footer() {
           <form className="capture-form" onSubmit={handleSubmit}>
             <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
             <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
-            <button type="submit" className="capture-btn">Confirmar</button>
+            <button type="submit" className="capture-btn hover:bg-foreground hover:text-background transition-colors">Confirmar</button>
           </form>
         </div>
         <div className="footer-grid">
           <div className="footer-box">
             <h4>Sua voz importa</h4>
             <p>Ajude a construir o melhor portal de violino do Brasil.</p>
-            <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline">Deixar Feedback Rapido</a>
+            <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background">Deixar Feedback Rapido</a>
           </div>
           <div className="footer-box">
             <h4>Contato Direto</h4>
             <p>Duvidas, parcerias ou projetos pessoais? Mande-nos um e-mail.</p>
-            <a href="mailto:contato.nikoluthieria@gmail.com" className="btn-outline">contato.nikoluthieria@gmail.com</a>
+            <a href="mailto:contato.nikoluthieria@gmail.com" className="btn-outline hover:bg-foreground hover:text-background">contato.nikoluthieria@gmail.com</a>
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
             <p>Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.</p>
             <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ flex: 1 }}>Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline" style={{ flex: 1 }}>PayPal</button>
+              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background" style={{ flex: 1 }}>Apoiar NKL</a>
+              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:bg-foreground hover:text-background" style={{ flex: 1 }}>PayPal</button>
             </div>
           </div>
         </div>
@@ -56,12 +56,12 @@ export function Footer() {
 
       {/* PayPal Modal */}
       {pixOpen && (
-        <div className="pix-modal-overlay" onClick={() => setPixOpen(false)}>
-          <div className="pix-modal-content" onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
-            <button className="pix-modal-close" onClick={() => setPixOpen(false)}>&times;</button>
-            <h4 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text)' }}>Apoiar o NKL pelo PayPal</h4>
-            <p style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '1.2rem', color: 'var(--text)' }}>Escaneie o codigo abaixo para apoiar a manutencao do nosso Portal.</p>
-            <Image src="/NKL/1000343886.webp" alt="QR Code PayPal" width={220} height={220} style={{ display: 'block', margin: '0 auto', borderRadius: '8px', border: '1px solid var(--border)' }} />
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
+          <div className="bg-surface border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
+            <button className="absolute top-3 right-3 text-2xl opacity-50 hover:opacity-100" onClick={() => setPixOpen(false)}>&times;</button>
+            <h4 className="font-playfair text-xl font-bold mb-2 text-foreground">Apoiar o NKL pelo PayPal</h4>
+            <p className="text-sm opacity-70 mb-4">Escaneie o codigo abaixo para apoiar a manutencao do nosso Portal.</p>
+            <Image src="/NKL/1000343886.webp" alt="QR Code PayPal" width={220} height={220} className="block mx-auto rounded-lg border border-border" />
           </div>
         </div>
       )}
