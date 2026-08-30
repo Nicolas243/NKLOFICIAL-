@@ -63,6 +63,14 @@ export const newsFeed = pgTable('news_feed', {
   imageUrl: text('image_url').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+export const newsSuggestions = pgTable('news_suggestions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: varchar('title', { length: 255 }).notNull(),
+  contentOrLink: text('content_or_link').notNull(),
+  suggestedBy: varchar('suggested_by', { length: 255 }),
+  status: varchar('status', { length: 20 }).notNull().default('pending'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
 
 export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),

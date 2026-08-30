@@ -2,6 +2,7 @@ import { getNewsFeed } from '@/actions/news';
 import { createClient } from '@/lib/supabase/server';
 import Image from 'next/image';
 import NewsForm from './news-form';
+import SuggestNewsModal from './suggest-news-modal';
 
 export const metadata = {
   title: 'Mural de Notícias | Portal NKL',
@@ -15,7 +16,21 @@ export default async function NoticiasPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 pt-8 pb-16">
       <h1 className="font-playfair text-3xl font-bold mb-8 text-center">Mural de Notícias e Eventos</h1>
-      
+
+      {/* Banner público — qualquer visitante pode sugerir */}
+      {!user && (
+        <div className="mb-8 p-4 bg-neon/5 border border-neon/20 rounded-xl flex items-center justify-between flex-wrap gap-3">
+          <p className="text-sm opacity-80">Viu algo interessante? Envie uma sugestão de notícia para a comunidade.</p>
+          <button
+            type="button"
+            className="px-4 py-2 bg-neon/10 border border-neon/30 text-neon rounded-lg font-semibold text-sm hover:bg-neon/20 transition-colors"
+            onClick={() => { const modalBtn = document.querySelector<HTMLButtonElement>('[data-suggest-news]'); modalBtn?.click() }}
+          >
+            Quero noticiar algo
+          </button>
+        </div>
+      )}
+
       {/* Restrição de acesso baseada na sessão */}
       {user && (
         <section className="mb-12 p-6 bg-surface border border-border rounded-xl shadow-sm">
@@ -26,7 +41,7 @@ export default async function NoticiasPage() {
 
       {/* Renderização do Feed */}
       <div className="news-feed">
-        {news.map((item) => (
+        {news.slice(0, 5).map((item) => (
           <article key={item.id} className="news-card">
             <div className="news-img-box">
               <Image
@@ -58,10 +73,13 @@ export default async function NoticiasPage() {
 
         {news.length === 0 && (
           <p className="text-center opacity-60 py-8 border border-dashed border-border rounded-lg">
-            O mural está vazio. Autentique-se para criar a primeira publicação.
+            O mural está vazio. Seja o primeiro a sugerir uma notícia!
           </p>
         )}
       </div>
+
+      {/* Modal de sugestão pública (acessível a todos) */}
+      <SuggestNewsModal />
     </div>
   );
 }

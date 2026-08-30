@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const LUTHIERS = [
   'Antonio Stradivari','Messiah 1716','Soil 1714','Betts 1704',
@@ -25,13 +25,13 @@ interface Cell {
   x: number; y: number; rotate: number; text: string; isSymbol: boolean
 }
 
+interface State { grid: Cell[]; w: number; h: number }
+
 function sh<T>(a: readonly T[]): T[] { return [...a].sort(() => Math.random() - 0.5) }
 
-function buildGrid(): Cell[] {
-  const W = window.innerWidth * 4
-  const H = window.innerHeight * 4
-  const cw = 320; const ch = 100
-  const cols = Math.ceil(W / cw) + 3; const rows = Math.ceil(H / ch) + 2
+function buildGrid(w: number, h: number): Cell[] {
+  const cw = 300; const ch = 110
+  const cols = Math.ceil(w / cw) + 2; const rows = Math.ceil(h / ch) + 2
   let poolL = sh(LUTHIERS); let poolS = sh(SYMBOLS)
   const next = (): { t: string; s: boolean } => {
     if (!poolL.length) poolL = sh(LUTHIERS)
@@ -52,13 +52,22 @@ function buildGrid(): Cell[] {
 }
 
 export function ParallaxBackground() {
-  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
-  const [grid] = useState<Cell[]>(() => (typeof window !== 'undefined' ? buildGrid() : []))
-  const layerRef = useRef<HTMLDivElement>(null)
-  const mx = useRef(0)
+  const [state, setState] = useState<State | null>(null)
+  const layerA = useRef<HTMLDivElement>(null)
+  const layerB = useRef<HTMLDivElement>(null)
+  const pointer = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const w = window.innerWidth * 3
+    const h = window.innerHeight * 3
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setState({ grid: buildGrid(w, h), w, h })
+  }, [])
 
   const onMove = useCallback((e: MouseEvent) => {
-    mx.current = (e.clientX - window.innerWidth / 2) * 0.4
+    pointer.current.x = (e.clientX - window.innerWidth / 2) * 0.08
+    pointer.current.y = (e.clientY - window.innerHeight / 2) * 0.08
   }, [])
 
   useEffect(() => {
@@ -66,45 +75,57 @@ export function ParallaxBackground() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [onMove])
 
-  // rAF loop — modular wrapping para movimento infinito sem bordas visiveis
+  // rAF loop — wraps position within grid bounds for infinite scroll
   useEffect(() => {
     let raf = 0
-    const cw = 320; const ch = 100
     const loop = () => {
-      // Wrap via modulo no espaco de uma celula — nunca bate em limite
-      const ox = ((mx.current % cw) + cw) % cw
-      const oy = ((-window.scrollY * 1.55 % ch) + ch) % ch
-      if (layerRef.current) {
-        layerRef.current.style.transform = `translate(${ox}px, ${oy}px)`
-      }
+      const w = window.innerWidth * 3
+      const h = window.innerHeight * 3
+      if (!w || !h) { raf = requestAnimationFrame(loop); return }
+
+      const sY = window.scrollY * 0.35
+      const bx = pointer.current.x
+      const by = pointer.current.y - sY
+
+      const tx = `translate3d(${((bx % w) + w) % w - w}px, ${((by % h) + h) % h - h}px, 0)`
+      if (layerA.current) layerA.current.style.transform = tx
+      if (layerB.current) layerB.current.style.transform = tx
+
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
   }, [])
 
-  if (!mounted || !grid.length) return null
+  if (!state) return null
 
-  const totalW = window.innerWidth * 4 + 320 * 3
-  const totalH = window.innerHeight * 4 + 100 * 2
+  const { grid, w, h } = state
+  if (!grid.length) return null
+
+  const totalW = w * 2
+  const totalH = h * 2
+
+  const renderCells = (kp: string) =>
+    grid.map((c, i) => (
+      <span key={`${kp}-${i}`}
+        className={c.isSymbol
+          ? 'font-playfair text-6xl font-bold text-foreground/8'
+          : 'font-playfair italic text-3xl font-bold text-foreground/12'}
+        style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
+      >{c.text}</span>
+    ))
 
   return (
     <>
-      {/* Fundo nitido sem blur — overlay escuro para legibilidade do conteudo frontal */}
       <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none">
-        <div ref={layerRef} className="absolute" style={{ width: totalW, height: totalH, left: -320, top: -100 }}>
-          {grid.map((c, i) => (
-            <span key={`p-${i}`}
-              className={c.isSymbol
-                ? 'font-playfair text-3xl font-bold text-text/15'
-                : 'font-playfair italic text-3xl font-bold text-text/20'}
-              style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
-            >{c.text}</span>
-          ))}
+        <div ref={layerA} className="absolute will-change-transform" style={{ width: totalW, height: totalH, left: 0, top: 0 }}>
+          {renderCells('a')}
+        </div>
+        <div ref={layerB} className="absolute will-change-transform" style={{ width: totalW, height: totalH, left: -w, top: -h }}>
+          {renderCells('b')}
         </div>
       </div>
-      {/* Overlay escuro sem blur — fundo nitido mas texto frontal legivel */}
-      <div className="fixed inset-0 bg-background/85 z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/80 z-[-1] pointer-events-none" />
     </>
   )
 }
