@@ -28,26 +28,26 @@ export function Footer() {
           <form className="capture-form" onSubmit={handleSubmit}>
             <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
             <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
-            <button type="submit" className="capture-btn hover:bg-foreground hover:text-background transition-colors">Confirmar</button>
+            <button type="submit" className="capture-btn bg-foreground text-background font-bold hover:opacity-90 transition-all">Confirmar</button>
           </form>
         </div>
         <div className="footer-grid">
           <div className="footer-box">
             <h4>Sua voz importa</h4>
             <p>Ajude a construir o melhor portal de violino do Brasil.</p>
-            <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background">Deixar Feedback Rapido</a>
+            <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background transition-colors duration-200">Deixar Feedback Rapido</a>
           </div>
           <div className="footer-box">
             <h4>Contato Direto</h4>
             <p>Duvidas, parcerias ou projetos pessoais? Mande-nos um e-mail.</p>
-            <a href="mailto:contato.nikoluthieria@gmail.com" className="btn-outline hover:bg-foreground hover:text-background">contato.nikoluthieria@gmail.com</a>
+            <a href="mailto:contato.nikoluthieria@gmail.com" className="btn-outline hover:bg-foreground hover:text-background transition-colors duration-200">contato.nikoluthieria@gmail.com</a>
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
             <p>Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.</p>
             <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background" style={{ flex: 1 }}>Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:bg-foreground hover:text-background" style={{ flex: 1 }}>PayPal</button>
+              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:bg-foreground hover:text-background transition-colors duration-200" style={{ flex: 1 }}>Apoiar NKL</a>
+              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:bg-foreground hover:text-background transition-colors duration-200" style={{ flex: 1 }}>PayPal</button>
             </div>
           </div>
         </div>
