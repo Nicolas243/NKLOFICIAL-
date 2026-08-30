@@ -60,15 +60,19 @@ height: auto;
    CABEÇALHO / HEADER
 ========================================== */
 .site-header {
-    background-color: var(--header-bg) !important;
+    background-color: #ffffff !important;
     border-bottom: 1px solid var(--border);
     padding: 1.5rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     transform: translateY(0);
-    z-index: 1000;
+    z-index: 100;
     transition: transform 0.4s cubic-bezier(0.3, 0, 0.2, 1), background-color 0.3s;
+}
+
+.dark .site-header {
+    background-color: #000000 !important;
 }
 
 .showcase-section, 

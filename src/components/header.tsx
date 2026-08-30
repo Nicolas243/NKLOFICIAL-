@@ -92,13 +92,14 @@ function DropdownDesktop({ group }: { group: DropdownGroup }) {
     return () => document.removeEventListener('mousedown', fn)
   }, [])
   return (
-    <div ref={ref} className="relative z-[999]">
+    <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1">
+        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 pointer-events-auto">
         {group.label} <span className="text-xs">▾</span>
       </button>
       {open && (
-        <div className="absolute left-1/2 -translate-x-1/2 pt-3 z-50">
+        <div className="absolute left-1/2 -translate-x-1/2 top-full z-[9999] pointer-events-auto">
+          <div className="h-3" />
           <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[220px]">
             {group.items.map((item) => (
               <li key={item.label}>
@@ -168,14 +169,15 @@ export function Header() {
     <header id="site-header" className="site-header fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert" />
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:hidden" />
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain hidden dark:block invert" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal</Link>
         </div>
 
-        <ul className="hidden lg:flex items-center gap-6">
-          <li><Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Home</Link></li>
-          {groups.map((g) => <li key={g.label}><DropdownDesktop group={g} /></li>)}
-          <li><Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Contatos</Link></li>
+        <ul className="hidden lg:flex items-stretch gap-6">
+          <li className="flex items-center"><Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Home</Link></li>
+          {groups.map((g) => <li key={g.label} className="flex items-center"><DropdownDesktop group={g} /></li>)}
+          <li className="flex items-center"><Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Contatos</Link></li>
         </ul>
 
         <div className="flex items-center gap-3">
