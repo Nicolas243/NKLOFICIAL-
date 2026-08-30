@@ -3,18 +3,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { MoreVertical, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useSmartHeader } from '@/components/use-smart-header'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-type DropdownGroup = {
-  label: string
-  items: { href: string; label: string }[]
-}
-
-const groups: DropdownGroup[] = [
+const groups = [
   { label: 'Cordas', items: [
     { href: '/catalogo', label: 'Catálogo' },
     { href: '/comparar', label: 'Comparador' },
@@ -61,16 +55,17 @@ function LangDropdown() {
     return () => document.removeEventListener('mousedown', fn)
   }, [])
   return (
-    <div ref={ref} className="relative z-[999]">
+    <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)} className="cursor-pointer">
         <FlagPair top="/flags/br.svg" bottom="/flags/pt.svg" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full pt-3 z-50">
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-2 flex flex-col gap-1">
+        <div className="fixed mt-2 z-[99999]">
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-2 flex flex-col gap-1"
+            style={{ marginLeft: '-8px' }}>
             {LANG_OPTIONS.map((opt) => (
               <li key={opt.label}>
-                <a href="#" className="block cursor-pointer hover:opacity-80 transition-opacity"
+                <a href="#" className="block cursor-pointer hover:opacity-80"
                   onClick={(e) => { e.preventDefault(); setOpen(false) }}>
                   <FlagPair top={opt.top} bottom={opt.bottom} />
                 </a>
@@ -83,7 +78,7 @@ function LangDropdown() {
   )
 }
 
-function DropdownDesktop({ group }: { group: DropdownGroup }) {
+function Dropdown({ label, items }: { label: string; items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -94,14 +89,14 @@ function DropdownDesktop({ group }: { group: DropdownGroup }) {
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 pointer-events-auto">
-        {group.label} <span className="text-xs">▾</span>
+        className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95">
+        {label} <span className="text-xs">▾</span>
       </button>
       {open && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-full z-[9999] pointer-events-auto">
-          <div className="h-3" />
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[220px]">
-            {group.items.map((item) => (
+        <div className="fixed mt-2 z-[99999]"
+          style={{ transform: 'translateX(-50%)', left: 'auto' }}>
+          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px]">
+            {items.map((item) => (
               <li key={item.label}>
                 <Link href={item.href} className="block px-4 py-2 text-sm rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
@@ -114,90 +109,75 @@ function DropdownDesktop({ group }: { group: DropdownGroup }) {
   )
 }
 
-function DropdownMobile({ group }: { group: DropdownGroup }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <li>
-      <button type="button" onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold uppercase tracking-wider opacity-60">
-        {group.label} <span className={`transition-transform ${open ? 'rotate-180' : ''}`}>▾</span>
-      </button>
-      {open && (
-        <ul className="pl-4 border-l-2 border-border ml-4 mb-2">
-          {group.items.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href} className="block px-3 py-1.5 text-sm hover:text-neon transition-colors">{item.label}</Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  )
-}
-
 export function Header() {
   const pathname = usePathname()
   const isHome = pathname === '/'
-  useSmartHeader(isHome ? '' : '#site-header')
-
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     let ignore = false
-    supabase.auth.getUser().then(({ data }) => {
-      if (!ignore) setIsLoggedIn(Boolean(data.user))
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!ignore) setIsLoggedIn(Boolean(session?.user))
-    })
+    supabase.auth.getUser().then(({ data }) => { if (!ignore) setIsLoggedIn(Boolean(data.user)) })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => { if (!ignore) setIsLoggedIn(Boolean(s?.user)) })
     return () => { ignore = true; subscription.unsubscribe() }
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   if (isHome) return null
 
-  const authBtn = isLoggedIn
-    ? <Link href="/perfil" className="hidden sm:inline-flex px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90">Perfil</Link>
-    : <Link href="/login" className="hidden sm:inline-flex px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90">Entrar</Link>
+  const authBtn = (
+    <Link href={isLoggedIn ? '/perfil' : '/login'}
+      className="px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90 active:scale-95">
+      {isLoggedIn ? 'Perfil' : 'Entrar'}
+    </Link>
+  )
 
-  const mobileAuth = isLoggedIn
-    ? <li className="border-t border-border mt-2 pt-2 px-4"><Link href="/perfil" className="inline-block px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90" onClick={() => setMobileOpen(false)}>Perfil</Link></li>
-    : <li className="border-t border-border mt-2 pt-2 px-4"><Link href="/login" className="inline-block px-4 py-2 text-sm font-bold bg-foreground text-background rounded-md transition-all hover:opacity-90" onClick={() => setMobileOpen(false)}>Entrar</Link></li>
+  const navLinks = (
+    <>
+      <Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Home</Link>
+      {groups.map((g) => <Dropdown key={g.label} label={g.label} items={g.items} />)}
+      <Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Contatos</Link>
+    </>
+  )
 
   return (
-    <header id="site-header" className="site-header fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border">
-      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <header className={`fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled ? '-translate-y-full' : 'translate-y-0'}`}>
+      {/* Row 1 */}
+      <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2 shrink-0">
           <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:hidden" />
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain hidden dark:block invert" />
+          <Image src="/NKL/nklbranco.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain hidden dark:block" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal</Link>
         </div>
 
-        <ul className="hidden lg:flex items-stretch gap-6">
-          <li className="flex items-center"><Link href="/" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Home</Link></li>
-          {groups.map((g) => <li key={g.label} className="flex items-center"><DropdownDesktop group={g} /></li>)}
-          <li className="flex items-center"><Link href="/contatos" className="text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Contatos</Link></li>
-        </ul>
+        <div className="hidden lg:flex items-center gap-6">
+          {navLinks}
+        </div>
 
         <div className="flex items-center gap-3">
-          {authBtn}
+          <div className="hidden sm:block">{authBtn}</div>
           <LangDropdown />
           <ThemeToggle />
-          <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMobileOpen((v) => !v)}>
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
+            {menuOpen ? <X size={24} /> : <MoreVertical size={24} />}
           </button>
         </div>
-      </nav>
+      </div>
 
-      {mobileOpen && (
+      {/* Row 2 — mobile */}
+      {menuOpen && (
         <div className="lg:hidden border-t border-border bg-white dark:bg-black pb-4">
-          <ul className="flex flex-col py-2">
-            <li><Link href="/" className="block px-4 py-2 text-sm hover:text-neon transition-colors" onClick={() => setMobileOpen(false)}>Home</Link></li>
-            {groups.map((g) => <DropdownMobile key={g.label} group={g} />)}
-            <li><Link href="/contatos" className="block px-4 py-2 text-sm hover:text-neon transition-colors" onClick={() => setMobileOpen(false)}>Contatos</Link></li>
-            {mobileAuth}
-          </ul>
+          <div className="flex flex-col px-4 py-2 gap-3">
+            {navLinks}
+            <div className="sm:hidden pt-2 border-t border-border">{authBtn}</div>
+          </div>
         </div>
       )}
     </header>

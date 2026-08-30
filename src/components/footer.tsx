@@ -28,7 +28,7 @@ export function Footer() {
           <form className="capture-form" onSubmit={handleSubmit}>
             <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
             <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
-            <button type="submit" className="capture-btn bg-white text-black dark:bg-white dark:text-black font-bold hover:opacity-90 transition-all">Confirmar</button>
+            <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
           </form>
         </div>
         <div className="footer-grid">
