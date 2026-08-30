@@ -121,7 +121,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95">
+        className="text-[clamp(0.7rem,2.5vw,0.875rem)] font-medium uppercase tracking-wider hover:text-neon transition-colors flex items-center gap-1 active:scale-95 whitespace-nowrap">
         {label} <span className="text-[0.6rem] sm:text-xs">▾</span>
       </button>
       {open && (
@@ -181,11 +181,13 @@ export function Header() {
     </>
   )
 
+  const navLinkCls = 'text-[clamp(0.7rem,2.5vw,0.875rem)] font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
+
   const navLinksCompact = (
     <>
-      <Link href="/" className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link href="/" className={navLinkCls} onClick={() => setMenuOpen(false)}>Home</Link>
       {groups.map((g) => <DropdownCompact key={g.label} label={g.label} items={g.items} />)}
-      <Link href="/contatos" className="text-xs sm:text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95" onClick={() => setMenuOpen(false)}>Contatos</Link>
+      <Link href="/contatos" className={navLinkCls} onClick={() => setMenuOpen(false)}>Contatos</Link>
     </>
   )
 
@@ -217,8 +219,8 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center justify-center px-2">
-          <div className="flex items-center gap-x-2 sm:gap-x-4 flex-nowrap w-full justify-center">
+        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center px-[25px]">
+          <div className="flex items-center justify-between flex-nowrap w-full">
             {navLinksCompact}
           </div>
         </div>
