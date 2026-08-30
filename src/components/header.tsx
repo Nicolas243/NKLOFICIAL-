@@ -157,18 +157,18 @@ export function Header() {
   return (
     <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between">
-        <div className="flex items-center gap-2 shrink-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert" />
-          <Link href="/" className="font-playfair font-bold text-lg tracking-tight">Portal</Link>
+      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0">
+        <div className="flex items-center gap-2 shrink-0 min-w-0">
+          <Image src="/NKL/NKL.png" alt="NKL" width={32} height={32} className="w-8 h-8 object-contain dark:invert shrink-0" />
+          <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
         </div>
 
         <div className="hidden lg:flex items-center gap-6">
           {navLinks}
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:block">{authBtn}</div>
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="hidden sm:inline-flex">{authBtn}</span>
           <LangDropdown />
           <ThemeToggle />
           <button className="lg:hidden p-2" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
@@ -179,8 +179,8 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border h-[72px] flex items-center px-4">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 w-full">
+        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border py-2 flex items-center justify-center px-4">
+          <div className="flex items-center gap-x-6 gap-y-1 overflow-x-auto flex-nowrap w-full justify-center">
             {navLinks}
             <span className="sm:hidden shrink-0">{authBtn}</span>
           </div>
