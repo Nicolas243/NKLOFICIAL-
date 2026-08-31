@@ -98,13 +98,15 @@ export function ParallaxBackground() {
       accum.current.x += pointer.current.x * 0.05
       accum.current.y += pointer.current.y * 0.05 - scrollDelta
 
-      // Wrap positivo: ((val % max) + max) % max evita saltos com nº negativos
-      const px = ((accum.current.x % w) + w) % w
-      const py = ((accum.current.y % h) + h) % h
+      // Marquee pattern: reset invisível por subtração — sem operador %
+      if (accum.current.x > w) accum.current.x -= w
+      else if (accum.current.x < -w) accum.current.x += w
+      if (accum.current.y > h) accum.current.y -= h
+      else if (accum.current.y < -h) accum.current.y += h
 
-      // Layer A: posição no tile corrente; Layer B: offset por w,h (telha infinita)
-      layerA.current.style.transform = `translate3d(${-px}px, ${-py}px, 0)`
-      layerB.current.style.transform = `translate3d(${-px + w}px, ${-py + h}px, 0)`
+      // Duas instâncias idênticas deslizam juntas; o reset de 0 é invisível
+      layerA.current.style.transform = `translate3d(${-accum.current.x}px, ${-accum.current.y}px, 0)`
+      layerB.current.style.transform = `translate3d(${-accum.current.x + w}px, ${-accum.current.y + h}px, 0)`
 
       raf = requestAnimationFrame(loop)
     }
@@ -129,7 +131,7 @@ export function ParallaxBackground() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none opacity-90">
         <div ref={layerA} className="absolute will-change-transform" style={{ width: w * 2, height: h * 2, left: 0, top: 0 }}>
           {renderCells('a')}
         </div>
@@ -137,7 +139,7 @@ export function ParallaxBackground() {
           {renderCells('b')}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/55 z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/65 z-[-1] pointer-events-none" />
     </>
   )
 }

@@ -9,7 +9,7 @@ export function ThemeToggle() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
 
   if (!mounted) {
-    return <button className="w-[30px] h-[30px] flex items-center justify-center rounded-[3px]" aria-label="Alternar tema"><span className="w-[22px] h-[22px] block" /></button>
+    return <button className="w-[35px] h-[35px] flex items-center justify-center rounded-[3px]" aria-label="Alternar tema"><span className="w-[27px] h-[27px] block" /></button>
   }
 
   const isDark = theme === 'dark'
@@ -17,15 +17,15 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="w-[30px] h-[30px] flex items-center justify-center rounded-[3px] transition-all duration-300"
+      className="w-[35px] h-[35px] flex items-center justify-center rounded-[3px] transition-all duration-300"
       aria-label="Alternar tema"
       style={{ backgroundColor: isDark ? '#000' : '#fff' }}
     >
       <Image
         src="/NKL/moonsun.png"
         alt="Alternar tema"
-        width={22} height={22}
-        className="w-[22px] h-[22px] object-contain transition-transform duration-500"
+        width={27} height={27}
+        className="w-[27px] h-[27px] object-contain transition-transform duration-500"
       />
     </button>
   )

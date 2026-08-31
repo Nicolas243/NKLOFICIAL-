@@ -66,8 +66,7 @@ export default async function HomePage() {
 return (
     <div className="max-w-7xl w-full mx-auto px-4 flex flex-col gap-20">
       {/* Radial Menu — PRIMEIRO após o header (Landing Page style) */}
-      <section className="flex flex-col items-center text-center pt-6">
-        <h2 className="font-playfair text-3xl font-bold mb-4">Navegue pelo Portal</h2>
+      <section className="flex items-center justify-center pt-2">
         <RadialMenu />
       </section>
 
