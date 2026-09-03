@@ -24,7 +24,7 @@ export default function ContatosPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <header className="text-center mb-8">
-        <Image src="/NKL/NKL.png" alt="NKL Logo" width={96} height={96} className="rounded-full mx-auto mb-4 object-contain border border-border p-2 bg-surface" />
+        <Image src="/NKL/NKL.png" alt="NKL Logo" width={96} height={96} className="rounded-full mx-auto mb-4 object-contain border border-border p-2 bg-surface dark:invert" />
         <h1 className="font-playfair text-2xl md:text-3xl font-bold">NKL_oficial</h1>
         <p className="opacity-70 mt-1 text-sm">Engenheiro · Criador de conteudo. Links oficiais.</p>
       </header>
