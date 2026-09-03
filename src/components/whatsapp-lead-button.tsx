@@ -1,14 +1,16 @@
 'use client';
 
 import { useTransition } from 'react';
-import { registerLead } from '@/actions/leads';
+import { registerLead, type LeadActionType } from '@/actions/leads';
 
 export function WhatsAppLeadButton({
   luthierId,
   whatsapp,
+  leadType = 'whatsapp_click',
 }: {
   luthierId: string;
   whatsapp: string;
+  leadType?: LeadActionType;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -16,7 +18,7 @@ export function WhatsAppLeadButton({
     // Fire-and-forget: registra a métrica de forma segura e NEVER bloqueia o
     // redirecionamento do usuário para o WhatsApp (Pensamento de Inversão).
     startTransition(async () => {
-      await registerLead(luthierId, 'whatsapp_click');
+      await registerLead(luthierId, leadType);
     });
 
     const digits = whatsapp.replace(/\D/g, '');

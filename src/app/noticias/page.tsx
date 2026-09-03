@@ -1,9 +1,10 @@
-import { getNewsFeed } from '@/actions/news';
+import { getNewsFeed, getNewsComments, isNewsLiked } from '@/actions/news';
 import { createClient } from '@/lib/supabase/server';
 import Image from 'next/image';
 import NewsForm from './news-form';
 import SuggestNewsModal from './suggest-news-modal';
 import { SuggestNewsBannerButton } from './suggest-news-banner-button';
+import { NewsEngagement } from '@/components/news-engagement';
 
 export const metadata = {
   title: 'Mural de Notícias | Portal NKL',
@@ -13,6 +14,23 @@ export default async function NoticiasPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const news = await getNewsFeed();
+
+  // Engajamento (Tarefa 9): 1 query para os likes do usuário logado + comentários.
+  const likedNewsIds = new Set<string>();
+  if (user?.id) {
+    const liked = await Promise.all(
+      news.map((item) => isNewsLiked(item.id, user.id))
+    );
+    news.forEach((item, index) => {
+      if (liked[index]) likedNewsIds.add(item.id);
+    });
+  }
+  const commentsByNews = new Map<string, Awaited<ReturnType<typeof getNewsComments>>>();
+  await Promise.all(
+    news.map(async (item) => {
+      commentsByNews.set(item.id, await getNewsComments(item.id));
+    })
+  );
 
   return (
     <div className="max-w-5xl mx-auto px-4 pt-8 pb-16">
@@ -37,7 +55,7 @@ export default async function NoticiasPage() {
       {/* Renderização do Feed */}
       <div className="news-feed">
         {news.slice(0, 5).map((item) => (
-          <article key={item.id} className="news-card">
+          <article key={item.id} className="news-card flex flex-col">
             <div className="news-img-box">
               <Image
                 src={item.imageUrl}
@@ -61,7 +79,19 @@ export default async function NoticiasPage() {
                 <span className="news-date">
                   {new Date(item.createdAt).toLocaleDateString('pt-BR')}
                 </span>
+                {item.author && (
+                  <span className="news-date">Por {item.author}</span>
+                )}
               </div>
+
+              {/* Tarefa 9 — curtir e comentar */}
+              <NewsEngagement
+                newsId={item.id}
+                initialLiked={likedNewsIds.has(item.id)}
+                initialLikes={item.likesCount}
+                initialComments={commentsByNews.get(item.id) ?? []}
+                canComment={Boolean(user)}
+              />
             </div>
           </article>
         ))}

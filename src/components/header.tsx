@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useSessionUser } from '@/components/use-session-user'
 import { useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -147,17 +147,10 @@ export function Header() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
   const isHome = pathname === '/'
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const user = useSessionUser()
+  const isLoggedIn = Boolean(user)
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const supabase = createClient()
-    let ignore = false
-    supabase.auth.getUser().then(({ data }) => { if (!ignore) setIsLoggedIn(Boolean(data.user)) })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => { if (!ignore) setIsLoggedIn(Boolean(s?.user)) })
-    return () => { ignore = true; subscription.unsubscribe() }
-  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80)

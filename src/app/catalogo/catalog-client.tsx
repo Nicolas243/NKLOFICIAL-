@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { getStringsCatalog, type CatalogFilters } from '@/actions/strings';
+import { getStringsCatalog, type CatalogFilters, type CatalogSort } from '@/actions/strings';
+import { AffiliateLinks } from '@/components/affiliate-links';
 
 type StringItem = {
   id: string;
@@ -14,6 +15,7 @@ type StringItem = {
   responseSpeed: string | null;
   projection: string | null;
   soundColor: string | null;
+  affiliateLinks: Record<string, string> | null;
 };
 
 function parseNumberInput(value: string): number | undefined {
@@ -33,6 +35,9 @@ export function CatalogClient({
 }) {
   const [query, setQuery] = useState('');
   const [coreMaterial, setCoreMaterial] = useState('');
+  const [qualityLevel, setQualityLevel] = useState('');
+  const [sort, setSort] = useState<CatalogSort>('name');
+  const [perPage, setPerPage] = useState(12);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [items, setItems] = useState<StringItem[]>(initialData);
@@ -50,16 +55,26 @@ export function CatalogClient({
     )
   ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
+  const qualityOptions = Array.from(
+    new Set(
+      initialData
+        .map((item) => item.qualityLevel)
+        .filter((level): level is string => level !== null && level.trim() !== '')
+    )
+  ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
   // Busca aplicando filtros + página corrente. Reutilizável por debounce e
   // pelos botões de paginação (evita duplicação de lógica).
   const fetchPage = (page: number) => {
     const filters: CatalogFilters = {
       query: query.trim() !== '' ? query.trim() : undefined,
       coreMaterial: coreMaterial !== '' ? coreMaterial : undefined,
+      qualityLevel: qualityLevel !== '' ? qualityLevel : undefined,
+      sort,
       minPrice: parseNumberInput(minPrice),
       maxPrice: parseNumberInput(maxPrice),
       page,
-      limit: 12,
+      limit: perPage,
     };
 
     startTransition(async () => {
@@ -90,7 +105,7 @@ export function CatalogClient({
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, coreMaterial, minPrice, maxPrice]);
+  }, [query, coreMaterial, qualityLevel, sort, perPage, minPrice, maxPrice]);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
@@ -101,13 +116,18 @@ export function CatalogClient({
     // Reset de filtros dispara o debounce, que refetcha a página 1.
     setQuery('');
     setCoreMaterial('');
+    setQualityLevel('');
     setMinPrice('');
     setMaxPrice('');
     setCurrentPage(1);
   };
 
   const hasActiveFilters =
-    query !== '' || coreMaterial !== '' || minPrice !== '' || maxPrice !== '';
+    query !== '' ||
+    coreMaterial !== '' ||
+    qualityLevel !== '' ||
+    minPrice !== '' ||
+    maxPrice !== '';
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
@@ -150,6 +170,36 @@ export function CatalogClient({
             </select>
           </label>
 
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-medium opacity-80">Nível</span>
+            <select
+              value={qualityLevel}
+              onChange={(event) => setQualityLevel(event.target.value)}
+              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+            >
+              <option value="">Todos</option>
+              {qualityOptions.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-medium opacity-80">Ordenar por</span>
+            <select
+              value={sort}
+              onChange={(event) => setSort(event.target.value as CatalogSort)}
+              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+            >
+              <option value="name">Nome (A–Z)</option>
+              <option value="score">Melhor nota</option>
+              <option value="price_asc">Menor preço</option>
+              <option value="price_desc">Maior preço</option>
+            </select>
+          </label>
+
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-2">
               <span className="text-sm font-medium opacity-80">Preço Mín.</span>
@@ -182,11 +232,27 @@ export function CatalogClient({
       </aside>
 
       <section className="flex-1 flex flex-col gap-6">
+        {/* Tarefa 6 — seletor de quantidade de itens por página */}
+        <div className="flex items-center justify-end gap-3">
+          <label className="flex items-center gap-2 text-sm opacity-80">
+            Itens por página
+            <select
+              value={perPage}
+              onChange={(event) => setPerPage(Number(event.target.value))}
+              className="p-2 bg-background border border-border rounded-md focus:border-neon outline-none"
+            >
+              <option value={12}>12</option>
+              <option value={24}>24</option>
+              <option value={48}>48</option>
+            </select>
+          </label>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {items.map((item) => (
             <article
               key={item.id}
-              className="p-6 bg-surface border border-border rounded-lg hover:border-neon transition-colors"
+              className="p-6 bg-surface border border-border rounded-lg hover:border-neon transition-colors flex flex-col gap-4"
             >
               <h3 className="font-playfair font-bold text-lg mb-2">
                 <Link href={`/catalogo/${item.id}`} className="hover:text-neon transition-colors">
@@ -197,8 +263,11 @@ export function CatalogClient({
                 <span>Nível: {item.qualityLevel || 'N/A'}</span>
                 <span>Nota: {item.communityScore || 'N/A'}</span>
               </div>
-              <div className="text-neon font-bold">
-                {item.realPrice ? `R$ ${item.realPrice}` : 'Preço Indisponível'}
+              <div className="flex items-center justify-between mt-auto gap-3">
+                <div className="text-neon font-bold">
+                  {item.realPrice ? `R$ ${item.realPrice}` : 'Preço Indisponível'}
+                </div>
+                <AffiliateLinks links={item.affiliateLinks} variant="compact" />
               </div>
             </article>
           ))}

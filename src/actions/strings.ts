@@ -2,14 +2,18 @@
 
 import { db } from '@/db';
 import { stringsCatalog } from '@/db/schema';
-import { and, asc, eq, gte, ilike, lte, count, type SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, ilike, lte, count, type SQL } from 'drizzle-orm';
 import { isUuid } from '@/lib/uuid';
+
+export type CatalogSort = 'name' | 'score' | 'price_asc' | 'price_desc';
 
 export interface CatalogFilters {
   query?: string;
   coreMaterial?: string;
+  qualityLevel?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: CatalogSort;
   page?: number;
   limit?: number;
 }
@@ -36,6 +40,10 @@ export async function getStringsCatalog(
       conditions.push(eq(stringsCatalog.coreMaterial, filters.coreMaterial));
     }
 
+    if (filters.qualityLevel && filters.qualityLevel.trim() !== '') {
+      conditions.push(eq(stringsCatalog.qualityLevel, filters.qualityLevel.trim()));
+    }
+
     if (typeof filters.minPrice === 'number' && !Number.isNaN(filters.minPrice)) {
       // Coluna numeric do Postgres: comparações recebem string.
       conditions.push(gte(stringsCatalog.realPrice, String(filters.minPrice)));
@@ -55,12 +63,24 @@ export async function getStringsCatalog(
 
     // Duas queries paralelas: dados paginados + total para calcular a última
     // página sem carregar o acervo inteiro (previne OOM).
+    // Ordenações do legado catalogos.html (Tarefa 6): nome, nota da
+    // comunidade e preço (asc/desc). Notas nulas vão para o fim.
+    const sort = filters.sort ?? 'name';
+    const orderBy =
+      sort === 'score'
+        ? [desc(stringsCatalog.communityScore), asc(stringsCatalog.name)]
+        : sort === 'price_asc'
+          ? [asc(stringsCatalog.realPrice), asc(stringsCatalog.name)]
+          : sort === 'price_desc'
+            ? [desc(stringsCatalog.realPrice), asc(stringsCatalog.name)]
+            : [asc(stringsCatalog.name)];
+
     const [rows, totalRow] = await Promise.all([
       db
         .select()
         .from(stringsCatalog)
         .where(where)
-        .orderBy(asc(stringsCatalog.name))
+        .orderBy(...orderBy)
         .limit(limit)
         .offset((page - 1) * limit),
       db.select({ value: count() }).from(stringsCatalog).where(where),

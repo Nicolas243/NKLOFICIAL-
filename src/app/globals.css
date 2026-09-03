@@ -37,6 +37,17 @@
   --font-sans: var(--font-inter);
   --font-playfair: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
+  /* Tarefa 1 — reduz peso excessivo dos negritos que embolavam a leitura */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+  --font-weight-black: 800;
+}
+
+/* Tarefa 1 — base tipográfica mais legível: leve aumento de corpo,
+   entrelinha e tracking globais */
+html {
+  font-size: 106.25%; /* 17px */
+  letter-spacing: 0.01em;
 }
 
 body {
@@ -48,6 +59,7 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.65;
 }
 
 img {
@@ -883,6 +895,11 @@ body.dark-theme .image-placeholder { background: #1e1e1e; border-color: #444; }
 @keyframes fadeInUp {
     from { opacity: 0; transform: translate(-50%, 20px); }
     to { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes violinPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 @keyframes organicShake {
     0% { transform: scale(1) translate(0,0) rotate(0deg); }

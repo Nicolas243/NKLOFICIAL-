@@ -1,4 +1,4 @@
-﻿import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -53,6 +53,10 @@ export const businessDirectory = pgTable('business_directory', {
   state: text('state').notNull(),
   planType: text('plan_type').notNull().default('free'),
   whatsapp: text('whatsapp'),
+  // Tarefa 12 — cartões enriquecidos do diretório (lojas/luthiers).
+  imageUrl: text('image_url'),
+  instrumentTypes: text('instrument_types'),
+  repairTypes: text('repair_types'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 export const newsFeed = pgTable('news_feed', {
@@ -61,13 +65,72 @@ export const newsFeed = pgTable('news_feed', {
   content: text('content').notNull(),
   tags: varchar('tags', { length: 255 }), 
   imageUrl: text('image_url').notNull(),
+  // Tarefa 9 — autoria editorial (seed inicial: Admin-flame)
+  author: varchar('author', { length: 255 }).default('Admin-flame'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+// Tarefa 9 — engajamento: comentários e likes em notícias.
+export const newsComments = pgTable('news_comments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  newsId: uuid('news_id')
+    .references(() => newsFeed.id)
+    .notNull(),
+  userId: uuid('user_id')
+    .references(() => userProfiles.id)
+    .notNull(),
+  authorName: varchar('author_name', { length: 255 }).notNull(),
+  comment: text('comment').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const newsLikes = pgTable(
+  'news_likes',
+  {
+    newsId: uuid('news_id')
+      .references(() => newsFeed.id)
+      .notNull(),
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'news_likes_news_id_user_id_pk',
+      columns: [table.newsId, table.userId],
+    }),
+  ]
+);
+
+export const newsCommentsRelations = relations(newsComments, ({ one }) => ({
+  news: one(newsFeed, {
+    fields: [newsComments.newsId],
+    references: [newsFeed.id],
+  }),
+  user: one(userProfiles, {
+    fields: [newsComments.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
+export const newsLikesRelations = relations(newsLikes, ({ one }) => ({
+  news: one(newsFeed, {
+    fields: [newsLikes.newsId],
+    references: [newsFeed.id],
+  }),
+  user: one(userProfiles, {
+    fields: [newsLikes.userId],
+    references: [userProfiles.id],
+  }),
+}));
+
 export const newsSuggestions = pgTable('news_suggestions', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
   contentOrLink: text('content_or_link').notNull(),
   suggestedBy: varchar('suggested_by', { length: 255 }),
+  imageUrl: text('image_url'),
   status: varchar('status', { length: 20 }).notNull().default('pending'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -164,6 +227,7 @@ export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   leadsForLuthier: many(luthierLeads, { relationName: 'leadsForLuthier' }),
   leadsReferedByMe: many(luthierLeads, { relationName: 'leadReferrer' }),
   portfolioItems: many(luthierPortfolio, { relationName: 'portfolioOfLuthier' }),
+  passwordChangeAttempts: many(passwordChangeAttempts),
 }));
 
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
@@ -227,6 +291,44 @@ export const favoriteLuthiers = pgTable(
   ]
 );
 
+export const favoriteBusinesses = pgTable(
+  'favorite_businesses',
+  {
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    businessId: uuid('business_id')
+      .references(() => businessDirectory.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'favorite_businesses_user_id_business_id_pk',
+      columns: [table.userId, table.businessId],
+    }),
+  ]
+);
+
+export const favoriteProfessors = pgTable(
+  'favorite_professors',
+  {
+    userId: uuid('user_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    professorId: uuid('professor_id')
+      .references(() => userProfiles.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'favorite_professors_user_id_professor_id_pk',
+      columns: [table.userId, table.professorId],
+    }),
+  ]
+);
+
 export const favoriteStringsRelations = relations(favoriteStrings, ({ one }) => ({
   user: one(userProfiles, {
     fields: [favoriteStrings.userId],
@@ -248,6 +350,30 @@ export const favoriteLuthiersRelations = relations(favoriteLuthiers, ({ one }) =
     fields: [favoriteLuthiers.luthierId],
     references: [userProfiles.id],
     relationName: 'savedLuthier',
+  }),
+}));
+
+export const favoriteBusinessesRelations = relations(favoriteBusinesses, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [favoriteBusinesses.userId],
+    references: [userProfiles.id],
+  }),
+  business: one(businessDirectory, {
+    fields: [favoriteBusinesses.businessId],
+    references: [businessDirectory.id],
+  }),
+}));
+
+export const favoriteProfessorsRelations = relations(favoriteProfessors, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [favoriteProfessors.userId],
+    references: [userProfiles.id],
+    relationName: 'favoritingUser',
+  }),
+  professor: one(userProfiles, {
+    fields: [favoriteProfessors.professorId],
+    references: [userProfiles.id],
+    relationName: 'savedProfessor',
   }),
 }));
 
@@ -326,3 +452,27 @@ export const luthierPortfolioRelations = relations(luthierPortfolio, ({ one }) =
     relationName: 'portfolioOfLuthier',
   }),
 }));
+
+/**
+ * Rate limiting distributo (POST /api/auth/change-password).
+ * Uma linha por usuario: contagem de tentativas + janelas de cooldown com
+ * exponential backoff. Persistido no Postgres (compartilhado entre todas as
+ * instancias/servers) em vez de um Map em memoria — o mesmo contrato que o
+ * Upstash Redis cumpriria, sem dependencia externa nova.
+ */
+export const passwordChangeAttempts = pgTable('password_change_attempts', {
+  userId: uuid('user_id').primaryKey().references(() => userProfiles.id),
+  attemptCount: integer('attempt_count').notNull().default(0),
+  lastAttemptAt: timestamp('last_attempt_at').defaultNow().notNull(),
+  lastSuccessAt: timestamp('last_success_at'),
+});
+
+export const passwordChangeAttemptsRelations = relations(
+  passwordChangeAttempts,
+  ({ one }) => ({
+    user: one(userProfiles, {
+      fields: [passwordChangeAttempts.userId],
+      references: [userProfiles.id],
+    }),
+  })
+);

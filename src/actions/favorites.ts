@@ -7,6 +7,8 @@ import { db } from '@/db';
 import {
   favoriteStrings,
   favoriteLuthiers,
+  favoriteBusinesses,
+  favoriteProfessors,
   stringsCatalog,
   userProfiles,
   businessDirectory,
@@ -113,6 +115,72 @@ export async function toggleFavoriteLuthier(luthierId: string): Promise<void> {
   }
 
   revalidatePath(`/luthiers/${luthierId}`);
+  revalidatePath('/meu-setup');
+}
+
+export async function toggleFavoriteBusiness(businessId: string): Promise<void> {
+  const { userId, email } = await requireSession();
+
+  if (!isUuid(businessId)) {
+    throw new Error('Loja inválida.');
+  }
+
+  const [existing] = await db
+    .select({ userId: favoriteBusinesses.userId })
+    .from(favoriteBusinesses)
+    .where(
+      and(eq(favoriteBusinesses.userId, userId), eq(favoriteBusinesses.businessId, businessId))
+    )
+    .limit(1);
+
+  if (existing) {
+    await db
+      .delete(favoriteBusinesses)
+      .where(
+        and(eq(favoriteBusinesses.userId, userId), eq(favoriteBusinesses.businessId, businessId))
+      );
+  } else {
+    await ensureProfile(userId, email);
+    await db
+      .insert(favoriteBusinesses)
+      .values({ userId, businessId })
+      .onConflictDoNothing();
+  }
+
+  revalidatePath('/lojas');
+  revalidatePath('/meu-setup');
+}
+
+export async function toggleFavoriteProfessor(professorId: string): Promise<void> {
+  const { userId, email } = await requireSession();
+
+  if (!isUuid(professorId)) {
+    throw new Error('Professor inválido.');
+  }
+
+  const [existing] = await db
+    .select({ userId: favoriteProfessors.userId })
+    .from(favoriteProfessors)
+    .where(
+      and(eq(favoriteProfessors.userId, userId), eq(favoriteProfessors.professorId, professorId))
+    )
+    .limit(1);
+
+  if (existing) {
+    await db
+      .delete(favoriteProfessors)
+      .where(
+        and(eq(favoriteProfessors.userId, userId), eq(favoriteProfessors.professorId, professorId))
+      );
+  } else {
+    await ensureProfile(userId, email);
+    await db
+      .insert(favoriteProfessors)
+      .values({ userId, professorId })
+      .onConflictDoNothing();
+  }
+
+  revalidatePath('/professores');
   revalidatePath('/meu-setup');
 }
 
@@ -226,6 +294,122 @@ export async function getFavoriteLuthiers(userId: string): Promise<FavoriteLuthi
     state: row.businessState ?? row.profileState,
     planType: row.planType,
     whatsapp: row.whatsapp,
+    savedAt: row.savedAt,
+  }));
+}
+
+export async function isBusinessFavorite(
+  userId: string,
+  businessId: string
+): Promise<boolean> {
+  if (!isUuid(userId) || !isUuid(businessId)) return false;
+
+  const [row] = await db
+    .select({ userId: favoriteBusinesses.userId })
+    .from(favoriteBusinesses)
+    .where(
+      and(eq(favoriteBusinesses.userId, userId), eq(favoriteBusinesses.businessId, businessId))
+    )
+    .limit(1);
+
+  return row !== undefined;
+}
+
+export type FavoriteBusinessItem = {
+  id: string;
+  name: string;
+  city: string | null;
+  state: string | null;
+  planType: string | null;
+  whatsapp: string | null;
+  imageUrl: string | null;
+  savedAt: Date;
+};
+
+export async function getFavoriteBusinesses(userId: string): Promise<FavoriteBusinessItem[]> {
+  if (!isUuid(userId)) return [];
+
+  const rows = await db
+    .select({
+      id: businessDirectory.id,
+      businessName: businessDirectory.businessName,
+      city: businessDirectory.city,
+      state: businessDirectory.state,
+      planType: businessDirectory.planType,
+      whatsapp: businessDirectory.whatsapp,
+      imageUrl: businessDirectory.imageUrl,
+      savedAt: favoriteBusinesses.createdAt,
+    })
+    .from(favoriteBusinesses)
+    .leftJoin(businessDirectory, eq(businessDirectory.id, favoriteBusinesses.businessId))
+    .where(eq(favoriteBusinesses.userId, userId))
+    .orderBy(desc(favoriteBusinesses.createdAt));
+
+  return rows.map((row) => ({
+    id: row.id ?? '',
+    name: row.businessName ?? 'Loja',
+    city: row.city,
+    state: row.state,
+    planType: row.planType,
+    whatsapp: row.whatsapp,
+    imageUrl: row.imageUrl,
+    savedAt: row.savedAt,
+  }));
+}
+
+export async function isProfessorFavorite(
+  userId: string,
+  professorId: string
+): Promise<boolean> {
+  if (!isUuid(userId) || !isUuid(professorId)) return false;
+
+  const [row] = await db
+    .select({ userId: favoriteProfessors.userId })
+    .from(favoriteProfessors)
+    .where(
+      and(eq(favoriteProfessors.userId, userId), eq(favoriteProfessors.professorId, professorId))
+    )
+    .limit(1);
+
+  return row !== undefined;
+}
+
+export type FavoriteProfessorItem = {
+  id: string;
+  name: string;
+  instrumento: string | null;
+  city: string | null;
+  state: string | null;
+  planType: string | null;
+  savedAt: Date;
+};
+
+export async function getFavoriteProfessors(userId: string): Promise<FavoriteProfessorItem[]> {
+  if (!isUuid(userId)) return [];
+
+  const rows = await db
+    .select({
+      id: userProfiles.id,
+      fullName: userProfiles.fullName,
+      businessName: userProfiles.businessName,
+      instrumento: userProfiles.instrumento,
+      city: userProfiles.city,
+      state: userProfiles.state,
+      planType: userProfiles.planType,
+      savedAt: favoriteProfessors.createdAt,
+    })
+    .from(favoriteProfessors)
+    .leftJoin(userProfiles, eq(userProfiles.id, favoriteProfessors.professorId))
+    .where(eq(favoriteProfessors.userId, userId))
+    .orderBy(desc(favoriteProfessors.createdAt));
+
+  return rows.map((row) => ({
+    id: row.id ?? '',
+    name: row.businessName ?? row.fullName ?? 'Professor(a)',
+    instrumento: row.instrumento,
+    city: row.city,
+    state: row.state,
+    planType: row.planType,
     savedAt: row.savedAt,
   }));
 }

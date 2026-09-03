@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { ExportDataButton, DeleteAccountButton } from '@/components/privacy-actions';
+import { ChangePasswordForm } from '@/components/change-password-form';
 
 export const metadata = {
   title: 'Privacidade e Dados | Portal NKL',
@@ -24,6 +25,15 @@ export default async function PrivacidadePage() {
           Controle total sobre suas informações pessoais, conforme a LGPD (Lei 13.709/2018).
         </p>
       </header>
+
+      <section className="p-6 bg-surface border border-border rounded-xl space-y-3">
+        <h2 className="font-playfair text-xl font-bold">Segurança da Conta</h2>
+        <p className="text-sm opacity-70">
+          Por segurança, a troca de senha é permitida uma vez a cada 12 horas.
+          Tentativas em excesso aumentam o período de bloqueio progressivamente.
+        </p>
+        <ChangePasswordForm />
+      </section>
 
       <section className="p-6 bg-surface border border-border rounded-xl space-y-3">
         <h2 className="font-playfair text-xl font-bold">Exportar Meus Dados</h2>

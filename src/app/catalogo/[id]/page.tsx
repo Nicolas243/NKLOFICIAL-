@@ -4,6 +4,7 @@ import { getStringDetails } from '@/actions/strings';
 import { getReviewsByStringId, submitReview } from '@/actions/reviews';
 import { isStringFavorite, toggleFavoriteString } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
+import { AffiliateLinks } from '@/components/affiliate-links';
 import { createClient } from '@/lib/supabase/server';
 
 type Params = Promise<{ id: string }>;
@@ -113,6 +114,9 @@ export default async function StringDetailsPage(props: { params: Params }) {
               initialSaved={isFavorite}
             />
           )}
+
+          {/* Tarefa 6 — CTA Comprar com marketplaces do legado */}
+          <AffiliateLinks links={stringData.affiliateLinks} variant="full" />
 
           <Link
             href="/comparar"

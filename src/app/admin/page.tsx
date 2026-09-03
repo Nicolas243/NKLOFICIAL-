@@ -3,11 +3,17 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
-import { publishNews, deleteNews } from '@/actions/news-admin';
-import { promoteToAdmin } from '@/actions/admin-setup';
+import {
+  publishNews,
+  deleteNews,
+  getPendingNewsSuggestions,
+  approveNewsSuggestion,
+  rejectNewsSuggestion,
+} from '@/actions/news-admin';
 import { getPlatformMetrics } from '@/actions/admin-analytics';
+import { AdminPromoteForm } from '@/components/admin-promote-form';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -16,16 +22,20 @@ export default async function AdminDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.id) redirect('/');
 
-  const [profile] = await db
-    .select({ role: userProfiles.role })
-    .from(userProfiles)
-    .where(eq(userProfiles.id, user.id))
-    .limit(1);
+  const [[profile], [{ value: adminCount }]] = await Promise.all([
+    db
+      .select({ role: userProfiles.role })
+      .from(userProfiles)
+      .where(eq(userProfiles.id, user.id))
+      .limit(1),
+    db.select({ value: count() }).from(userProfiles).where(eq(userProfiles.role, 'admin')),
+  ]);
 
   const isAdmin = profile?.role === 'admin';
-  const [news, metrics] = await Promise.all([
+  const [news, metrics, pendingSuggestions] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
+    isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
   ]);
 
   const metricCards: { label: string; value: string }[] = metrics
@@ -51,20 +61,17 @@ export default async function AdminDashboardPage() {
           <span className="text-xs px-3 py-1 bg-surface border border-border rounded-full">
             Perfil: <strong className="text-neon">{profile?.role ?? 'user'}</strong>
           </span>
-          {!isAdmin && (
-            <form action={promoteToAdmin}>
-              <button type="submit" className="px-4 py-2 text-xs font-bold bg-neon text-black rounded-md">
-                Promover a Admin
-              </button>
-            </form>
-          )}
+          {!isAdmin && <AdminPromoteForm isBootstrap={adminCount === 0} />}
         </div>
       </div>
 
       {!isAdmin ? (
         <div className="p-8 bg-surface border border-border rounded-xl text-center">
           <p className="text-red-400 font-medium">Acesso restrito a administradores.</p>
-          <p className="text-sm opacity-70 mt-2">Clique em &quot;Promover a Admin&quot; acima para habilitar seu acesso.</p>
+          <p className="text-sm opacity-70 mt-2">
+            Acesso restrito a administradores. O primeiro admin é concedido por bootstrap;
+            em seguida, apenas com o segredo de administrador.
+          </p>
         </div>
       ) : (
         <div className="space-y-12">
@@ -94,6 +101,51 @@ export default async function AdminDashboardPage() {
               <input type="file" name="image" accept="image/png, image/jpeg, image/webp" required className="w-full p-2 border border-border rounded-md text-sm" />
               <button type="submit" className="w-full py-3 bg-neon text-black font-bold rounded-md">Publicar Notícia</button>
             </form>
+          </section>
+
+          <section className="p-6 bg-surface border border-border rounded-xl">
+            <h2 className="font-playfair text-xl font-bold mb-6">
+              Fila de Aprovação ({pendingSuggestions.length})
+            </h2>
+            {pendingSuggestions.length === 0 ? (
+              <p className="text-sm opacity-60">Nenhum anúncio/sugestão pendente.</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {pendingSuggestions.map((suggestion) => (
+                  <article
+                    key={suggestion.id}
+                    className="p-4 border border-border rounded-lg flex flex-col gap-2"
+                  >
+                    <h3 className="font-bold text-sm">{suggestion.title}</h3>
+                    <p className="text-xs opacity-70 line-clamp-2">{suggestion.contentOrLink}</p>
+                    <div className="text-xs opacity-50">
+                      Sugerido por: {suggestion.suggestedBy ?? 'Anônimo'} ·{' '}
+                      {new Date(suggestion.createdAt).toLocaleDateString('pt-BR')}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1">
+                      <form action={approveNewsSuggestion}>
+                        <input type="hidden" name="suggestionId" value={suggestion.id} />
+                        <button
+                          type="submit"
+                          className="px-4 py-1.5 text-xs font-bold bg-neon text-black rounded-md"
+                        >
+                          Aprovar
+                        </button>
+                      </form>
+                      <form action={rejectNewsSuggestion}>
+                        <input type="hidden" name="suggestionId" value={suggestion.id} />
+                        <button
+                          type="submit"
+                          className="px-4 py-1.5 text-xs border border-red-500/50 text-red-400 rounded-md"
+                        >
+                          Rejeitar
+                        </button>
+                      </form>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="space-y-4">

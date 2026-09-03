@@ -1,10 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { newsFeed, userProfiles } from '@/db/schema';
+import { newsFeed, newsSuggestions, userProfiles } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
 
 const BUCKET = 'public-assets';
@@ -106,5 +106,78 @@ export async function deleteNews(formData: FormData): Promise<void> {
 
   revalidatePath('/');
   revalidatePath('/noticias');
+  revalidatePath('/admin');
+}
+
+/** Tarefa 9 — fila de aprovação de anúncios/sugestões (status = pending). */
+export async function getPendingNewsSuggestions() {
+  return db
+    .select({
+      id: newsSuggestions.id,
+      title: newsSuggestions.title,
+      contentOrLink: newsSuggestions.contentOrLink,
+      suggestedBy: newsSuggestions.suggestedBy,
+      imageUrl: newsSuggestions.imageUrl,
+      createdAt: newsSuggestions.createdAt,
+    })
+    .from(newsSuggestions)
+    .where(eq(newsSuggestions.status, 'pending'))
+    .orderBy(asc(newsSuggestions.createdAt));
+}
+
+export async function approveNewsSuggestion(formData: FormData): Promise<void> {
+  await requireAdminId();
+
+  const rawId = formData.get('suggestionId');
+  const suggestionId = typeof rawId === 'string' ? rawId : '';
+
+  if (!isUuid(suggestionId)) {
+    throw new Error('ID de sugestão inválido.');
+  }
+
+  const [suggestion] = await db
+    .select()
+    .from(newsSuggestions)
+    .where(eq(newsSuggestions.id, suggestionId))
+    .limit(1);
+
+  if (!suggestion) {
+    throw new Error('Sugestão não encontrada.');
+  }
+
+  // Aprova: cria a notícia no feed com a imagem da sugestão (ou fallback).
+  await db.insert(newsFeed).values({
+    title: suggestion.title,
+    content: suggestion.contentOrLink,
+    tags: null,
+    imageUrl: suggestion.imageUrl ?? '/NKL/violino3.webp',
+    author: suggestion.suggestedBy ?? 'Admin-flame',
+  });
+
+  await db
+    .update(newsSuggestions)
+    .set({ status: 'approved' })
+    .where(eq(newsSuggestions.id, suggestionId));
+
+  revalidatePath('/');
+  revalidatePath('/noticias');
+  revalidatePath('/admin');
+}
+
+export async function rejectNewsSuggestion(formData: FormData): Promise<void> {
+  await requireAdminId();
+
+  const rawId = formData.get('suggestionId');
+  const suggestionId = typeof rawId === 'string' ? rawId : '';
+
+  if (!isUuid(suggestionId)) {
+    throw new Error('ID de sugestão inválido.');
+  }
+
+  await db
+    .update(newsSuggestions)
+    .set({ status: 'rejected' })
+    .where(eq(newsSuggestions.id, suggestionId));
+
   revalidatePath('/admin');
 }

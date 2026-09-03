@@ -5,6 +5,12 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
 import { upsertLuthierProfile } from '@/actions/profile';
+import {
+  getFavoriteStrings,
+  getFavoriteLuthiers,
+  getFavoriteBusinesses,
+  getFavoriteProfessors,
+} from '@/actions/favorites';
 
 export const metadata = {
   title: 'Perfil de Luthier | Portal NKL',
@@ -26,12 +32,100 @@ export default async function PerfilPage() {
     .where(eq(userProfiles.id, user.id))
     .limit(1);
 
+  const [favoriteStrings, favoriteLuthiers, favoriteBusinesses, favoriteProfessors] =
+    await Promise.all([
+      getFavoriteStrings(user.id),
+      getFavoriteLuthiers(user.id),
+      getFavoriteBusinesses(user.id),
+      getFavoriteProfessors(user.id),
+    ]);
+
+  // Tarefa 11 — UX que incentiva o preenchimento completo do perfil.
+  const missingFields: string[] = [];
+  if (!profile?.fullName) missingFields.push('Nome completo');
+  if (!profile?.bio) missingFields.push('Biografia (About me)');
+  if (!profile?.city || !profile?.state) missingFields.push('Cidade e Estado');
+  const isProfileIncomplete = missingFields.length > 0;
+
   return (
     <div className="max-w-2xl w-full mx-auto px-4 pt-8">
       <h1 className="font-playfair text-3xl font-bold mb-2">Perfil de Luthier</h1>
       <p className="text-sm opacity-70 mb-8">
         Cadastre seus dados para se habilitar como luthier no mercado.
       </p>
+
+      {isProfileIncomplete && (
+        <div
+          role="alert"
+          className="mb-8 p-4 rounded-xl border border-neon/50 bg-neon/5 flex flex-col gap-1"
+        >
+          <p className="text-sm font-bold text-neon">
+            Complete seu perfil para aparecer nas buscas
+          </p>
+          <p className="text-sm opacity-80">
+            Campos pendentes: <strong>{missingFields.join(', ')}</strong>. Um
+            perfil completo com biografia aumenta sua credibilidade e suas
+            chances de ser contatado.
+          </p>
+        </div>
+      )}
+
+      <section className="mb-8 p-6 bg-surface border border-border rounded-xl flex flex-col gap-4">
+        <h2 className="font-playfair text-xl font-bold">Meus Favoritos</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            href="/meu-setup"
+            className="p-4 rounded-lg border border-border hover:border-neon transition-colors group"
+          >
+            <span className="block text-2xl font-playfair font-bold text-neon">
+              {favoriteStrings.length}
+            </span>
+            <span className="text-sm opacity-80 group-hover:opacity-100">
+              {favoriteStrings.length === 1 ? 'Corda salva' : 'Cordas salvas'}
+            </span>
+          </Link>
+          <Link
+            href="/meu-setup"
+            className="p-4 rounded-lg border border-border hover:border-neon transition-colors group"
+          >
+            <span className="block text-2xl font-playfair font-bold text-neon">
+              {favoriteLuthiers.length}
+            </span>
+            <span className="text-sm opacity-80 group-hover:opacity-100">
+              {favoriteLuthiers.length === 1 ? 'Luthier salvo' : 'Luthiers salvos'}
+            </span>
+          </Link>
+          <Link
+            href="/meu-setup"
+            className="p-4 rounded-lg border border-border hover:border-neon transition-colors group"
+          >
+            <span className="block text-2xl font-playfair font-bold text-neon">
+              {favoriteBusinesses.length}
+            </span>
+            <span className="text-sm opacity-80 group-hover:opacity-100">
+              {favoriteBusinesses.length === 1 ? 'Loja favorita' : 'Lojas favoritas'}
+            </span>
+          </Link>
+          <Link
+            href="/meu-setup"
+            className="p-4 rounded-lg border border-border hover:border-neon transition-colors group"
+          >
+            <span className="block text-2xl font-playfair font-bold text-neon">
+              {favoriteProfessors.length}
+            </span>
+            <span className="text-sm opacity-80 group-hover:opacity-100">
+              {favoriteProfessors.length === 1 ? 'Professor salvo' : 'Professores salvos'}
+            </span>
+          </Link>
+        </div>
+        <p className="text-sm opacity-70">
+          Gerencie todos os itens favoritados no{' '}
+          <Link href="/meu-setup" className="text-neon font-bold hover:underline">
+            Meu Setup
+          </Link>
+          .
+        </p>
+      </section>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-8">
         <Link

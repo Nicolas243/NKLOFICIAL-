@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { stringsCatalog, userProfiles, businessDirectory, newsFeed } from '@/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { RadialMenu } from '@/components/radial-menu';
+import { HomeMenuFallback } from '@/components/home-menu-fallback';
 
 type TopStringRow = Pick<
   typeof stringsCatalog.$inferSelect,
@@ -65,6 +66,9 @@ export default async function HomePage() {
   ]);
 return (
     <div className="max-w-7xl w-full mx-auto px-4 flex flex-col gap-20">
+      {/* Tarefa 4 — hambúrguer de fallback no canto superior esquerdo da Home */}
+      <HomeMenuFallback />
+
       {/* Radial Menu — PRIMEIRO após o header (Landing Page style) */}
       <section className="flex items-center justify-center pt-2">
         <RadialMenu />

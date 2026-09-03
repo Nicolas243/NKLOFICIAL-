@@ -82,7 +82,17 @@ export default async function LuthierDetailsPage(props: { params: Params }) {
             )}
 
             {luthier.whatsapp ? (
-              <WhatsAppLeadButton luthierId={luthier.id} whatsapp={luthier.whatsapp} />
+              user ? (
+                <WhatsAppLeadButton luthierId={luthier.id} whatsapp={luthier.whatsapp} />
+              ) : (
+                /* Paywall de Privacidade (Tarefa 12): contato só para autenticados */
+                <Link
+                  href="/login"
+                  className="inline-flex justify-center py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+                >
+                  Entre para ver o contato
+                </Link>
+              )
             ) : (
               <p className="text-center text-sm opacity-60 border border-dashed border-border rounded-md py-3">
                 WhatsApp não disponível

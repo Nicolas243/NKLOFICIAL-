@@ -4,8 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 import {
   getFavoriteStrings,
   getFavoriteLuthiers,
+  getFavoriteBusinesses,
+  getFavoriteProfessors,
   toggleFavoriteString,
   toggleFavoriteLuthier,
+  toggleFavoriteBusiness,
 } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
 
@@ -28,9 +31,11 @@ export default async function MeuSetupPage() {
     redirect('/login');
   }
 
-  const [savedStrings, savedLuthiers] = await Promise.all([
+  const [savedStrings, savedLuthiers, savedBusinesses, savedProfessors] = await Promise.all([
     getFavoriteStrings(user.id),
     getFavoriteLuthiers(user.id),
+    getFavoriteBusinesses(user.id),
+    getFavoriteProfessors(user.id),
   ]);
 
   return (
@@ -151,6 +156,103 @@ export default async function MeuSetupPage() {
                 diretório
               </Link>{' '}
               de profissionais.
+            </p>
+          )}
+        </div>
+      </section>
+      {/* Lojas Favoritas */}
+      <section>
+        <h2 className="font-playfair text-2xl font-bold mb-6">Lojas Favoritas</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {savedBusinesses.map((store) => (
+            <article
+              key={store.id}
+              className="p-6 bg-surface border border-border rounded-xl hover:border-neon transition-colors flex flex-col gap-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-playfair font-bold text-lg">{store.name}</h3>
+                  <p className="text-sm opacity-80">
+                    {store.city && store.state
+                      ? `${store.city} · ${store.state}`
+                      : store.city ?? store.state ?? 'Localização não informada'}
+                  </p>
+                </div>
+                <span
+                  className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md border ${
+                    store.planType === 'premium'
+                      ? 'bg-neon/10 text-neon border-neon/40'
+                      : 'bg-accent/10 text-foreground/70 border-border'
+                  }`}
+                >
+                  {store.planType === 'premium' ? 'Premium' : 'Verificado'}
+                </span>
+              </div>
+
+              <div className="mt-auto">
+                <FavoriteButton
+                  action={toggleFavoriteBusiness}
+                  targetId={store.id}
+                  initialSaved={true}
+                  savedLabel="Remover das Favoritas"
+                  unsavedLabel="Salvar nas Favoritas"
+                />
+              </div>
+            </article>
+          ))}
+          {savedBusinesses.length === 0 && (
+            <p className="col-span-full text-center opacity-60 py-8 border border-dashed border-border rounded-lg">
+              Nenhuma loja favoritada ainda. Explore o{' '}
+              <Link href="/lojas" className="text-neon font-bold hover:underline">
+                diretório de lojas
+              </Link>
+              .
+            </p>
+          )}
+        </div>
+      </section>
+      {/* Meus Professores */}
+      <section>
+        <h2 className="font-playfair text-2xl font-bold mb-6">Meus Professores</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {savedProfessors.map((professor) => (
+            <article
+              key={professor.id}
+              className="p-6 bg-surface border border-border rounded-xl hover:border-neon transition-colors flex flex-col gap-4"
+            >
+              <div>
+                <h3 className="font-playfair font-bold text-lg">
+                  <Link
+                    href={`/professores/${professor.id}`}
+                    className="hover:text-neon transition-colors"
+                  >
+                    {professor.name}
+                  </Link>
+                </h3>
+                <p className="text-sm opacity-80">
+                  {professor.instrumento ?? 'Instrumento não informado'}
+                  {professor.city
+                    ? ` · ${professor.city}${professor.state ? ` · ${professor.state}` : ''}`
+                    : ''}
+                </p>
+              </div>
+              <div className="mt-auto">
+                <Link
+                  href={`/professores/${professor.id}`}
+                  className="inline-flex justify-center w-full py-3 border border-neon text-neon rounded-md font-bold transition-all hover:bg-neon hover:text-black"
+                >
+                  Abrir aula de vídeo
+                </Link>
+              </div>
+            </article>
+          ))}
+          {savedProfessors.length === 0 && (
+            <p className="col-span-full text-center opacity-60 py-8 border border-dashed border-border rounded-lg">
+              Nenhum professor salvo ainda. Conheça o{' '}
+              <Link href="/professores" className="text-neon font-bold hover:underline">
+                diretório de professores
+              </Link>
+              .
             </p>
           )}
         </div>

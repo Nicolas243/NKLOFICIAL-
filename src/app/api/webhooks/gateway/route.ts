@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
+import crypto from 'crypto';
 import { db } from '@/db';
 import { subscriptions, userProfiles, businessDirectory } from '@/db/schema';
 
-// Chave secreta para validar webhooks (definida via env em produção).
-// Se ausente em dev, aceita o payload para permitir testes locais.
-const WEBHOOK_SECRET = process.env.GATEWAY_WEBHOOK_SECRET;
+// Chave secreta para assinar/validar webhooks (definida via env em produção).
+// Assinatura: HMAC-SHA256 hexadecimal do body bruto, enviada no header
+// `x-webhook-signature`. Ausente apenas em dev para permitir testes locais.
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET ?? process.env.GATEWAY_WEBHOOK_SECRET;
+
+const HMAC_SHA256_HEX = /^[0-9a-f]{64}$/i;
 
 function extractUserId(payload: Record<string, unknown>): string | null {
   const meta = payload as {
@@ -29,18 +33,59 @@ function extractStatus(payload: Record<string, unknown>): string {
   return String(raw).toLowerCase();
 }
 
+/**
+ * Comparação em tempo constante do HMAC recebido contra o valor esperado.
+ * `timingSafeEqual` exige buffers de mesmo comprimento; por isso o formato
+ * hex (64 chars) é validado antes, e ambos os lados são normalizados.
+ */
+function isValidSignature(received: string, expected: Buffer): boolean {
+  if (!HMAC_SHA256_HEX.test(received)) return false;
+  const receivedBuffer = Buffer.from(received, 'hex');
+  return crypto.timingSafeEqual(receivedBuffer, expected);
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // 1) Validação do header de autenticação/assinatura (anti-spoofing).
-    if (WEBHOOK_SECRET) {
-      const signature = request.headers.get('x-gateway-signature');
-      if (signature !== WEBHOOK_SECRET) {
-        return NextResponse.json({ error: 'forbidden' }, { status: 401 });
-      }
+    // 1) Lê o corpo bruto UMA única vez — o HMAC precisa do payload exato
+    //    transmitido e o parse de JSON subsequente reutiliza essa string.
+    const rawBody = await request.text();
+    if (!rawBody) {
+      return NextResponse.json({ error: 'empty payload' }, { status: 400 });
     }
 
-    // 2) Parsing do payload.
-    const payload = (await request.json()) as Record<string, unknown>;
+    // 2) Validação de autenticidade (anti-spoofing / replay): HMAC-SHA256 do
+    //    body bruto contra o secret. Em ambiente prod, o secret é obrigatório.
+    if (WEBHOOK_SECRET) {
+      const signature = request.headers.get('x-webhook-signature');
+      if (!signature) {
+        return NextResponse.json({ error: 'missing signature' }, { status: 401 });
+      }
+
+      const expectedHmac = crypto
+        .createHmac('sha256', WEBHOOK_SECRET)
+        .update(rawBody, 'utf8')
+        .digest();
+
+      if (!isValidSignature(signature, expectedHmac)) {
+        return NextResponse.json({ error: 'forbidden' }, { status: 401 });
+      }
+    } else if (process.env.NODE_ENV === 'production') {
+      console.error('[webhook/gateway] WEBHOOK_SECRET ausente em produção.');
+      return NextResponse.json({ error: 'server misconfigured' }, { status: 500 });
+    } else {
+      console.warn(
+        '[webhook/gateway] WEBHOOK_SECRET ausente — payload aceito sem assinatura (apenas dev).'
+      );
+    }
+
+    // 3) Parsing do payload a partir do body já lido.
+    let payload: Record<string, unknown>;
+    try {
+      payload = JSON.parse(rawBody) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: 'invalid json' }, { status: 400 });
+    }
+
     const userId = extractUserId(payload);
     if (!userId) {
       return NextResponse.json({ error: 'missing user reference' }, { status: 422 });
@@ -57,9 +102,7 @@ export async function POST(request: NextRequest) {
       ? status
       : 'active';
 
-    // 3) Persiste a assinatura (upsert pela assinatura do gateway).
-    //    Uma renovação/atualização de status deve atualizar o registro, não
-    //    falhar nem ignorar — usa a unique em gatewaySubscriptionId.
+    // 4) Persiste a assinatura (upsert pelo id da assinatura do gateway).
     const periodEndRaw =
       (payload as {
         data?: { current_period_end?: number | string };
@@ -101,7 +144,7 @@ export async function POST(request: NextRequest) {
       .set({ planType })
       .where(eq(userProfiles.id, userId));
 
-    // Mantem sincronizado o businessDirectory (fonte usada pelo diretório).
+    // Mantém sincronizado o businessDirectory (fonte usada pelo diretório).
     await db
       .update(businessDirectory)
       .set({ planType })

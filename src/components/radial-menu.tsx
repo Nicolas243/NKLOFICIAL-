@@ -3,16 +3,128 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-const SLICES = [
-  { label: 'Catálogo', href: '/catalogo', desc: 'Explore a maior biblioteca de cordas com avaliações reais.' },
-  { label: 'Comparador', href: '/comparar', desc: 'Compare tensão, durabilidade e timbre lado a lado.' },
-  { label: 'Clínica', href: '/clinica', desc: 'Cuidados, reparos e segredos da bancada do luthier.' },
-  { label: 'Física do Som', href: '/fisica-do-som', desc: 'Entenda a ciência por trás do som do seu instrumento.' },
-  { label: 'Notícias', href: '/noticias', desc: 'As últimas novidades do mundo da música.' },
-  { label: 'Professores', href: '/professores', desc: 'Encontre professores de música perto de você.' },
-  { label: 'Lojas', href: '/lojas', desc: 'Descubra lojas de instrumentos e acessórios.' },
-  { label: 'Luthier', href: '/luthiers', desc: 'Conecte-se com luthiers profissionais verificados.' },
-  { label: 'Contatos', href: '/contatos', desc: 'Fale conosco: parcerias e redes sociais.' },
+interface SliceData {
+  label: string
+  desc: string
+  href: string
+  notes: Array<{
+    s: string // símbolo musical
+    r: number // fator de raio (0 a 1)
+    a: number // offset angular
+    sz: number // tamanho da fonte
+    o: number // opacidade base
+  }>
+}
+
+const SLICES: SliceData[] = [
+  {
+    label: 'Lista com todas as cordas atuais detalhadas',
+    desc: 'Catálogo completo com especificações técnicas, tensões, núcleos e avaliações.',
+    href: '/catalogo',
+    notes: [
+      { s: '𝄞', r: 0.35, a: -0.16, sz: 17, o: 0.5 },
+      { s: '♪', r: 0.78, a: 0.18, sz: 16, o: 0.6 },
+      { s: '♫', r: 0.88, a: -0.15, sz: 19, o: 0.5 },
+      { s: '𝄢', r: 0.45, a: 0.17, sz: 16, o: 0.4 },
+      { s: '♩', r: 0.90, a: 0.05, sz: 15, o: 0.55 },
+    ],
+  },
+  {
+    label: 'Comparativo lado a lado de tensão e timbre',
+    desc: 'Compare sonoridade, durabilidade, resposta e custo-benefício de múltiplos jogos.',
+    href: '/comparar',
+    notes: [
+      { s: '♬', r: 0.38, a: 0.15, sz: 18, o: 0.5 },
+      { s: '♩', r: 0.75, a: -0.18, sz: 16, o: 0.6 },
+      { s: '♭', r: 0.86, a: 0.16, sz: 15, o: 0.5 },
+      { s: '𝄞', r: 0.50, a: -0.20, sz: 16, o: 0.45 },
+      { s: '♫', r: 0.92, a: -0.06, sz: 17, o: 0.55 },
+    ],
+  },
+  {
+    label: 'Guia de cuidados, reparos e manutenção',
+    desc: 'Artigos de lutheria, diagnóstico de ruídos, ajustes de alma, pestana e cavalete.',
+    href: '/clinica',
+    notes: [
+      { s: '𝄢', r: 0.36, a: -0.15, sz: 17, o: 0.5 },
+      { s: '♫', r: 0.80, a: 0.17, sz: 18, o: 0.55 },
+      { s: '♪', r: 0.89, a: -0.16, sz: 15, o: 0.6 },
+      { s: '♯', r: 0.48, a: 0.20, sz: 14, o: 0.45 },
+      { s: '♬', r: 0.91, a: 0.08, sz: 17, o: 0.5 },
+    ],
+  },
+  {
+    label: 'Ciência acústica e física do seu instrumento',
+    desc: 'Entenda os harmônicos, densidade linear, vibrações de cordas e projeção sonora.',
+    href: '/fisica-do-som',
+    notes: [
+      { s: '𝄞', r: 0.34, a: 0.16, sz: 18, o: 0.5 },
+      { s: '♩', r: 0.77, a: -0.17, sz: 16, o: 0.6 },
+      { s: '♬', r: 0.87, a: 0.15, sz: 17, o: 0.55 },
+      { s: '♭', r: 0.52, a: -0.19, sz: 15, o: 0.45 },
+      { s: '♪', r: 0.90, a: -0.05, sz: 15, o: 0.5 },
+    ],
+  },
+  {
+    label: 'Artigos e novidades do mundo da lutheria',
+    desc: 'Lançamentos de marcas, inovações em encordoamentos e notícias do meio musical.',
+    href: '/noticias',
+    notes: [
+      { s: '♫', r: 0.37, a: -0.17, sz: 18, o: 0.5 },
+      { s: '♪', r: 0.79, a: 0.18, sz: 15, o: 0.6 },
+      { s: '𝄢', r: 0.88, a: -0.14, sz: 16, o: 0.45 },
+      { s: '♩', r: 0.46, a: 0.21, sz: 16, o: 0.55 },
+      { s: '♯', r: 0.92, a: 0.06, sz: 14, o: 0.45 },
+    ],
+  },
+  {
+    label: 'Encontre os melhores professores de música',
+    desc: 'Diretório completo de instrutores de violino, viola e cello perto de você.',
+    href: '/professores',
+    notes: [
+      { s: '♬', r: 0.35, a: 0.16, sz: 17, o: 0.5 },
+      { s: '𝄞', r: 0.76, a: -0.19, sz: 17, o: 0.5 },
+      { s: '♩', r: 0.86, a: 0.17, sz: 16, o: 0.6 },
+      { s: '♭', r: 0.49, a: -0.20, sz: 15, o: 0.45 },
+      { s: '♫', r: 0.91, a: -0.07, sz: 18, o: 0.55 },
+    ],
+  },
+  {
+    label: 'Guia de lojas parceiras e instrumentos',
+    desc: 'Lojas confiáveis com descontos e catálogo verificado de acessórios musicais.',
+    href: '/lojas',
+    notes: [
+      { s: '♩', r: 0.38, a: -0.16, sz: 16, o: 0.6 },
+      { s: '♫', r: 0.78, a: 0.16, sz: 18, o: 0.55 },
+      { s: '♪', r: 0.87, a: -0.17, sz: 15, o: 0.5 },
+      { s: '𝄢', r: 0.51, a: 0.19, sz: 16, o: 0.4 },
+      { s: '♯', r: 0.90, a: 0.08, sz: 14, o: 0.45 },
+    ],
+  },
+  {
+    label: 'Luthiers profissionais verificados no Brasil',
+    desc: 'Ateliês renomados, orçamentos rápidos e contato direto via WhatsApp oficial.',
+    href: '/luthiers',
+    notes: [
+      { s: '𝄞', r: 0.36, a: 0.17, sz: 17, o: 0.5 },
+      { s: '♬', r: 0.81, a: -0.18, sz: 18, o: 0.55 },
+      { s: '♭', r: 0.89, a: 0.15, sz: 15, o: 0.45 },
+      { s: '♩', r: 0.47, a: -0.21, sz: 16, o: 0.6 },
+      { s: '♪', r: 0.92, a: -0.05, sz: 15, o: 0.5 },
+    ],
+  },
+  {
+    label: 'Fale conosco, parcerias e redes sociais',
+    desc: 'Atendimento direto com a equipe NKL para dúvidas, suporte e anúncios.',
+    href: '/contatos',
+    notes: [
+      { s: '♫', r: 0.35, a: -0.15, sz: 18, o: 0.5 },
+      { s: '♪', r: 0.77, a: 0.19, sz: 16, o: 0.6 },
+      { s: '𝄞', r: 0.88, a: -0.16, sz: 17, o: 0.5 },
+      { s: '♯', r: 0.50, a: 0.18, sz: 14, o: 0.45 },
+      { s: '♩', r: 0.91, a: 0.05, sz: 15, o: 0.55 },
+    ],
+  },
 ]
 
 function describeArc(cx: number, cy: number, r: number, startAngle: number, endAngle: number): string {
@@ -67,6 +179,34 @@ export function RadialMenu() {
                 className={isHovered ? 'fill-foreground/20 stroke-foreground' : 'fill-foreground/10 stroke-foreground'}
                 strokeWidth={5}
               />
+
+              {/* Símbolos musicais de preenchimento que se expandem no hover */}
+              {slice.notes.map((n, idx) => {
+                const noteRadius = 130 + (r - 130) * n.r * (isHovered ? 1.08 : 1)
+                const noteAngle = mid + n.a
+                const nx = cx + noteRadius * Math.cos(noteAngle)
+                const ny = cy + noteRadius * Math.sin(noteAngle)
+                return (
+                  <text
+                    key={idx}
+                    x={nx}
+                    y={ny}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={n.sz}
+                    fill="currentColor"
+                    className="select-none pointer-events-none transition-all duration-300 fill-foreground"
+                    style={{
+                      opacity: isHovered ? Math.min(n.o * 1.5, 0.9) : n.o * 0.4,
+                      transform: isHovered ? 'scale(1.2)' : 'scale(1)',
+                      transformOrigin: `${nx}px ${ny}px`,
+                    }}
+                  >
+                    {n.s}
+                  </text>
+                )
+              })}
+
               <foreignObject
                 x={fx - 115}
                 y={fy - 38}
@@ -77,11 +217,11 @@ export function RadialMenu() {
               >
                 <div className="w-full h-full flex items-center justify-center text-center px-1">
                   {isHovered ? (
-                    <span className="text-foreground font-semibold text-[clamp(8px,1.05vw,12px)] leading-snug">
+                    <span className="text-foreground font-semibold text-[clamp(9px,1.15vw,13px)] leading-snug">
                       {slice.desc}
                     </span>
                   ) : (
-                    <span className="text-foreground font-playfair font-bold text-[clamp(9px,1.2vw,14px)]">
+                    <span className="text-foreground font-playfair font-bold text-[clamp(10px,1.3vw,15px)]">
                       {slice.label}
                     </span>
                   )}
@@ -94,15 +234,15 @@ export function RadialMenu() {
         {/* Centro — esconde a união das fatias */}
         <circle cx={cx} cy={cy} r={130} className="fill-background stroke-foreground" strokeWidth={4} />
         <foreignObject
-          x={cx - 100}
-          y={cy - 55}
-          width={200}
-          height={110}
+          x={cx - 110}
+          y={cy - 65}
+          width={220}
+          height={130}
           style={{ overflow: 'hidden' }}
           className="pointer-events-none"
         >
-          <div className="w-full h-full flex items-center justify-center text-center px-2">
-            <span className="text-foreground font-playfair font-bold text-[clamp(11px,1.4vw,16px)] leading-tight">
+          <div className="w-full h-full flex flex-col items-center justify-center text-center px-2">
+            <span className="text-foreground font-playfair font-bold text-[clamp(13px,1.8vw,22px)] leading-tight tracking-tight uppercase">
               Tudo que o Portal NKL tem para você
             </span>
           </div>

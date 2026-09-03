@@ -6,7 +6,7 @@ import { luthierLeads } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
 import { createNotificationQuietly } from '@/actions/notifications';
 
-export type LeadActionType = 'whatsapp_click';
+export type LeadActionType = 'whatsapp_click' | 'whatsapp_business_click';
 
 /**
  * Registra um evento de lead/captação para um luthier. O userId é capturado

@@ -5,16 +5,87 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
+import { isUuid } from '@/lib/uuid';
+
+/**
+ * IDENTIDADE (LGPD / integridade do grafo): o `user_profiles` DEVE ser
+ * criado com `id = auth.users.id`. Antes, o insert omitia o id e o banco
+ * aplicava `defaultRandom()`, gerando um perfil órfão que quebrava
+ * favorites/compliance/portfolio/leads/pagamentos para recém-registrados.
+ */
+async function upsertUserProfile(params: {
+  userId: string;
+  email: string;
+  role: string;
+  fullName?: string | null;
+  papel?: string | null;
+  instrumento?: string | null;
+  anosExperiencia?: number | null;
+  newsletterOptIn?: boolean;
+  birthDate?: string | null;
+}): Promise<void> {
+  const {
+    userId,
+    email,
+    role,
+    fullName,
+    papel,
+    instrumento,
+    anosExperiencia,
+    newsletterOptIn,
+    birthDate,
+  } = params;
+
+  await db
+    .insert(userProfiles)
+    .values({
+      id: userId,
+      email,
+      role,
+      fullName: fullName ?? null,
+      papel: papel ?? null,
+      instrumento: instrumento ?? null,
+      anosExperiencia: anosExperiencia ?? 0,
+      newsletterOptIn: newsletterOptIn ?? false,
+      birthDate: birthDate ?? null,
+    })
+    .onConflictDoUpdate({
+      target: userProfiles.id,
+      set: {
+        email,
+        fullName: fullName ?? null,
+        papel: papel ?? null,
+        instrumento: instrumento ?? null,
+        anosExperiencia: anosExperiencia ?? 0,
+        newsletterOptIn: newsletterOptIn ?? false,
+        birthDate: birthDate ?? null,
+      },
+    });
+}
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     redirect('/login?error=Credenciais inválidas');
+  }
+
+  // Usuários legados podem não ter user_profiles (perfil nascia só no bootstrap
+  // luthier). Garantir a linha de identidade no login evita FKs quebradas.
+  if (data.user?.id) {
+    try {
+      await upsertUserProfile({
+        userId: data.user.id,
+        email: data.user.email ?? email,
+        role: 'user',
+      });
+    } catch (profileError) {
+      console.error('[login] Falha ao garantir perfil:', profileError);
+    }
   }
 
   revalidatePath('/', 'layout');
@@ -26,10 +97,22 @@ export async function signup(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error, data } = await supabase.auth.signUp({ email, password });
 
   if (error) {
     redirect('/login?error=Falha ao criar conta. Verifique os dados.');
+  }
+
+  if (data.user?.id) {
+    try {
+      await upsertUserProfile({
+        userId: data.user.id,
+        email: data.user.email ?? email,
+        role: 'user',
+      });
+    } catch (profileError) {
+      console.error('[signup] Falha ao gravar perfil:', profileError);
+    }
   }
 
   revalidatePath('/', 'layout');
@@ -58,29 +141,50 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
   const { error, data } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName, papel, instrumento, anos_experiencia: anosExperiencia } },
+    options: {
+      data: { full_name: fullName, papel, instrumento, anos_experiencia: anosExperiencia },
+    },
   });
 
   if (error) {
     return { error: error.message };
   }
 
-  // Grava os metadados de onboarding na tabela userProfiles
-  if (data.user) {
-    try {
-      await db.insert(userProfiles).values({
-        email,
-        role: papel || 'user',
-        fullName,
-        papel,
-        instrumento,
-        anosExperiencia,
-        newsletterOptIn,
-        birthDate: birthDate || null,
-      });
-    } catch (profileError) {
-      console.error('[registerWithProfile] Falha ao gravar perfil:', profileError);
-      // Não bloqueia o fluxo — a conta já foi criada com sucesso
+  const authUser = data.user;
+  if (!authUser?.id || !isUuid(authUser.id)) {
+    return { error: 'Falha ao identificar a conta criada. Tente novamente.' };
+  }
+  const userId = authUser.id;
+
+  // Grava os metadados de onboarding na tabela userProfiles VINCULADOS ao
+  // uid do Supabase (nunca mais a um id aleatório do `defaultRandom`).
+  try {
+    await upsertUserProfile({
+      userId,
+      email: authUser.email ?? email,
+      role: papel === 'Luthier' ? 'luthier' : 'user',
+      fullName,
+      papel,
+      instrumento,
+      anosExperiencia,
+      newsletterOptIn,
+      birthDate: birthDate || null,
+    });
+  } catch (profileError) {
+    console.error('[registerWithProfile] Falha ao gravar perfil:', profileError);
+    // Não bloqueia o fluxo — a conta já foi criada com sucesso.
+  }
+
+  // AUTO-LOGIN: quando a confirmação de e-mail está desativada, o `signUp`
+  // já retorna `session`. Em configs híbridas, tenta estabelecer a sessão
+  // com as mesmas credenciais para não forçar um novo login manual.
+  if (!data.session) {
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      console.warn(
+        '[registerWithProfile] Auto-login indisponível (confirme o e-mail e entre manualmente):',
+        loginError.message
+      );
     }
   }
 
