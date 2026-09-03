@@ -24,9 +24,22 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
   const [isPending, startTransition] = useTransition()
   const [pw, setPw] = useState('')
 
+  const isRedirect = (err: unknown): boolean => {
+    // redirect() do Next lança erro com digest "NEXT_REDIRECT" — deve
+    // propagar para o Next concluir a navegação, nunca ser engolido aqui.
+    const digest =
+      err instanceof Error
+        ? (err as Error & { digest?: unknown }).digest
+        : undefined
+    return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT')
+  }
+
   const handleLogin = async (formData: FormData) => {
     startTransition(async () => {
-      try { await login(formData) } catch {
+      try {
+        await login(formData)
+      } catch (err) {
+        if (isRedirect(err)) throw err
         setError('Erro ao fazer login. Tente novamente.')
       }
     })
@@ -37,7 +50,10 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
       try {
         const result = await registerWithProfile(formData)
         if (result.error) setError(result.error)
-      } catch { setError('Erro ao criar conta.') }
+      } catch (err) {
+        if (isRedirect(err)) throw err
+        setError('Erro ao criar conta.')
+      }
     })
   }
 

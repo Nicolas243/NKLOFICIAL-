@@ -29,6 +29,16 @@ export default function RegistroForm() {
         const result = await registerWithProfile(formData)
         if (result.error) setError(result.error)
       } catch (err) {
+        // redirect() do Next lança um erro especial (digest NEXT_REDIRECT).
+        // Ele DEVE ser re-lançado para o Next concluir a navegação — engoli-lo
+        // aqui quebrava o auto-login pós-registro com "NEXT_REDIRECT" na tela.
+        const digest =
+          err && typeof err === 'object' && 'digest' in err
+            ? String((err as { digest?: unknown }).digest)
+            : ''
+        if (digest.startsWith('NEXT_REDIRECT')) {
+          throw err
+        }
         setError(err instanceof Error ? err.message : 'Erro ao criar conta.')
       }
     })
