@@ -11,6 +11,18 @@ export default function RegistroForm() {
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
+  // Estados persistentes dos passos anteriores: o FormData do último submit
+  // precisa conter email/senha/perfil mesmo depois que o input foi desmontado.
+  // (Bug corrigido: antes, os input dos passos 0/1 sumiam do DOM e o registro
+  // falhava com "E-mail obrigatório e senha deve ter no mínimo 8 caracteres".)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [papel, setPapel] = useState('')
+  const [instrumento, setInstrumento] = useState('')
+  const [anosExperiencia, setAnosExperiencia] = useState('')
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false)
+
   const action = (formData: FormData) => {
     startTransition(async () => {
       try {
@@ -24,6 +36,15 @@ export default function RegistroForm() {
 
   return (
     <form action={action} className="flex flex-col gap-4">
+      {/* Inputs ocultos SEMPRE presentes no form para o submit final */}
+      <input type="hidden" name="email" value={email} />
+      <input type="hidden" name="password" value={password} />
+      <input type="hidden" name="fullName" value={fullName} />
+      <input type="hidden" name="papel" value={papel} />
+      <input type="hidden" name="instrumento" value={instrumento} />
+      <input type="hidden" name="anosExperiencia" value={anosExperiencia} />
+      {newsletterOptIn && <input type="hidden" name="newsletterOptIn" value="on" />}
+
       {/* Step indicator */}
       <div className="flex items-center justify-center gap-2 mb-2">
         {STEPS.map((label, i) => {
@@ -45,9 +66,9 @@ export default function RegistroForm() {
       {/* STEP 0: Email + Senha + OAuth */}
       {step === 0 && (
         <>
-          <input type="email" name="email" placeholder="E-mail" required autoComplete="email" className={INPUT} />
-          <input type="password" name="password" placeholder="Senha (min. 8 caracteres)" required minLength={8} autoComplete="new-password" className={INPUT} />
-          <input type="text" name="fullName" placeholder="Nome completo" required className={INPUT} />
+          <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" required autoComplete="email" className={INPUT} />
+          <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Senha (min. 8 caracteres)" required minLength={8} autoComplete="new-password" className={INPUT} />
+          <input type="text" name="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Nome completo" required className={INPUT} />
           <div className="flex items-center gap-3">
             <span className="flex-1 h-px bg-white/10" />
             <span className="text-xs opacity-40 uppercase tracking-wider">ou continue com</span>
@@ -74,7 +95,7 @@ export default function RegistroForm() {
         <>
           <label className="flex flex-col gap-1.5">
             <span className="text-sm opacity-60">Qual o seu papel?</span>
-            <select name="papel" required className={INPUT}>
+            <select name="papel" value={papel} onChange={(e) => setPapel(e.target.value)} required className={INPUT}>
               <option value="">Selecione...</option>
               <option value="Musico">Musico</option>
               <option value="Lojista">Lojista</option>
@@ -83,8 +104,8 @@ export default function RegistroForm() {
               <option value="Aluno">Aluno</option>
             </select>
           </label>
-          <input type="text" name="instrumento" placeholder="Instrumento principal (ex: Violino)" required className={INPUT} />
-          <input type="number" name="anosExperiencia" placeholder="Anos de experiencia (ex: 5)" min={0} max={80} required className={INPUT} />
+          <input type="text" name="instrumento" value={instrumento} onChange={(e) => setInstrumento(e.target.value)} placeholder="Instrumento principal (ex: Violino)" required className={INPUT} />
+          <input type="number" name="anosExperiencia" value={anosExperiencia} onChange={(e) => setAnosExperiencia(e.target.value)} placeholder="Anos de experiencia (ex: 5)" min={0} max={80} required className={INPUT} />
           <div className="flex gap-3">
             <button type="button" onClick={() => setStep(0)} className="flex-1 py-3.5 border border-white/10 text-text rounded-xl font-bold text-base hover:border-neon">
               ← Voltar
@@ -100,7 +121,7 @@ export default function RegistroForm() {
       {step === 2 && (
         <>
           <label className="flex items-center gap-3 p-4 bg-black/20 rounded-xl border border-white/10 cursor-pointer">
-            <input type="checkbox" name="newsletterOptIn" className="accent-neon w-5 h-5" />
+            <input type="checkbox" name="newsletterOptIn" checked={newsletterOptIn} onChange={(e) => setNewsletterOptIn(e.target.checked)} className="accent-neon w-5 h-5" />
             <span className="text-sm opacity-80">Desejo receber novidades e noticias por e-mail</span>
           </label>
           <div className="flex gap-3">
