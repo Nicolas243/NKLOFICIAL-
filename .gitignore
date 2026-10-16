@@ -27,6 +27,10 @@
 # misc
 .DS_Store
 *.pem
+equipe_nkl.py
+nul
+/*.txt
+/*.lnk
 
 # debug
 npm-debug.log*
