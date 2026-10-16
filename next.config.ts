@@ -45,7 +45,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/comparador",
+        destination: "/comparar",
+        statusCode: 301,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
-

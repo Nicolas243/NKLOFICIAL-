@@ -175,17 +175,13 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
     // Não bloqueia o fluxo — a conta já foi criada com sucesso.
   }
 
-  // AUTO-LOGIN: quando a confirmação de e-mail está desativada, o `signUp`
-  // já retorna `session`. Em configs híbridas, tenta estabelecer a sessão
-  // com as mesmas credenciais para não forçar um novo login manual.
+  // Quando a confirmação de e-mail está ativa, o Supabase não retorna sessão.
+  // Não tentamos autenticar novamente antes da confirmação.
   if (!data.session) {
-    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-    if (loginError) {
-      console.warn(
-        '[registerWithProfile] Auto-login indisponível (confirme o e-mail e entre manualmente):',
-        loginError.message
-      );
-    }
+    revalidatePath('/', 'layout');
+    return {
+      error: 'Conta criada. Confirme seu e-mail antes de entrar.',
+    };
   }
 
   revalidatePath('/', 'layout');

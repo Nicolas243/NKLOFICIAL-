@@ -9,7 +9,7 @@
 - Perfil, avaliações, notificações e privacidade: [src/app/perfil/page.tsx](./src/app/perfil/page.tsx), [src/app/perfil/avaliacoes/page.tsx](./src/app/perfil/avaliacoes/page.tsx), [src/app/perfil/notificacoes/page.tsx](./src/app/perfil/notificacoes/page.tsx) e [src/app/perfil/privacidade/page.tsx](./src/app/perfil/privacidade/page.tsx) estão ligados às respectivas Server Actions.
 - Identidade: `registerWithProfile` usa estritamente o UID retornado por `supabase.auth.signUp` em `src/actions/auth.ts:155-165` e persiste o perfil pelo mesmo identificador.
 - LGPD: `deleteUserAccount` executa as remoções dependentes em `db.transaction` em `src/actions/compliance.ts:82-123`; a anonimização é apenas fallback explícito.
-- Webhook: a rota [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts) calcula HMAC SHA-256 em `src/app/api/webhooks/gateway/route.ts:55-61` e compara com `timingSafeEqual` em `src/app/api/webhooks/gateway/route.ts:37-42`.
+- Webhook: a rota [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts) calcula HMAC SHA-256 em `src/app/api/webhooks/gateway/route.ts:64-68` e compara com `timingSafeEqual` em `src/app/api/webhooks/gateway/route.ts:37-43`.
 - Validação final: `npx tsc --noEmit`, `npx eslint src/ --max-warnings=0` e `npm run build` concluíram sem erros.
 
 ## Correções e Conexões Executadas
@@ -20,16 +20,15 @@
 
 ## Gargalos e Lacunas de Integração
 
-- [src/app/comparador/page.tsx](./src/app/comparador/page.tsx:1) e [src/app/comparar/page.tsx](./src/app/comparar/page.tsx:68) representam duas implementações de comparação. A navegação principal aponta para `/comparar` em [src/components/header.tsx](./src/components/header.tsx:16) e [src/components/radial-menu.tsx](./src/components/radial-menu.tsx:35); a rota `/comparador` continua acessível, mas sua política de compatibilidade não está definida.
+- A rota legada `/comparador` agora redireciona permanentemente para `/comparar` via [next.config.ts](./next.config.ts:48); a navegação principal já aponta para `/comparar` em [src/components/header.tsx](./src/components/header.tsx:16) e [src/components/radial-menu.tsx](./src/components/radial-menu.tsx:35).
 - [src/app/lojas/page.tsx](./src/app/lojas/page.tsx:43) e [src/app/professores/page.tsx](./src/app/professores/page.tsx:105) exibem estado vazio porque dependem de registros no diretório; seeds operacionais não foram inventados.
 - [src/app/importacao/page.tsx](./src/app/importacao/page.tsx:1) e [src/app/clinica/page.tsx](./src/app/clinica/page.tsx:1) são superfícies predominantemente informativas, sem fluxo de persistência identificado.
-- A variável `WEBHOOK_SECRET` está documentada em [.env.example](./.env.example:8), mas o fallback `GATEWAY_WEBHOOK_SECRET` também é aceito em [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts:9); a duplicidade deve ser reduzida quando o gateway canônico for escolhido.
-- O webhook aceita payload sem assinatura apenas fora de produção em [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts:70-76); ambientes de homologação precisam definir se devem ter a mesma exigência de assinatura.
+- O webhook agora exige `WEBHOOK_SECRET` e assinatura HMAC em todos os ambientes em [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts:51-70); configuração ausente ou assinatura ausente retorna HTTP 401.
 
 ## Decisões Arquiteturais Pendentes (Ação Humana Exigida)
 
-- Escolher `/comparar` ou `/comparador` como rota canônica e definir redirecionamento ou remoção da outra implementação.
+- A rota canônica é `/comparar`; `/comparador` deve ser mantida apenas como compatibilidade histórica enquanto métricas e links externos forem monitorados.
 - Confirmar quais tabelas de diretório devem receber dados iniciais e por qual processo autorizado de seed, especialmente lojas e professores.
-- Definir o gateway de pagamentos oficial e manter apenas um nome de segredo (`WEBHOOK_SECRET` ou `GATEWAY_WEBHOOK_SECRET`), além do contrato definitivo do payload.
+- Definir o gateway de pagamentos oficial e o contrato definitivo do payload; `startPremiumCheckout` ainda é explicitamente simulado em [src/actions/subscriptions.ts](./src/actions/subscriptions.ts:14).
 - Definir o provedor de Storage e a política de retenção para imagens de notícias; o upload atual depende da configuração do bucket usada por `src/actions/news.ts:39-52`.
-- Confirmar a política de confirmação de e-mail e auto-login do cadastro em `src/actions/auth.ts:170-183`.
+- A política atual exige confirmação quando `signUp` não retorna sessão; o estado explícito está em [src/actions/auth.ts](./src/actions/auth.ts:178-184).

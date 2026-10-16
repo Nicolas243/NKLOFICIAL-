@@ -4,10 +4,9 @@ import crypto from 'crypto';
 import { db } from '@/db';
 import { subscriptions, userProfiles, businessDirectory } from '@/db/schema';
 
-// Chave secreta para assinar/validar webhooks (definida via env em produção).
 // Assinatura: HMAC-SHA256 hexadecimal do body bruto, enviada no header
-// `x-webhook-signature`. Ausente apenas em dev para permitir testes locais.
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET ?? process.env.GATEWAY_WEBHOOK_SECRET;
+// `x-webhook-signature`.
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
 const HMAC_SHA256_HEX = /^[0-9a-f]{64}$/i;
 
@@ -49,33 +48,30 @@ export async function POST(request: NextRequest) {
     // 1) Lê o corpo bruto UMA única vez — o HMAC precisa do payload exato
     //    transmitido e o parse de JSON subsequente reutiliza essa string.
     const rawBody = await request.text();
-    if (!rawBody) {
-      return NextResponse.json({ error: 'empty payload' }, { status: 400 });
-    }
 
     // 2) Validação de autenticidade (anti-spoofing / replay): HMAC-SHA256 do
-    //    body bruto contra o secret. Em ambiente prod, o secret é obrigatório.
-    if (WEBHOOK_SECRET) {
-      const signature = request.headers.get('x-webhook-signature');
-      if (!signature) {
-        return NextResponse.json({ error: 'missing signature' }, { status: 401 });
-      }
+    //    body bruto contra o secret em qualquer ambiente.
+    if (!WEBHOOK_SECRET) {
+      console.error('[webhook/gateway] WEBHOOK_SECRET ausente.');
+      return NextResponse.json({ error: 'missing webhook secret' }, { status: 401 });
+    }
 
-      const expectedHmac = crypto
-        .createHmac('sha256', WEBHOOK_SECRET)
-        .update(rawBody, 'utf8')
-        .digest();
+    const signature = request.headers.get('x-webhook-signature');
+    if (!signature) {
+      return NextResponse.json({ error: 'missing signature' }, { status: 401 });
+    }
 
-      if (!isValidSignature(signature, expectedHmac)) {
-        return NextResponse.json({ error: 'forbidden' }, { status: 401 });
-      }
-    } else if (process.env.NODE_ENV === 'production') {
-      console.error('[webhook/gateway] WEBHOOK_SECRET ausente em produção.');
-      return NextResponse.json({ error: 'server misconfigured' }, { status: 500 });
-    } else {
-      console.warn(
-        '[webhook/gateway] WEBHOOK_SECRET ausente — payload aceito sem assinatura (apenas dev).'
-      );
+    const expectedHmac = crypto
+      .createHmac('sha256', WEBHOOK_SECRET)
+      .update(rawBody, 'utf8')
+      .digest();
+
+    if (!isValidSignature(signature, expectedHmac)) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 401 });
+    }
+
+    if (!rawBody) {
+      return NextResponse.json({ error: 'empty payload' }, { status: 400 });
     }
 
     // 3) Parsing do payload a partir do body já lido.
