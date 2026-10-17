@@ -31,6 +31,9 @@ equipe_nkl.py
 nul
 /*.txt
 /*.lnk
+public/NKL/Violino_chave_logo.png
+public/NKL/arco_chave.png
+src/components/Attached Element Context*.txt
 
 # debug
 npm-debug.log*

@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useSessionUser } from '@/components/use-session-user'
 import { useSyncExternalStore } from 'react'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const groups = [

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useSyncExternalStore } from 'react'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/theme-provider'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
