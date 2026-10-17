@@ -5,7 +5,8 @@ import { stringsCatalog } from '@/db/schema';
 import { and, asc, desc, eq, gte, ilike, lte, count, type SQL } from 'drizzle-orm';
 import { isUuid } from '@/lib/uuid';
 
-export type CatalogSort = 'name' | 'score' | 'price_asc' | 'price_desc';
+export type CatalogSort = 'name' | 'score' | 'price';
+export type CatalogSortDirection = 'asc' | 'desc';
 
 export interface CatalogFilters {
   query?: string;
@@ -14,6 +15,7 @@ export interface CatalogFilters {
   minPrice?: number;
   maxPrice?: number;
   sort?: CatalogSort;
+  direction?: CatalogSortDirection;
   page?: number;
   limit?: number;
 }
@@ -66,14 +68,14 @@ export async function getStringsCatalog(
     // Ordenações do legado catalogos.html (Tarefa 6): nome, nota da
     // comunidade e preço (asc/desc). Notas nulas vão para o fim.
     const sort = filters.sort ?? 'name';
+    const direction = filters.direction ?? 'asc';
+    const order = direction === 'desc' ? desc : asc;
     const orderBy =
       sort === 'score'
-        ? [desc(stringsCatalog.communityScore), asc(stringsCatalog.name)]
-        : sort === 'price_asc'
-          ? [asc(stringsCatalog.realPrice), asc(stringsCatalog.name)]
-          : sort === 'price_desc'
-            ? [desc(stringsCatalog.realPrice), asc(stringsCatalog.name)]
-            : [asc(stringsCatalog.name)];
+        ? [order(stringsCatalog.communityScore), asc(stringsCatalog.name)]
+        : sort === 'price'
+          ? [order(stringsCatalog.realPrice), asc(stringsCatalog.name)]
+          : [order(stringsCatalog.name)];
 
     const [rows, totalRow] = await Promise.all([
       db

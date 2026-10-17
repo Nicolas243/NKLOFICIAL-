@@ -7,10 +7,22 @@ const PLATFORM_LABELS: Record<string, string> = {
   shopee: 'Shopee',
   ebay: 'eBay',
   amazon: 'Amazon',
+  amazon_com: 'Amazon (EUA)',
   ver_mais: 'Ver mais ofertas',
 };
 
-const PLATFORM_ORDER = ['mercado_livre', 'shopee', 'ebay', 'amazon', 'ver_mais'];
+const PLATFORM_ORDER = ['mercado_livre', 'shopee', 'ebay', 'amazon', 'amazon_com', 'ver_mais'];
+
+function buildSearchLinks(productName: string): Record<string, string> {
+  const searchTerm = encodeURIComponent(`corda violino ${productName}`);
+  const internationalTerm = encodeURIComponent(`${productName} violin strings`);
+  return {
+    mercado_livre: `https://lista.mercadolivre.com.br/${searchTerm}`,
+    shopee: `https://shopee.com.br/search?keyword=${searchTerm}`,
+    ebay: `https://www.ebay.com/sch/i.html?_nkw=${internationalTerm}`,
+    amazon: `https://www.amazon.com.br/s?k=${internationalTerm}`,
+  };
+}
 
 /**
  * Tarefa 6 — CTA "Comprar" que revela as opções de marketplace da corda
@@ -19,20 +31,28 @@ const PLATFORM_ORDER = ['mercado_livre', 'shopee', 'ebay', 'amazon', 'ver_mais']
  */
 export function AffiliateLinks({
   links,
+  productName,
   variant = 'full',
 }: {
   links: Record<string, string> | null;
+  productName?: string;
   /** 'full' = bloco vertical (detalhe) | 'compact' = inline no card do catálogo */
   variant?: 'full' | 'compact';
 }) {
   const [open, setOpen] = useState(false);
 
-  if (!links) return null;
+  const availableLinks = links && Object.keys(links).length > 0
+    ? links
+    : productName
+      ? buildSearchLinks(productName)
+      : null;
 
-  const entries = PLATFORM_ORDER.filter((key) => Boolean(links[key]?.trim())).map((key) => ({
+  if (!availableLinks) return null;
+
+  const entries = PLATFORM_ORDER.filter((key) => Boolean(availableLinks[key]?.trim())).map((key) => ({
     key,
     label: PLATFORM_LABELS[key] ?? key,
-    url: links[key].trim(),
+    url: availableLinks[key].trim(),
   }));
 
   if (entries.length === 0) return null;
@@ -71,7 +91,7 @@ export function AffiliateLinks({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex justify-center py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+        className="inline-flex justify-center py-3 border border-neon text-neon rounded-md font-bold transition-all hover:bg-neon hover:text-black"
       >
         {open ? 'Fechar opções' : 'Comprar'}
       </button>

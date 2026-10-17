@@ -168,7 +168,7 @@ export default function CompararPage() {
             >
               Avaliar corda
             </Link>
-            <AffiliateLinks links={stringA?.affiliateLinks ?? null} variant="compact" />
+            <AffiliateLinks links={stringA?.affiliateLinks ?? null} productName={stringA?.name} variant="compact" />
           </div>
         </div>
 
@@ -197,7 +197,7 @@ export default function CompararPage() {
             >
               Avaliar corda
             </Link>
-            <AffiliateLinks links={stringB?.affiliateLinks ?? null} variant="compact" />
+            <AffiliateLinks links={stringB?.affiliateLinks ?? null} productName={stringB?.name} variant="compact" />
           </div>
         </div>
       </div>

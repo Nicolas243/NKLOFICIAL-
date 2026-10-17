@@ -222,6 +222,8 @@ export type FavoriteStringItem = {
   id: string;
   name: string;
   qualityLevel: string | null;
+  priceMin: string | null;
+  priceMax: string | null;
   realPrice: string | null;
   communityScore: string | null;
   savedAt: Date;
@@ -235,6 +237,8 @@ export async function getFavoriteStrings(userId: string): Promise<FavoriteString
       id: stringsCatalog.id,
       name: stringsCatalog.name,
       qualityLevel: stringsCatalog.qualityLevel,
+      priceMin: stringsCatalog.priceMin,
+      priceMax: stringsCatalog.priceMax,
       realPrice: stringsCatalog.realPrice,
       communityScore: stringsCatalog.communityScore,
       savedAt: favoriteStrings.createdAt,
@@ -248,6 +252,8 @@ export async function getFavoriteStrings(userId: string): Promise<FavoriteString
     id: row.id ?? '',
     name: row.name ?? 'Corda indisponível',
     qualityLevel: row.qualityLevel,
+    priceMin: row.priceMin,
+    priceMax: row.priceMax,
     realPrice: row.realPrice,
     communityScore: row.communityScore,
     savedAt: row.savedAt,

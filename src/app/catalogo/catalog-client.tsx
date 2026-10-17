@@ -1,8 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { getStringsCatalog, type CatalogFilters, type CatalogSort } from '@/actions/strings';
+import {
+  getStringsCatalog,
+  type CatalogFilters,
+  type CatalogSort,
+  type CatalogSortDirection,
+} from '@/actions/strings';
 import { AffiliateLinks } from '@/components/affiliate-links';
 
 type StringItem = {
@@ -10,6 +16,8 @@ type StringItem = {
   name: string;
   coreMaterial: string | null;
   qualityLevel: string | null;
+  priceMin: string | null;
+  priceMax: string | null;
   realPrice: string | null;
   communityScore: string | null;
   responseSpeed: string | null;
@@ -17,6 +25,19 @@ type StringItem = {
   soundColor: string | null;
   affiliateLinks: Record<string, string> | null;
 };
+
+function formatAveragePrice(item: Pick<StringItem, 'realPrice' | 'priceMin' | 'priceMax'>): string {
+  if (item.realPrice) return `R$ ${item.realPrice}`;
+
+  const minimum = item.priceMin ? Number(item.priceMin) : null;
+  const maximum = item.priceMax ? Number(item.priceMax) : null;
+  if (minimum !== null && maximum !== null && Number.isFinite(minimum) && Number.isFinite(maximum)) {
+    return `R$ ${((minimum + maximum) / 2).toFixed(2)}`;
+  }
+  if (minimum !== null && Number.isFinite(minimum)) return `R$ ${minimum.toFixed(2)}`;
+  if (maximum !== null && Number.isFinite(maximum)) return `R$ ${maximum.toFixed(2)}`;
+  return 'Consulte as ofertas';
+}
 
 function parseNumberInput(value: string): number | undefined {
   if (value.trim() === '') return undefined;
@@ -37,6 +58,7 @@ export function CatalogClient({
   const [coreMaterial, setCoreMaterial] = useState('');
   const [qualityLevel, setQualityLevel] = useState('');
   const [sort, setSort] = useState<CatalogSort>('name');
+  const [direction, setDirection] = useState<CatalogSortDirection>('asc');
   const [perPage, setPerPage] = useState(12);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -45,6 +67,7 @@ export function CatalogClient({
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [isPending, startTransition] = useTransition();
   const isFirstRun = useRef(true);
+  const router = useRouter();
 
   // Opções do dropdown extraídas do catálogo completo (não encolhem ao filtrar).
   const materialOptions = Array.from(
@@ -71,6 +94,7 @@ export function CatalogClient({
       coreMaterial: coreMaterial !== '' ? coreMaterial : undefined,
       qualityLevel: qualityLevel !== '' ? qualityLevel : undefined,
       sort,
+      direction,
       minPrice: parseNumberInput(minPrice),
       maxPrice: parseNumberInput(maxPrice),
       page,
@@ -105,7 +129,7 @@ export function CatalogClient({
 
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, coreMaterial, qualityLevel, sort, perPage, minPrice, maxPrice]);
+  }, [query, coreMaterial, qualityLevel, sort, direction, perPage, minPrice, maxPrice]);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
@@ -119,6 +143,8 @@ export function CatalogClient({
     setQualityLevel('');
     setMinPrice('');
     setMaxPrice('');
+    setSort('name');
+    setDirection('asc');
     setCurrentPage(1);
   };
 
@@ -127,13 +153,15 @@ export function CatalogClient({
     coreMaterial !== '' ||
     qualityLevel !== '' ||
     minPrice !== '' ||
-    maxPrice !== '';
+    maxPrice !== '' ||
+    sort !== 'name' ||
+    direction !== 'asc';
 
   return (
     <div className="flex flex-col md:flex-row gap-6">
       <aside className="w-full md:w-80 flex-shrink-0 p-6 bg-surface border border-border rounded-lg h-fit">
         <div className="flex items-center justify-between mb-4 border-b border-border pb-2">
-          <h2 className="font-playfair text-xl">Filtros</h2>
+          <h2 className="font-playfair text-xl font-bold">Filtros</h2>
           {hasActiveFilters && (
             <button
               type="button"
@@ -195,8 +223,19 @@ export function CatalogClient({
             >
               <option value="name">Nome (A–Z)</option>
               <option value="score">Melhor nota</option>
-              <option value="price_asc">Menor preço</option>
-              <option value="price_desc">Maior preço</option>
+              <option value="price">Preço</option>
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-medium opacity-80">Ordem</span>
+            <select
+              value={direction}
+              onChange={(event) => setDirection(event.target.value as CatalogSortDirection)}
+              className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+            >
+              <option value="asc">Crescente (A–Z / menor para maior)</option>
+              <option value="desc">Decrescente (Z–A / maior para menor)</option>
             </select>
           </label>
 
@@ -227,14 +266,7 @@ export function CatalogClient({
             </label>
           </div>
 
-          {isPending && <p className="text-xs text-neon animate-pulse">Buscando...</p>}
-        </div>
-      </aside>
-
-      <section className="flex-1 flex flex-col gap-6">
-        {/* Tarefa 6 — seletor de quantidade de itens por página */}
-        <div className="flex items-center justify-end gap-3">
-          <label className="flex items-center gap-2 text-sm opacity-80">
+          <label className="flex items-center justify-between gap-2 text-sm opacity-80 border-t border-border pt-4">
             Itens por página
             <select
               value={perPage}
@@ -246,13 +278,29 @@ export function CatalogClient({
               <option value={48}>48</option>
             </select>
           </label>
-        </div>
 
+          {isPending && <p className="text-xs text-neon animate-pulse">Buscando...</p>}
+        </div>
+      </aside>
+
+      <section className="flex-1 flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {items.map((item) => (
             <article
               key={item.id}
-              className="p-6 bg-surface border border-border rounded-lg hover:border-neon transition-colors flex flex-col gap-4"
+              role="link"
+              tabIndex={0}
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest('a, button')) return;
+                router.push(`/catalogo/${item.id}`);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  router.push(`/catalogo/${item.id}`);
+                }
+              }}
+              className="p-6 bg-surface border border-border rounded-lg hover:border-neon transition-colors flex flex-col gap-4 cursor-pointer"
             >
               <h3 className="font-playfair font-bold text-lg mb-2">
                 <Link href={`/catalogo/${item.id}`} className="hover:text-neon transition-colors">
@@ -265,9 +313,9 @@ export function CatalogClient({
               </div>
               <div className="flex items-center justify-between mt-auto gap-3">
                 <div className="text-neon font-bold">
-                  {item.realPrice ? `R$ ${item.realPrice}` : 'Preço Indisponível'}
+                  {formatAveragePrice(item)}
                 </div>
-                <AffiliateLinks links={item.affiliateLinks} variant="compact" />
+                <AffiliateLinks links={item.affiliateLinks} productName={item.name} variant="compact" />
               </div>
             </article>
           ))}

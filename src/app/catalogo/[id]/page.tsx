@@ -10,8 +10,25 @@ import { createClient } from '@/lib/supabase/server';
 type Params = Promise<{ id: string }>;
 
 function formatPrice(value: string | null): string {
-  if (!value) return '—';
+  if (!value) return 'Consulte as ofertas';
   return `R$ ${value}`;
+}
+
+function formatAveragePrice(
+  realPrice: string | null,
+  priceMin: string | null,
+  priceMax: string | null
+): string {
+  if (realPrice) return formatPrice(realPrice);
+
+  const minimum = priceMin ? Number(priceMin) : null;
+  const maximum = priceMax ? Number(priceMax) : null;
+  if (minimum !== null && maximum !== null && Number.isFinite(minimum) && Number.isFinite(maximum)) {
+    return formatPrice(((minimum + maximum) / 2).toFixed(2));
+  }
+  if (minimum !== null && Number.isFinite(minimum)) return formatPrice(minimum.toFixed(2));
+  if (maximum !== null && Number.isFinite(maximum)) return formatPrice(maximum.toFixed(2));
+  return 'Consulte as ofertas';
 }
 
 export default async function StringDetailsPage(props: { params: Params }) {
@@ -100,7 +117,7 @@ export default async function StringDetailsPage(props: { params: Params }) {
               Preço Real
             </div>
             <div className="font-playfair text-3xl font-bold">
-              {formatPrice(stringData.realPrice)}
+              {formatAveragePrice(stringData.realPrice, stringData.priceMin, stringData.priceMax)}
             </div>
             <div className="text-sm opacity-70 mt-2">
               Faixa de mercado: {formatPrice(stringData.priceMin)} – {formatPrice(stringData.priceMax)}
@@ -116,7 +133,7 @@ export default async function StringDetailsPage(props: { params: Params }) {
           )}
 
           {/* Tarefa 6 — CTA Comprar com marketplaces do legado */}
-          <AffiliateLinks links={stringData.affiliateLinks} variant="full" />
+          <AffiliateLinks links={stringData.affiliateLinks} productName={stringData.name} variant="full" />
 
           <Link
             href="/comparar"

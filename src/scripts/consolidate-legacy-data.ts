@@ -41,6 +41,7 @@ interface ConsolidatedRow {
   coreMaterial: string
   priceMin: string
   priceMax: string
+  realPrice: string
   responseSpeed: string | null
   environment: string | null
   qualityLevel: string
@@ -61,6 +62,12 @@ function slugify(input: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+function averagePrice(minimum: number | null | undefined, maximum: number | null | undefined): string {
+  const values = [minimum, maximum].filter((value): value is number => typeof value === 'number' && Number.isFinite(value) && value > 0)
+  if (values.length === 0) return ''
+  return (values.reduce((total, value) => total + value, 0) / values.length).toFixed(2)
 }
 
 function parseBankObjects(raw: string): LegacyString[] {
@@ -133,6 +140,17 @@ function readTxtSlugs(name: string): { slug: string | null; url: string }[] {
 }
 
 const PLATFORM_KEYS = ['amazon', 'amazon_com', 'shopee', 'ebay', 'mercado_livre', 'ver_mais'] as const
+
+function buildMarketplaceSearchLinks(productName: string): Record<string, string> {
+  const searchTerm = encodeURIComponent(`corda violino ${productName}`)
+  const internationalTerm = encodeURIComponent(`${productName} violin strings`)
+  return {
+    mercado_livre: `https://lista.mercadolivre.com.br/${searchTerm}`,
+    shopee: `https://shopee.com.br/search?keyword=${searchTerm}`,
+    ebay: `https://www.ebay.com/sch/i.html?_nkw=${internationalTerm}`,
+    amazon: `https://www.amazon.com.br/s?k=${internationalTerm}`,
+  }
+}
 
 async function main() {
   if (!process.env.DATABASE_URL) {
@@ -229,6 +247,9 @@ async function main() {
         affiliateLinks[platform] = txtBucket[platform]
       }
     }
+    if (Object.keys(affiliateLinks).length === 0) {
+      Object.assign(affiliateLinks, buildMarketplaceSearchLinks(entry.nome))
+    }
     if (Object.keys(affiliateLinks).length === 0) missingLinks.push(entry.nome)
 
     rows.push({
@@ -238,6 +259,7 @@ async function main() {
       coreMaterial: entry.nucleo || 'Não informado',
       priceMin: String(entry.preco_min ?? ''),
       priceMax: String(entry.preco_max ?? ''),
+      realPrice: averagePrice(entry.preco_min, entry.preco_max),
       responseSpeed: entry.resposta || null,
       environment: entry.ambiente || null,
       qualityLevel: entry.qualidade || 'N/A',
@@ -283,6 +305,7 @@ async function main() {
             coreMaterial: sql`excluded.core_material`,
             priceMin: sql`excluded.price_min`,
             priceMax: sql`excluded.price_max`,
+            realPrice: sql`excluded.real_price`,
             responseSpeed: sql`excluded.response_speed`,
             environment: sql`excluded.environment`,
             qualityLevel: sql`excluded.quality_level`,

@@ -21,6 +21,15 @@ function buildWhatsAppUrl(whatsapp: string): string {
   return `https://wa.me/${digits}`;
 }
 
+function formatAveragePrice(realPrice: string | null, priceMin: string | null, priceMax: string | null): string {
+  if (realPrice) return `R$ ${realPrice}`;
+  const prices = [priceMin, priceMax]
+    .map((value) => (value ? Number(value) : NaN))
+    .filter((value) => Number.isFinite(value) && value > 0);
+  if (prices.length === 0) return 'Consulte as ofertas';
+  return `R$ ${(prices.reduce((total, value) => total + value, 0) / prices.length).toFixed(2)}`;
+}
+
 export default async function MeuSetupPage() {
   const supabase = await createClient();
   const {
@@ -66,7 +75,7 @@ export default async function MeuSetupPage() {
                 <span>Nota: {item.communityScore || 'N/A'}</span>
               </div>
               <div className="text-neon font-bold">
-                {item.realPrice ? `R$ ${item.realPrice}` : 'Preço Indisponível'}
+                {formatAveragePrice(item.realPrice, item.priceMin, item.priceMax)}
               </div>
               <div className="mt-auto">
                 <FavoriteButton
