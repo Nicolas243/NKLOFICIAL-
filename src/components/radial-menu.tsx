@@ -127,13 +127,19 @@ const SLICES: SliceData[] = [
   },
 ]
 
+const COORDINATE_PRECISION = 100
+
+function roundCoord(value: number): number {
+  return Math.round(value * COORDINATE_PRECISION) / COORDINATE_PRECISION
+}
+
 function describeArc(cx: number, cy: number, r: number, startAngle: number, endAngle: number): string {
-  const sx = cx + r * Math.cos(startAngle)
-  const sy = cy + r * Math.sin(startAngle)
-  const ex = cx + r * Math.cos(endAngle)
-  const ey = cy + r * Math.sin(endAngle)
+  const sx = roundCoord(cx + r * Math.cos(startAngle))
+  const sy = roundCoord(cy + r * Math.sin(startAngle))
+  const ex = roundCoord(cx + r * Math.cos(endAngle))
+  const ey = roundCoord(cy + r * Math.sin(endAngle))
   const large = endAngle - startAngle > Math.PI ? 1 : 0
-  return `M ${cx} ${cy} L ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} Z`
+  return `M ${roundCoord(cx)} ${roundCoord(cy)} L ${sx} ${sy} A ${roundCoord(r)} ${roundCoord(r)} 0 ${large} 1 ${ex} ${ey} Z`
 }
 
 export function RadialMenu() {
@@ -158,8 +164,8 @@ export function RadialMenu() {
           const mid = start + step / 2
           const d = describeArc(cx, cy, r, start, end)
           const isHovered = active === i
-          const fx = cx + midR * Math.cos(mid)
-          const fy = cy + midR * Math.sin(mid)
+          const fx = roundCoord(cx + midR * Math.cos(mid))
+          const fy = roundCoord(cy + midR * Math.sin(mid))
 
           return (
             <g
@@ -184,8 +190,8 @@ export function RadialMenu() {
               {slice.notes.map((n, idx) => {
                 const noteRadius = 130 + (r - 130) * n.r * (isHovered ? 1.08 : 1)
                 const noteAngle = mid + n.a
-                const nx = cx + noteRadius * Math.cos(noteAngle)
-                const ny = cy + noteRadius * Math.sin(noteAngle)
+                const nx = roundCoord(cx + noteRadius * Math.cos(noteAngle))
+                const ny = roundCoord(cy + noteRadius * Math.sin(noteAngle))
                 return (
                   <text
                     key={idx}
