@@ -128,9 +128,34 @@ const SLICES: SliceData[] = [
 ]
 
 const COORDINATE_PRECISION = 100
+const SYMBOL_COUNT = 18
 
 function roundCoord(value: number): number {
   return Math.round(value * COORDINATE_PRECISION) / COORDINATE_PRECISION
+}
+
+function seededValue(sliceIndex: number, noteIndex: number, salt: number): number {
+  const value = Math.sin((sliceIndex + 1) * 91.7 + (noteIndex + 1) * 37.3 + salt * 17.1) * 43758.5453
+  return value - Math.floor(value)
+}
+
+function wrapText(text: string, maxCharacters: number): string[] {
+  const words = text.split(' ')
+  const lines: string[] = []
+  let line = ''
+
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word
+    if (line && candidate.length > maxCharacters) {
+      lines.push(line)
+      line = word
+    } else {
+      line = candidate
+    }
+  }
+
+  if (line) lines.push(line)
+  return lines
 }
 
 function describeArc(cx: number, cy: number, r: number, startAngle: number, endAngle: number): string {
@@ -149,14 +174,13 @@ export function RadialMenu() {
   const cx = 400
   const cy = 400
   const r = 370
-  const midR = r * 0.63
   const step = (2 * Math.PI) / SLICES.length
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="relative flex items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
       <svg
         viewBox="0 0 800 800"
-        className="h-[calc(100vh-40px)] w-auto aspect-square max-w-full portrait:w-[calc(100vw-40px)] portrait:h-auto"
+        className="h-[calc(100vh-40px)] w-auto aspect-square max-w-full overflow-visible portrait:w-[calc(100vw-40px)] portrait:h-auto"
       >
         {SLICES.map((slice, i) => {
           const start = i * step - Math.PI / 2
@@ -164,8 +188,32 @@ export function RadialMenu() {
           const mid = start + step / 2
           const d = describeArc(cx, cy, r, start, end)
           const isHovered = active === i
-          const fx = roundCoord(cx + midR * Math.cos(mid))
-          const fy = roundCoord(cy + midR * Math.sin(mid))
+          const labelRadius = 252
+          const labelX = roundCoord(cx + labelRadius * Math.cos(mid))
+          const labelY = roundCoord(cy + labelRadius * Math.sin(mid))
+          const symbol = slice.notes[0]?.s ?? '♪'
+          const hoverDistance = 30
+          const hoverX = roundCoord(hoverDistance * Math.cos(mid))
+          const hoverY = roundCoord(hoverDistance * Math.sin(mid))
+          const symbolPositions: Array<{ x: number; y: number }> = []
+          let attempts = 0
+
+          while (symbolPositions.length < SYMBOL_COUNT && attempts < 500) {
+            const idx = attempts
+            const noteRadius = 148 + seededValue(i, idx, 1) * 205
+            const angleOffset = (seededValue(i, idx, 2) - 0.5) * step * 0.82
+            const noteAngle = mid + angleOffset
+            const nx = roundCoord(cx + noteRadius * Math.cos(noteAngle))
+            const ny = roundCoord(cy + noteRadius * Math.sin(noteAngle))
+            const isFarEnough = symbolPositions.every((position) => {
+              const dx = position.x - nx
+              const dy = position.y - ny
+              return Math.hypot(dx, dy) >= 29
+            })
+
+            if (isFarEnough) symbolPositions.push({ x: nx, y: ny })
+            attempts += 1
+          }
 
           return (
             <g
@@ -173,10 +221,15 @@ export function RadialMenu() {
               onClick={() => router.push(slice.href)}
               onMouseEnter={() => setActive(i)}
               onMouseLeave={() => setActive(null)}
+              onTouchStart={() => setActive(i)}
+              onTouchEnd={() => router.push(slice.href)}
+              onTouchCancel={() => setActive(null)}
               className="cursor-pointer"
               style={{
                 transition: 'transform 0.3s ease-out',
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                transform: isHovered
+                  ? `translate(${hoverX}px, ${hoverY}px) scale(1.18)`
+                  : 'translate(0, 0) scale(1)',
                 transformOrigin: `${cx}px ${cy}px`,
               }}
             >
@@ -186,53 +239,59 @@ export function RadialMenu() {
                 strokeWidth={5}
               />
 
-              {/* Símbolos musicais de preenchimento que se expandem no hover */}
-              {slice.notes.map((n, idx) => {
-                const noteRadius = 130 + (r - 130) * n.r * (isHovered ? 1.08 : 1)
-                const noteAngle = mid + n.a
-                const nx = roundCoord(cx + noteRadius * Math.cos(noteAngle))
-                const ny = roundCoord(cy + noteRadius * Math.sin(noteAngle))
+              <clipPath id={`slice-clip-${i}`}>
+                <path d={d} />
+              </clipPath>
+
+              {/* Um único símbolo repetido cria a textura visual de cada fatia. */}
+              <g clipPath={isHovered ? undefined : `url(#slice-clip-${i})`}>
+                {symbolPositions.map(({ x: nx, y: ny }, idx) => {
+                const dx = nx - cx
+                const dy = ny - cy
+                const radius = Math.hypot(dx, dy)
+                const angle = Math.atan2(dy, dx)
+                const pushedRadius = isHovered ? radius + 116 + seededValue(i, idx, 4) * 38 : radius
+                const pushedAngle = isHovered
+                  ? angle + (seededValue(i, idx, 5) - 0.5) * 0.16
+                  : angle
+                const symbolX = roundCoord(cx + pushedRadius * Math.cos(pushedAngle))
+                const symbolY = roundCoord(cy + pushedRadius * Math.sin(pushedAngle))
+                const opacity = (isHovered ? 0.3 : 0.13 + seededValue(i, idx, 3) * 0.08).toFixed(6)
+                const symbolScale = isHovered ? 1.1 : 1
+                const symbolTransform = `translate(${symbolX} ${symbolY}) scale(${symbolScale}) translate(${-symbolX} ${-symbolY})`
                 return (
                   <text
                     key={idx}
-                    x={nx}
-                    y={ny}
+                    x={symbolX}
+                    y={symbolY}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={n.sz}
+                    fontSize={isHovered ? 25 : 22}
                     fill="currentColor"
-                    className="select-none pointer-events-none transition-all duration-300 fill-foreground"
-                    style={{
-                      opacity: isHovered ? Math.min(n.o * 1.5, 0.9) : n.o * 0.4,
-                      transform: isHovered ? 'scale(1.2)' : 'scale(1)',
-                      transformOrigin: `${nx}px ${ny}px`,
-                    }}
+                    opacity={opacity}
+                    transform={symbolTransform}
+                    className="select-none pointer-events-none fill-foreground transition-all duration-300"
                   >
-                    {n.s}
+                    {symbol}
                   </text>
                 )
-              })}
+                })}
 
-              <foreignObject
-                x={fx - 115}
-                y={fy - 38}
-                width={230}
-                height={76}
-                style={{ overflow: 'hidden' }}
-                className="pointer-events-none"
-              >
-                <div className="w-full h-full flex items-center justify-center text-center px-1">
-                  {isHovered ? (
-                    <span className="text-foreground font-semibold text-[clamp(9px,1.15vw,13px)] leading-snug">
-                      {slice.desc}
-                    </span>
-                  ) : (
-                    <span className="text-foreground font-playfair font-bold text-[clamp(10px,1.3vw,15px)]">
-                      {slice.label}
-                    </span>
-                  )}
-                </div>
-              </foreignObject>
+                {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
+                  <text
+                    key={`${line}-${lineIndex}`}
+                    x={labelX}
+                    y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 19 : 18)}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className={`${isHovered
+                      ? 'radial-menu-label radial-menu-description fill-foreground font-semibold select-none pointer-events-none'
+                      : 'radial-menu-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
             </g>
           )
         })}
@@ -248,7 +307,7 @@ export function RadialMenu() {
           className="pointer-events-none"
         >
           <div className="w-full h-full flex flex-col items-center justify-center text-center px-2">
-            <span className="text-foreground font-playfair font-bold text-[clamp(13px,1.8vw,22px)] leading-tight tracking-tight uppercase">
+            <span className="radial-menu-center text-foreground font-playfair font-bold text-[clamp(15.6px,2.16vw,26.4px)] leading-tight tracking-tight uppercase">
               Tudo que o Portal NKL tem para você
             </span>
           </div>

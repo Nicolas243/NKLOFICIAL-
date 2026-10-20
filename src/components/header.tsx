@@ -205,7 +205,13 @@ export function Header() {
           <span className="inline-flex shrink-0">{authBtn}</span>
           <LangDropdown />
           <ThemeToggle />
-          <button className="lg:hidden w-[30px] h-[30px] p-0 flex items-center justify-center rounded-[3px] transition-colors hover:bg-accent" aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
+          <button
+            className="lg:hidden relative z-[110] w-[30px] h-[30px] p-0 flex items-center justify-center rounded-[3px] transition-colors hover:bg-accent"
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -213,7 +219,7 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="lg:hidden border-t border-border">
+        <div id="mobile-navigation" suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="relative z-[105] lg:hidden border-t border-border">
           <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>

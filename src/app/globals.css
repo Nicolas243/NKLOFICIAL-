@@ -26,6 +26,24 @@
   --accent: rgba(30, 144, 255, 0.15);
 }
 
+@media (max-width: 1024px) {
+  html {
+    font-size: 112.5%;
+  }
+
+  .radial-menu-label {
+    font-size: clamp(23.76px, 3.04vw, 34.32px);
+  }
+
+  .radial-menu-description {
+    font-size: clamp(21.12px, 2.64vw, 31.68px);
+  }
+
+  .radial-menu-center {
+    font-size: clamp(31.2px, 4.32vw, 52.8px);
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
