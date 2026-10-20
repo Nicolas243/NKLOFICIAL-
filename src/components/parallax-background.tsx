@@ -128,7 +128,7 @@ export function ParallaxBackground() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden z-[-2] pointer-events-none opacity-90">
+      <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none opacity-90">
         <div
           ref={plane}
           className="absolute will-change-transform"
@@ -147,7 +147,7 @@ export function ParallaxBackground() {
           )}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/65 z-[-1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/65 z-[1] pointer-events-none" />
     </>
   )
 }

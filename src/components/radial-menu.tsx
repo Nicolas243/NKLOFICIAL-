@@ -177,10 +177,10 @@ export function RadialMenu() {
   const step = (2 * Math.PI) / SLICES.length
 
   return (
-    <div className="relative flex items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
+    <div className="relative z-10 flex pointer-events-auto items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
       <svg
         viewBox="0 0 800 800"
-        className="h-[calc(100vh-40px)] w-auto aspect-square max-w-full overflow-visible portrait:w-[calc(100vw-40px)] portrait:h-auto"
+        className="pointer-events-auto h-[calc(100vh-40px)] w-auto aspect-square max-w-full overflow-visible portrait:w-[calc(100vw-40px)] portrait:h-auto"
       >
         {SLICES.map((slice, i) => {
           const start = i * step - Math.PI / 2
@@ -222,7 +222,10 @@ export function RadialMenu() {
               onMouseEnter={() => setActive(i)}
               onMouseLeave={() => setActive(null)}
               onTouchStart={() => setActive(i)}
-              onTouchEnd={() => router.push(slice.href)}
+              onTouchEnd={(event) => {
+                event.preventDefault()
+                router.push(slice.href)
+              }}
               onTouchCancel={() => setActive(null)}
               className="cursor-pointer"
               style={{
@@ -299,10 +302,10 @@ export function RadialMenu() {
         {/* Centro — esconde a união das fatias */}
         <circle cx={cx} cy={cy} r={130} className="fill-background stroke-foreground" strokeWidth={4} />
         <foreignObject
-          x={cx - 110}
-          y={cy - 65}
-          width={220}
-          height={130}
+          x={cx - 170}
+          y={cy - 120}
+          width={340}
+          height={240}
           style={{ overflow: 'hidden' }}
           className="pointer-events-none"
         >

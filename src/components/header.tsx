@@ -201,7 +201,7 @@ export function Header() {
           {navLinks}
         </div>
 
-        <div className="flex items-start gap-2 sm:gap-3 shrink-0">
+        <div className="relative z-[99999] flex items-start gap-2 sm:gap-3 shrink-0">
           <span className="inline-flex shrink-0">{authBtn}</span>
           <LangDropdown />
           <ThemeToggle />

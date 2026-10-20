@@ -9,7 +9,7 @@ export function ThemeToggle() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
 
   if (!mounted) {
-    return <button className="w-[35px] h-[35px] flex items-center justify-center rounded-[3px]" aria-label="Alternar tema"><span className="w-[27px] h-[27px] block" /></button>
+    return <button className="relative z-[99999] w-[35px] h-[35px] shrink-0 flex items-center justify-center rounded-[3px]" aria-label="Alternar tema"><span className="w-[27px] h-[27px] block" /></button>
   }
 
   const isDark = theme === 'dark'
@@ -17,7 +17,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="w-[35px] h-[35px] flex items-center justify-center rounded-[3px] transition-all duration-300"
+      className="relative z-[99999] w-[35px] h-[35px] shrink-0 flex items-center justify-center rounded-[3px] transition-all duration-300"
       aria-label="Alternar tema"
       style={{ backgroundColor: isDark ? '#000' : '#fff' }}
     >

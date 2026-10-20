@@ -32,15 +32,15 @@
   }
 
   .radial-menu-label {
-    font-size: clamp(23.76px, 3.04vw, 34.32px);
+    font-size: clamp(26.14px, 3.34vw, 37.75px);
   }
 
   .radial-menu-description {
-    font-size: clamp(21.12px, 2.64vw, 31.68px);
+    font-size: clamp(23.23px, 2.9vw, 34.85px);
   }
 
   .radial-menu-center {
-    font-size: clamp(31.2px, 4.32vw, 52.8px);
+    font-size: clamp(34.32px, 4.75vw, 58.08px);
   }
 }
 
