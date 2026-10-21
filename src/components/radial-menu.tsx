@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 interface SliceData {
   label: string
@@ -170,6 +170,8 @@ function describeArc(cx: number, cy: number, r: number, startAngle: number, endA
 export function RadialMenu() {
   const router = useRouter()
   const [active, setActive] = useState<number | null>(null)
+  const touchActive = useRef<number | null>(null)
+  const suppressClick = useRef(false)
 
   const cx = 400
   const cy = 400
@@ -218,15 +220,33 @@ export function RadialMenu() {
           return (
             <g
               key={slice.label}
-              onClick={() => router.push(slice.href)}
-              onMouseEnter={() => setActive(i)}
-              onMouseLeave={() => setActive(null)}
-              onTouchStart={() => setActive(i)}
-              onTouchEnd={(event) => {
-                event.preventDefault()
+              onClick={() => {
+                if (suppressClick.current) {
+                  suppressClick.current = false
+                  return
+                }
                 router.push(slice.href)
               }}
-              onTouchCancel={() => setActive(null)}
+              onMouseEnter={() => setActive(i)}
+              onMouseLeave={() => {
+                if (touchActive.current !== i) setActive(null)
+              }}
+              onTouchStart={(event) => {
+                event.preventDefault()
+                suppressClick.current = true
+                if (touchActive.current === i) {
+                  touchActive.current = null
+                  router.push(slice.href)
+                  return
+                }
+                touchActive.current = i
+                setActive(i)
+              }}
+              onTouchCancel={() => {
+                touchActive.current = null
+                suppressClick.current = false
+                setActive(null)
+              }}
               className="cursor-pointer"
               style={{
                 transition: 'transform 0.3s ease-out',
@@ -234,6 +254,7 @@ export function RadialMenu() {
                   ? `translate(${hoverX}px, ${hoverY}px) scale(1.18)`
                   : 'translate(0, 0) scale(1)',
                 transformOrigin: `${cx}px ${cy}px`,
+                touchAction: 'manipulation',
               }}
             >
               <path
@@ -316,6 +337,9 @@ export function RadialMenu() {
           </div>
         </foreignObject>
       </svg>
+      <p className="lg:hidden absolute bottom-0 left-1/2 w-[min(92vw,360px)] -translate-x-1/2 text-center text-xs font-medium text-foreground/75">
+        Primeiro toque: abrir a fatia. Segundo toque: acessar.
+      </p>
     </div>
   )
 }

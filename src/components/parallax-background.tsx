@@ -94,8 +94,8 @@ export function ParallaxBackground() {
       prevScroll.current = currentScroll
 
       // Acumula mouse + scroll suavizados
-      accum.current.x += pointer.current.x * 0.05
-      accum.current.y += pointer.current.y * 0.05 - scrollDelta
+      accum.current.x += 0.12 + pointer.current.x * 0.05
+      accum.current.y += 0.08 + pointer.current.y * 0.05 - scrollDelta
 
       // Mantém o deslocamento dentro de meio ladrilho; a malha 3x3 cobre o wrap.
       if (accum.current.x > w / 2) accum.current.x -= w
@@ -128,7 +128,7 @@ export function ParallaxBackground() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none opacity-90">
+      <div className="fixed inset-0 overflow-hidden z-[1] pointer-events-none opacity-90">
         <div
           ref={plane}
           className="absolute will-change-transform"
@@ -147,7 +147,7 @@ export function ParallaxBackground() {
           )}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/65 z-[1] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/65 z-[2] pointer-events-none" />
     </>
   )
 }

@@ -189,9 +189,9 @@ export function Header() {
   const bgColor = mounted ? rawBgColor : undefined
 
   return (
-    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
+    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0">
+      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0 bg-white dark:bg-black">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <Image src="/NKL/NKL.png" alt="NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
@@ -219,7 +219,7 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div id="mobile-navigation" suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="relative z-[105] lg:hidden border-t border-border">
+        <div id="mobile-navigation" suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="relative z-[105] lg:hidden bg-white dark:bg-black border-t border-border">
           <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>
