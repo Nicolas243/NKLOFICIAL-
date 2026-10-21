@@ -322,11 +322,11 @@ export function RadialMenu() {
                 </g>
 
                 <g clipPath={`url(#slice-clip-${i})`}>
-                  {(isHovered ? wrapText(slice.desc, 12) : wrapText(slice.label, 12)).map((line, lineIndex, lines) => (
+                  {(isHovered ? wrapText(slice.desc, 9) : wrapText(slice.label, 9)).map((line, lineIndex, lines) => (
                     <text
                       key={`mobile-${line}-${lineIndex}`}
                       x={mobileLabelX}
-                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 17 : 16)}
+                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 22 : 21)}
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
