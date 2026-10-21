@@ -6,6 +6,7 @@ const LINKS = [
   { icon: '🎻', title: 'NKL no Instagram', desc: 'Dicas diarias e analises comparativas de equipamentos em videos.', url: 'https://www.instagram.com/nkloficial/' },
   { icon: '🎯', title: 'NKL no TikTok', desc: 'Dicas rapidas, diretas ao ponto e resolucao de problemas em videos de 1 minuto.', url: 'https://www.tiktok.com/@nkloficial' },
   { icon: '📺', title: 'NKL no YouTube', desc: 'Tutoriais completos, analises profundas e aulas especiais.', url: 'https://www.youtube.com/@nkloficial' },
+  { icon: '→', title: 'Quero ganhar dinheiro online', desc: 'Descubra as plataformas que utilizo e recomendo para gerar renda extra internacional e nacional.', url: '/contatos/ganhar-dinheiro' },
   { icon: '🛒', title: 'eBay: Criar Conta + Loja com Promocoes', desc: 'Acesso direto a leiloes internacionais e lojas com ofertas especiais.', url: 'https://ebay.us/ea99Iy' },
   { icon: '🌏', title: 'FansBuy: Redirecionador da China', desc: 'Plataforma que redireciona compras de lojas chinesas para o Brasil.', url: 'https://fansbuy.com/register?invite=RmFucy1UdE11bnoxOQ==' },
   { icon: '🏪', title: 'Goofish / Xianyu: OLX da China', desc: 'Marketplace chines com violinos, arcos e acessorios direto de vendedores.', url: 'https://www.goofish.com/search?q=violin&spm=a21ybx.search.searchInput.0' },
@@ -13,7 +14,6 @@ const LINKS = [
   { icon: '🏛️', title: 'SISCOMEX: Situacao da Importacao', desc: 'Portal oficial para acompanhar o status da sua importacao na Receita.', url: 'https://portalunico.siscomex.gov.br/portal/#/' },
   { icon: '🎻', title: 'Violinos de Oficina Profissional', desc: 'Selecao de violinos nivel profissional em leiloes no eBay.', url: 'https://www.ebay.com/sch/i.html?_nkw=VIOLIN&_sacat=0&_from=R40&LH_Auction=1&_sop=1' },
   { icon: '🇺🇸', title: 'USCloser: Redirecionador dos EUA', desc: 'Plataforma que permite comprar itens dos EUA que nao vem para o Brasil normalmente.', url: 'https://uscloser.com/cadastre-se/nkloficial' },
-  { icon: '→', title: 'Quero ganhar dinheiro online', desc: 'Descubra as plataformas que utilizo e recomendo para gerar renda extra internacional e nacional.', url: '/contatos/ganhar-dinheiro' },
 ];
 
 export const metadata: Metadata = {

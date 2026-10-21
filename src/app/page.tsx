@@ -70,7 +70,7 @@ return (
       <HomeMenuFallback />
 
       {/* Radial Menu — PRIMEIRO após o header (Landing Page style) */}
-      <section className="flex items-center justify-center pt-2">
+      <section className="relative -top-[10vh] flex items-center justify-center pt-2">
         <RadialMenu />
       </section>
 
