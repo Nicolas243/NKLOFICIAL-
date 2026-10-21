@@ -26,17 +26,34 @@
   --accent: rgba(30, 144, 255, 0.15);
 }
 
+.radial-menu-mobile-label {
+  display: none;
+}
+
+.radial-menu-label {
+  font-size: clamp(11.88px, 1.52vw, 17.16px);
+}
+
+.radial-menu-description {
+  font-size: clamp(10.56px, 1.32vw, 15.84px);
+}
+
 @media (max-width: 1024px) {
   html {
     font-size: 112.5%;
   }
 
-  .radial-menu-label {
-    font-size: clamp(26.14px, 3.34vw, 37.75px);
+  .radial-menu-desktop-label {
+    display: none;
   }
 
-  .radial-menu-description {
-    font-size: clamp(23.23px, 2.9vw, 34.85px);
+  .radial-menu-mobile-label {
+    display: block;
+    font-size: clamp(12px, 2.4vw, 18px);
+  }
+
+  .radial-menu-mobile-description {
+    font-size: clamp(11px, 2.15vw, 16px);
   }
 
   .radial-menu-center {

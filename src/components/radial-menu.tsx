@@ -193,6 +193,9 @@ export function RadialMenu() {
           const labelRadius = 252
           const labelX = roundCoord(cx + labelRadius * Math.cos(mid))
           const labelY = roundCoord(cy + labelRadius * Math.sin(mid))
+          const mobileLabelRadius = 218
+          const mobileLabelX = roundCoord(cx + mobileLabelRadius * Math.cos(mid))
+          const mobileLabelY = roundCoord(cy + mobileLabelRadius * Math.sin(mid))
           const symbol = slice.notes[0]?.s ?? '♪'
           const hoverDistance = 30
           const hoverX = roundCoord(hoverDistance * Math.cos(mid))
@@ -301,20 +304,39 @@ export function RadialMenu() {
                 )
                 })}
 
-                {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
-                  <text
-                    key={`${line}-${lineIndex}`}
-                    x={labelX}
-                    y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 19 : 18)}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className={`${isHovered
-                      ? 'radial-menu-label radial-menu-description fill-foreground font-semibold select-none pointer-events-none'
-                      : 'radial-menu-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
-                  >
-                    {line}
-                  </text>
-                ))}
+                <g clipPath={`url(#slice-clip-${i})`}>
+                  {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
+                    <text
+                      key={`${line}-${lineIndex}`}
+                      x={labelX}
+                      y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 19 : 18)}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      className={`${isHovered
+                        ? 'radial-menu-desktop-label radial-menu-description fill-foreground font-semibold select-none pointer-events-none'
+                        : 'radial-menu-desktop-label radial-menu-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
+                    >
+                      {line}
+                    </text>
+                  ))}
+                </g>
+
+                <g clipPath={`url(#slice-clip-${i})`}>
+                  {(isHovered ? wrapText(slice.desc, 12) : wrapText(slice.label, 12)).map((line, lineIndex, lines) => (
+                    <text
+                      key={`mobile-${line}-${lineIndex}`}
+                      x={mobileLabelX}
+                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 17 : 16)}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      className={`${isHovered
+                        ? 'radial-menu-mobile-label radial-menu-mobile-description fill-foreground font-semibold select-none pointer-events-none'
+                        : 'radial-menu-mobile-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
+                    >
+                      {line}
+                    </text>
+                  ))}
+                </g>
               </g>
             </g>
           )
