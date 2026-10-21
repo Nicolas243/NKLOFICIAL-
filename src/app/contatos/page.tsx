@@ -13,6 +13,7 @@ const LINKS = [
   { icon: '🏛️', title: 'SISCOMEX: Situacao da Importacao', desc: 'Portal oficial para acompanhar o status da sua importacao na Receita.', url: 'https://portalunico.siscomex.gov.br/portal/#/' },
   { icon: '🎻', title: 'Violinos de Oficina Profissional', desc: 'Selecao de violinos nivel profissional em leiloes no eBay.', url: 'https://www.ebay.com/sch/i.html?_nkw=VIOLIN&_sacat=0&_from=R40&LH_Auction=1&_sop=1' },
   { icon: '🇺🇸', title: 'USCloser: Redirecionador dos EUA', desc: 'Plataforma que permite comprar itens dos EUA que nao vem para o Brasil normalmente.', url: 'https://uscloser.com/cadastre-se/nkloficial' },
+  { icon: '→', title: 'Quero ganhar dinheiro online', desc: 'Descubra as plataformas que utilizo e recomendo para gerar renda extra internacional e nacional.', url: '/contatos/ganhar-dinheiro' },
 ];
 
 export const metadata: Metadata = {
