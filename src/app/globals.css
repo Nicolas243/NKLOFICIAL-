@@ -31,11 +31,11 @@
 }
 
 .radial-menu-label {
-  font-size: clamp(11.88px, 1.52vw, 17.16px);
+  font-size: clamp(14.26px, 1.82vw, 20.59px);
 }
 
 .radial-menu-description {
-  font-size: clamp(10.56px, 1.32vw, 15.84px);
+  font-size: clamp(12.67px, 1.58vw, 19.01px);
 }
 
 @media (max-width: 1024px) {
@@ -49,15 +49,15 @@
 
   .radial-menu-mobile-label {
     display: block;
-    font-size: clamp(28.6px, 4.34vw, 49.08px);
+    font-size: clamp(34.32px, 5.21vw, 58.9px);
   }
 
   .radial-menu-mobile-description {
-    font-size: clamp(24.7px, 3.77vw, 45.31px);
+    font-size: clamp(29.64px, 4.52vw, 54.37px);
   }
 
   .radial-menu-center-line {
-    font-size: clamp(20.8px, 2.81vw, 34.32px);
+    font-size: clamp(24.96px, 3.37vw, 41.18px);
   }
 }
 

@@ -293,7 +293,7 @@ export function RadialMenu() {
                     y={symbolY}
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={isHovered ? 25 : 22}
+                    fontSize={isHovered ? 30 : 26.4}
                     fill="currentColor"
                     opacity={opacity}
                     transform={symbolTransform}
@@ -309,7 +309,7 @@ export function RadialMenu() {
                     <text
                       key={`${line}-${lineIndex}`}
                       x={labelX}
-                      y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 19 : 18)}
+                      y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 23 : 22)}
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
@@ -326,7 +326,7 @@ export function RadialMenu() {
                     <text
                       key={`mobile-${line}-${lineIndex}`}
                       x={mobileLabelX}
-                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 22 : 21)}
+                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 26 : 25)}
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
