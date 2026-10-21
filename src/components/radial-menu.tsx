@@ -179,7 +179,7 @@ export function RadialMenu() {
   const step = (2 * Math.PI) / SLICES.length
 
   return (
-    <div className="relative z-10 flex pointer-events-auto items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
+    <div className="radial-menu-intro relative z-10 flex pointer-events-auto items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
       <svg
         viewBox="0 0 800 800"
         className="pointer-events-auto h-[calc(100vh-40px)] w-auto aspect-square max-w-full overflow-visible portrait:w-[calc(100vw-40px)] portrait:h-auto"

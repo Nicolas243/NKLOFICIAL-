@@ -30,6 +30,27 @@
   display: none;
 }
 
+@keyframes radialMenuIntro {
+  0% {
+    opacity: 0;
+    transform: scale(0.04) rotate(-180deg);
+  }
+  68% {
+    opacity: 1;
+    transform: scale(1.06) rotate(12deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.radial-menu-intro {
+  transform-origin: center;
+  animation: radialMenuIntro 1.45s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  will-change: transform, opacity;
+}
+
 .radial-menu-label {
   font-size: clamp(13.07px, 1.67vw, 18.88px);
 }
