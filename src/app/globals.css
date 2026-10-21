@@ -49,15 +49,15 @@
 
   .radial-menu-mobile-label {
     display: block;
-    font-size: clamp(12px, 2.4vw, 18px);
+    font-size: clamp(22px, 3.34vw, 37.75px);
   }
 
   .radial-menu-mobile-description {
-    font-size: clamp(11px, 2.15vw, 16px);
+    font-size: clamp(19px, 2.9vw, 34.85px);
   }
 
-  .radial-menu-center {
-    font-size: clamp(34.32px, 4.75vw, 58.08px);
+  .radial-menu-center-line {
+    font-size: clamp(16px, 2.16vw, 26.4px);
   }
 }
 

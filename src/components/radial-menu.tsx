@@ -345,16 +345,22 @@ export function RadialMenu() {
         {/* Centro — esconde a união das fatias */}
         <circle cx={cx} cy={cy} r={130} className="fill-background stroke-foreground" strokeWidth={4} />
         <foreignObject
-          x={cx - 170}
-          y={cy - 120}
-          width={340}
-          height={240}
+          x={cx - 125}
+          y={cy - 100}
+          width={250}
+          height={200}
           style={{ overflow: 'hidden' }}
           className="pointer-events-none"
         >
-          <div className="w-full h-full flex flex-col items-center justify-center text-center px-2">
-            <span className="radial-menu-center text-foreground font-playfair font-bold text-[clamp(15.6px,2.16vw,26.4px)] leading-tight tracking-tight uppercase">
-              Tudo que o Portal NKL tem para você
+          <div className="radial-menu-center-box w-full h-full flex flex-col items-center justify-center text-center">
+            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
+              Tudo que
+            </span>
+            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
+              o Portal NKL
+            </span>
+            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
+              tem pra você
             </span>
           </div>
         </foreignObject>
