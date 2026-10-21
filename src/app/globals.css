@@ -26,16 +26,20 @@
   --accent: rgba(30, 144, 255, 0.15);
 }
 
-.radial-menu-mobile-label {
+.radial-menu-mobile-copy {
   display: none;
 }
 
 .radial-menu-label {
-  font-size: clamp(14.26px, 1.82vw, 20.59px);
+  font-size: clamp(13.07px, 1.67vw, 18.88px);
 }
 
 .radial-menu-description {
-  font-size: clamp(12.67px, 1.58vw, 19.01px);
+  font-size: clamp(11.62px, 1.45vw, 17.42px);
+}
+
+.radial-menu-center-line {
+  font-size: clamp(20.8px, 3.25vw, 31.2px);
 }
 
 @media (max-width: 1024px) {
@@ -47,17 +51,8 @@
     display: none;
   }
 
-  .radial-menu-mobile-label {
+  .radial-menu-mobile-copy {
     display: block;
-    font-size: clamp(34.32px, 5.21vw, 58.9px);
-  }
-
-  .radial-menu-mobile-description {
-    font-size: clamp(29.64px, 4.52vw, 54.37px);
-  }
-
-  .radial-menu-center-line {
-    font-size: clamp(24.96px, 3.37vw, 41.18px);
   }
 }
 

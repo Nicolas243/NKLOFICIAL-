@@ -321,8 +321,8 @@ export function RadialMenu() {
                   ))}
                 </g>
 
-                <g clipPath={`url(#slice-clip-${i})`}>
-                  {(isHovered ? wrapText(slice.desc, 9) : wrapText(slice.label, 9)).map((line, lineIndex, lines) => (
+                <g className="radial-menu-mobile-copy" clipPath={`url(#slice-clip-${i})`}>
+                  {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
                     <text
                       key={`mobile-${line}-${lineIndex}`}
                       x={mobileLabelX}
@@ -330,8 +330,8 @@ export function RadialMenu() {
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
-                        ? 'radial-menu-mobile-label radial-menu-mobile-description fill-foreground font-semibold select-none pointer-events-none'
-                        : 'radial-menu-mobile-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
+                        ? 'radial-menu-label radial-menu-description fill-foreground font-semibold select-none pointer-events-none'
+                        : 'radial-menu-label fill-foreground font-playfair font-bold select-none pointer-events-none'}`}
                     >
                       {line}
                     </text>
