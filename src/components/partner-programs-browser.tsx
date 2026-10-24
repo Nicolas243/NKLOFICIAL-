@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useActionState, useMemo, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
@@ -11,12 +12,56 @@ type Props = {
 
 const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
 
+type FormState = {
+  error: string | null;
+  success: boolean;
+};
+
+const INITIAL_FORM_STATE: FormState = { error: null, success: false };
+
+function actionErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.includes('Muitas tentativas')) {
+    return 'Muitas tentativas. Tente novamente em 1 minuto.';
+  }
+  return error instanceof Error ? error.message : 'Não foi possível concluir a operação. Tente novamente.';
+}
+
+async function submitSuggestionAction(_state: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await submitPartnerSuggestion(formData);
+    return { error: null, success: true };
+  } catch (error) {
+    return { error: actionErrorMessage(error), success: false };
+  }
+}
+
+async function submitReviewAction(_state: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await submitPartnerReview(formData);
+    return { error: null, success: true };
+  } catch (error) {
+    return { error: actionErrorMessage(error), success: false };
+  }
+}
+
+function SubmitButton({ idleLabel, pendingLabel }: { idleLabel: string; pendingLabel: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" disabled={pending} className="rounded-md bg-neon px-5 py-3 font-bold text-black transition-opacity disabled:cursor-not-allowed disabled:opacity-50">
+      {pending ? pendingLabel : idleLabel}
+    </button>
+  );
+}
+
 function extractReferralCode(description: string): string | null {
   const match = description.match(/(?:código|codigo)\s+(?:de\s+indicação|de\s+indicacao)?\s*[:\-]?\s*[`'"]?([A-Z0-9]{6,})/iu);
   return match?.[1] ?? null;
 }
 
 export function PartnerProgramsBrowser({ programs }: Props) {
+  const [suggestionState, suggestionAction] = useActionState(submitSuggestionAction, INITIAL_FORM_STATE);
+  const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('todas');
   const [difficulty, setDifficulty] = useState('todas');
@@ -126,7 +171,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
-        <form id="sugestao" action={submitPartnerSuggestion} className="space-y-4 rounded-xl border border-border bg-surface p-6">
+        <form id="sugestao" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-surface p-6">
           <div>
             <p className="text-xs uppercase tracking-wide text-neon font-bold">Ajude a ampliar o catálogo</p>
             <h2 className="font-playfair text-2xl font-bold mt-1">Sugira uma oportunidade</h2>
@@ -134,7 +179,9 @@ export function PartnerProgramsBrowser({ programs }: Props) {
           <input name="name" required placeholder="Nome do site ou serviço" className="w-full rounded-md border border-border bg-background px-3 py-2" />
           <input name="websiteUrl" type="url" placeholder="Link do site (opcional)" className="w-full rounded-md border border-border bg-background px-3 py-2" />
           <textarea name="reason" required minLength={40} rows={4} placeholder="Por que esta oportunidade deveria entrar? (mínimo de 10 palavras)" className="w-full rounded-md border border-border bg-background px-3 py-2" />
-          <button type="submit" className="rounded-md bg-neon px-5 py-3 font-bold text-black">Enviar sugestão</button>
+          {suggestionState.error && <p role="alert" className="text-sm text-red-400">{suggestionState.error}</p>}
+          {suggestionState.success && <p role="status" className="text-sm text-neon">Sugestão enviada para análise.</p>}
+          <SubmitButton idleLabel="Enviar sugestão" pendingLabel="Enviando..." />
         </form>
         <div className="rounded-xl border border-border bg-surface p-6">
           <p className="text-xs uppercase tracking-wide text-neon font-bold">Como funciona</p>
@@ -167,7 +214,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
             <div className="mt-4 flex flex-wrap gap-2">
               {(selectedProgram.communityTags.length >= 1 ? selectedProgram.communityTags : selectedProgram.tags).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs">{tag}</span>)}
             </div>
-            <form action={submitPartnerReview} className="mt-8 space-y-4 border-t border-border pt-6">
+            <form action={reviewAction} className="mt-8 space-y-4 border-t border-border pt-6">
               <input type="hidden" name="programId" value={selectedProgram.id} />
               <h3 className="font-playfair text-xl font-bold">Avalie esta oportunidade</h3>
               <label className="block text-sm font-bold">Nota de 0 a 10
@@ -182,7 +229,9 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                 <textarea name="reason" required minLength={100} rows={6} placeholder="Escreva pelo menos 20 palavras sobre sua experiência." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" />
               </label>
               <p className="text-xs opacity-60">Sua avaliação será anônima. O texto precisa ter pelo menos 20 palavras.</p>
-              <button type="submit" className="rounded-md bg-neon px-5 py-3 font-bold text-black">Publicar avaliação</button>
+              {reviewState.error && <p role="alert" className="text-sm text-red-400">{reviewState.error}</p>}
+              {reviewState.success && <p role="status" className="text-sm text-neon">Avaliação publicada com sucesso.</p>}
+              <SubmitButton idleLabel="Publicar avaliação" pendingLabel="Processando..." />
             </form>
           </div>
         </div>

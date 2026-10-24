@@ -1,32 +1,28 @@
 'use client';
 
-interface GlobalErrorProps {
+type RouteErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;
-}
+};
 
-export default function GlobalError({ error, reset }: GlobalErrorProps) {
+export default function RouteError({ error, reset }: RouteErrorProps) {
   return (
-    <div className="flex-1 flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center flex flex-col items-center gap-5">
-        <div className="w-16 h-16 rounded-full bg-border/50 flex items-center justify-center text-neon text-3xl font-bold">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 text-foreground">
+      <div className="flex w-full max-w-md flex-col items-center gap-5 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-surface text-3xl font-bold text-neon">
           !
         </div>
-        <h1 className="font-playfair text-3xl font-bold">Ops, algo deu errado</h1>
-        <p className="text-sm opacity-80 leading-relaxed">
-          Não foi possível carregar esta página no momento. Isso pode ser uma
-          falha temporária de conexão. Tente novamente em instantes.
-        </p>
+        <h1 className="font-playfair text-3xl font-bold">Instabilidade temporária</h1>
+        <p className="text-sm leading-relaxed opacity-80">Os servidores estão passando por uma instabilidade momentânea. Tente carregar a página novamente.</p>
         <button
-          onClick={() => reset()}
-          className="px-6 py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+          type="button"
+          onClick={reset}
+          className="rounded-md bg-neon px-6 py-3 font-bold text-black transition-opacity hover:opacity-90"
         >
           Tentar novamente
         </button>
-        {error.digest ? (
-          <p className="text-xs opacity-50">Referência: {error.digest}</p>
-        ) : null}
+        {error.digest && <p className="text-xs opacity-50">Referência: {error.digest}</p>}
       </div>
-    </div>
+    </main>
   );
 }
