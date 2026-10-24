@@ -576,3 +576,58 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
     references: [userProfiles.id],
   }),
 }));
+
+export const classBookingStatusEnum = pgEnum('class_booking_status', [
+  'pending',
+  'confirmed',
+  'cancelled',
+]);
+
+export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid']);
+
+export const teacherAvailability = pgTable('teacher_availability', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  teacherId: uuid('teacher_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  dayOfWeek: integer('day_of_week').notNull(),
+  startTime: time('start_time').notNull(),
+  endTime: time('end_time').notNull(),
+  isActive: boolean('is_active').notNull().default(true),
+}, (table) => [
+  check('teacher_availability_day_of_week_check', sql`${table.dayOfWeek} between 0 and 6`),
+]);
+
+export const classBookings = pgTable('class_bookings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  studentId: uuid('student_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  teacherId: uuid('teacher_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  scheduledAt: timestamp('scheduled_at', { withTimezone: true }).notNull(),
+  status: classBookingStatusEnum('status').notNull().default('pending'),
+  paymentStatus: paymentStatusEnum('payment_status').notNull().default('pending'),
+  meetingUrl: text('meeting_url'),
+});
+
+export const teacherAvailabilityRelations = relations(teacherAvailability, ({ one }) => ({
+  teacher: one(users, {
+    fields: [teacherAvailability.teacherId],
+    references: [users.id],
+  }),
+}));
+
+export const classBookingsRelations = relations(classBookings, ({ one }) => ({
+  student: one(users, {
+    fields: [classBookings.studentId],
+    references: [users.id],
+    relationName: 'studentBookings',
+  }),
+  teacher: one(users, {
+    fields: [classBookings.teacherId],
+    references: [users.id],
+    relationName: 'teacherBookings',
+  }),
+}));

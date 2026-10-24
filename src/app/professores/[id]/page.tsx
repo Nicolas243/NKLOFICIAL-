@@ -7,6 +7,8 @@ import { FavoriteButton } from '@/components/favorite-button';
 import { JitsiMeetRoom } from '@/components/jitsi-meet-room';
 import { createClient } from '@/lib/supabase/server';
 import { BookingCalendar } from '@/components/scheduling/booking-calendar';
+import { getAvailableTeacherSlots } from '@/actions/scheduling';
+import { TimeSlotPicker } from '@/components/booking/time-slot-picker';
 
 type Params = Promise<{ id: string }>;
 
@@ -38,6 +40,17 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
     data: { user },
   } = await supabase.auth.getUser();
   const isFavorite = user?.id ? await isProfessorFavorite(user.id, id) : false;
+  let availableSlots: Date[] = [];
+  if (user) {
+    const from = new Date();
+    const to = new Date(from);
+    to.setDate(to.getDate() + 14);
+    try {
+      availableSlots = await getAvailableTeacherSlots(id, from, to);
+    } catch (error) {
+      console.error('[PROFESSOR_BOOKING] Falha ao carregar disponibilidade:', error instanceof Error ? error.message : 'erro desconhecido');
+    }
+  }
 
   const location =
     professor.city && professor.state
@@ -110,6 +123,12 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
           )}
 
           {user && <BookingCalendar professorId={professor.id} />}
+          {user && (
+            <TimeSlotPicker
+              teacherId={professor.id}
+              slots={availableSlots.map((slot) => slot.toISOString())}
+            />
+          )}
 
           {/* Proteção anti-circumvention — lembrete contratual */}
           <p className="text-xs opacity-60 text-center mt-2">
