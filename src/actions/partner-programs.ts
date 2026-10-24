@@ -2,11 +2,13 @@
 
 import { createHash } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { partnerProgramReviews, partnerPrograms, partnerSuggestions, userProfiles } from '@/db/schema';
+import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
 const MIN_REASON_WORDS = 20;
@@ -40,6 +42,12 @@ async function reviewerHash(): Promise<string> {
   return createHash('sha256')
     .update(`${token}:${process.env.SUPABASE_REVIEW_SALT ?? 'portal-nkl-review'}`)
     .digest('hex');
+}
+
+async function requestIdentifier(): Promise<string> {
+  const requestHeaders = await headers();
+  const forwardedFor = requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim();
+  return forwardedFor || requestHeaders.get('x-real-ip')?.trim() || 'unknown';
 }
 
 async function requireAdmin(): Promise<void> {
@@ -140,6 +148,8 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
 }
 
 export async function submitPartnerReview(formData: FormData): Promise<void> {
+  await enforcePublicRateLimit('partner-review', await requestIdentifier());
+
   const programId = typeof formData.get('programId') === 'string' ? formData.get('programId') as string : '';
   const reason = typeof formData.get('reason') === 'string' ? (formData.get('reason') as string).trim() : '';
   const rating = Number(formData.get('rating'));
@@ -180,6 +190,8 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
 }
 
 export async function submitPartnerSuggestion(formData: FormData): Promise<void> {
+  await enforcePublicRateLimit('partner-suggestion', await requestIdentifier());
+
   const name = typeof formData.get('name') === 'string' ? (formData.get('name') as string).trim() : '';
   const websiteUrl = typeof formData.get('websiteUrl') === 'string' ? (formData.get('websiteUrl') as string).trim() : '';
   const reason = typeof formData.get('reason') === 'string' ? (formData.get('reason') as string).trim() : '';
