@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, type ComponentProps } from 'react';
+import { useEffect, useRef, type ComponentProps } from 'react';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 
 type PaymentProps = ComponentProps<typeof Payment>;
@@ -12,14 +12,18 @@ type PaymentBrickProps = {
 
 export function PaymentBrick({ amount, onSubmitPayment }: PaymentBrickProps) {
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
+  const initializedKey = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!publicKey) {
+    if (!publicKey || initializedKey.current === publicKey) {
+      if (!publicKey) {
       console.error('[PAYMENT_BRICK] NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY ausente.');
+      }
       return;
     }
 
     initMercadoPago(publicKey, { locale: 'pt-BR' });
+    initializedKey.current = publicKey;
   }, [publicKey]);
 
   if (!publicKey) {

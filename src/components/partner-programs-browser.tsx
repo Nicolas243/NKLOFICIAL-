@@ -3,12 +3,18 @@
 import { useMemo, useState } from 'react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
+import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 
 type Props = {
   programs: PartnerProgramCard[];
 };
 
 const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
+
+function extractReferralCode(description: string): string | null {
+  const match = description.match(/(?:código|codigo)\s+(?:de\s+indicação|de\s+indicacao)?\s*[:\-]?\s*[`'"]?([A-Z0-9]{6,})/iu);
+  return match?.[1] ?? null;
+}
 
 export function PartnerProgramsBrowser({ programs }: Props) {
   const [query, setQuery] = useState('');
@@ -149,6 +155,15 @@ export function PartnerProgramsBrowser({ programs }: Props) {
               <button type="button" onClick={() => setSelectedProgram(null)} className="text-2xl opacity-60 hover:opacity-100" aria-label="Fechar">×</button>
             </div>
             <p className="mt-5 text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
+            {extractReferralCode(selectedProgram.longDescription) && (
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wide opacity-60">Código de indicação</p>
+                  <code className="text-base font-bold tracking-wider">{extractReferralCode(selectedProgram.longDescription)}</code>
+                </div>
+                <ClipboardCopy textToCopy={extractReferralCode(selectedProgram.longDescription) ?? ''} />
+              </div>
+            )}
             <div className="mt-4 flex flex-wrap gap-2">
               {(selectedProgram.communityTags.length >= 1 ? selectedProgram.communityTags : selectedProgram.tags).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs">{tag}</span>)}
             </div>

@@ -181,10 +181,10 @@ export function Header() {
       <header className="lg:fixed top-0 w-full z-[100] border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
         <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
           <Link href="/programas" className="group flex min-w-0 items-center gap-3">
-            <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain" />
+            <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
               <span className="block truncate font-playfair text-xl font-bold tracking-tight">Blog NKL</span>
-              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">Seu blog de confiança sobre tudo o que você precisa</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">Seu blog de confiança sobre tudo.</span>
             </span>
           </Link>
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
