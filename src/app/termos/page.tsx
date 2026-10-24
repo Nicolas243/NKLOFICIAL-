@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Termos e Contratos | Portal NKL',
+  title: 'Termos de Uso | Portal NKL',
   description:
-    'Termos de uso e contratos de Professores, Luthiers e Lojas do Portal NKL.',
+    'Regras de utilização, responsabilidades e contratos do Portal NKL.',
 };
 
 const contracts = [
@@ -30,15 +30,35 @@ const contracts = [
 export default function TermosPage() {
   return (
     <div className="max-w-3xl w-full mx-auto px-4 pt-8">
-      <h1 className="font-playfair text-3xl font-bold mb-2">Termos e Contratos</h1>
+      <h1 className="font-playfair text-3xl font-bold mb-2">Termos de Uso</h1>
       <p className="text-sm opacity-70 mb-8">
-        Profissionais do Portal NKL (Professores, Luthiers e Lojas) aderem aos
+        Estes termos estabelecem as condições gerais para utilização do Portal NKL. Profissionais do portal (Professores, Luthiers e Lojas) aderem aos
         termos abaixo, que incluem cláusulas de <strong>não-circunvenção
         (anti-circumvention)</strong>: é proibido fechar aulas, serviços ou
         vendas &quot;por fora&quot; com clientes captados pela plataforma, sob
         penalidade de suspensão, cancelamento e multa.
       </p>
 
+      <div className="mb-8 space-y-6 text-sm leading-relaxed opacity-85">
+        <section>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">1. Uso da plataforma</h2>
+          <p className="mt-2">O usuário deve fornecer informações verdadeiras, manter seus dados de acesso protegidos e utilizar os recursos do portal de forma lícita, respeitosa e compatível com sua finalidade. É proibido publicar conteúdo fraudulento, ofensivo, enganoso ou que viole direitos de terceiros.</p>
+        </section>
+        <section>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">2. Conteúdo e oportunidades de terceiros</h2>
+          <p className="mt-2">O Portal NKL pode apresentar links de afiliados, plataformas de trabalho, marketplaces, serviços e conteúdos pertencentes a terceiros. Não somos responsáveis por disponibilidade, aprovação, preços, pagamentos, políticas, resultados ou decisões dessas plataformas. A relação contratual realizada fora do Portal NKL ocorre diretamente entre o usuário e o terceiro.</p>
+        </section>
+        <section>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">3. Avaliações e informações editoriais</h2>
+          <p className="mt-2">Notas, tags e descrições servem como referência informativa e não constituem promessa de renda, recomendação financeira ou garantia de contratação. Avaliações devem refletir experiências reais e podem ser moderadas quando violarem estas regras.</p>
+        </section>
+        <section>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">4. Alterações e contato</h2>
+          <p className="mt-2">Podemos atualizar funcionalidades, conteúdos e estes termos para refletir mudanças operacionais ou legais. A versão publicada nesta página é a referência vigente. Em caso de dúvida, utilize a página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.</p>
+        </section>
+      </div>
+
+      <h2 className="font-playfair text-2xl font-bold mb-4">Termos específicos por categoria</h2>
       <div className="flex flex-col gap-4">
         {contracts.map((contract) => (
           <article

@@ -3,6 +3,7 @@
 import { useState, useCallback, type FormEvent } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export function Footer() {
   const pathname = usePathname();
@@ -72,6 +73,14 @@ export function Footer() {
               <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>PayPal</button>
             </div>
           </div>
+        </div>
+        <div className="footer-box">
+          <h4>Legal / Conformidade</h4>
+          <nav className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Links legais">
+            <Link href="/privacidade" className="text-sm hover:text-neon hover:underline">Privacidade</Link>
+            <Link href="/termos" className="text-sm hover:text-neon hover:underline">Termos de Uso</Link>
+            <Link href="/reembolso" className="text-sm hover:text-neon hover:underline">Reembolso</Link>
+          </nav>
         </div>
         <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados</div>
       </footer>
