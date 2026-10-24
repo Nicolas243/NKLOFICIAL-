@@ -10,8 +10,28 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
 export const metadata: Metadata = {
-  title: 'Portal NKL | SaaS & Marketplace',
-  description: 'Ecossistema completo para musicos, luthiers e professores.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nkl.com.br'),
+  title: {
+    default: 'Portal NKL | Luthieria, Cordas e Oportunidades',
+    template: '%s | Portal NKL',
+  },
+  description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    siteName: 'Portal NKL',
+    title: 'Portal NKL | Luthieria, Cordas e Oportunidades',
+    description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Portal NKL | Luthieria, Cordas e Oportunidades',
+    description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
