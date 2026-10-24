@@ -35,7 +35,14 @@ const nextConfig: NextConfig = {
         hostname: "vgogceknmqdqzzpztkrr.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   },
   async headers() {
     return [

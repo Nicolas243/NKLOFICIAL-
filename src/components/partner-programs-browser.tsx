@@ -6,6 +6,7 @@ import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { Pagination } from '@/components/ui/pagination';
+import { OutboundLink } from '@/components/ui/outbound-link';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -187,7 +188,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
               <p className="text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
               <div className="mt-auto flex flex-wrap gap-3">
                 <button type="button" onClick={() => setSelectedProgram(program)} className="rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-neon">Ler mais e avaliar</button>
-                <a href={program.affiliateUrl ?? program.websiteUrl} target="_blank" rel="noopener noreferrer" className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</a>
+                <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
               </div>
             </article>
           );
