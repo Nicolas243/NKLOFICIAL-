@@ -6,7 +6,7 @@ const LINKS = [
   { icon: '🎻', title: 'NKL no Instagram', desc: 'Dicas diarias e analises comparativas de equipamentos em videos.', url: 'https://www.instagram.com/nkloficial/' },
   { icon: '🎯', title: 'NKL no TikTok', desc: 'Dicas rapidas, diretas ao ponto e resolucao de problemas em videos de 1 minuto.', url: 'https://www.tiktok.com/@nkloficial' },
   { icon: '📺', title: 'NKL no YouTube', desc: 'Tutoriais completos, analises profundas e aulas especiais.', url: 'https://www.youtube.com/@nkloficial' },
-  { icon: '→', title: 'Quero ganhar dinheiro online', desc: 'Descubra as plataformas que utilizo e recomendo para gerar renda extra internacional e nacional.', url: '/contatos/ganhar-dinheiro' },
+  { icon: '→', title: 'Quero ganhar dinheiro online', desc: 'Descubra as plataformas que utilizo e recomendo para gerar renda extra internacional e nacional.', url: '/programas' },
   { icon: '🛒', title: 'eBay: Criar Conta + Loja com Promocoes', desc: 'Acesso direto a leiloes internacionais e lojas com ofertas especiais.', url: 'https://ebay.us/ea99Iy' },
   { icon: '🌏', title: 'FansBuy: Redirecionador da China', desc: 'Plataforma que redireciona compras de lojas chinesas para o Brasil.', url: 'https://fansbuy.com/register?invite=RmFucy1UdE11bnoxOQ==' },
   { icon: '🏪', title: 'Goofish / Xianyu: OLX da China', desc: 'Marketplace chines com violinos, arcos e acessorios direto de vendedores.', url: 'https://www.goofish.com/search?q=violin&spm=a21ybx.search.searchInput.0' },
@@ -37,8 +37,8 @@ export default function ContatosPage() {
           <a
             key={i}
             href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={link.url.startsWith('/') ? undefined : '_blank'}
+            rel={link.url.startsWith('/') ? undefined : 'noopener noreferrer'}
             className="flex items-center gap-4 p-4 bg-surface border border-border rounded-lg hover:border-neon transition-colors"
           >
             <span className="text-2xl">{link.icon}</span>

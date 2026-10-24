@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
@@ -88,6 +89,16 @@ export default async function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          </section>
+
+          <section className="p-6 bg-surface border border-border rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="font-playfair text-xl font-bold">Programas de parceria</h2>
+              <p className="text-sm opacity-70 mt-1">Controle links de afiliado, notas editoriais e sugestões da comunidade.</p>
+            </div>
+            <Link href="/programas/admin" className="w-fit rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
+              Gerenciar programas
+            </Link>
           </section>
 
           <section className="p-6 bg-surface border border-border rounded-xl">

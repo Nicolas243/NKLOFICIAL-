@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 const LUTHIERS = [
   'Antonio Stradivari','Messiah 1716','Soil 1714','Betts 1704',
@@ -21,6 +22,12 @@ const SYMBOLS = [
   '\u{1D106}','\u{1D107}','\u{1D110}','\u{1D12A}',
 ]
 
+const BLOG_WORDS = [
+  'IDEIAS', 'RENDA', 'TRABALHO', 'REMOTO', 'PORTFÓLIO', 'PROJETOS',
+  'CRIADORES', 'FREELANCE', 'APRENDIZADO', 'OPORTUNIDADE', 'DIGITAL', 'NKL',
+]
+const BLOG_MARKS = ['+', '↗', '◌', '◇', '—', '•']
+
 interface Cell {
   x: number; y: number; rotate: number; text: string; isSymbol: boolean
 }
@@ -29,10 +36,10 @@ interface State { grid: Cell[]; w: number; h: number }
 
 function sh<T>(a: readonly T[]): T[] { return [...a].sort(() => Math.random() - 0.5) }
 
-function buildGrid(w: number, h: number): Cell[] {
+function buildGrid(w: number, h: number, words: readonly string[], marks: readonly string[]): Cell[] {
   const cw = 300; const ch = 110
   const cols = Math.ceil(w / cw) + 2; const rows = Math.ceil(h / ch) + 2
-  let poolL = sh(LUTHIERS); let poolS = sh(SYMBOLS)
+  let poolL = sh(words); let poolS = sh(marks)
   const next = (): { t: string; s: boolean } => {
     if (!poolL.length) poolL = sh(LUTHIERS)
     if (!poolS.length) poolS = sh(SYMBOLS)
@@ -52,6 +59,8 @@ function buildGrid(w: number, h: number): Cell[] {
 }
 
 export function ParallaxBackground() {
+  const pathname = usePathname()
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/')
   const [state, setState] = useState<State | null>(null)
   const plane = useRef<HTMLDivElement>(null)
   const pointer = useRef({ x: 0, y: 0 })
@@ -63,8 +72,8 @@ export function ParallaxBackground() {
     const w = window.innerWidth * 2.5   // 250vw
     const h = window.innerHeight * 1.5  // 150vh
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState({ grid: buildGrid(w, h), w, h })
-  }, [])
+    setState({ grid: buildGrid(w, h, isPartnerPortal ? BLOG_WORDS : LUTHIERS, isPartnerPortal ? BLOG_MARKS : SYMBOLS), w, h })
+  }, [isPartnerPortal])
 
   const onMove = useCallback((e: MouseEvent) => {
     pointer.current.x = (e.clientX - window.innerWidth / 2) * 0.08
@@ -119,9 +128,13 @@ export function ParallaxBackground() {
   const renderCells = (kp: string) =>
     grid.map((c, i) => (
       <span key={`${kp}-${i}`}
-        className={c.isSymbol
-          ? 'font-playfair text-6xl font-bold text-neutral-600/30 dark:text-neutral-400/20 max-lg:text-neutral-700/40 max-lg:dark:text-neutral-300/30'
-          : 'font-playfair italic text-3xl font-bold text-neutral-600/30 dark:text-neutral-400/20 max-lg:text-neutral-700/40 max-lg:dark:text-neutral-300/30'}
+        className={isPartnerPortal
+          ? (c.isSymbol
+          ? 'font-sans text-5xl font-light text-slate-900/10 dark:text-slate-100/10 max-lg:text-slate-900/15 max-lg:dark:text-slate-100/15'
+          : 'font-sans text-2xl font-semibold tracking-[0.18em] text-slate-900/10 dark:text-slate-100/10 max-lg:text-slate-900/15 max-lg:dark:text-slate-100/15')
+          : (c.isSymbol
+            ? 'font-playfair text-6xl font-bold text-neutral-600/30 dark:text-neutral-400/20 max-lg:text-neutral-700/40 max-lg:dark:text-neutral-300/30'
+            : 'font-playfair italic text-3xl font-bold text-neutral-600/30 dark:text-neutral-400/20 max-lg:text-neutral-700/40 max-lg:dark:text-neutral-300/30')}
         style={{ position: 'absolute', left: c.x, top: c.y, transform: `translate(-50%,-50%) rotate(${c.rotate}deg)`, whiteSpace: 'nowrap' }}
       >{c.text}</span>
     ))
@@ -147,7 +160,7 @@ export function ParallaxBackground() {
           )}
         </div>
       </div>
-      <div className="fixed inset-0 bg-background/65 z-[2] pointer-events-none" />
+      <div className={`fixed inset-0 z-[2] pointer-events-none ${isPartnerPortal ? 'bg-white/90 dark:bg-black/90' : 'bg-background/65'}`} />
     </>
   )
 }

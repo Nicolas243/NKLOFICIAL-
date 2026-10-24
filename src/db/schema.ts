@@ -135,6 +135,55 @@ export const newsSuggestions = pgTable('news_suggestions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const partnerPrograms = pgTable('partner_programs', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  slug: varchar('slug', { length: 120 }).notNull().unique(),
+  name: varchar('name', { length: 180 }).notNull(),
+  shortDescription: text('short_description').notNull(),
+  longDescription: text('long_description').notNull(),
+  category: varchar('category', { length: 80 }).notNull(),
+  difficulty: varchar('difficulty', { length: 20 }).notNull(),
+  tags: jsonb('tags').$type<string[]>().notNull().default([]),
+  websiteUrl: text('website_url').notNull(),
+  affiliateUrl: text('affiliate_url'),
+  editorialRating: integer('editorial_rating').notNull(),
+  editorialSource: text('editorial_source').notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('published'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const partnerProgramReviews = pgTable(
+  'partner_program_reviews',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    programId: uuid('program_id')
+      .references(() => partnerPrograms.id, { onDelete: 'cascade' })
+      .notNull(),
+    reviewerKeyHash: varchar('reviewer_key_hash', { length: 64 }).notNull(),
+    rating: integer('rating').notNull(),
+    reason: text('reason').notNull(),
+    tags: jsonb('tags').$type<string[]>().notNull().default([]),
+    status: varchar('status', { length: 20 }).notNull().default('published'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    unique('partner_program_reviews_program_reviewer_unique').on(
+      table.programId,
+      table.reviewerKeyHash
+    ),
+  ]
+);
+
+export const partnerSuggestions = pgTable('partner_suggestions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 180 }).notNull(),
+  websiteUrl: text('website_url'),
+  reason: text('reason').notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('pending'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),

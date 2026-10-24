@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('[sitemap] Falha ao consultar o banco, usando apenas rotas estáticas:', error);
   }
 
-  const staticRoutes = ['', '/catalogo', '/luthiers', '/noticias', '/comparar'];
+  const staticRoutes = ['', '/catalogo', '/luthiers', '/noticias', '/comparar', '/programas'];
 
   const entries: MetadataRoute.Sitemap = staticRoutes.map((path) => ({
     url: path === '' ? `${BASE_URL}/` : `${BASE_URL}${path}`,

@@ -3,6 +3,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 
 const API_PATH_PREFIX = '/api/';
 const ADMIN_PATH_PREFIX = '/admin';
+const PARTNER_ADMIN_PATH_PREFIX = '/programas/admin';
 
 /**
  * Normaliza o pathname decodificando percent-encoding. URLs como
@@ -53,7 +54,12 @@ export async function proxy(request: NextRequest) {
   // ADMIN MIDDLEWARE (convenção Next 16 — o proxy substitui o middleware):
   // a área administrativa exige sessão autenticada. A verificação de role
   // 'admin' é reforçada na página (Server Component com acesso ao banco).
-  if (pathname === ADMIN_PATH_PREFIX || pathname.startsWith(`${ADMIN_PATH_PREFIX}/`)) {
+  if (
+    pathname === ADMIN_PATH_PREFIX
+    || pathname.startsWith(`${ADMIN_PATH_PREFIX}/`)
+    || pathname === PARTNER_ADMIN_PATH_PREFIX
+    || pathname.startsWith(`${PARTNER_ADMIN_PATH_PREFIX}/`)
+  ) {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';

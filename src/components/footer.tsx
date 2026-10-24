@@ -2,8 +2,11 @@
 
 import { useState, useCallback, type FormEvent } from 'react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
+  const pathname = usePathname();
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/');
   const [pixOpen, setPixOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -31,7 +34,7 @@ export function Footer() {
 
   return (
     <>
-      <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label="Comunidade VIP WhatsApp">
+      <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" target="_blank" rel="noopener noreferrer" className={isPartnerPortal ? 'hidden' : 'whatsapp-float'} aria-label="Comunidade VIP WhatsApp">
         <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
       </a>
       <footer className="site-footer">

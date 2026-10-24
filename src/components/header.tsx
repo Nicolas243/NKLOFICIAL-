@@ -147,6 +147,7 @@ export function Header() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
   const isHome = pathname === '/'
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/')
   const user = useSessionUser()
   const isLoggedIn = Boolean(user)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -166,6 +167,50 @@ export function Header() {
       {isLoggedIn ? 'Perfil' : 'Entrar'}
     </Link>
   )
+
+  if (isPartnerPortal) {
+    const portalLinks = (
+      <>
+        <Link href="/programas" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
+        <a href="/programas#sugestao" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
+        <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
+      </>
+    )
+
+    return (
+      <header className="lg:fixed top-0 w-full z-[100] border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
+        <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
+          <Link href="/programas" className="group flex min-w-0 items-center gap-3">
+            <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain" />
+            <span className="min-w-0">
+              <span className="block truncate font-playfair text-xl font-bold tracking-tight">Blog NKL</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">Seu blog de confiança sobre tudo o que você precisa</span>
+            </span>
+          </Link>
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
+          <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
+            <span className="hidden">{authBtn}</span>
+            <ThemeToggle />
+            <button
+              className="relative z-[110] flex h-[30px] w-[30px] items-center justify-center rounded-[3px] transition-colors hover:bg-accent lg:hidden"
+              aria-label="Menu do Blog NKL"
+              aria-expanded={menuOpen}
+              aria-controls="partner-mobile-navigation"
+              onClick={() => setMenuOpen((value) => !value)}
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+        {menuOpen && (
+          <nav id="partner-mobile-navigation" className="flex flex-col gap-1 border-t border-border bg-white px-4 py-4 text-black dark:bg-black dark:text-white lg:hidden">
+            {portalLinks}
+            <span className="mt-2 sm:hidden">{authBtn}</span>
+          </nav>
+        )}
+      </header>
+    )
+  }
 
   const navLinks = (
     <>
