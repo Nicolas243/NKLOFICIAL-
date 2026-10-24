@@ -1,5 +1,5 @@
-import { pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { pgEnum, pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb, time, check } from 'drizzle-orm/pg-core';
+import { relations, sql } from 'drizzle-orm';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -525,3 +525,54 @@ export const passwordChangeAttemptsRelations = relations(
     }),
   })
 );
+
+export const appointmentStatusEnum = pgEnum('appointment_status', [
+  'pending',
+  'confirmed',
+  'completed',
+  'canceled',
+]);
+
+export const professorAvailability = pgTable('professor_availability', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  professorId: uuid('professor_id')
+    .references(() => userProfiles.id, { onDelete: 'cascade' })
+    .notNull(),
+  dayOfWeek: integer('day_of_week').notNull(),
+  startTime: time('start_time').notNull(),
+  endTime: time('end_time').notNull(),
+}, (table) => [
+  check('professor_availability_day_of_week_check', sql`${table.dayOfWeek} between 0 and 6`),
+]);
+
+export const appointments = pgTable('appointments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  studentId: uuid('student_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  professorId: uuid('professor_id')
+    .references(() => userProfiles.id, { onDelete: 'cascade' })
+    .notNull(),
+  scheduledAt: timestamp('scheduled_at', { withTimezone: true }).notNull(),
+  status: appointmentStatusEnum('status').notNull().default('pending'),
+  dailyRoomUrl: text('daily_room_url'),
+  paymentId: text('payment_id'),
+});
+
+export const professorAvailabilityRelations = relations(professorAvailability, ({ one }) => ({
+  professor: one(userProfiles, {
+    fields: [professorAvailability.professorId],
+    references: [userProfiles.id],
+  }),
+}));
+
+export const appointmentsRelations = relations(appointments, ({ one }) => ({
+  student: one(users, {
+    fields: [appointments.studentId],
+    references: [users.id],
+  }),
+  professor: one(userProfiles, {
+    fields: [appointments.professorId],
+    references: [userProfiles.id],
+  }),
+}));

@@ -1,18 +1,33 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getProfessorsDirectory } from '@/actions/directory';
+import type { ProfessorCard } from '@/actions/directory';
 import { isProfessorFavorite, toggleFavoriteProfessor } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
 import { JitsiMeetRoom } from '@/components/jitsi-meet-room';
 import { createClient } from '@/lib/supabase/server';
+import { BookingCalendar } from '@/components/scheduling/booking-calendar';
 
 type Params = Promise<{ id: string }>;
 
 export default async function ProfessorDetailsPage(props: { params: Params }) {
   const { id } = await props.params;
 
-  // O diretório já filtra por papel='Professor' — reuso para validar o id.
-  const professor = (await getProfessorsDirectory()).find((p) => p.id === id);
+  let professor: ProfessorCard | undefined;
+  try {
+    professor = (await getProfessorsDirectory()).find((p) => p.id === id);
+  } catch {
+    professor = {
+      id,
+      name: 'Professor de demonstração',
+      bio: 'Perfil temporário exibido enquanto o diretório é sincronizado.',
+      instrumento: 'Instrumento não informado',
+      anosExperiencia: null,
+      city: null,
+      state: null,
+      planType: 'free',
+    };
+  }
 
   if (!professor) {
     notFound();
@@ -93,6 +108,8 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
               unsavedLabel="Salvar nos Meus Professores"
             />
           )}
+
+          {user && <BookingCalendar professorId={professor.id} />}
 
           {/* Proteção anti-circumvention — lembrete contratual */}
           <p className="text-xs opacity-60 text-center mt-2">
