@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { createClassBooking } from '@/actions/scheduling';
 
 type TimeSlotPickerProps = {
@@ -24,11 +25,18 @@ function BookingSubmitButton() {
 }
 
 export function TimeSlotPicker({ teacherId, slots }: TimeSlotPickerProps) {
+  const router = useRouter();
   const [selectedSlot, setSelectedSlot] = useState(slots[0] ?? '');
   const [state, formAction] = useActionState(createClassBooking, {
     success: false,
     message: '',
   });
+
+  useEffect(() => {
+    if (state.bookingId) {
+      router.push(`/checkout/${state.bookingId}`);
+    }
+  }, [router, state.bookingId]);
 
   if (slots.length === 0) {
     return (

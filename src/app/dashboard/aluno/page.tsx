@@ -4,6 +4,7 @@ import { and, eq, gte } from 'drizzle-orm';
 import { db } from '@/db';
 import { classBookings, users } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
+import { BookingRoom } from '@/components/video/booking-room';
 
 function isRoomOpen(scheduledAt: Date, now: number): boolean {
   return now >= scheduledAt.getTime() - 10 * 60 * 1000;
@@ -62,10 +63,8 @@ export default async function StudentDashboardPage() {
                   {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(booking.scheduledAt)}
                 </p>
                 <p className="mt-3 text-xs uppercase tracking-wider opacity-60">Status: {booking.status}</p>
-                {open && booking.meetingUrl ? (
-                  <Link href={booking.meetingUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex w-full justify-center rounded-md bg-neon px-4 py-3 font-bold text-black">
-                    Entrar na Sala
-                  </Link>
+                {open ? (
+                  <BookingRoom url={booking.meetingUrl} />
                 ) : (
                   <span className="mt-6 block rounded-md border border-border px-4 py-3 text-center text-sm opacity-60">
                     Sala liberada 10 minutos antes

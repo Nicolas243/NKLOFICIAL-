@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 type ActionResult = {
   success: boolean;
   message: string;
+  bookingId?: string;
 };
 
 export async function saveTeacherAvailability(
@@ -121,14 +122,18 @@ export async function createClassBooking(
     return { success: false, message: 'Este horário acabou de ser reservado.' };
   }
 
-  await db.insert(classBookings).values({
+  const [booking] = await db.insert(classBookings).values({
     studentId: user.id,
     teacherId,
     scheduledAt,
     status: 'pending',
     paymentStatus: 'pending',
-  });
+  }).returning({ id: classBookings.id });
 
   revalidatePath('/dashboard/aluno');
-  return { success: true, message: 'Reserva criada. Aguarde a confirmação do pagamento.' };
+  return {
+    success: true,
+    message: 'Reserva criada. Continue para o pagamento.',
+    bookingId: booking?.id,
+  };
 }

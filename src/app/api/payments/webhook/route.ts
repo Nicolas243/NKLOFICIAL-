@@ -1,6 +1,10 @@
 import crypto from 'node:crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { and, eq } from 'drizzle-orm';
+import { db } from '@/db';
+import { classBookings } from '@/db/schema';
+import { env } from '@/env';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,6 +24,21 @@ type SignatureParts = {
   timestamp: string;
   signature: string;
 };
+
+function getBookingId(payment: { external_reference?: string; metadata?: unknown }): string | null {
+  if (payment.external_reference) {
+    return payment.external_reference;
+  }
+  if (
+    typeof payment.metadata === 'object'
+    && payment.metadata !== null
+    && 'booking_id' in payment.metadata
+    && typeof payment.metadata.booking_id === 'string'
+  ) {
+    return payment.metadata.booking_id;
+  }
+  return null;
+}
 
 const HEX_SIGNATURE = /^[a-f0-9]{64}$/i;
 
@@ -63,13 +82,7 @@ function hasValidSignature(request: NextRequest, notification: MercadoPagoNotifi
 }
 
 async function processNotification(notification: MercadoPagoNotification): Promise<void> {
-  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
   const paymentId = notification.data?.id;
-
-  if (!accessToken) {
-    console.error('[WEBHOOK] MERCADOPAGO_ACCESS_TOKEN ausente.');
-    return;
-  }
 
   if (typeof paymentId !== 'string' || !paymentId) {
     console.error('[WEBHOOK] Notificação sem identificador de pagamento.');
@@ -77,7 +90,7 @@ async function processNotification(notification: MercadoPagoNotification): Promi
   }
 
   try {
-    const client = new MercadoPagoConfig({ accessToken });
+    const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
     const payment = await new Payment(client).get({ id: paymentId });
     console.log('[WEBHOOK] Pagamento sincronizado:', {
       id: payment.id,
@@ -85,6 +98,55 @@ async function processNotification(notification: MercadoPagoNotification): Promi
       type: notification.type,
       action: notification.action,
     });
+
+    if (payment.status !== 'approved') {
+      return;
+    }
+
+    const bookingId = getBookingId(payment);
+    if (!bookingId) {
+      console.error('[WEBHOOK] Pagamento aprovado sem external_reference.');
+      return;
+    }
+
+    const dailyResponse = await fetch('https://api.daily.co/v1/rooms', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.DAILY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        privacy: 'private',
+        properties: {
+          exp: Math.floor(Date.now() / 1000) + 7200,
+        },
+      }),
+    });
+
+    if (!dailyResponse.ok) {
+      console.error('[WEBHOOK] Daily recusou a criação da sala:', dailyResponse.status);
+      return;
+    }
+
+    const dailyPayload: unknown = await dailyResponse.json();
+    if (
+      typeof dailyPayload !== 'object'
+      || dailyPayload === null
+      || !('url' in dailyPayload)
+      || typeof dailyPayload.url !== 'string'
+    ) {
+      console.error('[WEBHOOK] Daily retornou uma sala sem URL válida.');
+      return;
+    }
+
+    await db
+      .update(classBookings)
+      .set({
+        paymentStatus: 'paid',
+        status: 'confirmed',
+        meetingUrl: dailyPayload.url,
+      })
+      .where(and(eq(classBookings.id, bookingId), eq(classBookings.paymentStatus, 'pending')));
   } catch (error) {
     console.error('[WEBHOOK] Falha ao consultar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
   }

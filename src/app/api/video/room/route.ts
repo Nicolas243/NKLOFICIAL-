@@ -26,7 +26,7 @@ export async function POST(): Promise<NextResponse<{ url: string } | { error: st
       return NextResponse.json({ error: 'Não foi possível criar a sala de aula.' }, { status: 502 });
     }
 
-    const data = await response.json() as DailyRoomResponse;
+    const data: DailyRoomResponse = await response.json();
     if (!data.url) {
       console.error('[DAILY_ROOM] Resposta sem URL de sala.');
       return NextResponse.json({ error: 'A sala foi criada sem uma URL válida.' }, { status: 502 });
