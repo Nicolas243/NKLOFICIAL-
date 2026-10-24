@@ -5,12 +5,14 @@ import { useFormStatus } from 'react-dom';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
+import { Pagination } from '@/components/ui/pagination';
 
 type Props = {
   programs: PartnerProgramCard[];
 };
 
 const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
+const PROGRAMS_PER_PAGE = 9;
 
 type FormState = {
   error: string | null;
@@ -67,6 +69,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
   const [difficulty, setDifficulty] = useState('todas');
   const [sort, setSort] = useState('relevancia');
   const [selectedProgram, setSelectedProgram] = useState<PartnerProgramCard | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const categories = useMemo(
     () => Array.from(new Set(programs.map((program) => program.category))).sort(),
@@ -96,6 +99,17 @@ export function PartnerProgramsBrowser({ programs }: Props) {
     });
   }, [category, difficulty, programs, query, sort]);
 
+  const totalPages = Math.ceil(filteredPrograms.length / PROGRAMS_PER_PAGE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
+  const visiblePrograms = filteredPrograms.slice(
+    (safeCurrentPage - 1) * PROGRAMS_PER_PAGE,
+    safeCurrentPage * PROGRAMS_PER_PAGE,
+  );
+
+  function updatePage(page: number): void {
+    setCurrentPage(Math.min(Math.max(page, 1), Math.max(totalPages, 1)));
+  }
+
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-[1.6fr_1fr_1fr_1fr] gap-3 p-4 bg-surface border border-border rounded-xl">
@@ -103,21 +117,30 @@ export function PartnerProgramsBrowser({ programs }: Props) {
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Nome, categoria ou tag"
             className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:border-neon"
           />
         </label>
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
-          <select value={category} onChange={(event) => setCategory(event.target.value)} className="w-full rounded-md border border-border bg-background px-3 py-2">
+          <select value={category} onChange={(event) => {
+            setCategory(event.target.value);
+            setCurrentPage(1);
+          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
             <option value="todas">Todas</option>
             {categories.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
         </label>
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Dificuldade</span>
-          <select value={difficulty} onChange={(event) => setDifficulty(event.target.value)} className="w-full rounded-md border border-border bg-background px-3 py-2">
+          <select value={difficulty} onChange={(event) => {
+            setDifficulty(event.target.value);
+            setCurrentPage(1);
+          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
             <option value="todas">Todas</option>
             <option value="fácil">Fácil</option>
             <option value="médio">Médio</option>
@@ -126,7 +149,10 @@ export function PartnerProgramsBrowser({ programs }: Props) {
         </label>
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Ordenar</span>
-          <select value={sort} onChange={(event) => setSort(event.target.value)} className="w-full rounded-md border border-border bg-background px-3 py-2">
+          <select value={sort} onChange={(event) => {
+            setSort(event.target.value);
+            setCurrentPage(1);
+          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
             <option value="relevancia">Relevância</option>
             <option value="nota">Nota</option>
             <option value="nome">Nome</option>
@@ -137,7 +163,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       <p className="text-sm opacity-60">{filteredPrograms.length} oportunidades encontradas</p>
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {filteredPrograms.map((program) => {
+        {visiblePrograms.map((program) => {
           const rating = program.finalRating;
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
@@ -167,6 +193,8 @@ export function PartnerProgramsBrowser({ programs }: Props) {
           );
         })}
       </section>
+
+      <Pagination currentPage={safeCurrentPage} totalPages={totalPages} onPageChange={updatePage} />
 
       {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
 
