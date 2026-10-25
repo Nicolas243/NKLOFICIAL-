@@ -4,6 +4,7 @@ import { and, eq, gte, lt } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { classBookings, teacherAvailability, users } from '@/db/schema';
+import { calculateClassPricing, DEFAULT_CLASS_PRICE_CENTS } from '@/lib/pricing';
 import { createClient } from '@/lib/supabase/server';
 
 type ActionResult = {
@@ -128,6 +129,8 @@ export async function createClassBooking(
     scheduledAt,
     status: 'pending',
     paymentStatus: 'pending',
+    priceCents: DEFAULT_CLASS_PRICE_CENTS,
+    platformFeeCents: calculateClassPricing(DEFAULT_CLASS_PRICE_CENTS).platformApplicationFeeCents,
   }).returning({ id: classBookings.id });
 
   revalidatePath('/dashboard/aluno');

@@ -2,6 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
 import { classBookings, users } from '@/db/schema';
+import { calculateClassPricing, CENTS_PER_UNIT } from '@/lib/pricing';
 import { createClient } from '@/lib/supabase/server';
 import { BookingPayment } from '@/components/checkout/booking-payment';
 
@@ -24,6 +25,7 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
       scheduledAt: classBookings.scheduledAt,
       status: classBookings.status,
       paymentStatus: classBookings.paymentStatus,
+      priceCents: classBookings.priceCents,
       teacherId: classBookings.teacherId,
       teacherName: users.name,
     })
@@ -36,6 +38,8 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
     notFound();
   }
 
+  const pricing = calculateClassPricing(booking.priceCents);
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
       <div className="mb-8 max-w-2xl">
@@ -46,7 +50,12 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
           {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(booking.scheduledAt)}.
         </p>
       </div>
-      <BookingPayment bookingId={booking.id} />
+      <BookingPayment
+        bookingId={booking.id}
+        basePrice={pricing.basePriceCents / CENTS_PER_UNIT}
+        studentFee={pricing.studentFeeCents / CENTS_PER_UNIT}
+        total={pricing.totalStudentPaysCents / CENTS_PER_UNIT}
+      />
     </div>
   );
 }

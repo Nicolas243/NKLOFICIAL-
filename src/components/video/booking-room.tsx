@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DailyIframe } from '@/components/video/daily-iframe';
+import { DailyEmbed } from '@/components/video/daily-embed';
 
 type BookingRoomProps = {
   url: string | null;
@@ -16,7 +16,7 @@ export function BookingRoom({ url }: BookingRoomProps) {
 
   return open ? (
     <div className="mt-6">
-      <DailyIframe url={url} />
+      <DailyEmbed url={url} />
       <button type="button" onClick={() => setOpen(false)} className="mt-3 text-sm font-semibold text-neon hover:underline">
         Fechar sala
       </button>

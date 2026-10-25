@@ -200,6 +200,9 @@ export const userProfiles = pgTable('user_profiles', {
   anosExperiencia: integer('anos_experiencia'),       // anos de experiência
   newsletterOptIn: boolean('newsletter_opt_in').default(false),
   birthDate: varchar('birth_date', { length: 10 }),
+  hourlyRateCents: integer('hourly_rate_cents').notNull().default(15000),
+  mpCollectorId: text('mp_collector_id'),
+  mpAccessToken: text('mp_access_token'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -610,6 +613,8 @@ export const classBookings = pgTable('class_bookings', {
   status: classBookingStatusEnum('status').notNull().default('pending'),
   paymentStatus: paymentStatusEnum('payment_status').notNull().default('pending'),
   meetingUrl: text('meeting_url'),
+  priceCents: integer('price_cents').notNull().default(15000),
+  platformFeeCents: integer('platform_fee_cents').notNull().default(1500),
 });
 
 export const teacherAvailabilityRelations = relations(teacherAvailability, ({ one }) => ({

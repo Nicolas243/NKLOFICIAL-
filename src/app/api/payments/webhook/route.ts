@@ -9,15 +9,14 @@ import { env } from '@/env';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const CLASS_ROOM_TTL_SECONDS = 7200;
+const HEX_SIGNATURE = /^[a-f0-9]{64}$/i;
+
 type MercadoPagoNotification = {
   action?: unknown;
-  api_version?: unknown;
   data?: { id?: unknown };
-  date_created?: unknown;
   id?: unknown;
-  live_mode?: unknown;
   type?: unknown;
-  user_id?: unknown;
 };
 
 type SignatureParts = {
@@ -26,9 +25,7 @@ type SignatureParts = {
 };
 
 function getBookingId(payment: { external_reference?: string; metadata?: unknown }): string | null {
-  if (payment.external_reference) {
-    return payment.external_reference;
-  }
+  if (payment.external_reference) return payment.external_reference;
   if (
     typeof payment.metadata === 'object'
     && payment.metadata !== null
@@ -40,74 +37,42 @@ function getBookingId(payment: { external_reference?: string; metadata?: unknown
   return null;
 }
 
-const HEX_SIGNATURE = /^[a-f0-9]{64}$/i;
-
 function parseSignature(value: string): SignatureParts | null {
-  const parts = new Map(
-    value.split(',').map((part) => {
-      const [key, ...rest] = part.trim().split('=');
-      return [key, rest.join('=')];
-    }),
-  );
+  const parts = new Map(value.split(',').map((part) => {
+    const [key, ...rest] = part.trim().split('=');
+    return [key, rest.join('=')];
+  }));
   const timestamp = parts.get('ts');
   const signature = parts.get('v1');
-
-  if (!timestamp || !signature || !/^\d+$/.test(timestamp) || !HEX_SIGNATURE.test(signature)) {
-    return null;
-  }
-
+  if (!timestamp || !signature || !/^\d+$/.test(timestamp) || !HEX_SIGNATURE.test(signature)) return null;
   return { timestamp, signature };
 }
 
 function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
   const signatureHeader = request.headers.get('x-signature');
   const requestId = request.headers.get('x-request-id');
   const dataId = notification.data?.id;
-
-  if (!secret || !signatureHeader || !requestId || typeof dataId !== 'string' || !dataId) {
-    return false;
-  }
-
+  if (!env.MERCADOPAGO_WEBHOOK_SECRET || !signatureHeader || !requestId || typeof dataId !== 'string') return false;
   const parts = parseSignature(signatureHeader);
   if (!parts) return false;
-
   const manifest = `id:${dataId};request-id:${requestId};ts:${parts.timestamp};`;
-  const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
-  const receivedBuffer = Buffer.from(parts.signature, 'hex');
+  const expected = crypto.createHmac('sha256', env.MERCADOPAGO_WEBHOOK_SECRET).update(manifest).digest('hex');
+  const received = Buffer.from(parts.signature, 'hex');
   const expectedBuffer = Buffer.from(expected, 'hex');
-
-  return receivedBuffer.length === expectedBuffer.length
-    && crypto.timingSafeEqual(receivedBuffer, expectedBuffer);
+  return received.length === expectedBuffer.length && crypto.timingSafeEqual(received, expectedBuffer);
 }
 
 async function processNotification(notification: MercadoPagoNotification): Promise<void> {
   const paymentId = notification.data?.id;
-
-  if (typeof paymentId !== 'string' || !paymentId) {
-    console.error('[WEBHOOK] Notificação sem identificador de pagamento.');
-    return;
-  }
+  if (typeof paymentId !== 'string' || !paymentId) return;
 
   try {
     const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
     const payment = await new Payment(client).get({ id: paymentId });
-    console.log('[WEBHOOK] Pagamento sincronizado:', {
-      id: payment.id,
-      status: payment.status,
-      type: notification.type,
-      action: notification.action,
-    });
-
-    if (payment.status !== 'approved') {
-      return;
-    }
+    if (payment.status !== 'approved') return;
 
     const bookingId = getBookingId(payment);
-    if (!bookingId) {
-      console.error('[WEBHOOK] Pagamento aprovado sem external_reference.');
-      return;
-    }
+    if (!bookingId) return;
 
     const dailyResponse = await fetch('https://api.daily.co/v1/rooms', {
       method: 'POST',
@@ -117,9 +82,7 @@ async function processNotification(notification: MercadoPagoNotification): Promi
       },
       body: JSON.stringify({
         privacy: 'private',
-        properties: {
-          exp: Math.floor(Date.now() / 1000) + 7200,
-        },
+        properties: { exp: Math.floor(Date.now() / 1000) + CLASS_ROOM_TTL_SECONDS },
       }),
     });
 
@@ -139,22 +102,18 @@ async function processNotification(notification: MercadoPagoNotification): Promi
       return;
     }
 
-    await db
-      .update(classBookings)
-      .set({
-        paymentStatus: 'paid',
-        status: 'confirmed',
-        meetingUrl: dailyPayload.url,
-      })
-      .where(and(eq(classBookings.id, bookingId), eq(classBookings.paymentStatus, 'pending')));
+    await db.update(classBookings).set({
+      paymentStatus: 'paid',
+      status: 'confirmed',
+      meetingUrl: dailyPayload.url,
+    }).where(and(eq(classBookings.id, bookingId), eq(classBookings.paymentStatus, 'pending')));
   } catch (error) {
-    console.error('[WEBHOOK] Falha ao consultar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
+    console.error('[WEBHOOK] Falha ao processar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
   }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let notification: MercadoPagoNotification;
-
   try {
     notification = await request.json() as MercadoPagoNotification;
   } catch {
@@ -162,16 +121,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   if (!hasValidSignature(request, notification)) {
-    console.error('[WEBHOOK] Assinatura inválida ou configuração ausente.');
     return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
   }
-
-  console.log('[WEBHOOK] Notificação recebida:', {
-    id: notification.id,
-    type: notification.type,
-    action: notification.action,
-    paymentId: notification.data?.id,
-  });
 
   after(() => processNotification(notification));
   return NextResponse.json({ received: true }, { status: 200 });
