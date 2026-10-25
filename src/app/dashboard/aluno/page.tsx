@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { and, eq, gte } from 'drizzle-orm';
+import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings, studentPlanEnrollments, users } from '@/db/schema';
+import { classBookings, notifications, studentPlanEnrollments, users } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
 import { StudentPlansWallet } from '@/components/dashboard/student-plans-wallet';
 import { BookingActionsBar } from '@/components/dashboard/booking-actions-bar';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
+import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
 
 function isRoomOpen(scheduledAt: Date, now: number): boolean {
   return now >= scheduledAt.getTime() - 10 * 60 * 1000;
@@ -45,6 +46,24 @@ export default async function StudentDashboardPage() {
     status: studentPlanEnrollments.status,
     teacherName: users.name,
   }).from(studentPlanEnrollments).innerJoin(users, eq(users.id, studentPlanEnrollments.teacherId)).where(eq(studentPlanEnrollments.studentId, user.id));
+  const bannerTo = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+  const bannerClasses = await db.select({
+    id: classBookings.id,
+    scheduledAt: classBookings.scheduledAt,
+    teacherName: users.name,
+  }).from(classBookings).innerJoin(users, eq(users.id, classBookings.teacherId)).where(and(
+    eq(classBookings.studentId, user.id),
+    eq(classBookings.status, 'confirmed'),
+    gte(classBookings.scheduledAt, now),
+    lte(classBookings.scheduledAt, bannerTo),
+  ));
+  const recentNotifications = await db.select({
+    id: notifications.id,
+    title: notifications.title,
+    message: notifications.message,
+    createdAt: notifications.createdAt,
+    isRead: notifications.isRead,
+  }).from(notifications).where(eq(notifications.userId, user.id)).orderBy(desc(notifications.createdAt)).limit(5);
   // Capture one instant so every card uses the same room-opening boundary.
   // eslint-disable-next-line react-hooks/purity
   const currentTime = Date.now();
@@ -56,6 +75,10 @@ export default async function StudentDashboardPage() {
         <h1 className="mt-3 font-playfair text-4xl font-bold sm:text-5xl">Próximas aulas</h1>
       </div>
       <StudentPlansWallet enrollments={enrollments.map((item) => ({ ...item, teacherName: item.teacherName, expiresAt: item.expiresAt.toISOString() }))} />
+      <UpcomingClassBanner
+        classes={bannerClasses.map((item) => ({ ...item, scheduledAt: item.scheduledAt.toISOString() }))}
+        notifications={recentNotifications.map((item) => ({ ...item, createdAt: item.createdAt.toISOString() }))}
+      />
 
       {bookings.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">

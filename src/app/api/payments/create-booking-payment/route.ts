@@ -54,11 +54,17 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const pricing = calculateClassPricing(booking.priceCents, booking.planModality as ClassPlanModality);
     const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
+    const installments = typeof body.installments === 'number' && Number.isInteger(body.installments)
+      ? body.installments
+      : 1;
+    if (installments < 1 || installments > modality.maxInstallments) {
+      return NextResponse.json({ error: 'invalid_installments', maxInstallments: modality.maxInstallments }, { status: 400 });
+    }
     const accessToken = booking.teacherAccessToken || env.MERCADOPAGO_ACCESS_TOKEN;
     const paymentBody: Record<string, unknown> = {
       token: body.token,
       payment_method_id: body.payment_method_id,
-      installments: body.installments,
+      installments,
       issuer_id: body.issuer_id,
       payer: body.payer,
       transaction_amount: pricing.totalStudentPaysCents / CENTS_PER_UNIT,

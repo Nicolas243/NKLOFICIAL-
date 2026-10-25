@@ -1,12 +1,13 @@
 import { redirect } from 'next/navigation';
-import { and, eq, gte, count } from 'drizzle-orm';
+import { and, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { AvailabilityManager } from '@/components/dashboard/availability-manager';
 import { db } from '@/db';
-import { classBookings, studentPlanEnrollments, userProfiles, users } from '@/db/schema';
+import { classBookings, notifications, studentPlanEnrollments, userProfiles, users } from '@/db/schema';
 import { MpConnectCard } from '@/components/dashboard/mp-connect-card';
 import { TeacherPricingForm } from '@/components/dashboard/teacher-pricing-form';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
+import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
 
 export const metadata = {
   title: 'Dashboard do Professor | Portal NKL',
@@ -50,6 +51,25 @@ export default async function ProfessorDashboardPage() {
     .innerJoin(users, eq(users.id, classBookings.studentId))
     .where(and(eq(classBookings.teacherId, user.id), gte(classBookings.scheduledAt, new Date())));
   const [activePlans] = await db.select({ count: count() }).from(studentPlanEnrollments).where(and(eq(studentPlanEnrollments.teacherId, user.id), eq(studentPlanEnrollments.status, 'active')));
+  const bannerNow = new Date();
+  const bannerTo = new Date(bannerNow.getTime() + 2 * 60 * 60 * 1000);
+  const bannerClasses = await db.select({
+    id: classBookings.id,
+    scheduledAt: classBookings.scheduledAt,
+    studentName: users.name,
+  }).from(classBookings).innerJoin(users, eq(users.id, classBookings.studentId)).where(and(
+    eq(classBookings.teacherId, user.id),
+    eq(classBookings.status, 'confirmed'),
+    gte(classBookings.scheduledAt, bannerNow),
+    lte(classBookings.scheduledAt, bannerTo),
+  ));
+  const recentNotifications = await db.select({
+    id: notifications.id,
+    title: notifications.title,
+    message: notifications.message,
+    createdAt: notifications.createdAt,
+    isRead: notifications.isRead,
+  }).from(notifications).where(eq(notifications.userId, user.id)).orderBy(desc(notifications.createdAt)).limit(5);
   // Use one instant for consistent room availability across all cards.
   // eslint-disable-next-line react-hooks/purity
   const currentTime = Date.now();
@@ -72,6 +92,10 @@ export default async function ProfessorDashboardPage() {
         <MpConnectCard isConnected={Boolean(profile.mpCollectorId)} collectorId={profile.mpCollectorId} connectedAt={profile.mpConnectedAt?.toISOString() ?? null} isDevMode={process.env.NODE_ENV !== 'production'} />
         <TeacherPricingForm singleClassPriceCents={profile.singleClassPriceCents} monthlyPlanPriceCents={profile.monthlyPlanPriceCents} semiannualPlanPriceCents={profile.semiannualPlanPriceCents} annualPlanPriceCents={profile.annualPlanPriceCents} acceptsNewStudents={profile.acceptsNewStudents} />
       </div>
+      <UpcomingClassBanner
+        classes={bannerClasses.map((item) => ({ ...item, scheduledAt: item.scheduledAt.toISOString() }))}
+        notifications={recentNotifications.map((item) => ({ ...item, createdAt: item.createdAt.toISOString() }))}
+      />
       <AvailabilityManager />
       <section className="mt-8 space-y-4">
         <h2 className="font-playfair text-2xl font-bold">Próximas aulas</h2>

@@ -291,3 +291,7 @@ CREATE INDEX IF NOT EXISTS "student_plan_enrollments_student_teacher_status_idx"
   ON "student_plan_enrollments" ("student_id", "teacher_id", "status");
 CREATE INDEX IF NOT EXISTS "class_bookings_enrollment_id_idx"
   ON "class_bookings" ("enrollment_id");
+
+ALTER TABLE "class_bookings" ADD COLUMN IF NOT EXISTS "reminder_sent_at" timestamp;
+CREATE INDEX IF NOT EXISTS "class_bookings_reminder_window_idx"
+  ON "class_bookings" ("status", "payment_status", "scheduled_at", "reminder_sent_at");

@@ -7,6 +7,7 @@ const envSchema = z.object({
   MERCADOPAGO_ACCESS_TOKEN: z.string().min(1),
   MERCADOPAGO_WEBHOOK_SECRET: z.string().min(1),
   DAILY_API_KEY: z.string().min(1),
+  CRON_SECRET: z.string().min(1),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: z.string().min(1),

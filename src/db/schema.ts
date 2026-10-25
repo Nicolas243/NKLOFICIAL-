@@ -644,6 +644,7 @@ export const classBookings = pgTable('class_bookings', {
   enrollmentId: uuid('enrollment_id').references(() => studentPlanEnrollments.id),
   teacherNetCents: integer('teacher_net_cents').notNull().default(14250),
   cancelledAt: timestamp('cancelled_at'),
+  reminderSentAt: timestamp('reminder_sent_at'),
 });
 
 export const teacherAvailabilityRelations = relations(teacherAvailability, ({ one }) => ({

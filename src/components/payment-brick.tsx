@@ -7,10 +7,11 @@ type PaymentProps = ComponentProps<typeof Payment>;
 
 type PaymentBrickProps = {
   amount: number;
+  maxInstallments: number;
   onSubmitPayment: NonNullable<PaymentProps['onSubmit']>;
 };
 
-export function PaymentBrick({ amount, onSubmitPayment }: PaymentBrickProps) {
+export function PaymentBrick({ amount, maxInstallments, onSubmitPayment }: PaymentBrickProps) {
   const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
   const initializedKey = useRef<string | null>(null);
 
@@ -35,7 +36,7 @@ export function PaymentBrick({ amount, onSubmitPayment }: PaymentBrickProps) {
   return (
     <Payment
       initialization={initialization}
-      customization={{ paymentMethods: { creditCard: 'all' } }}
+      customization={{ paymentMethods: { creditCard: 'all', maxInstallments } }}
       onSubmit={async (formData) => {
         try {
           await onSubmitPayment(formData);

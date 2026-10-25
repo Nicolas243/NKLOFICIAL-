@@ -10,9 +10,10 @@ type BookingPaymentProps = {
   total: number;
   modalityLabel: string;
   includedClasses: number;
+  maxInstallments: number;
 };
 
-export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses }: BookingPaymentProps) {
+export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses, maxInstallments }: BookingPaymentProps) {
   const [message, setMessage] = useState('');
 
   return (
@@ -29,9 +30,11 @@ export function BookingPayment({ bookingId, basePrice, studentFee, total, modali
         <div className="flex justify-between"><dt>Taxa da plataforma (5%)</dt><dd>R$ {studentFee.toFixed(2).replace('.', ',')}</dd></div>
         <div className="flex justify-between border-t border-border pt-2 font-bold text-foreground"><dt>Total</dt><dd>R$ {total.toFixed(2).replace('.', ',')}</dd></div>
       </dl>
+      <p className="mb-6 text-sm opacity-75">Parcelamento em até {maxInstallments}x disponível. Eventuais juros da operadora são assumidos pelo comprador.</p>
       {includedClasses > 1 && <p className="mb-6 text-sm opacity-75">Após a aprovação, as {includedClasses} aulas do pacote serão liberadas automaticamente na sua carteira.</p>}
       <PaymentBrick
         amount={total}
+        maxInstallments={maxInstallments}
         onSubmitPayment={async (formData) => {
           const response = await fetch('/api/payments/create-booking-payment', {
             method: 'POST',

@@ -44,3 +44,16 @@ export async function rescheduleClassBookingAction(formData: FormData): Promise<
   revalidatePath('/dashboard/professor');
   return { success: true, message: 'Aula reagendada.' };
 }
+
+export async function markNotificationReadAction(formData: FormData): Promise<void> {
+  const notificationId = String(formData.get('notificationId') ?? '');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.id || !notificationId) return;
+  const { notifications } = await import('@/db/schema');
+  await db.update(notifications)
+    .set({ isRead: true })
+    .where(and(eq(notifications.id, notificationId), eq(notifications.userId, user.id)));
+  revalidatePath('/dashboard/aluno');
+  revalidatePath('/dashboard/professor');
+}
