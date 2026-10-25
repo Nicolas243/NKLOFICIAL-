@@ -24,10 +24,12 @@ export default async function BookingSuccessPage(props: { params: Params }) {
   }).from(classBookings).innerJoin(users, eq(users.id, classBookings.teacherId))
     .where(and(eq(classBookings.id, bookingId), eq(classBookings.studentId, user.id))).limit(1);
   if (!booking) notFound();
-  const [enrollment] = await db.select({
-    totalCredits: studentPlanEnrollments.totalCredits,
-    usedCredits: studentPlanEnrollments.usedCredits,
-  }).from(studentPlanEnrollments).where(eq(studentPlanEnrollments.id, booking.enrollmentId ?? '')).limit(1);
+  const [enrollment] = booking.enrollmentId
+    ? await db.select({
+        totalCredits: studentPlanEnrollments.totalCredits,
+        usedCredits: studentPlanEnrollments.usedCredits,
+      }).from(studentPlanEnrollments).where(eq(studentPlanEnrollments.id, booking.enrollmentId)).limit(1)
+    : [];
   const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
   const confirmed = booking.paymentStatus === 'paid' && booking.status === 'confirmed';
   return (

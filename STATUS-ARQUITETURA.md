@@ -47,6 +47,17 @@ matrículas, avaliações e denúncias.
 5. Validar `/api/health`, o webhook assinado e o cron autenticado antes de
    liberar pagamentos em produção.
 
+### Webhook Mercado Pago
+
+Em produção, a URL deve ser exatamente:
+
+`https://SEU_DOMINIO_PUBLICO/api/payments/webhook`
+
+A rota aceita somente notificações com `x-signature`, `x-request-id` e
+`data.id` válidos. O segredo correspondente deve ser configurado como
+`MERCADOPAGO_WEBHOOK_SECRET` na Vercel. O segredo não deve ser colocado no
+frontend, no repositório ou em mensagens de suporte.
+
 ## Tabelas implementadas no schema atual
 
 O arquivo `src/db/schema.ts` declara as seguintes 23 tabelas PostgreSQL:
