@@ -10,10 +10,11 @@ import { BookingCalendar } from '@/components/scheduling/booking-calendar';
 import { getAvailableTeacherSlots } from '@/actions/scheduling';
 import { TimeSlotPicker } from '@/components/booking/time-slot-picker';
 import { db } from '@/db';
-import { studentPlanEnrollments, userProfiles } from '@/db/schema';
+import { studentPlanEnrollments, teacherReviews, userProfiles } from '@/db/schema';
 import { and, eq, gt } from 'drizzle-orm';
 import type { ClassPlanModality } from '@/lib/pricing';
 import { DEFAULT_CLASS_PRICE_CENTS, CENTS_PER_UNIT, MONTHLY_PLAN_CLASSES, SEMIANNUAL_PLAN_CLASSES, ANNUAL_PLAN_CLASSES } from '@/lib/pricing';
+import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 
 type Params = Promise<{ id: string }>;
 
@@ -63,6 +64,12 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
       .from(studentPlanEnrollments)
       .where(and(eq(studentPlanEnrollments.studentId, user.id), eq(studentPlanEnrollments.teacherId, id), eq(studentPlanEnrollments.status, 'active'), gt(studentPlanEnrollments.expiresAt, new Date())))
     : [];
+  const publicReviews = await db.select({
+    id: teacherReviews.id,
+    rating: teacherReviews.rating,
+    comment: teacherReviews.comment,
+    createdAt: teacherReviews.createdAt,
+  }).from(teacherReviews).where(and(eq(teacherReviews.teacherId, id), eq(teacherReviews.visibility, 'public')));
   let availableSlots: Date[] = [];
   if (user) {
     const from = new Date();
@@ -146,6 +153,7 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
           )}
 
           {user && <BookingCalendar professorId={professor.id} />}
+          <ReportEntityModal targetType="teacher" targetUserId={professor.id} />
           {user && (
             <TimeSlotPicker
               teacherId={professor.id}
@@ -158,6 +166,22 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
             <h2 className="font-playfair text-xl font-bold">Planos e Valores de Aula</h2>
             <p className="mt-2 text-sm opacity-70">A partir de R$ {(prices.single / CENTS_PER_UNIT).toFixed(2)} por aula avulsa. Planos com créditos também estão disponíveis no agendamento.</p>
             {activeCredits.length > 0 && <p className="mt-2 text-sm text-neon">Você possui crédito ativo com este professor.</p>}
+          </section>
+          <section className="rounded-xl border border-border p-5">
+            <h2 className="font-playfair text-xl font-bold">Avaliações públicas</h2>
+            {publicReviews.length === 0 ? (
+              <p className="mt-2 text-sm opacity-70">Este professor ainda não possui avaliações públicas.</p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {publicReviews.map((review) => (
+                  <article key={review.id} className="rounded-lg border border-border p-4">
+                    <p className="font-bold text-neon">{review.rating}/5</p>
+                    <p className="mt-1 text-sm">{review.comment}</p>
+                    <p className="mt-2 text-xs opacity-60">{review.createdAt.toLocaleDateString('pt-BR')}</p>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Proteção anti-circumvention — lembrete contratual */}

@@ -2,13 +2,15 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings, notifications, studentPlanEnrollments, users } from '@/db/schema';
+import { classBookings, notifications, studentPlanEnrollments, teacherReviews, users } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
 import { StudentPlansWallet } from '@/components/dashboard/student-plans-wallet';
 import { BookingActionsBar } from '@/components/dashboard/booking-actions-bar';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
+import { TeacherReviewForm } from '@/components/booking/teacher-review-form';
+import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 
 function isRoomOpen(scheduledAt: Date, now: number): boolean {
   return now >= scheduledAt.getTime() - 10 * 60 * 1000;
@@ -32,6 +34,7 @@ export default async function StudentDashboardPage() {
       status: classBookings.status,
       meetingUrl: classBookings.meetingUrl,
       teacherName: users.name,
+      teacherId: classBookings.teacherId,
       planModality: classBookings.planModality,
     })
     .from(classBookings)
@@ -46,6 +49,8 @@ export default async function StudentDashboardPage() {
     status: studentPlanEnrollments.status,
     teacherName: users.name,
   }).from(studentPlanEnrollments).innerJoin(users, eq(users.id, studentPlanEnrollments.teacherId)).where(eq(studentPlanEnrollments.studentId, user.id));
+  const submittedReviews = await db.select({ bookingId: teacherReviews.bookingId }).from(teacherReviews).where(eq(teacherReviews.studentId, user.id));
+  const reviewedBookingIds = new Set(submittedReviews.map((review) => review.bookingId));
   const bannerTo = new Date(now.getTime() + 2 * 60 * 60 * 1000);
   const bannerClasses = await db.select({
     id: classBookings.id,
@@ -109,6 +114,10 @@ export default async function StudentDashboardPage() {
                   </span>
                 )}
                 <BookingActionsBar bookingId={booking.id} />
+                {booking.status === 'confirmed' && !reviewedBookingIds.has(booking.id) && (
+                  <TeacherReviewForm bookingId={booking.id} />
+                )}
+                <ReportEntityModal targetType="teacher" targetUserId={booking.teacherId} bookingId={booking.id} />
               </article>
             );
           })}

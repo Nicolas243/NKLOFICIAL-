@@ -2,12 +2,13 @@ import { redirect } from 'next/navigation';
 import { and, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { AvailabilityManager } from '@/components/dashboard/availability-manager';
 import { db } from '@/db';
-import { classBookings, notifications, studentPlanEnrollments, userProfiles, users } from '@/db/schema';
+import { classBookings, notifications, studentPlanEnrollments, teacherReviews, userProfiles, users } from '@/db/schema';
 import { MpConnectCard } from '@/components/dashboard/mp-connect-card';
 import { TeacherPricingForm } from '@/components/dashboard/teacher-pricing-form';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
 import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
+import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 
 export const metadata = {
   title: 'Dashboard do Professor | Portal NKL',
@@ -41,6 +42,7 @@ export default async function ProfessorDashboardPage() {
   const bookings = await db
     .select({
       id: classBookings.id,
+      studentId: classBookings.studentId,
       scheduledAt: classBookings.scheduledAt,
       meetingUrl: classBookings.meetingUrl,
       studentName: users.name,
@@ -50,6 +52,20 @@ export default async function ProfessorDashboardPage() {
     .from(classBookings)
     .innerJoin(users, eq(users.id, classBookings.studentId))
     .where(and(eq(classBookings.teacherId, user.id), gte(classBookings.scheduledAt, new Date())));
+  const reviews = await db.select({
+    id: teacherReviews.id,
+    rating: teacherReviews.rating,
+    comment: teacherReviews.comment,
+    visibility: teacherReviews.visibility,
+    createdAt: teacherReviews.createdAt,
+  }).from(teacherReviews).where(and(eq(teacherReviews.teacherId, user.id), eq(teacherReviews.visibility, 'public')));
+  const privateTeacherReviews = await db.select({
+    id: teacherReviews.id,
+    rating: teacherReviews.rating,
+    comment: teacherReviews.comment,
+    visibility: teacherReviews.visibility,
+    createdAt: teacherReviews.createdAt,
+  }).from(teacherReviews).where(and(eq(teacherReviews.teacherId, user.id), eq(teacherReviews.visibility, 'teacher_only')));
   const [activePlans] = await db.select({ count: count() }).from(studentPlanEnrollments).where(and(eq(studentPlanEnrollments.teacherId, user.id), eq(studentPlanEnrollments.status, 'active')));
   const bannerNow = new Date();
   const bannerTo = new Date(bannerNow.getTime() + 2 * 60 * 60 * 1000);
@@ -114,9 +130,22 @@ export default async function ProfessorDashboardPage() {
               ) : (
                 <p className="mt-2 text-xs opacity-60">A sala será liberada 10 minutos antes do horário.</p>
               )}
+              <ReportEntityModal targetType="student" targetUserId={booking.studentId} bookingId={booking.id} />
             </article>
           );
         })}
+      </section>
+      <section className="mt-8 space-y-4">
+        <h2 className="font-playfair text-2xl font-bold">Avaliações recebidas</h2>
+        {[...reviews, ...privateTeacherReviews].length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border p-6 text-sm opacity-70">Nenhuma avaliação disponível.</p>
+        ) : [...reviews, ...privateTeacherReviews].map((review) => (
+          <article key={review.id} className="rounded-xl border border-border bg-surface p-5">
+            <p className="text-sm font-bold text-neon">{review.rating}/5 · {review.visibility === 'public' ? 'Pública' : 'Privada'}</p>
+            <p className="mt-2 text-sm">{review.comment}</p>
+            <p className="mt-2 text-xs opacity-60">{review.createdAt.toLocaleDateString('pt-BR')}</p>
+          </article>
+        ))}
       </section>
     </div>
   );

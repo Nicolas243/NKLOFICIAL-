@@ -67,6 +67,8 @@ export default async function ProfessoresPage() {
               specialty={professor.instrumento ?? 'Aulas de música'}
               location={professor.city && professor.state ? `${professor.city} · ${professor.state}` : professor.city ?? professor.state ?? 'Atendimento online'}
               contactUrl={professor.id.startsWith('demo-') ? '/contatos' : `/professores/${professor.id}`}
+              reportTargetType="teacher"
+              reportTargetId={professor.id}
             />
           ))}
         </section>

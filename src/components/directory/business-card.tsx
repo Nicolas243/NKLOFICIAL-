@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 
 type BusinessCardProps = {
   name: string;
@@ -9,6 +10,8 @@ type BusinessCardProps = {
   location: string;
   avatarUrl?: string | null;
   contactUrl: string;
+  reportTargetType?: 'student' | 'teacher' | 'store' | 'luthier';
+  reportTargetId?: string;
 };
 
 function initials(name: string): string {
@@ -21,6 +24,8 @@ export function BusinessCard({
   location,
   avatarUrl,
   contactUrl,
+  reportTargetType,
+  reportTargetId,
 }: BusinessCardProps) {
   return (
     <article className="flex h-full flex-col gap-4 rounded-xl border border-border bg-surface p-6 transition-colors hover:border-neon">
@@ -41,6 +46,14 @@ export function BusinessCard({
       <Link href={contactUrl} className="inline-flex justify-center rounded-md border border-neon py-3 font-bold text-neon transition-colors hover:bg-neon hover:text-black">
         Ver detalhes e contato
       </Link>
+      {reportTargetType && reportTargetId && (
+        <ReportEntityModal
+          targetType={reportTargetType}
+          {...(reportTargetType === 'store' || reportTargetType === 'luthier'
+            ? { targetDirectoryId: reportTargetId }
+            : { targetUserId: reportTargetId })}
+        />
+      )}
     </article>
   );
 }

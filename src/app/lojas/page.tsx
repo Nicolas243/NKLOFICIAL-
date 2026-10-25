@@ -74,6 +74,8 @@ export default async function LojasPage() {
               location={store.city && store.state ? `${store.city} · ${store.state}` : store.city ?? store.state ?? 'Atendimento nacional'}
               avatarUrl={store.imageUrl}
               contactUrl="/contatos"
+              reportTargetType="store"
+              reportTargetId={store.id}
             />
           ))}
         </section>

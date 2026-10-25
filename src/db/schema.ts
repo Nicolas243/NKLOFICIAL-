@@ -676,3 +676,35 @@ export const studentPlanEnrollmentRelations = relations(studentPlanEnrollments, 
   teacher: one(users, { fields: [studentPlanEnrollments.teacherId], references: [users.id] }),
   bookings: many(classBookings),
 }));
+
+export const reviewVisibilityEnum = pgEnum('review_visibility', ['public', 'teacher_only', 'admin_only']);
+export const reportTargetTypeEnum = pgEnum('report_target_type', ['student', 'teacher', 'store', 'luthier']);
+export const reportReasonEnum = pgEnum('report_reason', ['fraud', 'harassment', 'no_show', 'inappropriate_content', 'commercial_violation', 'other']);
+export const reportStatusEnum = pgEnum('report_status', ['open', 'under_review', 'resolved', 'dismissed']);
+
+export const teacherReviews = pgTable('teacher_reviews', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  bookingId: uuid('booking_id').references(() => classBookings.id, { onDelete: 'cascade' }).notNull().unique(),
+  studentId: uuid('student_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  teacherId: uuid('teacher_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  rating: integer('rating').notNull(),
+  comment: text('comment').notNull(),
+  visibility: reviewVisibilityEnum('visibility').notNull().default('public'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const entityReports = pgTable('entity_reports', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  reporterId: uuid('reporter_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  targetType: reportTargetTypeEnum('target_type').notNull(),
+  targetUserId: uuid('target_user_id').references(() => users.id, { onDelete: 'set null' }),
+  targetDirectoryId: uuid('target_directory_id').references(() => businessDirectory.id, { onDelete: 'set null' }),
+  bookingId: uuid('booking_id').references(() => classBookings.id, { onDelete: 'set null' }),
+  reason: reportReasonEnum('reason').notNull(),
+  details: text('details').notNull(),
+  status: reportStatusEnum('status').notNull().default('open'),
+  adminNotes: text('admin_notes'),
+  resolvedBy: uuid('resolved_by').references(() => users.id, { onDelete: 'set null' }),
+  resolvedAt: timestamp('resolved_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

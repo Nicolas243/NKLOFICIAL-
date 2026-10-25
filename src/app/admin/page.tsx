@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { userProfiles } from '@/db/schema';
+import { entityReports, teacherReviews, userProfiles } from '@/db/schema';
 import { count, eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@/actions/news-admin';
 import { getPlatformMetrics } from '@/actions/admin-analytics';
 import { AdminPromoteForm } from '@/components/admin-promote-form';
+import { updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -33,10 +34,12 @@ export default async function AdminDashboardPage() {
   ]);
 
   const isAdmin = profile?.role === 'admin';
-  const [news, metrics, pendingSuggestions] = await Promise.all([
+  const [news, metrics, pendingSuggestions, reports, confidentialReviews] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
     isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
+    isAdmin ? db.select().from(entityReports).orderBy(entityReports.createdAt) : Promise.resolve([]),
+    isAdmin ? db.select().from(teacherReviews).where(eq(teacherReviews.visibility, 'admin_only')) : Promise.resolve([]),
   ]);
 
   const metricCards: { label: string; value: string }[] = metrics
@@ -99,6 +102,42 @@ export default async function AdminDashboardPage() {
                 ['GMV', `R$ ${((metrics?.marketplaceGmvCents ?? 0) / 100).toFixed(2)}`],
                 ['Receita da plataforma', `R$ ${((metrics?.marketplaceFeesCents ?? 0) / 100).toFixed(2)}`],
               ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-neon">{value}</strong></div>)}
+            </div>
+          </section>
+          <section className="space-y-4">
+            <h2 className="font-playfair text-xl font-bold">Moderação, Denúncias &amp; Avaliações Confidenciais</h2>
+            <div className="space-y-3">
+              {reports.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-border p-5 text-sm opacity-70">Nenhuma denúncia registrada.</p>
+              ) : reports.map((report) => (
+                <article key={report.id} className="rounded-xl border border-border bg-surface p-5">
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <p className="font-bold">{report.targetType} · {report.reason}</p>
+                    <span className="text-xs uppercase text-neon">{report.status}</span>
+                  </div>
+                  <p className="mt-2 text-sm opacity-80">{report.details}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {(['under_review', 'resolved', 'dismissed'] as const).map((status) => (
+                      <form key={status} action={updateEntityReportStatusAction}>
+                        <input type="hidden" name="reportId" value={report.id} />
+                        <input type="hidden" name="status" value={status} />
+                        <button type="submit" className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-neon">{status}</button>
+                      </form>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="space-y-3">
+              <h3 className="font-bold">Avaliações confidenciais</h3>
+              {confidentialReviews.length === 0 ? (
+                <p className="text-sm opacity-70">Nenhuma avaliação confidencial.</p>
+              ) : confidentialReviews.map((review) => (
+                <article key={review.id} className="rounded-xl border border-border bg-surface p-5">
+                  <p className="font-bold text-neon">{review.rating}/5</p>
+                  <p className="mt-2 text-sm">{review.comment}</p>
+                </article>
+              ))}
             </div>
           </section>
 
