@@ -201,8 +201,16 @@ export const userProfiles = pgTable('user_profiles', {
   newsletterOptIn: boolean('newsletter_opt_in').default(false),
   birthDate: varchar('birth_date', { length: 10 }),
   hourlyRateCents: integer('hourly_rate_cents').notNull().default(15000),
+  singleClassPriceCents: integer('single_class_price_cents').notNull().default(15000),
+  monthlyPlanPriceCents: integer('monthly_plan_price_cents').notNull().default(54000),
+  semiannualPlanPriceCents: integer('semiannual_plan_price_cents').notNull().default(288000),
+  annualPlanPriceCents: integer('annual_plan_price_cents').notNull().default(504000),
   mpCollectorId: text('mp_collector_id'),
   mpAccessToken: text('mp_access_token'),
+  mpRefreshToken: text('mp_refresh_token'),
+  mpTokenExpiresAt: timestamp('mp_token_expires_at'),
+  mpConnectedAt: timestamp('mp_connected_at'),
+  acceptsNewStudents: boolean('accepts_new_students').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -587,6 +595,23 @@ export const classBookingStatusEnum = pgEnum('class_booking_status', [
 ]);
 
 export const paymentStatusEnum = pgEnum('payment_status', ['pending', 'paid']);
+export const classPlanModalityEnum = pgEnum('class_plan_modality', ['single', 'monthly', 'semiannual', 'annual']);
+export const enrollmentStatusEnum = pgEnum('enrollment_status', ['active', 'exhausted', 'cancelled', 'expired']);
+
+export const studentPlanEnrollments = pgTable('student_plan_enrollments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  studentId: uuid('student_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  teacherId: uuid('teacher_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  modality: classPlanModalityEnum('modality').notNull(),
+  totalCredits: integer('total_credits').notNull(),
+  usedCredits: integer('used_credits').notNull().default(0),
+  pricePaidCents: integer('price_paid_cents').notNull(),
+  platformFeeCents: integer('platform_fee_cents').notNull(),
+  status: enrollmentStatusEnum('status').notNull().default('active'),
+  mpPaymentId: text('mp_payment_id'),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
 
 export const teacherAvailability = pgTable('teacher_availability', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -615,6 +640,10 @@ export const classBookings = pgTable('class_bookings', {
   meetingUrl: text('meeting_url'),
   priceCents: integer('price_cents').notNull().default(15000),
   platformFeeCents: integer('platform_fee_cents').notNull().default(1500),
+  planModality: classPlanModalityEnum('plan_modality').notNull().default('single'),
+  enrollmentId: uuid('enrollment_id').references(() => studentPlanEnrollments.id),
+  teacherNetCents: integer('teacher_net_cents').notNull().default(14250),
+  cancelledAt: timestamp('cancelled_at'),
 });
 
 export const teacherAvailabilityRelations = relations(teacherAvailability, ({ one }) => ({
@@ -635,4 +664,14 @@ export const classBookingsRelations = relations(classBookings, ({ one }) => ({
     references: [users.id],
     relationName: 'teacherBookings',
   }),
+  enrollment: one(studentPlanEnrollments, {
+    fields: [classBookings.enrollmentId],
+    references: [studentPlanEnrollments.id],
+  }),
+}));
+
+export const studentPlanEnrollmentRelations = relations(studentPlanEnrollments, ({ one, many }) => ({
+  student: one(users, { fields: [studentPlanEnrollments.studentId], references: [users.id] }),
+  teacher: one(users, { fields: [studentPlanEnrollments.teacherId], references: [users.id] }),
+  bookings: many(classBookings),
 }));

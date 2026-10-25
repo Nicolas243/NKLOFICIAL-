@@ -16,6 +16,10 @@ type ProfileSeed = {
   anosExperiencia?: number;
   instrumentTypes?: string;
   repairTypes?: string;
+  singleClassPriceCents?: number;
+  monthlyPlanPriceCents?: number;
+  semiannualPlanPriceCents?: number;
+  annualPlanPriceCents?: number;
 };
 
 const profileSeeds: ProfileSeed[] = [
@@ -63,6 +67,10 @@ const profileSeeds: ProfileSeed[] = [
     bio: 'Aulas individuais de violino com metodologia progressiva para iniciantes e músicos intermediários.',
     instrumento: 'Violino',
     anosExperiencia: 12,
+    singleClassPriceCents: 15000,
+    monthlyPlanPriceCents: 54000,
+    semiannualPlanPriceCents: 288000,
+    annualPlanPriceCents: 504000,
   },
   {
     email: 'seed.professor.renato@portal-nkl.local',
@@ -75,6 +83,10 @@ const profileSeeds: ProfileSeed[] = [
     bio: 'Professor de viola com aulas remotas e presenciais, leitura musical e preparação para provas práticas.',
     instrumento: 'Viola',
     anosExperiencia: 15,
+    singleClassPriceCents: 16000,
+    monthlyPlanPriceCents: 57600,
+    semiannualPlanPriceCents: 307200,
+    annualPlanPriceCents: 537600,
   },
   {
     email: 'seed.professor.beatriz@portal-nkl.local',
@@ -87,6 +99,10 @@ const profileSeeds: ProfileSeed[] = [
     bio: 'Ensino de violoncelo para jovens e adultos com planos de estudo personalizados e acompanhamento contínuo.',
     instrumento: 'Violoncelo',
     anosExperiencia: 10,
+    singleClassPriceCents: 18000,
+    monthlyPlanPriceCents: 64800,
+    semiannualPlanPriceCents: 345600,
+    annualPlanPriceCents: 604800,
   },
   {
     email: 'seed.store.arco@portal-nkl.local',
@@ -167,7 +183,17 @@ const partnerSeeds = [
 
 async function findOrCreateProfile(seed: ProfileSeed): Promise<string> {
   const [existing] = await db.select({ id: userProfiles.id }).from(userProfiles).where(eq(userProfiles.email, seed.email)).limit(1);
-  if (existing) return existing.id;
+  if (existing) {
+    if (seed.singleClassPriceCents !== undefined) {
+      await db.update(userProfiles).set({
+        singleClassPriceCents: seed.singleClassPriceCents,
+        monthlyPlanPriceCents: seed.monthlyPlanPriceCents,
+        semiannualPlanPriceCents: seed.semiannualPlanPriceCents,
+        annualPlanPriceCents: seed.annualPlanPriceCents,
+      }).where(eq(userProfiles.id, existing.id));
+    }
+    return existing.id;
+  }
 
   const [created] = await db.insert(userProfiles).values({
     email: seed.email,
@@ -180,6 +206,10 @@ async function findOrCreateProfile(seed: ProfileSeed): Promise<string> {
     bio: seed.bio,
     instrumento: seed.instrumento,
     anosExperiencia: seed.anosExperiencia,
+    singleClassPriceCents: seed.singleClassPriceCents,
+    monthlyPlanPriceCents: seed.monthlyPlanPriceCents,
+    semiannualPlanPriceCents: seed.semiannualPlanPriceCents,
+    annualPlanPriceCents: seed.annualPlanPriceCents,
   }).returning({ id: userProfiles.id });
 
   if (!created) throw new Error(`Não foi possível criar o perfil seed ${seed.email}.`);
@@ -231,6 +261,7 @@ async function main(): Promise<void> {
   await seedDirectory();
   await seedPrograms();
   console.log('[seed-b2b-and-affiliates] Diretório e programas atualizados com sucesso.');
+  process.exit(0);
 }
 
 main().catch((error: unknown) => {

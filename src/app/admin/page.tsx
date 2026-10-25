@@ -90,6 +90,17 @@ export default async function AdminDashboardPage() {
               ))}
             </div>
           </section>
+          <section aria-label="Marketplace de Aulas e Split Mercado Pago">
+            <h2 className="mb-4 font-playfair text-xl font-bold">Marketplace de Aulas &amp; Split Mercado Pago</h2>
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {[
+                ['Professores conectados', metrics?.connectedTeachers ?? 0],
+                ['Planos ativos', metrics?.activePlans ?? 0],
+                ['GMV', `R$ ${((metrics?.marketplaceGmvCents ?? 0) / 100).toFixed(2)}`],
+                ['Receita da plataforma', `R$ ${((metrics?.marketplaceFeesCents ?? 0) / 100).toFixed(2)}`],
+              ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-neon">{value}</strong></div>)}
+            </div>
+          </section>
 
           <section className="p-6 bg-surface border border-border rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

@@ -5,7 +5,7 @@ import { db } from '@/db';
 import { classBookings, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import { createClient } from '@/lib/supabase/server';
-import { calculateClassPricing, CENTS_PER_UNIT } from '@/lib/pricing';
+import { calculateClassPricing, CENTS_PER_UNIT, getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 
 type PaymentInput = {
   bookingId?: unknown;
@@ -35,6 +35,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       .select({
         id: classBookings.id,
         priceCents: classBookings.priceCents,
+        planModality: classBookings.planModality,
+        studentId: classBookings.studentId,
+        teacherId: classBookings.teacherId,
         paymentStatus: classBookings.paymentStatus,
         teacherAccessToken: userProfiles.mpAccessToken,
       })
@@ -45,8 +48,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!booking) return NextResponse.json({ error: 'booking_not_found' }, { status: 404 });
     if (booking.paymentStatus !== 'pending') return NextResponse.json({ error: 'booking_not_payable' }, { status: 409 });
+    if (process.env.NODE_ENV === 'production' && !booking.teacherAccessToken) {
+      return NextResponse.json({ error: 'teacher_mp_account_not_connected' }, { status: 422 });
+    }
 
-    const pricing = calculateClassPricing(booking.priceCents);
+    const pricing = calculateClassPricing(booking.priceCents, booking.planModality as ClassPlanModality);
+    const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
     const accessToken = booking.teacherAccessToken || env.MERCADOPAGO_ACCESS_TOKEN;
     const paymentBody: Record<string, unknown> = {
       token: body.token,
@@ -57,7 +64,13 @@ export async function POST(request: Request): Promise<NextResponse> {
       transaction_amount: pricing.totalStudentPaysCents / CENTS_PER_UNIT,
       description: 'Aula individual Portal NKL',
       external_reference: booking.id,
-      metadata: { booking_id: booking.id },
+      metadata: {
+        booking_id: booking.id,
+        plan_modality: booking.planModality,
+        included_classes: modality.includedClasses,
+        student_id: booking.studentId,
+        teacher_id: booking.teacherId,
+      },
     };
     if (booking.teacherAccessToken) {
       paymentBody.application_fee = pricing.platformApplicationFeeCents / CENTS_PER_UNIT;

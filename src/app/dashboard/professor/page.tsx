@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
-import { and, eq, gte } from 'drizzle-orm';
+import { and, eq, gte, count } from 'drizzle-orm';
 import { AvailabilityManager } from '@/components/dashboard/availability-manager';
 import { db } from '@/db';
-import { classBookings, users } from '@/db/schema';
+import { classBookings, studentPlanEnrollments, userProfiles, users } from '@/db/schema';
+import { MpConnectCard } from '@/components/dashboard/mp-connect-card';
+import { TeacherPricingForm } from '@/components/dashboard/teacher-pricing-form';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
 
@@ -20,8 +22,19 @@ export default async function ProfessorDashboardPage() {
     redirect('/login');
   }
 
-  const [profile] = await db.select({ name: users.name, role: users.role }).from(users).where(eq(users.id, user.id)).limit(1);
-  if (!profile || profile.role !== 'professor') {
+  const [profile] = await db.select({
+    name: users.name,
+    role: users.role,
+    papel: userProfiles.papel,
+    mpCollectorId: userProfiles.mpCollectorId,
+    mpConnectedAt: userProfiles.mpConnectedAt,
+    singleClassPriceCents: userProfiles.singleClassPriceCents,
+    monthlyPlanPriceCents: userProfiles.monthlyPlanPriceCents,
+    semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
+    annualPlanPriceCents: userProfiles.annualPlanPriceCents,
+    acceptsNewStudents: userProfiles.acceptsNewStudents,
+  }).from(users).innerJoin(userProfiles, eq(userProfiles.id, users.id)).where(eq(users.id, user.id)).limit(1);
+  if (!profile || (profile.role !== 'professor' && profile.papel !== 'Professor')) {
     redirect('/');
   }
   const bookings = await db
@@ -30,10 +43,13 @@ export default async function ProfessorDashboardPage() {
       scheduledAt: classBookings.scheduledAt,
       meetingUrl: classBookings.meetingUrl,
       studentName: users.name,
+      planModality: classBookings.planModality,
+      teacherNetCents: classBookings.teacherNetCents,
     })
     .from(classBookings)
     .innerJoin(users, eq(users.id, classBookings.studentId))
     .where(and(eq(classBookings.teacherId, user.id), gte(classBookings.scheduledAt, new Date())));
+  const [activePlans] = await db.select({ count: count() }).from(studentPlanEnrollments).where(and(eq(studentPlanEnrollments.teacherId, user.id), eq(studentPlanEnrollments.status, 'active')));
   // Use one instant for consistent room availability across all cards.
   // eslint-disable-next-line react-hooks/purity
   const currentTime = Date.now();
@@ -46,6 +62,15 @@ export default async function ProfessorDashboardPage() {
         <p className="mt-4 text-base opacity-70">
           Olá, {profile.name}. Defina os intervalos em que você pode receber alunos.
         </p>
+      </div>
+      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+        <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Planos ativos</span><strong className="mt-2 block text-2xl">{activePlans?.count ?? 0}</strong></div>
+        <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Aulas futuras</span><strong className="mt-2 block text-2xl">{bookings.length}</strong></div>
+        <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Split Mercado Pago</span><strong className="mt-2 block text-2xl">{profile.mpCollectorId ? 'Ativo' : 'Pendente'}</strong></div>
+      </div>
+      <div className="mb-6 space-y-6">
+        <MpConnectCard isConnected={Boolean(profile.mpCollectorId)} collectorId={profile.mpCollectorId} connectedAt={profile.mpConnectedAt?.toISOString() ?? null} isDevMode={process.env.NODE_ENV !== 'production'} />
+        <TeacherPricingForm singleClassPriceCents={profile.singleClassPriceCents} monthlyPlanPriceCents={profile.monthlyPlanPriceCents} semiannualPlanPriceCents={profile.semiannualPlanPriceCents} annualPlanPriceCents={profile.annualPlanPriceCents} acceptsNewStudents={profile.acceptsNewStudents} />
       </div>
       <AvailabilityManager />
       <section className="mt-8 space-y-4">

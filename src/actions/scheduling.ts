@@ -3,9 +3,10 @@
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { classBookings, teacherAvailability, users } from '@/db/schema';
-import { calculateClassPricing, DEFAULT_CLASS_PRICE_CENTS } from '@/lib/pricing';
+import { classBookings, teacherAvailability, users, userProfiles } from '@/db/schema';
+import { calculateClassPricing, DEFAULT_CLASS_PRICE_CENTS, resolveTeacherModalityPrice, type ClassPlanModality } from '@/lib/pricing';
 import { createClient } from '@/lib/supabase/server';
+import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 
 type ActionResult = {
   success: boolean;
@@ -105,6 +106,10 @@ export async function createClassBooking(
   const teacherId = String(formData.get('teacherId') ?? '');
   const scheduledAtValue = String(formData.get('scheduledAt') ?? '');
   const scheduledAt = new Date(scheduledAtValue);
+  const modalityValue = String(formData.get('planModality') ?? 'single');
+  const planModality: ClassPlanModality = ['single', 'monthly', 'semiannual', 'annual'].includes(modalityValue)
+    ? modalityValue as ClassPlanModality
+    : 'single';
 
   if (!user?.id || !teacherId || Number.isNaN(scheduledAt.getTime())) {
     return { success: false, message: 'Dados de reserva inválidos.' };
@@ -123,17 +128,34 @@ export async function createClassBooking(
     return { success: false, message: 'Este horário acabou de ser reservado.' };
   }
 
+  const [teacher] = await db.select({
+    hourlyRateCents: userProfiles.hourlyRateCents,
+    singleClassPriceCents: userProfiles.singleClassPriceCents,
+    monthlyPlanPriceCents: userProfiles.monthlyPlanPriceCents,
+    semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
+    annualPlanPriceCents: userProfiles.annualPlanPriceCents,
+  }).from(userProfiles).where(eq(userProfiles.id, teacherId)).limit(1);
+  const priceCents = resolveTeacherModalityPrice(teacher ?? { hourlyRateCents: DEFAULT_CLASS_PRICE_CENTS }, planModality);
+  const pricing = calculateClassPricing(priceCents, planModality);
   const [booking] = await db.insert(classBookings).values({
     studentId: user.id,
     teacherId,
     scheduledAt,
     status: 'pending',
     paymentStatus: 'pending',
-    priceCents: DEFAULT_CLASS_PRICE_CENTS,
-    platformFeeCents: calculateClassPricing(DEFAULT_CLASS_PRICE_CENTS).platformApplicationFeeCents,
+    priceCents,
+    platformFeeCents: pricing.platformApplicationFeeCents,
+    planModality,
+    teacherNetCents: pricing.teacherNetReceivesCents,
   }).returning({ id: classBookings.id });
 
   revalidatePath('/dashboard/aluno');
+  await createBookingNotification({
+    userId: teacherId,
+    title: 'Nova reserva pendente',
+    message: 'Um aluno selecionou um horário e aguarda a confirmação do pagamento.',
+    link: `/dashboard/professor/${booking?.id ?? ''}`,
+  });
   return {
     success: true,
     message: 'Reserva criada. Continue para o pagamento.',

@@ -9,6 +9,11 @@ import { createClient } from '@/lib/supabase/server';
 import { BookingCalendar } from '@/components/scheduling/booking-calendar';
 import { getAvailableTeacherSlots } from '@/actions/scheduling';
 import { TimeSlotPicker } from '@/components/booking/time-slot-picker';
+import { db } from '@/db';
+import { studentPlanEnrollments, userProfiles } from '@/db/schema';
+import { and, eq, gt } from 'drizzle-orm';
+import type { ClassPlanModality } from '@/lib/pricing';
+import { DEFAULT_CLASS_PRICE_CENTS, CENTS_PER_UNIT, MONTHLY_PLAN_CLASSES, SEMIANNUAL_PLAN_CLASSES, ANNUAL_PLAN_CLASSES } from '@/lib/pricing';
 
 type Params = Promise<{ id: string }>;
 
@@ -40,6 +45,24 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
     data: { user },
   } = await supabase.auth.getUser();
   const isFavorite = user?.id ? await isProfessorFavorite(user.id, id) : false;
+  const [profile] = await db.select({
+    singleClassPriceCents: userProfiles.singleClassPriceCents,
+    monthlyPlanPriceCents: userProfiles.monthlyPlanPriceCents,
+    semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
+    annualPlanPriceCents: userProfiles.annualPlanPriceCents,
+    acceptsNewStudents: userProfiles.acceptsNewStudents,
+  }).from(userProfiles).where(eq(userProfiles.id, id)).limit(1);
+  const prices: Record<ClassPlanModality, number> = {
+    single: profile?.singleClassPriceCents ?? DEFAULT_CLASS_PRICE_CENTS,
+    monthly: profile?.monthlyPlanPriceCents ?? DEFAULT_CLASS_PRICE_CENTS * MONTHLY_PLAN_CLASSES,
+    semiannual: profile?.semiannualPlanPriceCents ?? DEFAULT_CLASS_PRICE_CENTS * SEMIANNUAL_PLAN_CLASSES,
+    annual: profile?.annualPlanPriceCents ?? DEFAULT_CLASS_PRICE_CENTS * ANNUAL_PLAN_CLASSES,
+  };
+  const activeCredits = user?.id
+    ? await db.select({ totalCredits: studentPlanEnrollments.totalCredits, usedCredits: studentPlanEnrollments.usedCredits })
+      .from(studentPlanEnrollments)
+      .where(and(eq(studentPlanEnrollments.studentId, user.id), eq(studentPlanEnrollments.teacherId, id), eq(studentPlanEnrollments.status, 'active'), gt(studentPlanEnrollments.expiresAt, new Date())))
+    : [];
   let availableSlots: Date[] = [];
   if (user) {
     const from = new Date();
@@ -127,8 +150,15 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
             <TimeSlotPicker
               teacherId={professor.id}
               slots={availableSlots.map((slot) => slot.toISOString())}
+              prices={prices}
+              acceptsNewStudents={profile?.acceptsNewStudents ?? true}
             />
           )}
+          <section className="rounded-xl border border-border p-5">
+            <h2 className="font-playfair text-xl font-bold">Planos e Valores de Aula</h2>
+            <p className="mt-2 text-sm opacity-70">A partir de R$ {(prices.single / CENTS_PER_UNIT).toFixed(2)} por aula avulsa. Planos com créditos também estão disponíveis no agendamento.</p>
+            {activeCredits.length > 0 && <p className="mt-2 text-sm text-neon">Você possui crédito ativo com este professor.</p>}
+          </section>
 
           {/* Proteção anti-circumvention — lembrete contratual */}
           <p className="text-xs opacity-60 text-center mt-2">

@@ -10,6 +10,17 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: z.string().min(1),
+  NEXT_PUBLIC_SITE_URL: z.string().url().default('http://localhost:3000'),
+  MERCADOPAGO_CLIENT_ID: z.string().min(1).optional(),
+  MERCADOPAGO_CLIENT_SECRET: z.string().min(1).optional(),
+  MERCADOPAGO_REDIRECT_URI: z.string().url().optional(),
 });
 
-export const env = envSchema.parse(process.env);
+const parsedEnv = envSchema.parse(process.env);
+
+export const env = {
+  ...parsedEnv,
+  MERCADOPAGO_REDIRECT_URI:
+    parsedEnv.MERCADOPAGO_REDIRECT_URI
+    ?? `${parsedEnv.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')}/api/payments/mp-callback`,
+};

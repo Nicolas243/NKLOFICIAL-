@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/db';
 import { classBookings, users } from '@/db/schema';
-import { calculateClassPricing, CENTS_PER_UNIT } from '@/lib/pricing';
+import { calculateClassPricing, CENTS_PER_UNIT, getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createClient } from '@/lib/supabase/server';
 import { BookingPayment } from '@/components/checkout/booking-payment';
 
@@ -26,6 +26,7 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
       status: classBookings.status,
       paymentStatus: classBookings.paymentStatus,
       priceCents: classBookings.priceCents,
+      planModality: classBookings.planModality,
       teacherId: classBookings.teacherId,
       teacherName: users.name,
     })
@@ -38,7 +39,8 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
     notFound();
   }
 
-  const pricing = calculateClassPricing(booking.priceCents);
+  const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
+  const pricing = calculateClassPricing(booking.priceCents, booking.planModality as ClassPlanModality);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
@@ -55,6 +57,8 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
         basePrice={pricing.basePriceCents / CENTS_PER_UNIT}
         studentFee={pricing.studentFeeCents / CENTS_PER_UNIT}
         total={pricing.totalStudentPaysCents / CENTS_PER_UNIT}
+        modalityLabel={modality.label}
+        includedClasses={modality.includedClasses}
       />
     </div>
   );

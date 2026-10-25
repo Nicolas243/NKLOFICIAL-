@@ -3,8 +3,10 @@ import { after, NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings } from '@/db/schema';
+import { classBookings, studentPlanEnrollments } from '@/db/schema';
 import { env } from '@/env';
+import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
+import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -74,6 +76,18 @@ async function processNotification(notification: MercadoPagoNotification): Promi
     const bookingId = getBookingId(payment);
     if (!bookingId) return;
 
+    const [booking] = await db.select({
+      id: classBookings.id,
+      studentId: classBookings.studentId,
+      teacherId: classBookings.teacherId,
+      planModality: classBookings.planModality,
+      priceCents: classBookings.priceCents,
+      platformFeeCents: classBookings.platformFeeCents,
+      paymentStatus: classBookings.paymentStatus,
+    }).from(classBookings).where(and(eq(classBookings.id, bookingId), eq(classBookings.paymentStatus, 'pending'))).limit(1);
+    if (!booking) return;
+    const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
+
     const dailyResponse = await fetch('https://api.daily.co/v1/rooms', {
       method: 'POST',
       headers: {
@@ -102,11 +116,32 @@ async function processNotification(notification: MercadoPagoNotification): Promi
       return;
     }
 
+    let enrollmentId: string | undefined;
+    if (modality.includedClasses > 1) {
+      const [enrollment] = await db.insert(studentPlanEnrollments).values({
+        studentId: booking.studentId,
+        teacherId: booking.teacherId,
+        modality: booking.planModality,
+        totalCredits: modality.includedClasses,
+        usedCredits: 1,
+        pricePaidCents: booking.priceCents,
+        platformFeeCents: booking.platformFeeCents,
+        mpPaymentId: String(payment.id),
+        expiresAt: new Date(Date.now() + modality.validityDays * 24 * 60 * 60 * 1000),
+      }).returning({ id: studentPlanEnrollments.id });
+      enrollmentId = enrollment?.id;
+    }
+
     await db.update(classBookings).set({
       paymentStatus: 'paid',
       status: 'confirmed',
       meetingUrl: dailyPayload.url,
+      enrollmentId,
     }).where(and(eq(classBookings.id, bookingId), eq(classBookings.paymentStatus, 'pending')));
+    await Promise.all([
+      createBookingNotification({ userId: booking.studentId, title: 'Aula confirmada', message: 'Seu pagamento foi aprovado e a sala está pronta.', link: bookingId }),
+      createBookingNotification({ userId: booking.teacherId, title: 'Pagamento aprovado', message: 'A aula foi confirmada e a sala Daily está disponível.', link: bookingId }),
+    ]);
   } catch (error) {
     console.error('[WEBHOOK] Falha ao processar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
   }

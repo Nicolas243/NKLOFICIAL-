@@ -8,9 +8,11 @@ type BookingPaymentProps = {
   basePrice: number;
   studentFee: number;
   total: number;
+  modalityLabel: string;
+  includedClasses: number;
 };
 
-export function BookingPayment({ bookingId, basePrice, studentFee, total }: BookingPaymentProps) {
+export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses }: BookingPaymentProps) {
   const [message, setMessage] = useState('');
 
   return (
@@ -18,7 +20,7 @@ export function BookingPayment({ bookingId, basePrice, studentFee, total }: Book
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Pagamento</p>
-          <h2 className="mt-2 font-playfair text-2xl font-bold">Aula individual</h2>
+          <h2 className="mt-2 font-playfair text-2xl font-bold">{modalityLabel}</h2>
         </div>
         <strong className="text-2xl">R$ {total.toFixed(2).replace('.', ',')}</strong>
       </div>
@@ -27,6 +29,7 @@ export function BookingPayment({ bookingId, basePrice, studentFee, total }: Book
         <div className="flex justify-between"><dt>Taxa da plataforma (5%)</dt><dd>R$ {studentFee.toFixed(2).replace('.', ',')}</dd></div>
         <div className="flex justify-between border-t border-border pt-2 font-bold text-foreground"><dt>Total</dt><dd>R$ {total.toFixed(2).replace('.', ',')}</dd></div>
       </dl>
+      {includedClasses > 1 && <p className="mb-6 text-sm opacity-75">Após a aprovação, as {includedClasses} aulas do pacote serão liberadas automaticamente na sua carteira.</p>}
       <PaymentBrick
         amount={total}
         onSubmitPayment={async (formData) => {

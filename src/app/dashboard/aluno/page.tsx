@@ -2,9 +2,12 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { and, eq, gte } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings, users } from '@/db/schema';
+import { classBookings, studentPlanEnrollments, users } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
+import { StudentPlansWallet } from '@/components/dashboard/student-plans-wallet';
+import { BookingActionsBar } from '@/components/dashboard/booking-actions-bar';
+import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 
 function isRoomOpen(scheduledAt: Date, now: number): boolean {
   return now >= scheduledAt.getTime() - 10 * 60 * 1000;
@@ -28,10 +31,20 @@ export default async function StudentDashboardPage() {
       status: classBookings.status,
       meetingUrl: classBookings.meetingUrl,
       teacherName: users.name,
+      planModality: classBookings.planModality,
     })
     .from(classBookings)
     .innerJoin(users, eq(users.id, classBookings.teacherId))
     .where(and(eq(classBookings.studentId, user.id), gte(classBookings.scheduledAt, now)));
+  const enrollments = await db.select({
+    id: studentPlanEnrollments.id,
+    teacherId: studentPlanEnrollments.teacherId,
+    totalCredits: studentPlanEnrollments.totalCredits,
+    usedCredits: studentPlanEnrollments.usedCredits,
+    expiresAt: studentPlanEnrollments.expiresAt,
+    status: studentPlanEnrollments.status,
+    teacherName: users.name,
+  }).from(studentPlanEnrollments).innerJoin(users, eq(users.id, studentPlanEnrollments.teacherId)).where(eq(studentPlanEnrollments.studentId, user.id));
   // Capture one instant so every card uses the same room-opening boundary.
   // eslint-disable-next-line react-hooks/purity
   const currentTime = Date.now();
@@ -42,6 +55,7 @@ export default async function StudentDashboardPage() {
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Área do aluno</p>
         <h1 className="mt-3 font-playfair text-4xl font-bold sm:text-5xl">Próximas aulas</h1>
       </div>
+      <StudentPlansWallet enrollments={enrollments.map((item) => ({ ...item, teacherName: item.teacherName, expiresAt: item.expiresAt.toISOString() }))} />
 
       {bookings.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
@@ -63,6 +77,7 @@ export default async function StudentDashboardPage() {
                   {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(booking.scheduledAt)}
                 </p>
                 <p className="mt-3 text-xs uppercase tracking-wider opacity-60">Status: {booking.status}</p>
+                <p className="mt-1 text-xs uppercase tracking-wider opacity-60">{getModalityMetadata(booking.planModality as ClassPlanModality).label}</p>
                 {open ? (
                   <BookingRoom url={booking.meetingUrl} />
                 ) : (
@@ -70,6 +85,7 @@ export default async function StudentDashboardPage() {
                     Sala liberada 10 minutos antes
                   </span>
                 )}
+                <BookingActionsBar bookingId={booking.id} />
               </article>
             );
           })}

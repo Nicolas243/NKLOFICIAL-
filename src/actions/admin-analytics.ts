@@ -1,15 +1,19 @@
 'use server';
 
-import { count, eq } from 'drizzle-orm';
+import { count, eq, isNotNull, sum } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { userProfiles, subscriptions, luthierLeads } from '@/db/schema';
+import { userProfiles, subscriptions, luthierLeads, studentPlanEnrollments, classBookings } from '@/db/schema';
 
 export type PlatformMetrics = {
   totalUsers: number;
   activePremiumLuthiers: number;
   totalLeadsGenerated: number;
   mrr: number;
+  connectedTeachers: number;
+  activePlans: number;
+  marketplaceGmvCents: number;
+  marketplaceFeesCents: number;
 };
 
 /** Preço base da assinatura Premium (espelha o portal de planos). */
@@ -39,10 +43,14 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     throw new Error('Acesso restrito a administradores.');
   }
 
-  const [usersRow, premiumRow, leadsRow] = await Promise.all([
+  const [usersRow, premiumRow, leadsRow, connectedTeachersRow, activePlansRow, gmvRow, feesRow] = await Promise.all([
     db.select({ value: count() }).from(userProfiles),
     db.select({ value: count() }).from(subscriptions).where(eq(subscriptions.status, 'active')),
     db.select({ value: count() }).from(luthierLeads),
+    db.select({ value: count() }).from(userProfiles).where(isNotNull(userProfiles.mpCollectorId)),
+    db.select({ value: count() }).from(studentPlanEnrollments).where(eq(studentPlanEnrollments.status, 'active')),
+    db.select({ value: sum(classBookings.priceCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),
+    db.select({ value: sum(classBookings.platformFeeCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),
   ]);
 
   const activePremiumLuthiers = premiumRow[0]?.value ?? 0;
@@ -52,5 +60,9 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     activePremiumLuthiers,
     totalLeadsGenerated: leadsRow[0]?.value ?? 0,
     mrr: Number((activePremiumLuthiers * PREMIUM_PRICE).toFixed(2)),
+    connectedTeachers: connectedTeachersRow[0]?.value ?? 0,
+    activePlans: activePlansRow[0]?.value ?? 0,
+    marketplaceGmvCents: Number(gmvRow[0]?.value ?? 0),
+    marketplaceFeesCents: Number(feesRow[0]?.value ?? 0),
   };
 }
