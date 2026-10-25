@@ -33,7 +33,7 @@ export default function PrivacidadePage() {
         </section>
         <section>
           <h2 className="font-playfair text-2xl font-bold">5. Direitos do titular</h2>
-          <p className="mt-2 opacity-85">O titular pode solicitar confirmação de tratamento, acesso, correção, anonimização, eliminação quando aplicável, portabilidade, informação sobre compartilhamentos e revisão de consentimentos, conforme a legislação. Para solicitações, utilize a página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.</p>
+          <p className="mt-2 opacity-85">O titular pode solicitar confirmação de tratamento, acesso, correção, anonimização, eliminação quando aplicável, portabilidade, informação sobre compartilhamentos e revisão de consentimentos, conforme a legislação. Usuários autenticados também podem exportar seus dados em JSON e iniciar a anonimização nos dashboards de Aluno e Professor. Para outras solicitações, utilize a página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.</p>
         </section>
       </article>
     </main>

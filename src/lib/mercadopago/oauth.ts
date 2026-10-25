@@ -1,10 +1,14 @@
 import crypto from 'node:crypto';
 import { z } from 'zod';
 import { env } from '@/env';
+import { db } from '@/db';
+import { eq } from 'drizzle-orm';
+import { userProfiles } from '@/db/schema';
 
 export const MP_OAUTH_AUTH_URL = 'https://auth.mercadopago.com.br/authorization';
 export const MP_OAUTH_TOKEN_URL = 'https://api.mercadopago.com/oauth/token';
 export const OAUTH_STATE_TTL_MS = 600000;
+export const MP_TOKEN_REFRESH_BUFFER_MS = 86400000;
 
 const oauthResponseSchema = z.object({
   access_token: z.string().min(1),
@@ -72,4 +76,40 @@ export async function exchangeMercadoPagoCode(code: string) {
   });
   if (!response.ok) throw new Error(`Mercado Pago OAuth recusou a troca: ${response.status}`);
   return oauthResponseSchema.parse(await response.json());
+}
+
+export async function refreshMercadoPagoAccessToken(refreshToken: string) {
+  if (!env.MERCADOPAGO_CLIENT_ID || !env.MERCADOPAGO_CLIENT_SECRET) {
+    throw new Error('Mercado Pago OAuth não configurado.');
+  }
+  const response = await fetch(MP_OAUTH_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: env.MERCADOPAGO_CLIENT_ID,
+      client_secret: env.MERCADOPAGO_CLIENT_SECRET,
+      refresh_token: refreshToken,
+    }),
+  });
+  if (!response.ok) throw new Error(`Mercado Pago recusou a renovação: ${response.status}`);
+  return oauthResponseSchema.parse(await response.json());
+}
+
+export async function getValidTeacherMpAccessToken(teacherId: string): Promise<string | null> {
+  const [profile] = await db.select({
+    accessToken: userProfiles.mpAccessToken,
+    refreshToken: userProfiles.mpRefreshToken,
+    expiresAt: userProfiles.mpTokenExpiresAt,
+  }).from(userProfiles).where(eq(userProfiles.id, teacherId)).limit(1);
+  if (!profile?.accessToken) return null;
+  const expiresSoon = !profile.expiresAt || profile.expiresAt.getTime() - Date.now() <= MP_TOKEN_REFRESH_BUFFER_MS;
+  if (!expiresSoon || !profile.refreshToken) return profile.accessToken;
+  const refreshed = await refreshMercadoPagoAccessToken(profile.refreshToken);
+  await db.update(userProfiles).set({
+    mpAccessToken: refreshed.access_token,
+    mpRefreshToken: refreshed.refresh_token,
+    mpTokenExpiresAt: new Date(Date.now() + refreshed.expires_in * 1000),
+  }).where(eq(userProfiles.id, teacherId));
+  return refreshed.access_token;
 }

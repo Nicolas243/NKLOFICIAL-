@@ -111,8 +111,16 @@ export async function createClassBooking(
     ? modalityValue as ClassPlanModality
     : 'single';
 
-  if (!user?.id || !teacherId || Number.isNaN(scheduledAt.getTime())) {
+  if (!user?.id || !teacherId || user.id === teacherId || Number.isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
     return { success: false, message: 'Dados de reserva inválidos.' };
+  }
+  const [participants] = await db.select({
+    teacherSuspended: userProfiles.isSuspended,
+    acceptsNewStudents: userProfiles.acceptsNewStudents,
+  }).from(userProfiles).where(eq(userProfiles.id, teacherId)).limit(1);
+  const [studentProfile] = await db.select({ isSuspended: userProfiles.isSuspended }).from(userProfiles).where(eq(userProfiles.id, user.id)).limit(1);
+  if (!participants || participants.teacherSuspended || participants.acceptsNewStudents === false || studentProfile?.isSuspended) {
+    return { success: false, message: 'Este agendamento está temporariamente indisponível.' };
   }
 
   const existing = await db

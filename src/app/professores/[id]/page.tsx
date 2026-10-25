@@ -15,6 +15,7 @@ import { and, eq, gt } from 'drizzle-orm';
 import type { ClassPlanModality } from '@/lib/pricing';
 import { DEFAULT_CLASS_PRICE_CENTS, CENTS_PER_UNIT, MONTHLY_PLAN_CLASSES, SEMIANNUAL_PLAN_CLASSES, ANNUAL_PLAN_CLASSES } from '@/lib/pricing';
 import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
+import { JsonLd } from '@/components/seo/json-ld';
 
 type Params = Promise<{ id: string }>;
 
@@ -52,6 +53,7 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
     semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
     annualPlanPriceCents: userProfiles.annualPlanPriceCents,
     acceptsNewStudents: userProfiles.acceptsNewStudents,
+    isSuspended: userProfiles.isSuspended,
   }).from(userProfiles).where(eq(userProfiles.id, id)).limit(1);
   const prices: Record<ClassPlanModality, number> = {
     single: profile?.singleClassPriceCents ?? DEFAULT_CLASS_PRICE_CENTS,
@@ -89,6 +91,14 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
 
   return (
     <div className="max-w-3xl w-full mx-auto px-4 pt-8">
+      {!profile?.isSuspended && <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: professor.name,
+        description: professor.bio ?? undefined,
+        knowsAbout: professor.instrumento ?? undefined,
+        makesOffer: { '@type': 'Offer', priceCurrency: 'BRL', price: (prices.single / CENTS_PER_UNIT).toFixed(2) },
+      }} />}
       <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-sm">
         {/* Header */}
         <div className="p-8 border-b border-border">
@@ -154,7 +164,8 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
 
           {user && <BookingCalendar professorId={professor.id} />}
           <ReportEntityModal targetType="teacher" targetUserId={professor.id} />
-          {user && (
+          {profile?.isSuspended && <p className="rounded-md border border-red-400/50 bg-red-400/10 p-4 text-sm text-red-300">Perfil temporariamente indisponível para revisão administrativa.</p>}
+          {user && !profile?.isSuspended && (
             <TimeSlotPicker
               teacherId={professor.id}
               slots={availableSlots.map((slot) => slot.toISOString())}

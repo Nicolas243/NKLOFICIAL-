@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PaymentBrick } from '@/components/payment-brick';
 
 type BookingPaymentProps = {
@@ -15,6 +16,7 @@ type BookingPaymentProps = {
 
 export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses, maxInstallments }: BookingPaymentProps) {
   const [message, setMessage] = useState('');
+  const router = useRouter();
 
   return (
     <section className="rounded-2xl border border-border bg-surface p-6">
@@ -47,6 +49,11 @@ export function BookingPayment({ bookingId, basePrice, studentFee, total, modali
           if (!response.ok) {
             setMessage('Não foi possível iniciar o pagamento. Tente novamente.');
             throw new Error('booking_payment_failed');
+          }
+          if (typeof result === 'object' && result !== null && 'status' in result && typeof result.status === 'string'
+            && ['approved', 'in_process', 'pending'].includes(result.status)) {
+            router.push(`/checkout/${bookingId}/sucesso`);
+            return result;
           }
           setMessage('Pagamento enviado. Aguarde a confirmação para liberar a sala.');
           return result;

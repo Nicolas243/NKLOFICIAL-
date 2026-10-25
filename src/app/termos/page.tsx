@@ -53,7 +53,11 @@ export default function TermosPage() {
           <p className="mt-2">Notas, tags e descrições servem como referência informativa e não constituem promessa de renda, recomendação financeira ou garantia de contratação. Avaliações devem refletir experiências reais e podem ser moderadas quando violarem estas regras.</p>
         </section>
         <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">4. Alterações e contato</h2>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">4. Aulas, taxas e moderação</h2>
+          <p className="mt-2">A plataforma aplica taxa bilateral de 5% ao aluno e 5% ao professor por meio do Split do Mercado Pago. As modalidades são Aula Avulsa, Mensal com 4 aulas, Semestral com 24 aulas e Anual com 48 aulas. Três denúncias procedentes com status resolvido podem gerar suspensão preventiva automática para análise administrativa.</p>
+        </section>
+        <section>
+          <h2 className="font-playfair text-2xl font-bold opacity-100">5. Alterações e contato</h2>
           <p className="mt-2">Podemos atualizar funcionalidades, conteúdos e estes termos para refletir mudanças operacionais ou legais. A versão publicada nesta página é a referência vigente. Em caso de dúvida, utilize a página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.</p>
         </section>
       </div>

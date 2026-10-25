@@ -1,6 +1,6 @@
 'use server';
 
-import { and, eq, gt } from 'drizzle-orm';
+import { and, eq, gt, lte } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { classBookings, studentPlanEnrollments } from '@/db/schema';
@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 
 const MIN_RESCHEDULE_ADVANCE_HOURS = 24;
+const CLASS_COMPLETION_GRACE_MINUTES = 60;
 
 export async function cancelClassBookingAction(formData: FormData): Promise<{ success: boolean; message: string }> {
   const bookingId = String(formData.get('bookingId') ?? '');
@@ -56,4 +57,23 @@ export async function markNotificationReadAction(formData: FormData): Promise<vo
     .where(and(eq(notifications.id, notificationId), eq(notifications.userId, user.id)));
   revalidatePath('/dashboard/aluno');
   revalidatePath('/dashboard/professor');
+}
+
+export async function markClassCompletedAction(formData: FormData): Promise<{ success: boolean; message: string }> {
+  const bookingId = String(formData.get('bookingId') ?? '');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.id || !bookingId) return { success: false, message: 'Reserva inválida.' };
+  const [booking] = await db.select().from(classBookings).where(and(
+    eq(classBookings.id, bookingId),
+    eq(classBookings.status, 'confirmed'),
+    lte(classBookings.scheduledAt, new Date(Date.now() - CLASS_COMPLETION_GRACE_MINUTES * 60 * 1000)),
+  )).limit(1);
+  if (!booking || (booking.studentId !== user.id && booking.teacherId !== user.id)) {
+    return { success: false, message: 'Ação não autorizada.' };
+  }
+  await db.update(classBookings).set({ completedAt: new Date() }).where(eq(classBookings.id, bookingId));
+  revalidatePath('/dashboard/aluno');
+  revalidatePath('/dashboard/professor');
+  return { success: true, message: 'Aula marcada como concluída.' };
 }

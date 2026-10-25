@@ -24,15 +24,19 @@ export default function ReembolsoPage() {
           <p className="mt-2 opacity-85">A solicitação deve ser enviada pela página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>, com nome, e-mail da compra, identificação da transação e motivo do pedido. O prazo e os requisitos podem variar conforme o produto, serviço e fornecedor responsável.</p>
         </section>
         <section>
-          <h2 className="font-playfair text-2xl font-bold">3. Processamento</h2>
+          <h2 className="font-playfair text-2xl font-bold">3. Cancelamento e reagendamento de aulas</h2>
+          <p className="mt-2 opacity-85">Cancelamentos e reagendamentos de aulas devem ser solicitados com pelo menos 24 horas de antecedência. Quando a reserva utilizar crédito de um pacote ativo, o crédito será estornado automaticamente após o cancelamento elegível.</p>
+        </section>
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">4. Processamento</h2>
           <p className="mt-2 opacity-85">Após a análise, o reembolso aprovado será processado pelo mesmo meio de pagamento, quando tecnicamente possível. Em transações futuras via Mercado Pago, os prazos de disponibilização poderão depender da instituição financeira, bandeira ou método utilizado.</p>
         </section>
         <section>
-          <h2 className="font-playfair text-2xl font-bold">4. Serviços de terceiros</h2>
+          <h2 className="font-playfair text-2xl font-bold">5. Serviços de terceiros</h2>
           <p className="mt-2 opacity-85">Quando o pagamento ou a contratação ocorrer diretamente em uma plataforma de terceiros por meio de um link de afiliado, o pedido de cancelamento e reembolso deverá seguir a política do fornecedor responsável pela cobrança. O Portal NKL não controla decisões, prazos ou critérios de empresas externas.</p>
         </section>
         <section>
-          <h2 className="font-playfair text-2xl font-bold">5. Atualizações</h2>
+          <h2 className="font-playfair text-2xl font-bold">6. Atualizações</h2>
           <p className="mt-2 opacity-85">Esta política poderá ser atualizada antes da ativação de novas ofertas ou integrações de pagamento. A versão publicada nesta página será considerada a versão vigente.</p>
         </section>
       </article>

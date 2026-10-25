@@ -6,6 +6,7 @@ import { classBookings, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import { createClient } from '@/lib/supabase/server';
 import { calculateClassPricing, CENTS_PER_UNIT, getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
+import { getValidTeacherMpAccessToken } from '@/lib/mercadopago/oauth';
 
 type PaymentInput = {
   bookingId?: unknown;
@@ -39,7 +40,6 @@ export async function POST(request: Request): Promise<NextResponse> {
         studentId: classBookings.studentId,
         teacherId: classBookings.teacherId,
         paymentStatus: classBookings.paymentStatus,
-        teacherAccessToken: userProfiles.mpAccessToken,
       })
       .from(classBookings)
       .innerJoin(userProfiles, eq(userProfiles.id, classBookings.teacherId))
@@ -48,7 +48,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     if (!booking) return NextResponse.json({ error: 'booking_not_found' }, { status: 404 });
     if (booking.paymentStatus !== 'pending') return NextResponse.json({ error: 'booking_not_payable' }, { status: 409 });
-    if (process.env.NODE_ENV === 'production' && !booking.teacherAccessToken) {
+    const teacherAccessToken = await getValidTeacherMpAccessToken(booking.teacherId);
+    if (process.env.NODE_ENV === 'production' && !teacherAccessToken) {
       return NextResponse.json({ error: 'teacher_mp_account_not_connected' }, { status: 422 });
     }
 
@@ -60,7 +61,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (installments < 1 || installments > modality.maxInstallments) {
       return NextResponse.json({ error: 'invalid_installments', maxInstallments: modality.maxInstallments }, { status: 400 });
     }
-    const accessToken = booking.teacherAccessToken || env.MERCADOPAGO_ACCESS_TOKEN;
+    const accessToken = teacherAccessToken || env.MERCADOPAGO_ACCESS_TOKEN;
     const paymentBody: Record<string, unknown> = {
       token: body.token,
       payment_method_id: body.payment_method_id,
@@ -78,7 +79,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         teacher_id: booking.teacherId,
       },
     };
-    if (booking.teacherAccessToken) {
+    if (teacherAccessToken) {
       paymentBody.application_fee = pricing.platformApplicationFeeCents / CENTS_PER_UNIT;
     }
 

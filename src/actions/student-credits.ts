@@ -3,7 +3,7 @@
 import { and, eq, gte, lt, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
-import { classBookings, studentPlanEnrollments } from '@/db/schema';
+import { classBookings, studentPlanEnrollments, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import { createClient } from '@/lib/supabase/server';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
@@ -31,6 +31,14 @@ export async function bookClassWithCreditAction(formData: FormData): Promise<{ s
   const scheduledAt = new Date(String(formData.get('scheduledAtIso') ?? ''));
   if (!user?.id || !enrollmentId || !teacherId || Number.isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
     return { success: false, message: 'Dados de agendamento inválidos.' };
+  }
+  const [participants] = await db.select({
+    teacherSuspended: userProfiles.isSuspended,
+    acceptsNewStudents: userProfiles.acceptsNewStudents,
+  }).from(userProfiles).where(eq(userProfiles.id, teacherId)).limit(1);
+  const [studentProfile] = await db.select({ isSuspended: userProfiles.isSuspended }).from(userProfiles).where(eq(userProfiles.id, user.id)).limit(1);
+  if (!participants || participants.teacherSuspended || participants.acceptsNewStudents === false || studentProfile?.isSuspended) {
+    return { success: false, message: 'Este agendamento está temporariamente indisponível.' };
   }
   const [enrollment] = await db.select().from(studentPlanEnrollments).where(and(
     eq(studentPlanEnrollments.id, enrollmentId),

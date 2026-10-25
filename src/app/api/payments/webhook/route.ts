@@ -50,18 +50,22 @@ function parseSignature(value: string): SignatureParts | null {
   return { timestamp, signature };
 }
 
-function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {
-  const signatureHeader = request.headers.get('x-signature');
-  const requestId = request.headers.get('x-request-id');
-  const dataId = notification.data?.id;
-  if (!env.MERCADOPAGO_WEBHOOK_SECRET || !signatureHeader || !requestId || typeof dataId !== 'string') return false;
-  const parts = parseSignature(signatureHeader);
+export function verifyMercadoPagoWebhookSignature(input: { xSignature: string; xRequestId: string; dataId: string; secret: string }): boolean {
+  const parts = parseSignature(input.xSignature);
   if (!parts) return false;
-  const manifest = `id:${dataId};request-id:${requestId};ts:${parts.timestamp};`;
-  const expected = crypto.createHmac('sha256', env.MERCADOPAGO_WEBHOOK_SECRET).update(manifest).digest('hex');
+  const manifest = `id:${input.dataId};request-id:${input.xRequestId};ts:${parts.timestamp};`;
+  const expected = crypto.createHmac('sha256', input.secret).update(manifest).digest('hex');
   const received = Buffer.from(parts.signature, 'hex');
   const expectedBuffer = Buffer.from(expected, 'hex');
   return received.length === expectedBuffer.length && crypto.timingSafeEqual(received, expectedBuffer);
+}
+
+function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {
+  const xSignature = request.headers.get('x-signature');
+  const xRequestId = request.headers.get('x-request-id');
+  const dataId = notification.data?.id;
+  if (!env.MERCADOPAGO_WEBHOOK_SECRET || !xSignature || !xRequestId || typeof dataId !== 'string') return false;
+  return verifyMercadoPagoWebhookSignature({ xSignature, xRequestId, dataId, secret: env.MERCADOPAGO_WEBHOOK_SECRET });
 }
 
 async function processNotification(notification: MercadoPagoNotification): Promise<void> {

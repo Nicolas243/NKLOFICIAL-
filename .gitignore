@@ -47,6 +47,7 @@ yarn-error.log*
 !.env.example
 # vercel
 .vercel
+supabase/.temp/
 
 # typescript
 *.tsbuildinfo

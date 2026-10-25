@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { entityReports, teacherReviews, userProfiles } from '@/db/schema';
+import { businessDirectory, entityReports, teacherReviews, userProfiles } from '@/db/schema';
 import { count, eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/actions/news-admin';
 import { getPlatformMetrics } from '@/actions/admin-analytics';
 import { AdminPromoteForm } from '@/components/admin-promote-form';
-import { updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
+import { setEntitySuspensionStateAction, updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -34,12 +34,14 @@ export default async function AdminDashboardPage() {
   ]);
 
   const isAdmin = profile?.role === 'admin';
-  const [news, metrics, pendingSuggestions, reports, confidentialReviews] = await Promise.all([
+  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
     isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
     isAdmin ? db.select().from(entityReports).orderBy(entityReports.createdAt) : Promise.resolve([]),
     isAdmin ? db.select().from(teacherReviews).where(eq(teacherReviews.visibility, 'admin_only')) : Promise.resolve([]),
+    isAdmin ? db.select({ id: userProfiles.id, name: userProfiles.fullName, count: userProfiles.resolvedReportsCount, suspendedAt: userProfiles.suspendedAt }).from(userProfiles).where(eq(userProfiles.isSuspended, true)) : Promise.resolve([]),
+    isAdmin ? db.select({ id: businessDirectory.id, name: businessDirectory.businessName, count: businessDirectory.resolvedReportsCount, suspendedAt: businessDirectory.suspendedAt }).from(businessDirectory).where(eq(businessDirectory.isSuspended, true)) : Promise.resolve([]),
   ]);
 
   const metricCards: { label: string; value: string }[] = metrics
@@ -103,6 +105,15 @@ export default async function AdminDashboardPage() {
                 ['Receita da plataforma', `R$ ${((metrics?.marketplaceFeesCents ?? 0) / 100).toFixed(2)}`],
               ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-neon">{value}</strong></div>)}
             </div>
+          </section>
+          <section className="space-y-4">
+            <h2 className="font-playfair text-xl font-bold">Entidades Suspensas Aguardando Análise</h2>
+            {[...suspendedProfiles.map((item) => ({ ...item, type: 'user' as const })), ...suspendedDirectories.map((item) => ({ ...item, type: 'directory' as const }))].map((item) => (
+              <article key={`${item.type}-${item.id}`} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface p-5">
+                <div><p className="font-bold">{item.name ?? 'Sem nome'}</p><p className="text-xs opacity-70">{item.type} · {item.count} denúncias procedentes · {item.suspendedAt?.toLocaleDateString('pt-BR')}</p></div>
+                <form action={setEntitySuspensionStateAction}><input type="hidden" name="entityType" value={item.type} /><input type="hidden" name="entityId" value={item.id} /><input type="hidden" name="suspend" value="false" /><button type="submit" className="rounded-md border border-neon px-3 py-2 text-sm font-bold text-neon">Reabilitar Conta/Perfil</button></form>
+              </article>
+            ))}
           </section>
           <section className="space-y-4">
             <h2 className="font-playfair text-xl font-bold">Moderação, Denúncias &amp; Avaliações Confidenciais</h2>

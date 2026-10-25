@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { businessDirectory, classBookings, studentPlanEnrollments, subscriptions, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
+import { getValidTeacherMpAccessToken } from '@/lib/mercadopago/oauth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,6 +13,7 @@ export const dynamic = 'force-dynamic';
 const REMINDER_WINDOW_MIN_MINUTES = 5;
 const REMINDER_WINDOW_MAX_MINUTES = 75;
 const CLASS_ROOM_TTL_SECONDS = 7200;
+const CLASS_COMPLETION_GRACE_MINUTES = 60;
 
 function hasValidAuthorization(request: NextRequest): boolean {
   const value = request.headers.get('authorization') ?? '';
@@ -42,6 +44,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .set({ status: 'expired' })
       .where(and(eq(studentPlanEnrollments.status, 'active'), lt(studentPlanEnrollments.expiresAt, now)))
       .returning({ id: studentPlanEnrollments.id });
+    const completionCutoff = new Date(now.getTime() - CLASS_COMPLETION_GRACE_MINUTES * 60 * 1000);
+    await db.update(classBookings).set({ completedAt: now }).where(and(
+      eq(classBookings.status, 'confirmed'),
+      eq(classBookings.paymentStatus, 'paid'),
+      isNull(classBookings.completedAt),
+      lt(classBookings.scheduledAt, completionCutoff),
+    ));
 
     const from = new Date(now.getTime() + REMINDER_WINDOW_MIN_MINUTES * 60 * 1000);
     const to = new Date(now.getTime() + REMINDER_WINDOW_MAX_MINUTES * 60 * 1000);
@@ -58,6 +67,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       gte(classBookings.scheduledAt, from),
       lte(classBookings.scheduledAt, to),
     ));
+    const teacherIds = [...new Set(bookings.map((booking) => booking.teacherId))];
+    await Promise.all(teacherIds.map(async (teacherId) => {
+      try {
+        await getValidTeacherMpAccessToken(teacherId);
+      } catch (error) {
+        console.error('[CRON] Falha ao renovar credencial Mercado Pago:', error instanceof Error ? error.message : 'erro desconhecido');
+      }
+    }));
 
     let remindersDispatchedCount = 0;
     for (const booking of bookings) {

@@ -11,6 +11,7 @@ import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
 import { TeacherReviewForm } from '@/components/booking/teacher-review-form';
 import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
+import { LgpdPrivacyPanel } from '@/components/dashboard/lgpd-privacy-panel';
 
 function isRoomOpen(scheduledAt: Date, now: number): boolean {
   return now >= scheduledAt.getTime() - 10 * 60 * 1000;
@@ -33,13 +34,14 @@ export default async function StudentDashboardPage() {
       scheduledAt: classBookings.scheduledAt,
       status: classBookings.status,
       meetingUrl: classBookings.meetingUrl,
+      completedAt: classBookings.completedAt,
       teacherName: users.name,
       teacherId: classBookings.teacherId,
       planModality: classBookings.planModality,
     })
     .from(classBookings)
     .innerJoin(users, eq(users.id, classBookings.teacherId))
-    .where(and(eq(classBookings.studentId, user.id), gte(classBookings.scheduledAt, now)));
+    .where(and(eq(classBookings.studentId, user.id), gte(classBookings.scheduledAt, new Date(now.getTime() - 24 * 60 * 60 * 1000))));
   const enrollments = await db.select({
     id: studentPlanEnrollments.id,
     teacherId: studentPlanEnrollments.teacherId,
@@ -105,6 +107,7 @@ export default async function StudentDashboardPage() {
                   {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(booking.scheduledAt)}
                 </p>
                 <p className="mt-3 text-xs uppercase tracking-wider opacity-60">Status: {booking.status}</p>
+                {booking.completedAt && <p className="mt-1 text-xs font-bold text-neon">Aula Concluída</p>}
                 <p className="mt-1 text-xs uppercase tracking-wider opacity-60">{getModalityMetadata(booking.planModality as ClassPlanModality).label}</p>
                 {open ? (
                   <BookingRoom url={booking.meetingUrl} />
@@ -123,6 +126,7 @@ export default async function StudentDashboardPage() {
           })}
         </div>
       )}
+      <LgpdPrivacyPanel />
     </div>
   );
 }

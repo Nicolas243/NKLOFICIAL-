@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { WhatsAppLeadButton } from '@/components/whatsapp-lead-button';
 import { FavoriteButton } from '@/components/favorite-button';
+import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 import type { DirectoryCard } from '@/actions/directory';
 
 type DirectoryCardViewProps = {
@@ -100,6 +101,7 @@ export function DirectoryCardView({
       )}
 
       <div className="mt-auto flex flex-col gap-3">
+        <ReportEntityModal targetType="luthier" targetUserId={item.id} />
         {favorite && (
           <FavoriteButton
             action={favorite.action}

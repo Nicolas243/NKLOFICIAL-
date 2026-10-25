@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
 import { UpcomingClassBanner } from '@/components/dashboard/upcoming-class-banner';
 import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
+import { LgpdPrivacyPanel } from '@/components/dashboard/lgpd-privacy-panel';
 
 export const metadata = {
   title: 'Dashboard do Professor | Portal NKL',
@@ -45,6 +46,7 @@ export default async function ProfessorDashboardPage() {
       studentId: classBookings.studentId,
       scheduledAt: classBookings.scheduledAt,
       meetingUrl: classBookings.meetingUrl,
+      completedAt: classBookings.completedAt,
       studentName: users.name,
       planModality: classBookings.planModality,
       teacherNetCents: classBookings.teacherNetCents,
@@ -125,6 +127,7 @@ export default async function ProfessorDashboardPage() {
               <p className="mt-2 text-sm opacity-70">
                 {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(booking.scheduledAt)}
               </p>
+              {booking.completedAt && <p className="mt-1 text-xs font-bold text-neon">Aula Concluída</p>}
               {isOpen ? (
                 <BookingRoom url={booking.meetingUrl} />
               ) : (
@@ -147,6 +150,7 @@ export default async function ProfessorDashboardPage() {
           </article>
         ))}
       </section>
+      <LgpdPrivacyPanel />
     </div>
   );
 }

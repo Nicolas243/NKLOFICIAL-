@@ -3,6 +3,7 @@ import { getFavoriteLuthiers, toggleFavoriteLuthier } from '@/actions/favorites'
 import { DirectoryCardView } from '@/components/directory-card';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { JsonLd } from '@/components/seo/json-ld';
 
 export const metadata = {
   title: 'Diretório de Luthiers | Portal NKL',
@@ -15,14 +16,22 @@ export default async function LuthiersPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [directory, favorites] = await Promise.all([
-    getLuthiersDirectory(),
+  let directory = await getLuthiersDirectory();
+  if (directory.length === 0) {
+    directory = [
+      { id: 'demo-luthier-1', name: 'Ateliê Arco Vivo', city: 'São Paulo', state: 'SP', planType: 'free', whatsapp: null, bio: 'Manutenção e ajustes para instrumentos de arco.', imageUrl: null, instrumentTypes: 'Violino e viola', repairTypes: 'Ajustes e restauração' },
+      { id: 'demo-luthier-2', name: 'Oficina Harmonia', city: 'Curitiba', state: 'PR', planType: 'free', whatsapp: null, bio: 'Serviços de luthieria para músicos e estudantes.', imageUrl: null, instrumentTypes: 'Violoncelo', repairTypes: 'Revisão e regulagem' },
+      { id: 'demo-luthier-3', name: 'Casa do Som', city: 'Belo Horizonte', state: 'MG', planType: 'free', whatsapp: null, bio: 'Consultoria e manutenção especializada.', imageUrl: null, instrumentTypes: 'Cordas friccionadas', repairTypes: 'Restauração e conservação' },
+    ];
+  }
+  const [favorites] = await Promise.all([
     user?.id ? getFavoriteLuthiers(user.id) : Promise.resolve([]),
   ]);
   const favoriteIds = new Set(favorites.map((fav) => fav.id));
 
   return (
     <div className="max-w-7xl w-full mx-auto px-4 pt-8">
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: directory.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name })) }} />
       <h1 className="font-playfair text-3xl font-bold mb-2">Diretório de Luthiers</h1>
       <p className="text-sm opacity-70 mb-8">
         Conecte-se com profissionais do mercado.

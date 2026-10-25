@@ -1,6 +1,6 @@
 'use server';
 
-import { eq, asc } from 'drizzle-orm';
+import { eq, asc, and, or, isNull } from 'drizzle-orm';
 import { db } from '@/db';
 import { userProfiles, businessDirectory } from '@/db/schema';
 
@@ -76,7 +76,7 @@ export async function getLuthiersDirectory(): Promise<LuthierCard[]> {
     .select(directorySelection)
     .from(userProfiles)
     .leftJoin(businessDirectory, eq(businessDirectory.userId, userProfiles.id))
-    .where(eq(userProfiles.role, 'luthier'))
+    .where(and(eq(userProfiles.role, 'luthier'), eq(userProfiles.isSuspended, false), or(isNull(businessDirectory.isSuspended), eq(businessDirectory.isSuspended, false))))
     .orderBy(asc(userProfiles.createdAt));
 
   return rows.map(toDirectoryCard);
@@ -87,7 +87,7 @@ export async function getBusinessesDirectory(): Promise<DirectoryCard[]> {
     .select(directorySelection)
     .from(userProfiles)
     .leftJoin(businessDirectory, eq(businessDirectory.userId, userProfiles.id))
-    .where(eq(userProfiles.role, 'lojista'))
+    .where(and(eq(userProfiles.role, 'lojista'), eq(userProfiles.isSuspended, false), or(isNull(businessDirectory.isSuspended), eq(businessDirectory.isSuspended, false))))
     .orderBy(asc(userProfiles.createdAt));
 
   return rows.map(toDirectoryCard);
@@ -123,7 +123,7 @@ export async function getProfessorsDirectory(): Promise<ProfessorCard[]> {
       planType: userProfiles.planType,
     })
     .from(userProfiles)
-    .where(eq(userProfiles.papel, 'Professor'))
+    .where(and(eq(userProfiles.papel, 'Professor'), eq(userProfiles.isSuspended, false)))
     .orderBy(asc(userProfiles.createdAt));
 
   return rows.map((row) => ({

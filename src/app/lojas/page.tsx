@@ -1,5 +1,6 @@
 import { getBusinessesDirectory, type DirectoryCard } from '@/actions/directory';
 import { BusinessCard } from '@/components/directory/business-card';
+import { JsonLd } from '@/components/seo/json-ld';
 
 export const metadata = {
   title: 'Lojas | Portal NKL',
@@ -56,6 +57,7 @@ export default async function LojasPage() {
 
   return (
     <main className="min-h-screen pt-[120px] pb-12 flex flex-col max-w-7xl mx-auto px-4">
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: stores.map((store, index) => ({ '@type': 'ListItem', position: index + 1, name: store.name })) }} />
       <div className="mb-10">
         <h1 className="font-playfair text-4xl font-bold text-foreground">Lojas</h1>
         <p className="text-neutral-500 mt-2">

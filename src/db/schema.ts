@@ -1,5 +1,5 @@
 import { pgEnum, pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb, time, check } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
+import { relations, sql, type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -57,6 +57,10 @@ export const businessDirectory = pgTable('business_directory', {
   imageUrl: text('image_url'),
   instrumentTypes: text('instrument_types'),
   repairTypes: text('repair_types'),
+  isSuspended: boolean('is_suspended').notNull().default(false),
+  suspendedAt: timestamp('suspended_at'),
+  suspensionReason: text('suspension_reason'),
+  resolvedReportsCount: integer('resolved_reports_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 export const newsFeed = pgTable('news_feed', {
@@ -211,6 +215,10 @@ export const userProfiles = pgTable('user_profiles', {
   mpTokenExpiresAt: timestamp('mp_token_expires_at'),
   mpConnectedAt: timestamp('mp_connected_at'),
   acceptsNewStudents: boolean('accepts_new_students').notNull().default(true),
+  isSuspended: boolean('is_suspended').notNull().default(false),
+  suspendedAt: timestamp('suspended_at'),
+  suspensionReason: text('suspension_reason'),
+  resolvedReportsCount: integer('resolved_reports_count').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -645,6 +653,7 @@ export const classBookings = pgTable('class_bookings', {
   teacherNetCents: integer('teacher_net_cents').notNull().default(14250),
   cancelledAt: timestamp('cancelled_at'),
   reminderSentAt: timestamp('reminder_sent_at'),
+  completedAt: timestamp('completed_at'),
 });
 
 export const teacherAvailabilityRelations = relations(teacherAvailability, ({ one }) => ({
@@ -708,3 +717,8 @@ export const entityReports = pgTable('entity_reports', {
   resolvedAt: timestamp('resolved_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export type UserProfile = InferSelectModel<typeof userProfiles>;
+export type NewUserProfile = InferInsertModel<typeof userProfiles>;
+export type ClassBooking = InferSelectModel<typeof classBookings>;
+export type NewClassBooking = InferInsertModel<typeof classBookings>;
