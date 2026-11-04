@@ -65,7 +65,7 @@
 }
 
 .radial-menu-center-line {
-  font-size: clamp(28px, 3.8vw, 40px);
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 1024px) {
@@ -93,9 +93,6 @@
     font-size: clamp(28px, 6.5vw, 38px);
   }
 
-  .radial-menu-center-line {
-    font-size: clamp(40px, 10vw, 54px);
-  }
 }
 
 @theme inline {

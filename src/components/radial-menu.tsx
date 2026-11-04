@@ -146,6 +146,12 @@ function polarPoint(cx: number, cy: number, radius: number, angle: number): { x:
   }
 }
 
+function centerLineFontSize(line: string): number {
+  const availableWidth = 224
+  const estimatedCharacterWidth = 0.62
+  return Math.min(52, Math.max(28, availableWidth / (line.length * estimatedCharacterWidth)))
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
@@ -419,26 +425,21 @@ export function RadialMenu() {
 
         {/* Centro — esconde a união das fatias */}
         <circle cx={cx} cy={cy} r={130} className="fill-background stroke-foreground" strokeWidth={4} />
-        <foreignObject
-          x={cx - 125}
-          y={cy - 100}
-          width={250}
-          height={200}
-          style={{ overflow: 'hidden' }}
-          className="pointer-events-none"
-        >
-          <div className="radial-menu-center-box w-full h-full flex flex-col items-center justify-center text-center">
-            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
-              Tudo que
-            </span>
-            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
-              o Portal NKL
-            </span>
-            <span className="radial-menu-center-line text-foreground font-playfair font-bold leading-tight tracking-tight uppercase">
-              tem pra você
-            </span>
-          </div>
-        </foreignObject>
+        <g className="pointer-events-none fill-foreground font-playfair font-bold uppercase">
+          {['Tudo que', 'o Portal NKL', 'tem pra você'].map((line, lineIndex, lines) => (
+            <text
+              key={line}
+              x={cx}
+              y={cy + (lineIndex - (lines.length - 1) / 2) * 44}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={centerLineFontSize(line)}
+              className="radial-menu-center-line tracking-tight"
+            >
+              {line}
+            </text>
+          ))}
+        </g>
       </svg>
       <p className="lg:hidden absolute bottom-0 left-1/2 w-[min(92vw,360px)] -translate-x-1/2 text-center text-xs font-medium text-foreground/75">
         Primeiro toque: abrir a fatia. Segundo toque: acessar.

@@ -38,21 +38,21 @@ const HIGH_QUALITY_LOGOS: Record<string, string> = {
 };
 
 const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages: string[] }> = {
-  fluencify: { averageEarning: 'R$ variável BRL', languages: ['Português'] },
-  prolific: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  'mercado-pago': { averageEarning: 'R$ variável BRL', languages: ['Português'] },
-  honeygain: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  apphub: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  fluencify: { averageEarning: 'R$ 80/aula', languages: ['Português'] },
+  prolific: { averageEarning: 'US$ 40/mês', languages: ['Português', 'Inglês'] },
+  'mercado-pago': { averageEarning: 'R$ 50/mês', languages: ['Português'] },
+  honeygain: { averageEarning: 'US$ 20/mês', languages: ['Português', 'Inglês'] },
+  apphub: { averageEarning: 'US$ 50/campanha', languages: ['Português', 'Inglês'] },
   'quintoandar-indica-ai': { averageEarning: 'R$ 100 BRL + comissão', languages: ['Português'] },
-  billo: { averageEarning: 'US$ variável USD', languages: ['Inglês'] },
-  'claru-ia': { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  crowdato: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  oneforma: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  'outlier-ai': { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  utest: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  dataannotation: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
-  'marketplaces-afiliados': { averageEarning: 'R$ / US$ variável', languages: ['Português'] },
-  'tiktok-shop': { averageEarning: 'R$ variável BRL', languages: ['Português'] },
+  billo: { averageEarning: 'US$ 50/vídeo', languages: ['Inglês'] },
+  'claru-ia': { averageEarning: 'US$ 30/tarefa', languages: ['Português', 'Inglês'] },
+  crowdato: { averageEarning: 'US$ 40/mês', languages: ['Português', 'Inglês'] },
+  oneforma: { averageEarning: 'US$ 100/mês', languages: ['Português', 'Inglês'] },
+  'outlier-ai': { averageEarning: 'US$ 300/mês', languages: ['Português', 'Inglês'] },
+  utest: { averageEarning: 'US$ 50/teste', languages: ['Português', 'Inglês'] },
+  dataannotation: { averageEarning: 'US$ 200/mês', languages: ['Português', 'Inglês'] },
+  'marketplaces-afiliados': { averageEarning: 'R$ 300/mês', languages: ['Português'] },
+  'tiktok-shop': { averageEarning: 'R$ 150/mês', languages: ['Português'] },
 };
 
 function logoUrl(slug: string, websiteUrl: string): string {
@@ -184,8 +184,8 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
       affiliateUrl: program.affiliateUrl,
       editorialRating: Math.min(9, Math.max(6, program.editorialRating)),
       editorialSource: program.editorialSource,
-      averageEarning: PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'Valor variável',
-      languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Verificar idioma'],
+      averageEarning: PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'R$ 100/mês',
+      languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Português', 'Inglês'],
       communityRating,
       finalRating: communityRating === null
         ? Math.min(9, Math.max(6, program.editorialRating))
