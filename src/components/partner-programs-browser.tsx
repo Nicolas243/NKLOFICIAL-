@@ -438,43 +438,13 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                 {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
               </div>
               <p className="text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
-              <div className="mt-auto flex min-w-0 items-center gap-1.5 overflow-hidden">
-                <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="h-9 shrink-0 whitespace-nowrap rounded-md border border-border px-2 text-xs font-bold hover:border-neon sm:px-2.5">Ler mais</button>
-                  {program.slug === 'quintoandar-indica-ai' ? (
-                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-9 min-w-0 items-center truncate whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold text-black hover:opacity-90 sm:px-2.5">
-                      Quero começar
-                    </button>
-                  ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 min-w-0 items-center truncate whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold text-black hover:opacity-90 sm:px-2.5">
-                      Acessar plataforma
-                    </OutboundLink>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
-                    aria-label={`Compartilhar ${program.name}`}
-                    title="Compartilhar oportunidade"
-                  >
-                    <Share2 size={17} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
-                    aria-label={`Criar lembrete para ${program.name}`}
-                    title="Criar lembrete"
-                  >
-                    <BellPlus size={17} aria-hidden="true" />
-                  </button>
-                </div>
-                <div className="flex h-12 w-12 shrink-0 items-center justify-end">
+              <div className="mt-auto flex min-w-0 flex-col gap-2">
+                <div className="flex h-16 items-center justify-end">
                   {program.slug === 'quintoandar-indica-ai' ? (
                     <button
                       type="button"
                       onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }}
-                      className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-background p-1 shadow-sm transition-transform hover:scale-105 hover:border-neon"
+                      className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border bg-background p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon"
                       aria-label={`Indicar imóveis pelo ${program.name}`}
                       title={`Indicar imóveis pelo ${program.name}`}
                     >
@@ -485,13 +455,43 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                       href={program.affiliateUrl ?? program.websiteUrl}
                       trackingId={program.slug}
                       onClick={(event) => event.stopPropagation()}
-                      className={`inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border p-1 shadow-sm transition-transform hover:scale-105 hover:border-neon ${['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug) ? 'bg-white' : 'bg-background'}`}
+                      className={`inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon ${['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug) ? 'bg-white' : 'bg-background'}`}
                       aria-label={`Acessar plataforma ${program.name}`}
                       title={`Acessar plataforma ${program.name}`}
                     >
                       <ProgramLogo program={program} />
                     </OutboundLink>
                   )}
+                </div>
+                <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
+                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="h-8 shrink-0 whitespace-nowrap rounded-md border border-border px-1.5 text-[11px] font-bold leading-none hover:border-neon sm:px-2">Ler mais</button>
+                  {program.slug === 'quintoandar-indica-ai' ? (
+                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-8 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-1.5 text-[11px] font-bold leading-none text-black hover:opacity-90 sm:px-2">
+                      Quero começar
+                    </button>
+                  ) : (
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} onClick={(event) => event.stopPropagation()} className="inline-flex h-8 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-1.5 text-[11px] font-bold leading-none text-black hover:opacity-90 sm:px-2">
+                      Acessar plataforma
+                    </OutboundLink>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    aria-label={`Compartilhar ${program.name}`}
+                    title="Compartilhar oportunidade"
+                  >
+                    <Share2 size={15} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    aria-label={`Criar lembrete para ${program.name}`}
+                    title="Criar lembrete"
+                  >
+                    <BellPlus size={15} aria-hidden="true" />
+                  </button>
                 </div>
               </div>
             </article>
