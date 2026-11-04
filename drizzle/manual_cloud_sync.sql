@@ -73,6 +73,9 @@ CREATE TABLE IF NOT EXISTS "partner_program_reviews" (
   "created_at" timestamp DEFAULT now() NOT NULL,
   CONSTRAINT "partner_program_reviews_program_reviewer_unique" UNIQUE ("program_id", "reviewer_key_hash")
 );
+ALTER TABLE "partner_program_reviews" ADD COLUMN IF NOT EXISTS "pay_amount" numeric(10, 2);
+ALTER TABLE "partner_program_reviews" ADD COLUMN IF NOT EXISTS "pay_currency" varchar(3);
+ALTER TABLE "partner_program_reviews" ADD COLUMN IF NOT EXISTS "pay_period" varchar(20);
 
 CREATE TABLE IF NOT EXISTS "partner_suggestions" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,

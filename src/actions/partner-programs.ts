@@ -13,6 +13,8 @@ import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
 const MIN_REASON_WORDS = 20;
 const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
+const REVIEW_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
+const REVIEW_PERIODS = ['hora', 'dia', 'semana', 'trabalho'] as const;
 
 type ProgramRow = typeof partnerPrograms.$inferSelect;
 
@@ -190,7 +192,7 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
       communityRating,
       finalRating: communityRating === null
         ? Math.min(9, Math.max(6, program.editorialRating))
-        : Math.min(9, Math.max(6, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
+        : Math.min(10, Math.max(0, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
       communityReviewCount: programReviews.length,
       communityTags,
     };
@@ -207,8 +209,17 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
     .filter((tag): tag is string => typeof tag === 'string')
     .filter((tag) => REVIEW_TAGS.includes(tag));
 
-  if (!programId || !Number.isInteger(rating) || rating < 6 || rating > 9) {
+  const payAmountRaw = typeof formData.get('payAmount') === 'string' ? (formData.get('payAmount') as string).trim().replace(',', '.') : '';
+  const payCurrency = typeof formData.get('payCurrency') === 'string' ? formData.get('payCurrency') as string : '';
+  const payPeriod = typeof formData.get('payPeriod') === 'string' ? formData.get('payPeriod') as string : '';
+  const payAmount = payAmountRaw ? Number(payAmountRaw) : null;
+
+  if (!programId || !Number.isInteger(rating) || rating < 0 || rating > 10) {
     throw new Error('Programa ou nota inválida.');
+  }
+
+  if (payAmountRaw && (!Number.isFinite(payAmount) || payAmount === null || payAmount <= 0 || !REVIEW_CURRENCIES.includes(payCurrency as typeof REVIEW_CURRENCIES[number]) || !REVIEW_PERIODS.includes(payPeriod as typeof REVIEW_PERIODS[number]))) {
+    throw new Error('Informe valor, moeda e período válidos para a remuneração.');
   }
 
   if (wordCount(reason) < MIN_REASON_WORDS) {
@@ -229,11 +240,22 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
     programId,
     reviewerKeyHash: await reviewerHash(),
     rating,
+    payAmount: payAmount === null ? null : payAmount.toFixed(2),
+    payCurrency: payAmount === null ? null : payCurrency,
+    payPeriod: payAmount === null ? null : payPeriod,
     reason,
     tags,
   }).onConflictDoUpdate({
     target: [partnerProgramReviews.programId, partnerProgramReviews.reviewerKeyHash],
-    set: { rating, reason, tags, status: 'published' },
+    set: {
+      rating,
+      payAmount: payAmount === null ? null : payAmount.toFixed(2),
+      payCurrency: payAmount === null ? null : payCurrency,
+      payPeriod: payAmount === null ? null : payPeriod,
+      reason,
+      tags,
+      status: 'published',
+    },
   });
 
   revalidatePath('/programas');

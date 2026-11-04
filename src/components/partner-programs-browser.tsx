@@ -432,14 +432,16 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                 ))}
               </div>
               <p className="text-sm opacity-75 leading-relaxed">{program.shortDescription}</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
-                {visibleTags.includes('dólar') && <span className="rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
-                {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
-              </div>
-              <p className="text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
               <div className="mt-auto flex min-w-0 flex-col gap-2">
-                <div className="flex h-16 items-center justify-end">
+                <div className="flex min-h-16 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
+                      {visibleTags.includes('dólar') && <span className="rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
+                      {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
+                    </div>
+                    <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
+                  </div>
                   {program.slug === 'quintoandar-indica-ai' ? (
                     <button
                       type="button"
@@ -464,33 +466,33 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                   )}
                 </div>
                 <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-1.5 text-[11px] font-bold leading-none hover:border-neon sm:px-2">Ler mais</button>
+                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-2 text-xs font-bold leading-none hover:border-neon">Ler mais</button>
                   {program.slug === 'quintoandar-indica-ai' ? (
-                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-8 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-1.5 text-[11px] font-bold leading-none text-black hover:opacity-90 sm:px-2">
+                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
                       Quero começar
                     </button>
                   ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} onClick={(event) => event.stopPropagation()} className="inline-flex h-8 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-1.5 text-[11px] font-bold leading-none text-black hover:opacity-90 sm:px-2">
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
                       Acessar plataforma
                     </OutboundLink>
                   )}
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
-                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
                     aria-label={`Compartilhar ${program.name}`}
                     title="Compartilhar oportunidade"
                   >
-                    <Share2 size={15} aria-hidden="true" />
+                    <Share2 size={16} aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
-                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
                     aria-label={`Criar lembrete para ${program.name}`}
                     title="Criar lembrete"
                   >
-                    <BellPlus size={15} aria-hidden="true" />
+                    <BellPlus size={16} aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -664,9 +666,27 @@ export function PartnerProgramsBrowser({ programs }: Props) {
             {showReviewForm && <form action={reviewAction} className="mt-8 space-y-4 border-t border-border pt-6">
               <input type="hidden" name="programId" value={selectedProgram.id} />
               <h3 className="font-playfair text-xl font-bold">Avalie esta oportunidade</h3>
-              <label className="block text-sm font-bold">Nota de 6 a 9
-                <input name="rating" type="number" min="6" max="9" required className="mt-2 block w-28 rounded-md border border-border bg-background px-3 py-2" />
+              <label className="block text-sm font-bold">Nota de 0 a 10
+                <input name="rating" type="number" min="0" max="10" step="1" required className="mt-2 block w-28 rounded-md border border-border bg-background px-3 py-2" />
               </label>
+              <fieldset className="rounded-lg border border-border p-3">
+                <legend className="px-1 text-sm font-bold">Quanto você recebeu ou espera receber?</legend>
+                <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+                  <input name="payAmount" type="number" min="0.01" step="0.01" placeholder="Valor médio (opcional)" className="rounded-md border border-border bg-background px-3 py-2 font-normal" />
+                  <select name="payCurrency" defaultValue="BRL" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
+                    <option value="BRL">R$ BRL</option>
+                    <option value="USD">US$ USD</option>
+                    <option value="EUR">€ EUR</option>
+                  </select>
+                  <select name="payPeriod" defaultValue="trabalho" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
+                    <option value="hora">por hora</option>
+                    <option value="dia">por dia</option>
+                    <option value="semana">por semana</option>
+                    <option value="trabalho">por trabalho</option>
+                  </select>
+                </div>
+                <p className="mt-2 text-xs font-normal opacity-60">Informe apenas se você tiver uma referência real.</p>
+              </fieldset>
               <label className="block text-sm font-bold">Tags da sua experiência
                 <select name="tags" multiple className="mt-2 min-h-32 w-full rounded-md border border-border bg-background px-3 py-2 font-normal">
                   {REVIEW_TAGS.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
