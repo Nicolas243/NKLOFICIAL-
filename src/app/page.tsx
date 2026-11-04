@@ -5,6 +5,9 @@ import { stringsCatalog, userProfiles, businessDirectory, newsFeed } from '@/db/
 import { desc, eq } from 'drizzle-orm';
 import { RadialMenu } from '@/components/radial-menu';
 import { HomeMenuFallback } from '@/components/home-menu-fallback';
+import { PwaInstallButton } from '@/components/pwa';
+
+export const dynamic = 'force-dynamic';
 
 type TopStringRow = Pick<
   typeof stringsCatalog.$inferSelect,
@@ -70,7 +73,10 @@ return (
       <HomeMenuFallback />
 
       {/* Radial Menu — PRIMEIRO após o header (Landing Page style) */}
-      <section className="relative -top-[10vh] flex items-center justify-center pt-2">
+      <section className="relative flex items-center justify-center pt-2">
+        <div className="absolute right-2 top-2 z-20">
+          <PwaInstallButton />
+        </div>
         <RadialMenu />
       </section>
 

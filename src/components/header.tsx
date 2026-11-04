@@ -9,6 +9,7 @@ import { useSessionUser } from '@/components/use-session-user'
 import { useSyncExternalStore } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { PwaInstallButton } from '@/components/pwa'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -147,7 +148,7 @@ export function Header() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
   const isHome = pathname === '/'
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/')
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra'
   const user = useSessionUser()
   const isLoggedIn = Boolean(user)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -171,16 +172,16 @@ export function Header() {
   if (isPartnerPortal) {
     const portalLinks = (
       <>
-        <Link href="/programas" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
-        <a href="/programas#sugestao" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
+        <Link href="/blog/renda-extra" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
+        <a href="/blog/renda-extra#sugestao" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
         <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
       </>
     )
 
     return (
-      <header className="lg:fixed top-0 w-full z-[100] border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
+      <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
         <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
-          <Link href="/programas" className="group flex min-w-0 items-center gap-3">
+          <Link href="/blog/renda-extra" className="group flex min-w-0 items-center gap-3">
             <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
               <span className="block truncate font-playfair text-xl font-bold tracking-tight">Blog NKL</span>
@@ -190,6 +191,7 @@ export function Header() {
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
             <span className="hidden">{authBtn}</span>
+            <PwaInstallButton />
             <ThemeToggle />
             <button
               className="relative z-[110] flex h-[30px] w-[30px] items-center justify-center rounded-[3px] transition-colors hover:bg-accent lg:hidden"
@@ -234,7 +236,7 @@ export function Header() {
   const bgColor = mounted ? rawBgColor : undefined
 
   return (
-    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`lg:fixed top-0 w-full z-[100] bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
+    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`relative z-[100] lg:fixed top-0 w-full bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
       <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0 bg-white dark:bg-black">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
@@ -248,6 +250,7 @@ export function Header() {
 
         <div className="relative z-[99999] flex items-start gap-2 sm:gap-3 shrink-0">
           <span className="inline-flex shrink-0">{authBtn}</span>
+          <PwaInstallButton />
           <LangDropdown />
           <ThemeToggle />
           <button

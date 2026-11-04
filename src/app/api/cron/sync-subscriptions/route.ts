@@ -45,12 +45,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .where(and(eq(studentPlanEnrollments.status, 'active'), lt(studentPlanEnrollments.expiresAt, now)))
       .returning({ id: studentPlanEnrollments.id });
     const completionCutoff = new Date(now.getTime() - CLASS_COMPLETION_GRACE_MINUTES * 60 * 1000);
-    await db.update(classBookings).set({ completedAt: now }).where(and(
+    const autoCompleted = await db.update(classBookings).set({ completedAt: now }).where(and(
       eq(classBookings.status, 'confirmed'),
       eq(classBookings.paymentStatus, 'paid'),
       isNull(classBookings.completedAt),
       lt(classBookings.scheduledAt, completionCutoff),
-    ));
+    )).returning({ id: classBookings.id });
 
     const from = new Date(now.getTime() + REMINDER_WINDOW_MIN_MINUTES * 60 * 1000);
     const to = new Date(now.getTime() + REMINDER_WINDOW_MAX_MINUTES * 60 * 1000);
@@ -97,7 +97,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       await db.update(businessDirectory).set({ planType: 'free' }).where(eq(businessDirectory.userId, subscription.userId));
     }
 
-    return NextResponse.json({ expiredEnrollmentsCount: expired.length, remindersDispatchedCount }, { status: 200 });
+    return NextResponse.json({
+      expiredEnrollmentsCount: expired.length,
+      autoCompletedClasses: autoCompleted.length,
+      remindersDispatchedCount,
+    }, { status: 200 });
   } catch (error) {
     console.error('[CRON] Falha ao sincronizar assinaturas e lembretes:', error instanceof Error ? error.message : 'erro desconhecido');
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });

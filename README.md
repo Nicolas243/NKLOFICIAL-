@@ -1,5 +1,13 @@
 # Portal NKL
 
+Documentação operacional:
+
+- [Visão do produto](./PRODUCT.md)
+- [Arquitetura](./docs/architecture.md)
+- [Onboarding](./docs/onboarding.md)
+- [Setup e recuperação](./docs/setup.md)
+- [Qualidade](./docs/quality.md)
+
 **Marketplace B2B que conecta músicos a luthiers** — catálogo técnico de cordas com avaliações da comunidade, diretório de profissionais, dashboard comercial com assinaturas Premium e ecossistema de favoritos ("Meu Setup").
 
 ## Stack Tecnológica

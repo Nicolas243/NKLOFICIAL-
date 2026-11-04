@@ -188,6 +188,18 @@ export const partnerSuggestions = pgTable('partner_suggestions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const partnerReferralLeads = pgTable('partner_referral_leads', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  programId: uuid('program_id')
+    .references(() => partnerPrograms.id, { onDelete: 'cascade' })
+    .notNull(),
+  contactName: varchar('contact_name', { length: 180 }).notNull(),
+  phone: varchar('phone', { length: 30 }).notNull(),
+  consentConfirmed: boolean('consent_confirmed').notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('new'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const userProfiles = pgTable('user_profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),

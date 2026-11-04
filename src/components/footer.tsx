@@ -7,7 +7,13 @@ import Link from 'next/link';
 
 export function Footer() {
   const pathname = usePathname();
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/');
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra';
+  const communityUrl = isPartnerPortal
+    ? 'https://chat.whatsapp.com/Bp7YWQ1bjJQ39M0vvn9MED'
+    : 'https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r';
+  const communityLabel = isPartnerPortal
+    ? 'Entrar no grupo de renda extra do Portal NKL no WhatsApp'
+    : 'Entrar na comunidade musical do Portal NKL no WhatsApp';
   const [pixOpen, setPixOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -35,7 +41,7 @@ export function Footer() {
 
   return (
     <>
-      <a href="https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r" target="_blank" rel="noopener noreferrer" className={isPartnerPortal ? 'hidden' : 'whatsapp-float'} aria-label="Comunidade VIP WhatsApp">
+      <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label={communityLabel}>
         <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
       </a>
       <footer className="site-footer">
@@ -82,7 +88,7 @@ export function Footer() {
             <Link href="/reembolso" className="text-sm hover:text-neon hover:underline">Reembolso</Link>
           </nav>
         </div>
-        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados</div>
+        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.0</span></div>
       </footer>
 
       {/* PayPal Modal */}

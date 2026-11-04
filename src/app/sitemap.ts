@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${BASE_URL}/`, lastModified, changeFrequency: 'daily', priority: 1.0 },
     { url: `${BASE_URL}/programas`, lastModified, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE_URL}/blog/renda-extra`, lastModified, changeFrequency: 'daily', priority: 1.0 },
     { url: `${BASE_URL}/catalogo`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/luthiers`, lastModified, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/professores`, lastModified, changeFrequency: 'weekly', priority: 0.7 },

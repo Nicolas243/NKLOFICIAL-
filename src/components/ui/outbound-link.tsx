@@ -1,15 +1,18 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, MouseEvent, ReactNode } from 'react';
 
 type OutboundLinkProps = {
   href: string;
   children: ReactNode;
   className?: string;
   trackingId: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  title?: string;
+  style?: CSSProperties;
 };
 
-export function OutboundLink({ href, children, className, trackingId }: OutboundLinkProps) {
+export function OutboundLink({ href, children, className, trackingId, onClick, title, style }: OutboundLinkProps) {
   function handleClick(): void {
     const event = {
       trackingId,
@@ -27,7 +30,10 @@ export function OutboundLink({ href, children, className, trackingId }: Outbound
   }
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={className} onClick={handleClick}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className} style={style} title={title} onClick={(event) => {
+      handleClick();
+      onClick?.(event);
+    }}>
       {children}
     </a>
   );

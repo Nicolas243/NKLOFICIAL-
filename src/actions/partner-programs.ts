@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { partnerProgramReviews, partnerPrograms, partnerSuggestions, userProfiles } from '@/db/schema';
+import { partnerProgramReviews, partnerPrograms, partnerReferralLeads, partnerSuggestions, userProfiles } from '@/db/schema';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
@@ -22,6 +22,49 @@ function stringArray(value: unknown): string[] {
 
 function wordCount(value: string): number {
   return value.trim().split(/\s+/u).filter(Boolean).length;
+}
+
+const HIGH_QUALITY_LOGOS: Record<string, string> = {
+  billo: '/partner-logos/billo.png',
+  'claru-ia': '/partner-logos/claru-ai.png',
+  apphub: 'https://app.hub.xyz/favicon.ico',
+  crowdato: '/partner-logos/crowdato.png',
+  oneforma: '/partner-logos/oneforma.png',
+  'outlier-ai': '/partner-logos/outlier.webp',
+  utest: 'https://utest.com/favicon.ico',
+  dataannotation: '/partner-logos/dataannotation.png',
+  'marketplaces-afiliados': '/partner-logos/marketplaces.png',
+  'tiktok-shop': '/NKL/tiktoklogo.png',
+};
+
+const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages: string[] }> = {
+  fluencify: { averageEarning: 'R$ variável BRL', languages: ['Português'] },
+  prolific: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  'mercado-pago': { averageEarning: 'R$ variável BRL', languages: ['Português'] },
+  honeygain: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  apphub: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  'quintoandar-indica-ai': { averageEarning: 'R$ 100 BRL + comissão', languages: ['Português'] },
+  billo: { averageEarning: 'US$ variável USD', languages: ['Inglês'] },
+  'claru-ia': { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  crowdato: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  oneforma: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  'outlier-ai': { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  utest: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  dataannotation: { averageEarning: 'US$ variável USD', languages: ['Português', 'Inglês'] },
+  'marketplaces-afiliados': { averageEarning: 'R$ / US$ variável', languages: ['Português'] },
+  'tiktok-shop': { averageEarning: 'R$ variável BRL', languages: ['Português'] },
+};
+
+function logoUrl(slug: string, websiteUrl: string): string {
+  const highQualityLogo = HIGH_QUALITY_LOGOS[slug];
+  if (highQualityLogo) return highQualityLogo;
+
+  try {
+    const hostname = new URL(websiteUrl).hostname.replace(/^www\./u, '');
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=256`;
+  } catch {
+    return '';
+  }
 }
 
 async function reviewerHash(): Promise<string> {
@@ -79,9 +122,12 @@ export type PartnerProgramCard = {
   difficulty: string;
   tags: string[];
   websiteUrl: string;
+  logoUrl: string;
   affiliateUrl: string | null;
   editorialRating: number;
   editorialSource: string;
+  averageEarning: string;
+  languages: string[];
   finalRating: number;
   communityRating: number | null;
   communityReviewCount: number;
@@ -134,13 +180,16 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
       difficulty: program.difficulty,
       tags: stringArray(program.tags),
       websiteUrl: program.websiteUrl,
+      logoUrl: logoUrl(program.slug, program.websiteUrl),
       affiliateUrl: program.affiliateUrl,
-      editorialRating: program.editorialRating,
+      editorialRating: Math.min(9, Math.max(6, program.editorialRating)),
       editorialSource: program.editorialSource,
+      averageEarning: PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'Valor variável',
+      languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Verificar idioma'],
       communityRating,
       finalRating: communityRating === null
-        ? program.editorialRating
-        : Number(((program.editorialRating + communityRating) / 2).toFixed(1)),
+        ? Math.min(9, Math.max(6, program.editorialRating))
+        : Math.min(9, Math.max(6, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
       communityReviewCount: programReviews.length,
       communityTags,
     };
@@ -157,7 +206,7 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
     .filter((tag): tag is string => typeof tag === 'string')
     .filter((tag) => REVIEW_TAGS.includes(tag));
 
-  if (!programId || !Number.isInteger(rating) || rating < 0 || rating > 10) {
+  if (!programId || !Number.isInteger(rating) || rating < 6 || rating > 9) {
     throw new Error('Programa ou nota inválida.');
   }
 
@@ -187,6 +236,7 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
   });
 
   revalidatePath('/programas');
+  revalidatePath('/blog/renda-extra');
 }
 
 export async function submitPartnerSuggestion(formData: FormData): Promise<void> {
@@ -207,6 +257,47 @@ export async function submitPartnerSuggestion(formData: FormData): Promise<void>
   });
 
   revalidatePath('/programas/admin');
+}
+
+export async function submitPartnerReferralLead(formData: FormData): Promise<void> {
+  await enforcePublicRateLimit('partner-referral-lead', await requestIdentifier());
+
+  const programId = typeof formData.get('programId') === 'string' ? formData.get('programId') as string : '';
+  const contactName = typeof formData.get('contactName') === 'string' ? (formData.get('contactName') as string).trim() : '';
+  const phone = typeof formData.get('phone') === 'string' ? (formData.get('phone') as string).trim() : '';
+  const consentConfirmed = formData.get('consentConfirmed') === 'on';
+
+  if (!programId || contactName.length < 2 || contactName.length > 180) {
+    throw new Error('Informe um nome válido.');
+  }
+
+  if (!/^[0-9+()\s-]{8,30}$/u.test(phone)) {
+    throw new Error('Informe um telefone válido.');
+  }
+
+  if (!consentConfirmed) {
+    throw new Error('Confirme que a pessoa autorizou o contato.');
+  }
+
+  const [program] = await db
+    .select({ id: partnerPrograms.id })
+    .from(partnerPrograms)
+    .where(and(eq(partnerPrograms.id, programId), eq(partnerPrograms.slug, 'quintoandar-indica-ai'), eq(partnerPrograms.status, 'published')))
+    .limit(1);
+
+  if (!program) {
+    throw new Error('Programa de indicação não encontrado.');
+  }
+
+  await db.insert(partnerReferralLeads).values({
+    programId,
+    contactName,
+    phone,
+    consentConfirmed,
+  });
+
+  revalidatePath('/programas');
+  revalidatePath('/blog/renda-extra');
 }
 
 export type PartnerAdminProgram = ProgramRow & {
@@ -243,7 +334,7 @@ export async function updatePartnerProgram(formData: FormData): Promise<void> {
   const status = typeof formData.get('status') === 'string' ? formData.get('status') as string : 'published';
   const editorialRating = Number(formData.get('editorialRating'));
 
-  if (!id || !['published', 'draft'].includes(status) || !Number.isInteger(editorialRating) || editorialRating < 0 || editorialRating > 10) {
+  if (!id || !['published', 'draft'].includes(status) || !Number.isInteger(editorialRating) || editorialRating < 6 || editorialRating > 9) {
     throw new Error('Dados administrativos inválidos.');
   }
 
@@ -255,6 +346,7 @@ export async function updatePartnerProgram(formData: FormData): Promise<void> {
   }).where(eq(partnerPrograms.id, id));
 
   revalidatePath('/programas');
+  revalidatePath('/blog/renda-extra');
   revalidatePath('/programas/admin');
 }
 

@@ -89,6 +89,22 @@ DO $$ BEGIN
     FOREIGN KEY ("user_id") REFERENCES "public"."user_profiles"("id");
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
+CREATE TABLE IF NOT EXISTS "partner_referral_leads" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  "program_id" uuid NOT NULL,
+  "contact_name" varchar(180) NOT NULL,
+  "phone" varchar(30) NOT NULL,
+  "consent_confirmed" boolean NOT NULL,
+  "status" varchar(20) NOT NULL DEFAULT 'new',
+  "created_at" timestamp DEFAULT now() NOT NULL
+);
+DO $$ BEGIN
+  ALTER TABLE "partner_referral_leads"
+    ADD CONSTRAINT "partner_referral_leads_program_id_partner_programs_id_fk"
+    FOREIGN KEY ("program_id") REFERENCES "partner_programs"("id")
+    ON DELETE cascade ON UPDATE no action;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 DO $$ BEGIN
   ALTER TABLE "favorite_businesses"
@@ -392,3 +408,45 @@ DO $$ BEGIN
     WITH CHECK (auth.uid() = "reporter_id");
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
+
+INSERT INTO "partner_programs" (
+  "slug",
+  "name",
+  "short_description",
+  "long_description",
+  "category",
+  "difficulty",
+  "tags",
+  "website_url",
+  "affiliate_url",
+  "editorial_rating",
+  "editorial_source",
+  "status"
+)
+VALUES (
+  'tiktok-shop',
+  'TikTok Shop',
+  'Crie conteúdo e recomende produtos no TikTok Shop conforme as campanhas e regras disponíveis na sua região.',
+  'O TikTok Shop permite que criadores apresentem produtos e recebam comissão quando uma venda elegível acontece pelas ferramentas da plataforma. A disponibilidade, a aprovação, as categorias, as taxas e os requisitos dependem da região e podem mudar. Leia as regras oficiais antes de publicar, sinalize conteúdo comercial e não prometa resultado ou remuneração fixa.',
+  'Conteúdo e vídeo',
+  'médio',
+  '["TikTok", "afiliados", "vídeos curtos", "vendas", "renda extra pelo celular"]'::jsonb,
+  'https://www.tiktok.com/shop',
+  'https://www.tiktok.com/d/1/ZS9y3kC6kW7Tx-TCI1K/',
+  8,
+  'Descrição editorial baseada na proposta pública do TikTok Shop; elegibilidade, campanhas e comissões variam por região e período.',
+  'published'
+)
+ON CONFLICT ("slug") DO UPDATE SET
+  "name" = EXCLUDED."name",
+  "short_description" = EXCLUDED."short_description",
+  "long_description" = EXCLUDED."long_description",
+  "category" = EXCLUDED."category",
+  "difficulty" = EXCLUDED."difficulty",
+  "tags" = EXCLUDED."tags",
+  "website_url" = EXCLUDED."website_url",
+  "affiliate_url" = EXCLUDED."affiliate_url",
+  "editorial_rating" = EXCLUDED."editorial_rating",
+  "editorial_source" = EXCLUDED."editorial_source",
+  "status" = EXCLUDED."status",
+  "updated_at" = now();

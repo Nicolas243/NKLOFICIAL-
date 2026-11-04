@@ -6,7 +6,7 @@ test.describe('Espinha dorsal crítica do Portal NKL', () => {
 
     const heading = page.getByRole('heading', { level: 1 });
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText('Portal NKL');
+    await expect(heading).toContainText('O Cuidado Oculto');
   });
 
   test('Catálogo renderiza os filtros e o grid', async ({ page }) => {
@@ -19,6 +19,6 @@ test.describe('Espinha dorsal crítica do Portal NKL', () => {
     await expect(page.getByPlaceholder('Buscar modelo...')).toBeVisible();
 
     // Dropdown de material do núcleo (select/combobox).
-    await expect(page.getByRole('combobox')).toBeVisible();
+    await expect(page.getByLabel(/Material do Núcleo/)).toBeVisible();
   });
 });

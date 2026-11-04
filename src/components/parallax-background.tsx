@@ -60,7 +60,7 @@ function buildGrid(w: number, h: number, words: readonly string[], marks: readon
 
 export function ParallaxBackground() {
   const pathname = usePathname()
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/')
+  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra'
   const [state, setState] = useState<State | null>(null)
   const plane = useRef<HTMLDivElement>(null)
   const pointer = useRef({ x: 0, y: 0 })
@@ -141,7 +141,7 @@ export function ParallaxBackground() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden z-[1] pointer-events-none opacity-90">
+      <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none opacity-90">
         <div
           ref={plane}
           className="absolute will-change-transform"
@@ -160,7 +160,7 @@ export function ParallaxBackground() {
           )}
         </div>
       </div>
-      <div className={`fixed inset-0 z-[2] pointer-events-none ${isPartnerPortal ? 'bg-white/90 dark:bg-black/90' : 'bg-background/65'}`} />
+      <div className={`fixed inset-0 z-0 pointer-events-none ${isPartnerPortal ? 'bg-white/90 dark:bg-black/90' : 'bg-background/65'}`} />
     </>
   )
 }

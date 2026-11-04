@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface SliceData {
   label: string
@@ -139,18 +139,46 @@ function seededValue(sliceIndex: number, noteIndex: number, salt: number): numbe
   return value - Math.floor(value)
 }
 
+function polarPoint(cx: number, cy: number, radius: number, angle: number): { x: number; y: number } {
+  return {
+    x: roundCoord(cx + radius * Math.cos(angle)),
+    y: roundCoord(cy + radius * Math.sin(angle)),
+  }
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
 function wrapText(text: string, maxCharacters: number): string[] {
   const words = text.split(' ')
   const lines: string[] = []
   let line = ''
 
-  for (const word of words) {
-    const candidate = line ? `${line} ${word}` : word
-    if (line && candidate.length > maxCharacters) {
-      lines.push(line)
-      line = word
+  for (const rawWord of words) {
+    const wordParts: string[] = []
+    if (rawWord.length > maxCharacters) {
+      const partLength = Math.max(1, maxCharacters - 1)
+      for (let start = 0; start < rawWord.length; start += partLength) {
+        const part = rawWord.slice(start, start + partLength)
+        wordParts.push(start + partLength < rawWord.length ? `${part}-` : part)
+      }
     } else {
-      line = candidate
+      wordParts.push(rawWord)
+    }
+
+    for (const word of wordParts) {
+      if (line && wordParts.length > 1 && word === wordParts[0]) {
+        lines.push(line)
+        line = ''
+      }
+      const candidate = line ? `${line} ${word}` : word
+      if (line && candidate.length > maxCharacters) {
+        lines.push(line)
+        line = word
+      } else {
+        line = candidate
+      }
     }
   }
 
@@ -170,8 +198,24 @@ function describeArc(cx: number, cy: number, r: number, startAngle: number, endA
 export function RadialMenu() {
   const router = useRouter()
   const [active, setActive] = useState<number | null>(null)
+  const [reduceMotion, setReduceMotion] = useState(true)
+  const [motionReady, setMotionReady] = useState(false)
   const touchActive = useRef<number | null>(null)
   const suppressClick = useRef(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const updatePreference = () => {
+      setReduceMotion(mediaQuery.matches)
+      setMotionReady(true)
+    }
+    const frameId = window.requestAnimationFrame(updatePreference)
+    mediaQuery.addEventListener('change', updatePreference)
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      mediaQuery.removeEventListener('change', updatePreference)
+    }
+  }, [])
 
   const cx = 400
   const cy = 400
@@ -179,10 +223,10 @@ export function RadialMenu() {
   const step = (2 * Math.PI) / SLICES.length
 
   return (
-    <div className="radial-menu-intro relative z-10 flex pointer-events-auto items-center justify-center overflow-visible p-[clamp(18px,4vw,56px)]">
+    <div className="radial-menu-intro relative z-10 flex pointer-events-auto items-center justify-center overflow-visible p-[clamp(8px,2vw,24px)]">
       <svg
         viewBox="0 0 800 800"
-        className="pointer-events-auto h-[calc(100vh-40px)] w-auto aspect-square max-w-full overflow-visible portrait:w-[calc(100vw-40px)] portrait:h-auto"
+        className="radial-menu-svg pointer-events-auto aspect-square max-w-full overflow-visible"
       >
         {SLICES.map((slice, i) => {
           const start = i * step - Math.PI / 2
@@ -205,11 +249,10 @@ export function RadialMenu() {
 
           while (symbolPositions.length < SYMBOL_COUNT && attempts < 500) {
             const idx = attempts
-            const noteRadius = 148 + seededValue(i, idx, 1) * 205
-            const angleOffset = (seededValue(i, idx, 2) - 0.5) * step * 0.82
+            const noteRadius = 150 + seededValue(i, idx, 1) * 165
+            const angleOffset = (seededValue(i, idx, 2) - 0.5) * step * 0.68
             const noteAngle = mid + angleOffset
-            const nx = roundCoord(cx + noteRadius * Math.cos(noteAngle))
-            const ny = roundCoord(cy + noteRadius * Math.sin(noteAngle))
+            const { x: nx, y: ny } = polarPoint(cx, cy, noteRadius, noteAngle)
             const isFarEnough = symbolPositions.every((position) => {
               const dx = position.x - nx
               const dy = position.y - ny
@@ -260,11 +303,7 @@ export function RadialMenu() {
                 touchAction: 'manipulation',
               }}
             >
-              <path
-                d={d}
-                className={isHovered ? 'fill-foreground/20 stroke-foreground' : 'fill-foreground/10 stroke-foreground'}
-                strokeWidth={5}
-              />
+              <path d={d} className={isHovered ? 'fill-background stroke-foreground' : 'fill-background stroke-foreground'} strokeWidth={5} />
 
               <clipPath id={`slice-clip-${i}`}>
                 <path d={d} />
@@ -273,39 +312,75 @@ export function RadialMenu() {
               {/* Um único símbolo repetido cria a textura visual de cada fatia. */}
               <g clipPath={isHovered ? undefined : `url(#slice-clip-${i})`}>
                 {symbolPositions.map(({ x: nx, y: ny }, idx) => {
-                const dx = nx - cx
-                const dy = ny - cy
-                const radius = Math.hypot(dx, dy)
-                const angle = Math.atan2(dy, dx)
-                const pushedRadius = isHovered ? radius + 116 + seededValue(i, idx, 4) * 38 : radius
-                const pushedAngle = isHovered
-                  ? angle + (seededValue(i, idx, 5) - 0.5) * 0.16
-                  : angle
-                const symbolX = roundCoord(cx + pushedRadius * Math.cos(pushedAngle))
-                const symbolY = roundCoord(cy + pushedRadius * Math.sin(pushedAngle))
-                const opacity = (isHovered ? 0.3 : 0.13 + seededValue(i, idx, 3) * 0.08).toFixed(6)
-                const symbolScale = isHovered ? 1.1 : 1
-                const symbolTransform = `translate(${symbolX} ${symbolY}) scale(${symbolScale}) translate(${-symbolX} ${-symbolY})`
-                return (
-                  <text
-                    key={idx}
-                    x={symbolX}
-                    y={symbolY}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={isHovered ? 30 : 26.4}
-                    fill="currentColor"
-                    opacity={opacity}
-                    transform={symbolTransform}
-                    className="select-none pointer-events-none fill-foreground transition-all duration-300"
-                  >
-                    {symbol}
-                  </text>
-                )
+                  const dx = nx - cx
+                  const dy = ny - cy
+                  const radius = Math.hypot(dx, dy)
+                  const angle = Math.atan2(dy, dx)
+                  const pushedRadius = isHovered ? radius + 70 + seededValue(i, idx, 4) * 20 : radius
+                  const pushedAngle = isHovered
+                    ? angle + (seededValue(i, idx, 5) - 0.5) * 0.1
+                    : angle
+                  const symbolX = roundCoord(cx + pushedRadius * Math.cos(pushedAngle))
+                  const symbolY = roundCoord(cy + pushedRadius * Math.sin(pushedAngle))
+                  const motionPoints = [0, 1, 2, 3].map((pointIndex) => {
+                    const edgeRadius = pointIndex % 2 === 0 ? 315 : 155
+                    const motionRadius = clamp(edgeRadius + (seededValue(i, idx, 10 + pointIndex) - 0.5) * 20, 145, 325)
+                    const motionOffset = clamp(
+                      (angle - mid) + (seededValue(i, idx, 20 + pointIndex) - 0.5) * step * 0.24,
+                      -step * 0.64,
+                      step * 0.64,
+                    )
+                    return polarPoint(cx, cy, motionRadius, mid + motionOffset)
+                  })
+                  const motionDuration = (18 + seededValue(i, idx, 30) * 14).toFixed(2)
+                  const motionDelay = (-seededValue(i, idx, 31) * Number(motionDuration)).toFixed(2)
+                  const opacity = (isHovered ? 0.38 : 0.18 + seededValue(i, idx, 3) * 0.1).toFixed(6)
+                  const symbolScale = isHovered ? 1.08 : 1
+                  const symbolTransform = `translate(${symbolX} ${symbolY}) scale(${symbolScale}) translate(${-symbolX} ${-symbolY})`
+                  return (
+                    <text
+                      key={idx}
+                      x={symbolX}
+                      y={symbolY}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize={isHovered ? 32 : 28}
+                      fill="currentColor"
+                      opacity={opacity}
+                      transform={symbolTransform}
+                      className="select-none pointer-events-none fill-foreground transition-all duration-300"
+                    >
+                      {symbol}
+                      {motionReady && !reduceMotion && !isHovered && (
+                        <>
+                          <animate
+                            attributeName="x"
+                            values={motionPoints.map((point) => point.x).join(';')}
+                            keyTimes="0;0.33;0.66;1"
+                            keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+                            calcMode="spline"
+                            dur={`${motionDuration}s`}
+                            begin={`${motionDelay}s`}
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="y"
+                            values={motionPoints.map((point) => point.y).join(';')}
+                            keyTimes="0;0.33;0.66;1"
+                            keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+                            calcMode="spline"
+                            dur={`${motionDuration}s`}
+                            begin={`${motionDelay}s`}
+                            repeatCount="indefinite"
+                          />
+                        </>
+                      )}
+                    </text>
+                  )
                 })}
 
                 <g clipPath={`url(#slice-clip-${i})`}>
-                  {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
+                  {(isHovered ?                   wrapText(slice.desc, 14) : wrapText(slice.label, 12)).map((line, lineIndex, lines) => (
                     <text
                       key={`${line}-${lineIndex}`}
                       x={labelX}
@@ -322,7 +397,7 @@ export function RadialMenu() {
                 </g>
 
                 <g className="radial-menu-mobile-copy" clipPath={`url(#slice-clip-${i})`}>
-                  {(isHovered ? wrapText(slice.desc, 18) : wrapText(slice.label, 15)).map((line, lineIndex, lines) => (
+                  {(isHovered ? wrapText(slice.desc, 14) : wrapText(slice.label, 12)).map((line, lineIndex, lines) => (
                     <text
                       key={`mobile-${line}-${lineIndex}`}
                       x={mobileLabelX}

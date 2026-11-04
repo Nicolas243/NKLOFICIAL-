@@ -5,6 +5,8 @@ export const metadata = {
   title: 'Catálogo de Cordas | Portal NKL',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function CatalogoPage() {
   // Primeiro paint vem do servidor (sem filtros); o drill-down de filtros
   // e a paginação acontecem no cliente acionando a Server Action.

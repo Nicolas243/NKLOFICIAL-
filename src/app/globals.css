@@ -51,16 +51,21 @@
   will-change: transform, opacity;
 }
 
+.radial-menu-svg {
+  width: min(92vw, calc(100svh - 110px));
+  height: auto;
+}
+
 .radial-menu-label {
-  font-size: clamp(13.07px, 1.67vw, 18.88px);
+  font-size: clamp(22px, 2.2vw, 27px);
 }
 
 .radial-menu-description {
-  font-size: clamp(11.62px, 1.45vw, 17.42px);
+  font-size: clamp(18px, 1.9vw, 23px);
 }
 
 .radial-menu-center-line {
-  font-size: clamp(20.8px, 3.25vw, 31.2px);
+  font-size: clamp(28px, 3.8vw, 40px);
 }
 
 @media (max-width: 1024px) {
@@ -74,6 +79,22 @@
 
   .radial-menu-mobile-copy {
     display: block;
+  }
+
+  .radial-menu-svg {
+    width: min(94vw, calc(100svh - 120px));
+  }
+
+  .radial-menu-label {
+    font-size: clamp(34px, 8vw, 44px);
+  }
+
+  .radial-menu-description {
+    font-size: clamp(28px, 6.5vw, 38px);
+  }
+
+  .radial-menu-center-line {
+    font-size: clamp(40px, 10vw, 54px);
   }
 }
 
@@ -113,6 +134,46 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.65;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a,
+select,
+input,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+    outline: 3px solid var(--neon);
+    outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+    input,
+    select,
+    textarea {
+        min-height: 44px;
+        font-size: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 img {
