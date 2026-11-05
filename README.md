@@ -1,74 +1,68 @@
 # Portal NKL
 
-Documentação operacional:
+O Portal NKL é um portal brasileiro com duas frentes: ferramentas e conteúdo para músicos,
+luthiers, professores e lojas; e um catálogo editorial de oportunidades digitais e renda extra.
+Alguns links de oportunidades são afiliados e podem gerar comissão sem custo adicional para o
+visitante. A remuneração, aprovação e disponibilidade são sempre definidas pela plataforma externa.
 
+## Documentação rápida
+
+- [Contexto para agentes de IA](./AI-CONTEXT.md)
+- [Catálogo de oportunidades para PDF](./OPORTUNIDADES-RENDA-EXTRA.md)
 - [Visão do produto](./PRODUCT.md)
 - [Arquitetura](./docs/architecture.md)
 - [Onboarding](./docs/onboarding.md)
 - [Setup e recuperação](./docs/setup.md)
 - [Qualidade](./docs/quality.md)
+- [Changelog](./CHANGELOG.md)
 
-**Marketplace B2B que conecta músicos a luthiers** — catálogo técnico de cordas com avaliações da comunidade, diretório de profissionais, dashboard comercial com assinaturas Premium e ecossistema de favoritos ("Meu Setup").
-
-## Stack Tecnológica
+## Stack atual
 
 | Camada | Tecnologia |
 |---|---|
-| Framework | Next.js 15 (App Router, Turbopack, Server Actions) + React 19 (Optimistic UI) |
-| ORM | Drizzle ORM (PostgreSQL) |
-| Banco / Auth / Storage | Supabase |
-| Estilo | Tailwind CSS v4 |
-| Qualidade | TypeScript strict (sem `any`), ESLint `--max-warnings=0` |
+| Framework | Next.js 16.4.5 (App Router, Server Actions) |
+| UI | React 19.2.8, TypeScript strict, Tailwind CSS v4 |
+| Dados | Drizzle ORM + PostgreSQL/Supabase |
+| Auth e Storage | Supabase |
+| Integrações | Mercado Pago, Upstash Redis, Daily |
+| Deploy | Vercel |
 
-## Arquitetura de Dados
+## Áreas principais
 
-O schema Drizzle (`src/db/schema.ts`) é organizado em domínios:
+- `/` — home musical com menu radial;
+- `/catalogo`, `/luthiers`, `/professores` e `/lojas` — catálogo e diretórios;
+- `/programas` e `/blog/renda-extra` — oportunidades e conteúdo de renda extra;
+- `/login`, `/dashboard`, `/admin` — conta, operações e moderação;
+- `/termos`, `/privacidade` e `/reembolso` — documentos legais públicos.
 
-- **Catálogo** — `strings_catalog` (encordoados com métricas técnicas) e `string_reviews` (avaliações com upsert anti-duplicidade via unique composta `string_id + user_id`).
-- **B2B Directory** — `user_profiles` (RBAC: `user` / `luthier` / `admin`) e `business_directory` (dados comerciais: WhatsApp, plano, bio, FK estrita para `user_profiles`).
-- **Assinaturas / Paywall** — `subscriptions` (espelho do gateway: status, período) sincronizada com `plan_type`; recursos premium (portfólio, métricas de leads) bloqueados no plano gratuito.
-- **Notificações** — `notifications` in-app com gatilhos silenciosos (leads, avaliações) e badge no header.
-- **Analytics** — `luthier_leads` (rastreamento de cliques no WhatsApp) alimentando o MRR/leads do dashboard admin.
-- **Favoritos** — tabelas associativas com PK composta (`favorite_strings`, `favorite_luthiers`).
-- **Conteúdo** — `news_feed` gerenciado pelo CMS de admin.
-
-### Fronteiras de Integração
-
-| Endpoint | Segurança | Função |
-|---|---|---|
-| `POST /api/webhooks/gateway` | `x-gateway-signature` (`GATEWAY_WEBHOOK_SECRET`) | Recebe eventos do gateway, atualiza `subscriptions` e sincroniza `plan_type` |
-| `GET /api/cron/sync-subscriptions` | `Authorization: Bearer` (`CRON_SECRET`) | Rebaixa assinaturas expiradas (`active` + período vencido → `past_due` + plano `free`) |
-
-## Setup Local
+## Desenvolvimento local
 
 ```bash
-# 1. Instalar dependências
 npm install
-
-# 2. Configurar o ambiente
-cp .env.example .env.local
-#    Preencha DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY
-#    (obtidos no painel do Supabase).
-
-# 3. Rodar em desenvolvimento
+# copie .env.example para .env.local e preencha os valores locais
 npm run dev
 ```
 
-O Supabase Storage requer o bucket **público `public-assets`** (uploads de portfólio, capas de notícias e avatares, pastas `luthiers/`, `news/`).
+Nunca coloque valores de segredo no código, no README ou em commits. Variáveis são validadas em
+`src/env.ts`; consulte `.env.example` para os nomes exigidos.
 
-## Comandos de Verificação (Metodologia Zero-Defeitos)
-
-Todo commit **deve** passar pela tríade de homologação — o pipeline `.github/workflows/production.yml` (Node 20, `ubuntu-latest`) aplica os mesmos gates em `push`/`pull_request` para `main`:
-
-```bash
-npx eslint src/ --max-warnings=0   # 0 warnings tolerados
-npx tsc --noEmit                   # tipagem estrita, sem asserções soltas
-npm run build                      # build de produção (Turbopack)
-```
-
-Utilitários de manutenção:
+## Validação
 
 ```bash
-npx drizzle-kit push    # sincroniza o schema com o Postgres (usar com cautela)
-npm run seed            # popula dados de demonstração (src/db/seed.ts)
+npm run lint
+npm run typecheck
+npm run build
+npm run verify
+npm run test:e2e
 ```
+
+`npm run lint` pode reportar warnings legados dentro de `AntigoNKL`; eles não devem ser
+confundidos com erros novos na aplicação atual. Mudanças de banco devem usar migração versionada
+em `drizzle/` e ser verificadas localmente antes de qualquer sincronização de produção.
+
+## Privacidade e segurança
+
+Scripts de Google Analytics e AdSense só são carregados depois do consentimento para recursos não
+essenciais. Sessão, segurança, PWA e prevenção de abuso continuam funcionando como recursos
+necessários. Webhooks validam assinatura, cron valida `CRON_SECRET` e ações server-side validam
+entrada e autorização.

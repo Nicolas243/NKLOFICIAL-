@@ -1,45 +1,42 @@
 # TERMO DE USO E CONTRATO DE PRESTAÇÃO DE SERVIÇOS — LUTHIERS
 
-**Portal NKL** — Última atualização: 2026 (versão 1.0)
+**Portal NKL** — Última atualização: 4 de novembro de 2026 (versão 1.1)
 
-Este contrato estabelece as condições para luthiers e profissionais de reparo de instrumentos listados no diretório do Portal NKL.
+Este termo estabelece as condições para luthiers e profissionais de reparo listados no diretório
+do Portal NKL. Ele complementa os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade).
 
-## 1. Objeto
+## 1. Objeto e cadastro
 
-O Luthier adere ao diretório para divulgar seus serviços de construção, reparo e manutenção de instrumentos de corda (violino, viola, violoncelo, contrabaixo, violão e correlatos), recebendo contatos de clientes mediados pela plataforma.
+O luthier utiliza o diretório para divulgar construção, reparo e manutenção de instrumentos. Deve
+manter dados, localização, tipos de instrumento, serviços, imagens e autorizações atualizados.
 
-## 2. Cadastro e Verificação
+## 2. Verificação e portfólio
 
-2.1. As informações de cadastro (nome do ateliê, localização, tipos de instrumentos atendidos e tipos de reparos) devem ser verdadeiras e mantidas atualizadas.
+O selo “Verificado” ou “Premium” atesta apenas a informação indicada na oferta e não garante
+qualidade, prazo, preço ou resultado. O luthier responde pelo uso autorizado das imagens e
+descrições de seu portfólio.
 
-2.2. O selo "Verificado" ou "Premium" não constitui garantia do Portal NKL quanto à qualidade dos serviços, mas atesta a existência e a identidade do profissional.
+## 3. Contatos, conduta e dados
 
-## 3. Cláusula de Não-Circunvenção (Anti-Circumvention) — NÚCLEO DO CONTRATO
+O luthier não deve usar dados de clientes para spam, assédio, fraude, discriminação ou finalidade
+incompatível com o contato solicitado. Contratações diretas lícitas não são proibidas; cobranças,
+comissões e taxas do Portal devem ser informadas previamente. Abuso de dados, fraude ou indução
+do cliente a erro pode resultar em suspensão proporcional, após análise e esclarecimento quando
+cabível.
 
-3.1. **Proibição de captação por fora.** É proibido ao Luthier utilizar os dados de contato de clientes obtidos via Portal NKL para concretizar negócios fora da plataforma durante a vigência deste Termo e por **12 (doze) meses** após o último contato originado pela plataforma.
+## 4. Planos, serviços e avaliações
 
-3.2. **Proibição de indução.** O Luthier não poderá induzir o cliente a encerrar o relacionamento com a plataforma, oferecer condições especiais "por fora" ou divulgar canais de contato próprios dentro dos espaços da plataforma.
+Planos, destaque e eventuais taxas seguem a oferta vigente. O luthier responde pela execução do
+serviço e pela relação de consumo quando aplicável. Avaliações podem usar nota de 0 a 10; não é
+permitido publicar avaliações falsas ou pressionar clientes a alterar avaliações legítimas.
 
-3.3. **Sanções.** A violação autoriza: (a) suspensão imediata; (b) cancelamento definitivo; (c) retenção de valores pendentes; (d) multa equivalente a 6 (seis) vezes a média mensal de remuneração estimada dos serviços intermediados, sem prejuízo de perdas e danos.
+## 5. Proteção de dados, vigência e encerramento
 
-## 4. Planos e Portfólio
+Dados pessoais são tratados conforme a LGPD e a Política de Privacidade. O luthier pode encerrar
+o perfil, preservados registros necessários à lei, segurança ou defesa de direitos. O Portal pode
+suspender o perfil diante de fraude, risco ou violação deste termo.
 
-4.1. O acesso ao diretório pode ser gratuito ou mediante plano Premium, com prioridade de exibição.
+## 6. Foro
 
-4.2. Imagens do portfólio devem ser de autoria do Luthier ou usadas com autorização, respondendo civilmente por uso indevido.
-
-## 5. Avaliações
-
-As avaliações públicas (1 a 10) são de responsabilidade de quem as emite. O Luthier não poderá pressionar clientes a alterar ou remover avaliações legítimas.
-
-## 6. Proteção de Dados (LGPD)
-
-Os dados pessoais são tratados conforme a LGPD e a Política de Privacidade do Portal NKL.
-
-## 7. Vigância e Rescisão
-
-Vigora enquanto o perfil estiver ativo, mantendo-se as cláusulas 3 e 6 quanto aos fatos ocorridos durante a vigência.
-
-## 8. Foro
-
-Fica eleito o foro do domicílio do usuário, com renúncia a qualquer outro.
+Aplicam-se as leis brasileiras, preservando os direitos inderrogáveis do consumidor e o foro
+legalmente competente.

@@ -2,7 +2,7 @@
 
 ## Runtime
 
-- Next.js 16.3.1 com App Router e Turbopack.
+- Next.js 16.4.5 com App Router e Turbopack.
 - React 19.2.8 e TypeScript strict.
 - Tailwind CSS v4 e `lucide-react`.
 - Server Actions para operações de domínio e Route Handlers para integrações HTTP.
@@ -29,4 +29,5 @@
 - Webhooks devem validar assinatura antes de alterar dados.
 - Cron deve validar `CRON_SECRET`.
 - Links de afiliados devem preservar a URL cadastrada e ser tratados como conteúdo editorial sujeito a mudança.
+- Google Analytics e AdSense são recursos não essenciais e só são carregados após consentimento explícito.
 - Migrações devem ser aditivas, revisáveis e testadas localmente; não aplicar automaticamente em produção.

@@ -240,10 +240,10 @@ export function RadialMenu() {
           const mid = start + step / 2
           const d = describeArc(cx, cy, r, start, end)
           const isHovered = active === i
-          const labelRadius = 315
+          const labelRadius = 284
           const labelX = roundCoord(cx + labelRadius * Math.cos(mid))
           const labelY = roundCoord(cy + labelRadius * Math.sin(mid))
-          const mobileLabelRadius = 272
+          const mobileLabelRadius = 245
           const mobileLabelX = roundCoord(cx + mobileLabelRadius * Math.cos(mid))
           const mobileLabelY = roundCoord(cy + mobileLabelRadius * Math.sin(mid))
           const symbol = slice.notes[0]?.s ?? '♪'

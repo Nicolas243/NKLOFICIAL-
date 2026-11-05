@@ -100,7 +100,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
           <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex items-center h-[30px] text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -122,7 +122,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors gap-1 max-[480px]:gap-0.5 active:scale-95 whitespace-nowrap">
+        className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95 whitespace-nowrap">
         <span className={label === 'Encontre um...' ? 'max-[480px]:hidden' : ''}>{label}</span>
         {label === 'Encontre um...' && <span className="hidden max-[480px]:inline">Encontre</span>}
         <span className="text-xs max-[480px]:text-[9px]">▾</span>
@@ -132,7 +132,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
           <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex items-center h-[30px] text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -222,7 +222,7 @@ export function Header() {
     </>
   )
 
-  const navLinkCls = 'inline-flex items-center h-[30px] text-[clamp(13.4px,1.8vw,16.8px)] max-[480px]:text-[11.2px] font-medium uppercase tracking-tight max-[480px]:tracking-[-0.03em] hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
+  const navLinkCls = 'inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
 
   const navLinksCompact = (
     <>

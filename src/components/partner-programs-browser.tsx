@@ -15,7 +15,20 @@ type Props = {
   programs: PartnerProgramCard[];
 };
 
-const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
+const REVIEW_TAG_GROUPS = [
+  {
+    label: 'Características gerais',
+    tags: ['fácil', 'médio', 'difícil', 'exige experiência'],
+  },
+  {
+    label: 'Pontos positivos',
+    tags: ['boa remuneração', 'flexível', 'pagamento pontual', 'suporte eficiente', 'cadastro simples', 'tarefas interessantes', 'boa oferta de tarefas'],
+  },
+  {
+    label: 'Pontos negativos',
+    tags: ['baixa remuneração', 'poucas tarefas disponíveis', 'pagamento atrasado', 'suporte ruim', 'cadastro demorado', 'requisitos confusos', 'tarefas repetitivas'],
+  },
+];
 const PROGRAMS_PER_PAGE = 9;
 const DISCOVERY_TAGS = [
   { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer'] },
@@ -435,10 +448,10 @@ export function PartnerProgramsBrowser({ programs }: Props) {
               <div className="mt-auto flex min-w-0 flex-col gap-2">
                 <div className="flex min-h-16 items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
-                      {visibleTags.includes('dólar') && <span className="rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
-                      {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
+                    <div className="flex max-h-[5.25rem] flex-wrap content-start gap-1.5 overflow-hidden">
+                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
+                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
+                      {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
                     </div>
                     <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
                   </div>
@@ -688,9 +701,14 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                 <p className="mt-2 text-xs font-normal opacity-60">Informe apenas se você tiver uma referência real.</p>
               </fieldset>
               <label className="block text-sm font-bold">Tags da sua experiência
-                <select name="tags" multiple className="mt-2 min-h-32 w-full rounded-md border border-border bg-background px-3 py-2 font-normal">
-                  {REVIEW_TAGS.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+                <select name="tags" multiple className="mt-2 min-h-32 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" aria-describedby="review-tags-help">
+                  {REVIEW_TAG_GROUPS.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+                    </optgroup>
+                  ))}
                 </select>
+                <span id="review-tags-help" className="mt-1 block text-xs font-normal opacity-60">Você pode selecionar quantas tags quiser, incluindo pontos positivos e negativos.</span>
               </label>
               <label className="block text-sm font-bold">Por que você deu esta nota?
                 <textarea name="reason" required minLength={100} rows={6} placeholder="Escreva pelo menos 20 palavras sobre sua experiência." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" />

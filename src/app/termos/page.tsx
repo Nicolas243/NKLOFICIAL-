@@ -2,103 +2,157 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Termos de Uso | Portal NKL',
-  description:
-    'Regras de utilização, responsabilidades e contratos do Portal NKL.',
+  description: 'Regras de utilização, responsabilidades e contratos do Portal NKL.',
 };
 
 const contracts = [
   {
     href: '/contratos/termo-professores.md',
     title: 'Termo do Professor(a)',
-    description:
-      'Aulas por videochamada e presencialmente, com cláusula de não-circunvenção que proíbe contratar alunos da plataforma por fora.',
+    description: 'Regras para divulgação e prestação de aulas dentro do diretório.',
   },
   {
     href: '/contratos/termo-luthiers.md',
     title: 'Termo do Luthier',
-    description:
-      'Serviços de construção e reparo de instrumentos, com cláusula de não-circunvenção sobre clientes captados via plataforma.',
+    description: 'Regras para divulgação de construção, manutenção e reparo de instrumentos.',
   },
   {
     href: '/contratos/termo-lojas.md',
     title: 'Termo da Loja',
-    description:
-      'Comércio de instrumentos e acessórios, com cláusula de não-circunvenção e responsabilidades de relação de consumo (CDC).',
+    description: 'Regras para divulgação de lojas e produtos de instrumentos e acessórios.',
   },
 ];
 
 export default function TermosPage() {
   return (
-    <div className="max-w-3xl w-full mx-auto px-4 pt-8">
-      <h1 className="font-playfair text-3xl font-bold mb-2">Termos de Uso</h1>
-      <p className="text-sm opacity-70 mb-8">
-        Estes termos estabelecem as condições gerais para utilização do Portal NKL. Profissionais do portal (Professores, Luthiers e Lojas) aderem aos
-        termos abaixo, que incluem cláusulas de <strong>não-circunvenção
-        (anti-circumvention)</strong>: é proibido fechar aulas, serviços ou
-        vendas &quot;por fora&quot; com clientes captados pela plataforma, sob
-        penalidade de suspensão, cancelamento e multa.
-      </p>
+    <main className="max-w-3xl w-full mx-auto px-4 pt-8 pb-12">
+      <article className="space-y-7 text-sm leading-relaxed">
+        <header>
+          <p className="text-xs uppercase tracking-[0.2em] text-neon font-bold">Regras da plataforma</p>
+          <h1 className="font-playfair text-3xl font-bold mt-2">Termos de Uso</h1>
+          <p className="mt-3 opacity-70">Versão 1.1 · última atualização: 4 de novembro de 2026</p>
+          <p className="mt-3 opacity-85">
+            Ao acessar o Portal NKL, você concorda com estes termos e com a{' '}
+            <Link href="/privacidade" className="text-neon font-bold hover:underline">Política de Privacidade</Link>.
+          </p>
+        </header>
 
-      <div className="mb-8 space-y-6 text-sm leading-relaxed opacity-85">
         <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">1. Uso da plataforma</h2>
-          <p className="mt-2">O usuário deve fornecer informações verdadeiras, manter seus dados de acesso protegidos e utilizar os recursos do portal de forma lícita, respeitosa e compatível com sua finalidade. É proibido publicar conteúdo fraudulento, ofensivo, enganoso ou que viole direitos de terceiros.</p>
+          <h2 className="font-playfair text-2xl font-bold">1. O que é o Portal NKL</h2>
+          <p className="mt-2 opacity-85">
+            O Portal NKL reúne conteúdo editorial, catálogo e ferramentas para o universo musical,
+            diretório de professores, luthiers e lojas, além de uma seleção editorial de
+            oportunidades de renda extra. Algumas funções são gratuitas; outras podem depender de
+            cadastro, disponibilidade, contratação ou pagamento informado na própria tela.
+          </p>
         </section>
-        <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">2. Conteúdo e oportunidades de terceiros</h2>
-          <p className="mt-2">O Portal NKL pode apresentar links de afiliados, plataformas de trabalho, marketplaces, serviços e conteúdos pertencentes a terceiros. Não somos responsáveis por disponibilidade, aprovação, preços, pagamentos, políticas, resultados ou decisões dessas plataformas. A relação contratual realizada fora do Portal NKL ocorre diretamente entre o usuário e o terceiro.</p>
-        </section>
-        <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">3. Avaliações e informações editoriais</h2>
-          <p className="mt-2">Notas, tags e descrições servem como referência informativa e não constituem promessa de renda, recomendação financeira ou garantia de contratação. Avaliações devem refletir experiências reais e podem ser moderadas quando violarem estas regras.</p>
-        </section>
-        <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">4. Aulas, taxas e moderação</h2>
-          <p className="mt-2">A plataforma aplica taxa bilateral de 5% ao aluno e 5% ao professor por meio do Split do Mercado Pago. As modalidades são Aula Avulsa, Mensal com 4 aulas, Semestral com 24 aulas e Anual com 48 aulas. Três denúncias procedentes com status resolvido podem gerar suspensão preventiva automática para análise administrativa.</p>
-        </section>
-        <section>
-          <h2 className="font-playfair text-2xl font-bold opacity-100">5. Alterações e contato</h2>
-          <p className="mt-2">Podemos atualizar funcionalidades, conteúdos e estes termos para refletir mudanças operacionais ou legais. A versão publicada nesta página é a referência vigente. Em caso de dúvida, utilize a página de <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.</p>
-        </section>
-      </div>
 
-      <h2 className="font-playfair text-2xl font-bold mb-4">Termos específicos por categoria</h2>
-      <div className="flex flex-col gap-4">
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">2. Cadastro e uso permitido</h2>
+          <p className="mt-2 opacity-85">
+            Informe dados verdadeiros, mantenha suas credenciais em sigilo e use a plataforma de
+            forma lícita. É proibido fraudar avaliações, criar contas para burlar limites,
+            automatizar abusos, publicar conteúdo ilegal, discriminatório, enganoso ou que viole
+            direitos de terceiros. O responsável pela conta responde pelo material que enviar.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">3. Conteúdo editorial e afiliados</h2>
+          <p className="mt-2 opacity-85">
+            O catálogo de oportunidades é uma curadoria informativa. Alguns links são de afiliado:
+            o Portal pode receber comissão se você se cadastrar ou contratar por eles, sem custo
+            adicional necessariamente. Isso não transforma o Portal em empregador, agente,
+            representante ou garantidor da empresa externa.
+          </p>
+          <p className="mt-2 opacity-85">
+            Valores, moedas, idiomas, notas e descrições são referências editoriais aproximadas.
+            Não constituem promessa de renda, vaga, aprovação, quantidade de trabalho ou resultado.
+            Confirme os requisitos, disponibilidade, remuneração e regras diretamente com o terceiro
+            antes de fornecer dados ou realizar atividade.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">4. Avaliações e conteúdo do usuário</h2>
+          <p className="mt-2 opacity-85">
+            Avaliações devem refletir experiência real e podem receber nota de 0 a 10, além de
+            informações opcionais sobre remuneração. Não publique dados pessoais de outras pessoas,
+            acusações sem fundamento, spam ou material protegido sem autorização. O Portal pode
+            ocultar, corrigir ou remover conteúdo que viole estes termos, preservando registros
+            necessários para segurança e defesa de direitos.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">5. Serviços musicais e pagamentos</h2>
+          <p className="mt-2 opacity-85">
+            Quando o Portal intermediar aulas ou serviços, a oferta exibirá as condições aplicáveis.
+            Pagamentos podem ser processados por Mercado Pago ou outro provedor identificado na
+            contratação. Taxas, divisão de valores, cancelamento e reembolso devem ser apresentados
+            antes da confirmação e não afastam direitos obrigatórios do consumidor. O prestador é
+            responsável pela execução do serviço e o Portal atua somente no papel descrito na oferta.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">6. Plataformas externas</h2>
+          <p className="mt-2 opacity-85">
+            Sites de terceiros têm cadastro, aprovação, privacidade, cobrança, suporte e regras
+            próprios. O Portal não controla disponibilidade, decisões, pagamentos, segurança,
+            remuneração ou resultados dessas empresas. A relação formada após o clique é entre você
+            e o terceiro; leia os termos externos antes de prosseguir.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">7. Propriedade intelectual</h2>
+          <p className="mt-2 opacity-85">
+            Textos, identidade visual, código e componentes do Portal pertencem ao Portal NKL ou
+            aos respectivos licenciadores. Marcas, logos e materiais de terceiros permanecem de
+            seus titulares. É permitido compartilhar links da plataforma sem remover atribuição,
+            mas não copiar, revender, extrair em massa ou explorar o conteúdo sem autorização.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">8. Suspensão, disponibilidade e alterações</h2>
+          <p className="mt-2 opacity-85">
+            Podemos limitar ou suspender contas para investigar fraude, abuso, risco à comunidade,
+            inadimplemento ou violação destes termos, com oportunidade de esclarecimento quando
+            cabível. Buscamos manter o serviço disponível, mas não garantimos funcionamento
+            ininterrupto. Alterações relevantes serão publicadas nesta página com nova data de
+            atualização.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">9. Lei aplicável e contato</h2>
+          <p className="mt-2 opacity-85">
+            Aplicam-se as leis brasileiras, sem prejuízo dos direitos inderrogáveis do consumidor.
+            Para dúvidas, denúncias ou solicitações, use a página de{' '}
+            <Link href="/contatos" className="text-neon font-bold hover:underline">Contatos</Link>.
+          </p>
+        </section>
+      </article>
+
+      <section className="mt-10 space-y-4">
+        <h2 className="font-playfair text-2xl font-bold">Termos específicos por categoria</h2>
         {contracts.map((contract) => (
-          <article
-            key={contract.href}
-            className="p-6 bg-surface border border-border rounded-xl flex flex-col gap-2"
-          >
-            <h2 className="font-playfair text-xl font-bold">{contract.title}</h2>
-            <p className="text-sm opacity-80">{contract.description}</p>
-            <div className="flex items-center gap-4 mt-1">
-              <a
-                href={contract.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-bold text-neon hover:underline"
-              >
+          <article key={contract.href} className="p-6 bg-surface border border-border rounded-xl">
+            <h3 className="font-playfair text-xl font-bold">{contract.title}</h3>
+            <p className="text-sm opacity-80 mt-2">{contract.description}</p>
+            <div className="flex flex-wrap items-center gap-4 mt-3">
+              <a href={contract.href} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-neon hover:underline">
                 Ler o termo completo →
               </a>
-              <a
-                href={contract.href}
-                download
-                className="text-sm font-bold opacity-70 hover:underline"
-              >
+              <a href={contract.href} download className="text-sm font-bold opacity-70 hover:underline">
                 Baixar (.md)
               </a>
             </div>
           </article>
         ))}
-      </div>
-
-      <p className="text-xs opacity-60 mt-8">
-        Dúvidas sobre os termos? Fale conosco pela página{' '}
-        <Link href="/contatos" className="text-neon font-bold hover:underline">
-          Contatos
-        </Link>
-        .
-      </p>
-    </div>
+      </section>
+    </main>
   );
 }

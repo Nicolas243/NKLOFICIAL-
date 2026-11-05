@@ -6,8 +6,8 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ParallaxBackground } from '@/components/parallax-background'
 import { JsonLd } from '@/components/seo/json-ld'
-import Script from 'next/script'
 import { PwaRegister } from '@/components/pwa'
+import { PrivacyScripts } from '@/components/privacy-scripts'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -46,25 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8249438839607534"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        <Script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){window.dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-QD0HQJFWVW');
-          `}
-        </Script>
+        <PrivacyScripts />
         <PwaRegister />
         <JsonLd data={{
           '@context': 'https://schema.org',

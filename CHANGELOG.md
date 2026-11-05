@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1 - 2026-11-04
+
+### Adicionado
+
+- Política de consentimento para recursos não essenciais, com opção de aceitar, recusar e rever a escolha.
+- Política de Privacidade, Termos de Uso e Política de Reembolso revisados com versão e data.
+- `AI-CONTEXT.md` e README atualizados para refletir a arquitetura e o produto atuais.
+
+### Segurança e transparência
+
+- Google Analytics e Google AdSense só carregam após consentimento explícito.
+- Termos públicos esclarecem afiliados, oportunidades externas, avaliações, pagamentos e responsabilidades.
+
 ## 0.2.0 - 2026-11-04
 
 ### Adicionado

@@ -80,15 +80,15 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="footer-box">
+        <div className="footer-box footer-legal items-center text-center">
           <h4>Legal / Conformidade</h4>
-          <nav className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Links legais">
+          <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Links legais">
             <Link href="/privacidade" className="text-sm hover:text-neon hover:underline">Privacidade</Link>
             <Link href="/termos" className="text-sm hover:text-neon hover:underline">Termos de Uso</Link>
             <Link href="/reembolso" className="text-sm hover:text-neon hover:underline">Reembolso</Link>
           </nav>
         </div>
-        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.0</span></div>
+        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.1</span></div>
       </footer>
 
       {/* PayPal Modal */}

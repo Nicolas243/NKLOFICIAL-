@@ -734,6 +734,7 @@ input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--surface) inset !im
 
 .footer-grid { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; padding: 0 2rem; }
 .footer-box { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+.footer-legal { max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem; }
 .footer-box h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--text); font-weight: 600; }
 .footer-box p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; line-height: 1.5; }
 

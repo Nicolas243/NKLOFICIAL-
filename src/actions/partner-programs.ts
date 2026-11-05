@@ -12,7 +12,26 @@ import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
 const MIN_REASON_WORDS = 20;
-const REVIEW_TAGS = ['fácil', 'médio', 'difícil', 'boa remuneração', 'flexível', 'exige experiência'];
+const REVIEW_TAGS = [
+  'fácil',
+  'médio',
+  'difícil',
+  'boa remuneração',
+  'flexível',
+  'exige experiência',
+  'pagamento pontual',
+  'suporte eficiente',
+  'cadastro simples',
+  'tarefas interessantes',
+  'boa oferta de tarefas',
+  'baixa remuneração',
+  'poucas tarefas disponíveis',
+  'pagamento atrasado',
+  'suporte ruim',
+  'cadastro demorado',
+  'requisitos confusos',
+  'tarefas repetitivas',
+];
 const REVIEW_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
 const REVIEW_PERIODS = ['hora', 'dia', 'semana', 'trabalho'] as const;
 
@@ -288,7 +307,6 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
   const programId = typeof formData.get('programId') === 'string' ? formData.get('programId') as string : '';
   const contactName = typeof formData.get('contactName') === 'string' ? (formData.get('contactName') as string).trim() : '';
   const phone = typeof formData.get('phone') === 'string' ? (formData.get('phone') as string).trim() : '';
-  const consentConfirmed = formData.get('consentConfirmed') === 'on';
 
   if (!programId || contactName.length < 2 || contactName.length > 180) {
     throw new Error('Informe um nome válido.');
@@ -296,10 +314,6 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
 
   if (!/^[0-9+()\s-]{8,30}$/u.test(phone)) {
     throw new Error('Informe um telefone válido.');
-  }
-
-  if (!consentConfirmed) {
-    throw new Error('Confirme que a pessoa autorizou o contato.');
   }
 
   const [program] = await db
@@ -316,7 +330,7 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
     programId,
     contactName,
     phone,
-    consentConfirmed,
+    consentConfirmed: false,
   });
 
   revalidatePath('/programas');
