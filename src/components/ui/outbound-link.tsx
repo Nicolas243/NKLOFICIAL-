@@ -10,9 +10,10 @@ type OutboundLinkProps = {
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   title?: string;
   style?: CSSProperties;
+  sponsored?: boolean;
 };
 
-export function OutboundLink({ href, children, className, trackingId, onClick, title, style }: OutboundLinkProps) {
+export function OutboundLink({ href, children, className, trackingId, onClick, title, style, sponsored = false }: OutboundLinkProps) {
   function handleClick(): void {
     const event = {
       trackingId,
@@ -30,7 +31,7 @@ export function OutboundLink({ href, children, className, trackingId, onClick, t
   }
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={className} style={style} title={title} onClick={(event) => {
+    <a href={href} target="_blank" rel={sponsored ? 'noopener noreferrer sponsored' : 'noopener noreferrer'} className={className} style={style} title={title} onClick={(event) => {
       handleClick();
       onClick?.(event);
     }}>

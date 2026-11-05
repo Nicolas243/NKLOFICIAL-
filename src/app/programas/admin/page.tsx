@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getPartnerAdminData, updatePartnerProgram, approvePartnerSuggestion, rejectPartnerSuggestion } from '@/actions/partner-programs';
+import { getPartnerAdminData, updatePartnerProgram, approvePartnerSuggestion, rejectPartnerSuggestion, markPartnerProgramVerified } from '@/actions/partner-programs';
 
 export const metadata: Metadata = {
   title: 'Administração de Programas | Portal NKL',
@@ -22,7 +22,8 @@ export default async function PartnerProgramsAdminPage() {
 
       <section className="space-y-4">
         {programs.map((program) => (
-          <form key={program.id} action={updatePartnerProgram} className={`grid grid-cols-1 lg:grid-cols-[1.3fr_1.8fr_0.7fr_0.8fr_auto] items-center gap-4 rounded-xl border p-5 ${program.affiliateUrl ? 'border-border bg-surface' : 'border-amber-500/70 bg-amber-500/5'}`}>
+          <div key={program.id} className={`grid grid-cols-1 gap-4 rounded-xl border p-5 ${program.affiliateUrl ? 'border-border bg-surface' : 'border-amber-500/70 bg-amber-500/5'}`}>
+          <form action={updatePartnerProgram} className="grid grid-cols-1 items-center gap-4 lg:grid-cols-[1.3fr_1.8fr_0.7fr_0.8fr_auto]">
             <div>
               <input type="hidden" name="id" value={program.id} />
               <h2 className="font-bold">{program.name}</h2>
@@ -45,6 +46,14 @@ export default async function PartnerProgramsAdminPage() {
             </label>
             <button type="submit" className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black">Salvar</button>
           </form>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-xs opacity-70">
+            <p>{program.lastVerifiedAt ? `Informações verificadas em ${program.lastVerifiedAt.toLocaleDateString('pt-BR')}.` : 'Ainda não há data de verificação editorial.'}</p>
+            <form action={markPartnerProgramVerified}>
+              <input type="hidden" name="id" value={program.id} />
+              <button type="submit" className="rounded-md border border-neon px-3 py-2 font-bold text-neon hover:bg-neon hover:text-black">Marcar verificado hoje</button>
+            </form>
+          </div>
+          </div>
         ))}
       </section>
 

@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     template: '%s | Portal NKL',
   },
   description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+  ...(process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION } }
+    : {}),
   alternates: {
     canonical: '/',
   },
@@ -43,8 +46,15 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const googleAdsVerification = process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION;
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
+      {googleAdsVerification && (
+        <head>
+          <meta name="google-site-verification" content={googleAdsVerification} />
+        </head>
+      )}
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
         <PrivacyScripts />
         <PwaRegister />

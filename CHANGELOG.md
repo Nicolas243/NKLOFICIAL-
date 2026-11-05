@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.2 - 2026-11-05
+
+### Adicionado
+
+- Páginas individuais indexáveis para oportunidades, hubs para iniciantes e oportunidades pagas em dólar.
+- Dados estruturados editoriais para requisitos, pontos positivos, pontos de atenção, pagamento, remuneração e verificação.
+- Formulário de captura com entrega do Guia de Renda Extra em PDF.
+- Comparação de até três oportunidades e JSON-LD para catálogo e páginas individuais.
+- Novos programas editoriais: UGC Roster, Creator Space e estratégia Canal Dark YouTube + NotebookLM.
+
+### Melhorado
+
+- Links de parceria usam `rel="sponsored"` e a página individual exibe transparência logo abaixo do título.
+- Modal do catálogo ganhou Escape, foco inicial, focus trap e restauração de foco.
+- Verificação opcional do Google Ads usa `NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION`.
+- Migrações 0027 e 0028 preparadas para campos editoriais e requisitos de hardware do App Minute.
+
 ## 0.2.1 - 2026-11-04
 
 ### Adicionado

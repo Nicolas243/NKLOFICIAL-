@@ -1,7 +1,8 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element */
-import { useActionState, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { BellPlus, CalendarPlus, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
@@ -177,6 +178,48 @@ export function PartnerProgramsBrowser({ programs }: Props) {
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const activeDialog = selectedProgram ?? reminderProgram;
+    if (!activeDialog) return;
+
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const focusable = () => Array.from(dialog.querySelectorAll<HTMLElement>('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+    focusable()[0]?.focus();
+
+    function handleKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        setSelectedProgram(null);
+        setReminderProgram(null);
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+      const elements = focusable();
+      if (elements.length === 0) return;
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+      previousFocus?.focus();
+    };
+  }, [selectedProgram, reminderProgram]);
 
   const categories = useMemo(
     () => Array.from(new Set(programs.map((program) => program.category))).sort(),
@@ -469,6 +512,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                     <OutboundLink
                       href={program.affiliateUrl ?? program.websiteUrl}
                       trackingId={program.slug}
+                      sponsored={Boolean(program.affiliateUrl)}
                       onClick={(event) => event.stopPropagation()}
                       className={`inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon ${['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug) ? 'bg-white' : 'bg-background'}`}
                       aria-label={`Acessar plataforma ${program.name}`}
@@ -479,13 +523,13 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                   )}
                 </div>
                 <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-2 text-xs font-bold leading-none hover:border-neon">Ler mais</button>
+                  <Link href={`/programas/${program.slug}`} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-2 text-xs font-bold leading-none hover:border-neon">Ler mais</Link>
                   {program.slug === 'quintoandar-indica-ai' ? (
                     <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
                       Quero começar
                     </button>
                   ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
                       Acessar plataforma
                     </OutboundLink>
                   )}
@@ -540,7 +584,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       </section>
 
       {reminderProgram && (
-        <div className="fixed inset-0 z-[230] flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Criar lembrete para ${reminderProgram.name}`}>
+        <div ref={dialogRef} className="fixed inset-0 z-[230] flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Criar lembrete para ${reminderProgram.name}`}>
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -571,7 +615,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       )}
 
       {selectedProgram && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`}>
+        <div ref={dialogRef} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`}>
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-surface p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -580,12 +624,15 @@ export function PartnerProgramsBrowser({ programs }: Props) {
               </div>
               <button type="button" onClick={() => setSelectedProgram(null)} className="text-2xl opacity-60 hover:opacity-100" aria-label="Fechar">×</button>
             </div>
+            <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="mt-4 inline-flex text-sm font-bold text-neon hover:underline">
+              Abrir página completa da oportunidade
+            </Link>
             <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
             {selectedProgram.slug === 'claru-ia' && (
               <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm font-bold">Você tem uma empresa e quer divulgá-la?</p>
                 <p className="mt-1 text-sm leading-relaxed opacity-75">A Claru também permite que empresas criem oportunidades e encontrem pessoas para campanhas de conteúdo e tarefas digitais.</p>
-                <OutboundLink href={CLARU_PARTNER_URL} trackingId="claru-ia-partner" className="mt-3 inline-flex rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">
+                <OutboundLink href={CLARU_PARTNER_URL} trackingId="claru-ia-partner" sponsored className="mt-3 inline-flex rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">
                   Divulgar minha empresa na Claru
                 </OutboundLink>
               </section>
@@ -599,7 +646,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                     <div key={project.href} className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
                       <span className="text-sm font-medium">{project.title}</span>
                       <div className="flex shrink-0 gap-2">
-                        <OutboundLink href={project.href} trackingId={`aligner-${project.title}`} className="rounded-md bg-neon px-3 py-2 text-xs font-bold text-black hover:opacity-90">
+                        <OutboundLink href={project.href} trackingId={`aligner-${project.title}`} sponsored className="rounded-md bg-neon px-3 py-2 text-xs font-bold text-black hover:opacity-90">
                           Ver projeto
                         </OutboundLink>
                         <button type="button" onClick={() => void shareProgram(selectedProgram, project.href, project.title)} className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar ${project.title}`}>
@@ -633,6 +680,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                       <OutboundLink
                         href={marketplace.href}
                         trackingId={`marketplace-${marketplace.name.toLowerCase().replaceAll(' ', '-')}`}
+                        sponsored
                         className="flex min-h-11 items-center rounded-md border border-border px-3 py-2 text-sm font-medium text-neon transition-colors hover:border-neon hover:bg-neon/5 hover:no-underline"
                       >
                         {marketplace.name}
@@ -670,7 +718,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
               {selectedProgram.slug === 'quintoandar-indica-ai' ? (
                 <button type="button" onClick={() => setShowReferralModal(true)} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Quero começar</button>
               ) : (
-                <OutboundLink href={selectedProgram.affiliateUrl ?? selectedProgram.websiteUrl} trackingId={selectedProgram.slug} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
+                <OutboundLink href={selectedProgram.affiliateUrl ?? selectedProgram.websiteUrl} trackingId={selectedProgram.slug} sponsored={Boolean(selectedProgram.affiliateUrl)} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
               )}
               <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-neon">
                 {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}

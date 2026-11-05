@@ -36,6 +36,26 @@ const REVIEW_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
 const REVIEW_PERIODS = ['hora', 'dia', 'semana', 'trabalho'] as const;
 
 type ProgramRow = typeof partnerPrograms.$inferSelect;
+type ProgramCardRow = Pick<
+  ProgramRow,
+  'id' | 'slug' | 'name' | 'shortDescription' | 'longDescription' | 'category' | 'difficulty'
+  | 'tags' | 'websiteUrl' | 'affiliateUrl' | 'editorialRating' | 'editorialSource'
+> & Partial<Pick<ProgramRow, 'pros' | 'cons' | 'requirements' | 'paymentMethods' | 'earningPotential' | 'lastVerifiedAt'>>;
+
+const PROGRAM_BASE_SELECTION = {
+  id: partnerPrograms.id,
+  slug: partnerPrograms.slug,
+  name: partnerPrograms.name,
+  shortDescription: partnerPrograms.shortDescription,
+  longDescription: partnerPrograms.longDescription,
+  category: partnerPrograms.category,
+  difficulty: partnerPrograms.difficulty,
+  tags: partnerPrograms.tags,
+  websiteUrl: partnerPrograms.websiteUrl,
+  affiliateUrl: partnerPrograms.affiliateUrl,
+  editorialRating: partnerPrograms.editorialRating,
+  editorialSource: partnerPrograms.editorialSource,
+};
 
 function stringArray(value: unknown): string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string') ? value : [];
@@ -43,6 +63,15 @@ function stringArray(value: unknown): string[] {
 
 function wordCount(value: string): number {
   return value.trim().split(/\s+/u).filter(Boolean).length;
+}
+
+function isMissingEditorialColumnsError(error: unknown): boolean {
+  if (!(error instanceof Error) || !('cause' in error)) return false;
+  const cause = error.cause;
+  return typeof cause === 'object'
+    && cause !== null
+    && 'code' in cause
+    && cause.code === '42703';
 }
 
 const HIGH_QUALITY_LOGOS: Record<string, string> = {
@@ -75,6 +104,9 @@ const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages
   aligner: { averageEarning: 'US$ 100 ±', languages: ['Português', 'Inglês'] },
   'marketplaces-afiliados': { averageEarning: 'R$ 300 ±', languages: ['Português'] },
   'tiktok-shop': { averageEarning: 'R$ 150 ±', languages: ['Português'] },
+  'ugc-roster': { averageEarning: 'US$ 300 ± por vídeo', languages: ['Português', 'Inglês'] },
+  'creator-space': { averageEarning: 'US$ 100 ± por campanha', languages: ['Português', 'Inglês'] },
+  'canal-dark-youtube-notebooklm': { averageEarning: 'R$ 300 ± por mês', languages: ['Português'] },
 };
 
 function logoUrl(slug: string, websiteUrl: string): string {
@@ -148,6 +180,12 @@ export type PartnerProgramCard = {
   affiliateUrl: string | null;
   editorialRating: number;
   editorialSource: string;
+  pros: string[];
+  cons: string[];
+  requirements: string[];
+  paymentMethods: string[];
+  earningPotential: string | null;
+  lastVerifiedAt: string | null;
   averageEarning: string;
   languages: string[];
   finalRating: number;
@@ -156,9 +194,48 @@ export type PartnerProgramCard = {
   communityTags: string[];
 };
 
+function toProgramCard(program: ProgramCardRow, programReviews: Array<{ rating: number; tags: unknown }>): PartnerProgramCard {
+  const communityTags = programReviews.length >= 5
+    ? Array.from(new Set(programReviews.flatMap((review) => stringArray(review.tags))))
+    : [];
+  const communityRating = programReviews.length > 0
+    ? Number((programReviews.reduce((total, review) => total + review.rating, 0) / programReviews.length).toFixed(1))
+    : null;
+
+  return {
+    id: program.id,
+    slug: program.slug,
+    name: program.name,
+    shortDescription: program.shortDescription,
+    longDescription: program.longDescription,
+    category: program.category,
+    difficulty: program.difficulty,
+    tags: stringArray(program.tags),
+    websiteUrl: program.websiteUrl,
+    logoUrl: logoUrl(program.slug, program.websiteUrl),
+    affiliateUrl: program.affiliateUrl,
+    editorialRating: Math.min(9, Math.max(6, program.editorialRating)),
+    editorialSource: program.editorialSource,
+    pros: stringArray(program.pros),
+    cons: stringArray(program.cons),
+    requirements: stringArray(program.requirements),
+    paymentMethods: stringArray(program.paymentMethods),
+    earningPotential: program.earningPotential ?? null,
+    lastVerifiedAt: program.lastVerifiedAt?.toISOString() ?? null,
+    averageEarning: program.earningPotential ?? PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'R$ 100 ±',
+    languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Português', 'Inglês'],
+    communityRating,
+    finalRating: communityRating === null
+      ? Math.min(9, Math.max(6, program.editorialRating))
+      : Math.min(10, Math.max(0, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
+    communityReviewCount: programReviews.length,
+    communityTags,
+  };
+}
+
 export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
   const programs = await db
-    .select()
+    .select(PROGRAM_BASE_SELECTION)
     .from(partnerPrograms)
     .where(eq(partnerPrograms.status, 'published'))
     .orderBy(asc(partnerPrograms.name));
@@ -183,39 +260,47 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
     reviewByProgram.set(review.programId, current);
   }
 
-  return programs.map((program) => {
-    const programReviews = reviewByProgram.get(program.id) ?? [];
-    const communityTags = programReviews.length >= 5
-      ? Array.from(new Set(programReviews.flatMap((review) => stringArray(review.tags))))
-      : [];
-    const communityRating = programReviews.length > 0
-      ? Number((programReviews.reduce((total, review) => total + review.rating, 0) / programReviews.length).toFixed(1))
-      : null;
+  return programs.map((program) => toProgramCard(program, reviewByProgram.get(program.id) ?? []));
+}
 
-    return {
-      id: program.id,
-      slug: program.slug,
-      name: program.name,
-      shortDescription: program.shortDescription,
-      longDescription: program.longDescription,
-      category: program.category,
-      difficulty: program.difficulty,
-      tags: stringArray(program.tags),
-      websiteUrl: program.websiteUrl,
-      logoUrl: logoUrl(program.slug, program.websiteUrl),
-      affiliateUrl: program.affiliateUrl,
-      editorialRating: Math.min(9, Math.max(6, program.editorialRating)),
-      editorialSource: program.editorialSource,
-      averageEarning: PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'R$ 100 ±',
-      languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Português', 'Inglês'],
-      communityRating,
-      finalRating: communityRating === null
-        ? Math.min(9, Math.max(6, program.editorialRating))
-        : Math.min(10, Math.max(0, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
-      communityReviewCount: programReviews.length,
-      communityTags,
-    };
-  });
+export async function getPartnerProgramBySlug(slug: string): Promise<PartnerProgramCard | null> {
+  const [program] = await db
+    .select(PROGRAM_BASE_SELECTION)
+    .from(partnerPrograms)
+    .where(and(eq(partnerPrograms.slug, slug), eq(partnerPrograms.status, 'published')))
+    .limit(1);
+
+  if (!program) return null;
+
+  let editorialFields: Partial<Pick<ProgramRow, 'pros' | 'cons' | 'requirements' | 'paymentMethods' | 'earningPotential' | 'lastVerifiedAt'>> = {};
+  try {
+    const [fields] = await db
+      .select({
+        pros: partnerPrograms.pros,
+        cons: partnerPrograms.cons,
+        requirements: partnerPrograms.requirements,
+        paymentMethods: partnerPrograms.paymentMethods,
+        earningPotential: partnerPrograms.earningPotential,
+        lastVerifiedAt: partnerPrograms.lastVerifiedAt,
+      })
+      .from(partnerPrograms)
+      .where(eq(partnerPrograms.id, program.id))
+      .limit(1);
+    editorialFields = fields ?? {};
+  } catch (error) {
+    if (!isMissingEditorialColumnsError(error)) throw error;
+    console.warn('[partner-programs] Migração editorial 0027 ainda não aplicada; usando metadados legados.');
+  }
+
+  const reviews = await db
+    .select({
+      rating: partnerProgramReviews.rating,
+      tags: partnerProgramReviews.tags,
+    })
+    .from(partnerProgramReviews)
+    .where(and(eq(partnerProgramReviews.programId, program.id), eq(partnerProgramReviews.status, 'published')));
+
+  return toProgramCard({ ...program, ...editorialFields }, reviews);
 }
 
 export async function submitPartnerReview(formData: FormData): Promise<void> {
@@ -384,6 +469,23 @@ export async function updatePartnerProgram(formData: FormData): Promise<void> {
 
   revalidatePath('/programas');
   revalidatePath('/blog/renda-extra');
+  revalidatePath('/programas/admin');
+}
+
+export async function markPartnerProgramVerified(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = typeof formData.get('id') === 'string' ? formData.get('id') as string : '';
+
+  if (!id) {
+    throw new Error('Programa inválido.');
+  }
+
+  await db.update(partnerPrograms).set({
+    lastVerifiedAt: new Date(),
+    updatedAt: new Date(),
+  }).where(eq(partnerPrograms.id, id));
+
+  revalidatePath('/programas');
   revalidatePath('/programas/admin');
 }
 

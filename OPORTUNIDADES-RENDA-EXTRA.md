@@ -34,6 +34,7 @@
 | Claru IA | Inteligência artificial | Médio | US$ 30 ± | Português, Inglês | 6/10 |
 | Clickworker | Microtarefas | Fácil | R$ 100 ±* | Português, Inglês* | 7/10 |
 | Crowdato | Dados e microtarefas | Médio | US$ 40 ± | Português, Inglês | 6/10 |
+| Creator Space | Conteúdo e vídeo | Médio | US$ 100 ± por campanha | Português, Inglês | 7/10 |
 | DataAnnotation | Inteligência artificial | Difícil | US$ 200 ± | Português, Inglês | 8/10 |
 | Fiverr | Freelance | Médio | R$ 100 ±* | Português, Inglês* | 8/10 |
 | Flambra | Oportunidades digitais | Médio | R$ 100 ±* | Português, Inglês* | 6/10 |
@@ -50,11 +51,60 @@
 | Testlio | Testes e QA | Médio | R$ 100 ±* | Português, Inglês* | 8/10 |
 | TikTok Shop | Conteúdo e vídeo | Médio | R$ 150 ± | Português | 8/10 |
 | Upwork | Freelance | Difícil | R$ 100 ±* | Português, Inglês* | 8/10 |
+| UGC Roster | Conteúdo e vídeo | Médio | US$ 300 ± por vídeo | Português, Inglês | 7/10 |
 | uTest | Testes e QA | Médio | US$ 50 ± | Português, Inglês | 8/10 |
+| Estratégia Canal Dark YouTube + NotebookLM | Conteúdo e vídeo | Difícil | R$ 300 ± por mês após monetização | Português | 8/10 |
 
 `*` Valor ou idioma padrão utilizado pelo catálogo quando não existe uma referência
 editorial específica cadastrada para aquela oportunidade. Não deve ser interpretado
 como dado oficial da empresa.
+
+## Novas oportunidades editoriais
+
+### Creator Space
+
+- **Categoria:** Conteúdo e vídeo
+- **Dificuldade:** Médio
+- **Nota editorial:** 7/10
+- **Remuneração de referência exibida:** US$ 100 ± por campanha
+- **Idiomas:** Português e Inglês
+- **Tags:** ugc; estrategias-de-conteudo; video; freelance; trabalho-remoto
+- **Link oficial:** https://app.creator.space/
+- **Link de afiliado:** https://app.creator.space/
+
+O Creator Space reúne campanhas para criadores apresentarem seu trabalho a marcas. A oferta
+depende do perfil, da região e das campanhas abertas. Confira briefing, prazo, formato e
+direitos de uso antes de aceitar.
+
+### UGC Roster
+
+- **Categoria:** Conteúdo e vídeo
+- **Dificuldade:** Médio
+- **Nota editorial:** 7/10
+- **Remuneração de referência exibida:** US$ 300 ± por vídeo
+- **Idiomas:** Português e Inglês
+- **Tags:** ugc; freelance; video; estrategias-de-conteudo; trabalho-remoto
+- **Link oficial:** https://ugcroster.com/
+- **Link de afiliado:** https://tolt.link/nkloficial
+
+O UGC Roster reúne campanhas de conteúdo gerado por usuários. O valor informado é uma
+referência editorial por vídeo, não uma promessa. Confirme briefing, seleção, prazo,
+pagamento e autorização de uso de imagem.
+
+### Estratégia Canal Dark YouTube + NotebookLM
+
+- **Categoria:** Conteúdo e vídeo
+- **Dificuldade:** Difícil
+- **Nota editorial:** 8/10
+- **Remuneração de referência exibida:** R$ 300 ± por mês após monetização
+- **Idiomas:** Português
+- **Tags:** estrategias-de-conteudo; ia; video; renda-passiva; trabalho-remoto
+- **Link oficial:** https://www.youtube.com/creators/
+- **Link de afiliado:** Não cadastrado
+
+Esta estratégia combina pesquisa, roteiro, revisão humana, edição e distribuição de vídeos
+sem exigir que a pessoa apareça na câmera. Crescimento e monetização não são garantidos:
+é necessário respeitar direitos autorais, regras do YouTube e a qualidade do conteúdo.
 
 ---
 

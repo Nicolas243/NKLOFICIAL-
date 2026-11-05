@@ -32,6 +32,7 @@ visitante. A remuneração, aprovação e disponibilidade são sempre definidas 
 - `/` — home musical com menu radial;
 - `/catalogo`, `/luthiers`, `/professores` e `/lojas` — catálogo e diretórios;
 - `/programas` e `/blog/renda-extra` — oportunidades e conteúdo de renda extra;
+- `/programas/[slug]`, `/programas/iniciantes` e `/programas/dolar` — páginas SEO e hubs de triagem;
 - `/login`, `/dashboard`, `/admin` — conta, operações e moderação;
 - `/termos`, `/privacidade` e `/reembolso` — documentos legais públicos.
 
@@ -45,6 +46,10 @@ npm run dev
 
 Nunca coloque valores de segredo no código, no README ou em commits. Variáveis são validadas em
 `src/env.ts`; consulte `.env.example` para os nomes exigidos.
+
+O formulário de captura de renda extra usa o endpoint Formspree já configurado e entrega
+`public/guias/guia-renda-extra-nkl.pdf` após o envio confirmado. A meta opcional de verificação do
+Google Ads usa `NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION`.
 
 ## Validação
 

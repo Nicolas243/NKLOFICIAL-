@@ -15,7 +15,9 @@ não garante renda e não representa as plataformas externas listadas.
 - `/` — home musical e menu radial;
 - `/catalogo` — catálogo técnico de cordas;
 - `/luthiers`, `/professores`, `/lojas` — diretórios profissionais;
-- `/programas` — catálogo de oportunidades, filtros, avaliações e links externos;
+- `/programas` — catálogo de oportunidades, filtros, avaliações, hubs e links externos;
+- `/programas/[slug]` — página indexável de cada oportunidade, com dados editoriais e JSON-LD;
+- `/programas/iniciantes` e `/programas/dolar` — hubs temáticos para triagem;
 - `/blog/renda-extra` — conteúdo editorial de renda extra;
 - `/dashboard` — recursos do usuário autenticado;
 - `/admin` — moderação, leads e operações administrativas;
@@ -30,6 +32,8 @@ não garante renda e não representa as plataformas externas listadas.
   trabalho.
 - Dados enviados por usuários devem ser validados no servidor e conteúdo abusivo pode ser moderado.
 - Serviços de terceiros possuem cadastro, cobrança, privacidade e reembolso próprios.
+- O guia de captura fica em `public/guias/guia-renda-extra-nkl.pdf` e o formulário usa o endpoint
+  Formspree já existente; o download só aparece depois da confirmação do envio.
 - Pagamentos do Portal podem usar Mercado Pago; não tratar integração externa como disponível sem
   confirmar as variáveis de ambiente e o fluxo vigente.
 
@@ -42,6 +46,10 @@ não garante renda e não representa as plataformas externas listadas.
   server actions em `src/actions/`; schema e conexão em `src/db/`; migrações em `drizzle/`.
 - O layout global está em `src/app/layout.tsx`.
 - O consentimento de Analytics/AdSense está em `src/components/privacy-scripts.tsx`.
+- A verificação opcional do Google Ads usa `NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION` no layout.
+- O schema `partner_programs` possui campos editoriais estruturados para pros, contras, requisitos,
+  métodos de pagamento, remuneração e `last_verified_at`; as migrações `drizzle/0027...sql` e
+  `drizzle/0028...sql` ainda precisam ser aplicadas localmente antes de sincronizar dados.
 
 ## Integrações e segredos
 

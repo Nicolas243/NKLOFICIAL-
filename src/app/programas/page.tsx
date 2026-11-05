@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
+import { LeadCaptureForm } from '@/components/blog/lead-capture-form';
+import { JsonLd } from '@/components/seo/json-ld';
+import { ProgramCompare } from '@/components/program-compare';
 
 export const metadata: Metadata = {
   title: 'Programas de Parceria e Renda Extra | Portal NKL',
@@ -15,6 +18,17 @@ export default async function PartnerProgramsPage() {
 
   return (
     <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-0 md:pb-20">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Oportunidades de renda extra do Portal NKL',
+        itemListElement: programs.map((program, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: program.name,
+          url: `/programas/${program.slug}`,
+        })),
+      }} />
       <header className="relative mb-8 overflow-hidden rounded-[1.5rem] border border-border bg-surface px-5 py-8 md:mb-12 md:rounded-[2rem] md:px-12 md:py-16">
         <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-neon/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-40 left-1/3 h-72 w-72 rounded-full bg-emerald-300/10 blur-3xl" />
@@ -75,6 +89,9 @@ export default async function PartnerProgramsPage() {
       <div id="catalogo">
         <PartnerProgramsBrowser programs={programs} />
       </div>
+      <div className="mt-8 md:mt-12">
+        <ProgramCompare programs={programs} />
+      </div>
 
       <section className="mt-10 rounded-2xl border border-border bg-surface p-6 md:mt-16 md:p-8">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Transparência editorial</p>
@@ -85,6 +102,9 @@ export default async function PartnerProgramsPage() {
           <a href="#catalogo" className="text-sm font-bold text-neon hover:underline">Voltar ao catálogo</a>
         </div>
       </section>
+      <div className="mt-8 md:mt-12">
+        <LeadCaptureForm context="renda-extra" />
+      </div>
     </div>
   );
 }

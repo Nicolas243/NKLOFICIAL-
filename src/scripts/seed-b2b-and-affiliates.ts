@@ -23,6 +23,26 @@ type ProfileSeed = {
   isSuspended?: boolean;
 };
 
+type PartnerSeed = {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  longDescription: string;
+  category: string;
+  difficulty: string;
+  tags: string[];
+  websiteUrl: string;
+  affiliateUrl: string | null;
+  editorialRating: number;
+  editorialSource: string;
+  pros?: string[];
+  cons?: string[];
+  requirements?: string[];
+  paymentMethods?: string[];
+  earningPotential?: string;
+  lastVerifiedAt?: Date;
+};
+
 const profileSeeds: ProfileSeed[] = [
   {
     email: 'seed.luthier.aurora@portal-nkl.local',
@@ -140,7 +160,7 @@ const profileSeeds: ProfileSeed[] = [
   },
 ];
 
-const partnerSeeds = [
+const partnerSeeds: PartnerSeed[] = [
   {
     slug: 'fluencify',
     name: 'Fluencify',
@@ -205,6 +225,11 @@ const partnerSeeds = [
     affiliateUrl: 'https://app.hub.xyz/r/NX6XDDEG',
     editorialRating: 7,
     editorialSource: 'Nota editorial inicial do Portal NKL, baseada em informações públicas e sujeita à disponibilidade de campanhas.',
+    requirements: [
+      'iPhone 12 ao 18 (Mini, Plus, Pro e Pro Max). Incompatível com modelos 16e, 17e e 18e.',
+      'Google Pixel 6 ao 10 (incluindo modelos Pro).',
+      'Samsung Galaxy S21 ao S26 (incluindo modelos Plus e Ultra).',
+    ],
   },
   {
     slug: 'tiktok-shop',
@@ -257,6 +282,63 @@ const partnerSeeds = [
     affiliateUrl: 'https://datahub.oortech.com/start/task',
     editorialRating: 7,
     editorialSource: 'Nota editorial inicial do Portal NKL, baseada em reputação pública geral.',
+  },
+  {
+    slug: 'ugc-roster',
+    name: 'UGC Roster',
+    shortDescription: 'Encontre campanhas de conteúdo gerado por usuários e produza vídeos para marcas conforme o briefing.',
+    longDescription: 'O UGC Roster reúne oportunidades para criadores produzirem vídeos e outros materiais para marcas. O volume de campanhas, a seleção e o valor dependem do briefing, do perfil, da região e da disponibilidade. Leia as regras de uso de imagem e confirme o pagamento antes de aceitar um trabalho.',
+    category: 'Conteúdo e vídeo',
+    difficulty: 'médio',
+    tags: ['ugc', 'freelance', 'video', 'estrategias-de-conteudo', 'trabalho-remoto'],
+    websiteUrl: 'https://ugcroster.com/',
+    affiliateUrl: 'https://tolt.link/nkloficial',
+    editorialRating: 7,
+    editorialSource: 'Descrição editorial inicial baseada na proposta informada para o catálogo; campanhas, elegibilidade e valores variam.',
+    pros: ['Pode ser feito remotamente', 'Portfólio de vídeos para marcas', 'Não exige audiência grande em todas as campanhas'],
+    cons: ['Seleção depende do briefing e do perfil', 'Prazos e direitos de uso devem ser conferidos'],
+    requirements: ['Celular com câmera', 'Boa iluminação e áudio', 'Leitura cuidadosa do briefing'],
+    paymentMethods: ['Conferir em cada campanha'],
+    earningPotential: 'US$ 300 ± por vídeo',
+    lastVerifiedAt: new Date('2026-11-05T00:00:00.000Z'),
+  },
+  {
+    slug: 'creator-space',
+    name: 'Creator Space',
+    shortDescription: 'Organize oportunidades de criação de conteúdo e conecte seu perfil a campanhas de marcas.',
+    longDescription: 'O Creator Space é uma plataforma para criadores encontrarem campanhas e apresentarem seu trabalho a marcas. A disponibilidade depende do país, do perfil e das campanhas abertas. Antes de aceitar, confira o briefing, o prazo, o formato de entrega e os direitos de utilização do conteúdo.',
+    category: 'Conteúdo e vídeo',
+    difficulty: 'médio',
+    tags: ['ugc', 'estrategias-de-conteudo', 'video', 'freelance', 'trabalho-remoto'],
+    websiteUrl: 'https://app.creator.space/',
+    affiliateUrl: 'https://app.creator.space/',
+    editorialRating: 7,
+    editorialSource: 'Descrição editorial inicial baseada na proposta informada para o catálogo; campanhas e condições devem ser validadas na plataforma.',
+    pros: ['Centraliza campanhas de conteúdo', 'Pode ampliar o portfólio', 'Trabalho remoto em algumas oportunidades'],
+    cons: ['Aprovação e oferta de campanhas variam', 'Pode exigir produção e revisão de conteúdo'],
+    requirements: ['Perfil de criador', 'Celular ou câmera adequada', 'Capacidade de seguir briefing'],
+    paymentMethods: ['Conferir em cada campanha'],
+    earningPotential: 'US$ 100 ± por campanha',
+    lastVerifiedAt: new Date('2026-11-05T00:00:00.000Z'),
+  },
+  {
+    slug: 'canal-dark-youtube-notebooklm',
+    name: 'Estratégia Canal Dark YouTube + NotebookLM',
+    shortDescription: 'Estruture um canal sem aparecer usando pesquisa, roteiro e ferramentas de IA com revisão humana.',
+    longDescription: 'Esta é uma estratégia editorial para criar vídeos narrados ou ilustrados sem depender da aparição do criador. O fluxo pode combinar pesquisa, roteiro, revisão humana, edição e distribuição no YouTube com apoio do NotebookLM e outras ferramentas. Não há remuneração garantida: crescimento, monetização e retorno dependem da qualidade, consistência, direitos autorais e regras da plataforma.',
+    category: 'Conteúdo e vídeo',
+    difficulty: 'difícil',
+    tags: ['estrategias-de-conteudo', 'ia', 'video', 'renda-passiva', 'trabalho-remoto'],
+    websiteUrl: 'https://www.youtube.com/creators/',
+    affiliateUrl: null,
+    editorialRating: 8,
+    editorialSource: 'Estratégia editorial do Portal NKL; resultados, monetização e elegibilidade não são garantidos.',
+    pros: ['Crescimento escalável', 'Não requer aparecer na câmera', 'Pode criar um ativo de conteúdo'],
+    cons: ['Requer consistência e domínio de prompts IA', 'Exige revisão humana e atenção a direitos autorais'],
+    requirements: ['Computador ou celular', 'Pesquisa e roteiro originais', 'Edição de vídeo e áudio', 'Revisão de fatos e direitos autorais'],
+    paymentMethods: ['Receita de anúncios e outras fontes do canal, conforme elegibilidade'],
+    earningPotential: 'R$ 300 ± por mês após monetização',
+    lastVerifiedAt: new Date('2026-11-05T00:00:00.000Z'),
   },
 ];
 
@@ -331,6 +413,11 @@ async function seedPrograms(): Promise<void> {
         affiliateUrl: seed.affiliateUrl,
         editorialRating: seed.editorialRating,
         editorialSource: seed.editorialSource,
+        pros: seed.pros,
+        cons: seed.cons,
+        requirements: seed.requirements,
+        paymentMethods: seed.paymentMethods,
+        earningPotential: seed.earningPotential,
         updatedAt: new Date(),
       },
     });

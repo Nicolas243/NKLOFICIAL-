@@ -88,7 +88,7 @@ export function Footer() {
             <Link href="/reembolso" className="text-sm hover:text-neon hover:underline">Reembolso</Link>
           </nav>
         </div>
-        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.1</span></div>
+        <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.2</span></div>
       </footer>
 
       {/* PayPal Modal */}

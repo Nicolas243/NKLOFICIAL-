@@ -23,6 +23,7 @@
 - `drizzle/`: migrações SQL versionadas.
 - `src/scripts/`: seeds e manutenção.
 - `public/`: assets públicos, incluindo logos de parceiros.
+- `public/guias/`: materiais editoriais entregues após a captura de lead.
 
 ## Regras de integração
 
@@ -31,3 +32,7 @@
 - Links de afiliados devem preservar a URL cadastrada e ser tratados como conteúdo editorial sujeito a mudança.
 - Google Analytics e AdSense são recursos não essenciais e só são carregados após consentimento explícito.
 - Migrações devem ser aditivas, revisáveis e testadas localmente; não aplicar automaticamente em produção.
+- O catálogo público usa páginas individuais em `/programas/[slug]`, hubs em `/programas/iniciantes`
+  e `/programas/dolar`, JSON-LD de página/lista e links de afiliado com `rel="sponsored"`.
+- A migração `0027_partner_editorial_fields.sql` adiciona campos estruturados e data de verificação;
+  o painel administrativo pode marcar uma oportunidade como verificada sem alterar o conteúdo público.
