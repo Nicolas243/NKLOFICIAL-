@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
-const COMMUNITY_NOTIFICATION_KEY = 'notified_today';
+const COMMUNITY_NOTIFICATION_KEY = 'community_notified';
 
 export function Footer() {
   const pathname = usePathname();
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra';
+  const isPartnerPortal = pathname.includes('/programas') || pathname.includes('/blog/renda-extra') || pathname.includes('/guias/renda-extra');
   const communityUrl = isPartnerPortal
     ? 'https://chat.whatsapp.com/Bp7YWQ1bjJQ39M0vvn9MED'
     : 'https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r';
@@ -86,8 +86,8 @@ export function Footer() {
           </div>
         )}
         <div className="footer-header">
-          <h3 className="text-neon font-bold">Receba o PDF completo em Alta Resolucao do Grafico de Cordas</h3>
-          <p>Deixe o seu contato para enviarmos o material de estudo diretamente para voce.</p>
+          <h3 className="text-neon font-bold">{isPartnerPortal ? 'Guia gratuito - Receba o PDF com o resumo prático e comparativo das oportunidades antes de se cadastrar' : 'Receba o PDF completo em Alta Resolucao do Grafico de Cordas'}</h3>
+          <p>{isPartnerPortal ? 'Deixe seu contato para receber uma visão rápida antes de escolher uma plataforma.' : 'Deixe o seu contato para enviarmos o material de estudo diretamente para voce.'}</p>
           <form className="capture-form" onSubmit={handleSubmit}>
             <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
             <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />

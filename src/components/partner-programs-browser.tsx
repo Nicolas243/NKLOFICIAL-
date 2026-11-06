@@ -395,7 +395,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           {shareMessage}
         </div>
       )}
-      <section id="onboarding-filters" className="rounded-2xl border border-border bg-surface p-4 md:p-5">
+      <section id="filtros" className="rounded-2xl border border-border bg-surface p-4 md:p-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Encontre seu próximo caminho</p>
@@ -491,7 +491,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
             {index === 1 && (
               <article className="flex flex-col justify-between rounded-xl border border-orange/35 bg-[linear-gradient(145deg,rgba(249,115,22,0.12),rgba(11,94,215,0.08))] p-5 shadow-sm">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange">Guia NKL</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange">Especial NKL</p>
                   <h2 className="mt-2 font-playfair text-2xl font-bold">Renda extra com menos tentativa e erro</h2>
                   <p className="mt-3 text-sm leading-relaxed text-foreground/75">Um guia prático para filtrar oportunidades, organizar sua rotina e começar com mais clareza.</p>
                 </div>
@@ -519,7 +519,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
-                  <button id={index === 0 ? 'onboarding-community-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                  <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
                 </div>
@@ -544,7 +544,6 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   </div>
                     <div className="flex shrink-0 items-center gap-2">
                     <button
-                      id={index === 0 ? 'onboarding-save' : undefined}
                       type="button"
                       onClick={(event) => { event.stopPropagation(); toggleSavedProgram(program.slug); }}
                       className={`inline-flex h-11 w-11 items-center justify-center rounded-lg border p-1.5 transition-colors ${savedProgramSlugs.includes(program.slug) ? 'border-orange bg-orange/10 text-orange' : 'border-border text-foreground/70 hover:border-orange hover:text-orange'}`}

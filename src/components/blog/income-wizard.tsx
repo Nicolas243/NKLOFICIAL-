@@ -8,7 +8,7 @@ type Props = {
   programs: PartnerProgramCard[];
 };
 
-type QuestionId = 'experience' | 'urgency' | 'device' | 'currency' | 'english' | 'video' | 'availability' | 'workType' | 'investment';
+type QuestionId = 'experience' | 'urgency' | 'device' | 'pc' | 'currency' | 'english' | 'video' | 'availability' | 'workType' | 'investment';
 
 type Question = {
   id: QuestionId;
@@ -48,6 +48,16 @@ const QUESTIONS: Question[] = [
       { value: 'phone', label: 'Celular' },
       { value: 'computer', label: 'Computador' },
       { value: 'both', label: 'Os dois' },
+    ],
+  },
+  {
+    id: 'pc',
+    title: 'Você possui computador?',
+    description: 'Algumas plataformas exigem uma tela maior ou tarefas que não funcionam bem apenas no celular.',
+    options: [
+      { value: 'yes', label: 'Sim, tenho acesso' },
+      { value: 'shared', label: 'Uso um computador compartilhado' },
+      { value: 'no', label: 'Não, só uso celular' },
     ],
   },
   {
@@ -121,6 +131,8 @@ function scoreProgram(program: PartnerProgramCard, answers: Partial<Record<Quest
   if (answers.urgency === 'now' && program.difficulty !== 'difícil') score += 2;
   if (answers.device === 'phone' && (searchText.includes('celular') || searchText.includes('app'))) score += 3;
   if (answers.device === 'computer' && (searchText.includes('computador') || searchText.includes('software') || searchText.includes('serviço'))) score += 2;
+  if (answers.pc === 'yes' && (searchText.includes('software') || searchText.includes('serviço'))) score += 2;
+  if (answers.pc === 'no' && (searchText.includes('celular') || searchText.includes('app'))) score += 3;
   if (answers.currency === 'usd' && earning.includes('us$')) score += 4;
   if (answers.currency === 'brl' && !earning.includes('us$')) score += 2;
   if (answers.english === 'no' && program.languages.includes('Português')) score += 3;
@@ -215,8 +227,8 @@ export function IncomeWizard({ programs }: Props) {
 
   return (
     <>
-      <button type="button" onClick={openWizard} className="inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-dark focus:outline-none focus:ring-2 focus:ring-orange/40">
-        Começar guia de perfil
+      <button id="wizard-trigger" type="button" onClick={openWizard} className="inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-dark focus-visible:ring-2 focus-visible:ring-orange/40">
+        Descubra seu perfil ideal
       </button>
 
       {isOpen && (

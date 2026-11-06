@@ -9,7 +9,7 @@ import { JsonLd } from '@/components/seo/json-ld'
 import { PwaInstallReminder, PwaRegister } from '@/components/pwa'
 import { PrivacyScripts } from '@/components/privacy-scripts'
 import { SiteGuidance } from '@/components/site-guidance'
-import { OnboardingTutorial } from '@/components/ui/onboarding-tutorial'
+import { SpotlightTutorial } from '@/components/ui/spotlight-tutorial'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {googleAdsVerification && <meta name="google-site-verification" content={googleAdsVerification} />}
         <meta name="google-adsense-account" content="ca-pub-8249438839607534" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased selection:bg-orange-500/30 selection:text-white`} suppressHydrationWarning>
         <PrivacyScripts />
         <PwaRegister />
         <JsonLd data={{
@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ParallaxBackground />
           <Header />
           <SiteGuidance />
-          <OnboardingTutorial />
+          <SpotlightTutorial />
           <PwaInstallReminder />
           <main className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col lg:pt-[77px]">
             {children}

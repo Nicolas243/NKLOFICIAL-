@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 type Props = {
   context: string;
@@ -10,6 +11,12 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maqzkwwb';
 const GUIDE_PATH = '/guias/guia-renda-extra-nkl.pdf';
 
 export function LeadCaptureForm({ context }: Props) {
+  const pathname = usePathname();
+  const isIncomeContext = pathname.includes('/programas')
+    || pathname.includes('/blog/renda-extra')
+    || pathname.includes('/guias/renda-extra')
+    || context.includes('renda-extra')
+    || context.includes('programa');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +50,8 @@ export function LeadCaptureForm({ context }: Props) {
 
   return (
     <section className="rounded-2xl border border-neon/30 bg-neon/5 p-6 md:p-8" aria-labelledby="lead-capture-title">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Guia gratuito</p>
-      <h2 id="lead-capture-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Comece com mais contexto</h2>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">{isIncomeContext ? 'Guia gratuito' : 'Material de estudo'}</p>
+      <h2 id="lead-capture-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">{isIncomeContext ? 'Receba o PDF com o resumo prático e comparativo das oportunidades antes de se cadastrar' : 'Comece com mais contexto'}</h2>
       {isSuccess ? (
         <div className="mt-4" aria-live="polite">
           <p className="text-sm leading-relaxed">Cadastro confirmado! Baixe seu Guia de Renda Extra abaixo:</p>
@@ -55,7 +62,7 @@ export function LeadCaptureForm({ context }: Props) {
       ) : (
         <>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed opacity-75">
-            Receba um resumo prático para comparar dificuldade, idioma, remuneração de referência e cuidados antes de se cadastrar.
+            {isIncomeContext ? 'Receba um resumo prático para comparar dificuldade, idioma, remuneração de referência e cuidados antes de se cadastrar.' : 'Receba um resumo prático para comparar dificuldade, idioma, remuneração de referência e cuidados antes de se cadastrar.'}
           </p>
           <form onSubmit={handleSubmit} className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
             <label className="text-sm font-bold">

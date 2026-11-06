@@ -3,12 +3,21 @@
 import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export const CONSENT_STORAGE_KEY = 'nkl_privacy_consent';
+export const CONSENT_EVENT = 'nkl:privacy-consent';
 type Consent = 'accepted' | 'rejected';
 
 export function PrivacyScripts() {
+  const pathname = usePathname();
   const [consent, setConsent] = useState<Consent | null>(null);
+  const isIncomePortal = pathname === '/programas'
+    || pathname.startsWith('/programas/')
+    || pathname === '/blog/renda-extra'
+    || pathname.startsWith('/blog/renda-extra/')
+    || pathname === '/guias/renda-extra'
+    || pathname.startsWith('/guias/renda-extra/');
 
   useEffect(() => {
     const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);
@@ -21,6 +30,7 @@ export function PrivacyScripts() {
   function saveConsent(value: Consent) {
     window.localStorage.setItem(CONSENT_STORAGE_KEY, value);
     setConsent(value);
+    window.dispatchEvent(new Event(CONSENT_EVENT));
   }
 
   return (
@@ -33,19 +43,23 @@ export function PrivacyScripts() {
             crossOrigin="anonymous"
             strategy="afterInteractive"
           />
-          <Script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){window.dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-QD0HQJFWVW');
-            `}
-          </Script>
+          {!isIncomePortal && (
+            <>
+              <Script
+                async
+                src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics-music" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){window.dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-QD0HQJFWVW');
+                `}
+              </Script>
+            </>
+          )}
         </>
       )}
 
