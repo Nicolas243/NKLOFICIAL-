@@ -41,6 +41,9 @@ type PartnerSeed = {
   paymentMethods?: string[];
   earningPotential?: string;
   lastVerifiedAt?: Date;
+  youtubeVideoId?: string;
+  tiktokVideoId?: string;
+  zeroInvestmentRequired?: boolean;
 };
 
 const profileSeeds: ProfileSeed[] = [
@@ -418,6 +421,9 @@ async function seedPrograms(): Promise<void> {
         requirements: seed.requirements,
         paymentMethods: seed.paymentMethods,
         earningPotential: seed.earningPotential,
+        youtubeVideoId: seed.youtubeVideoId,
+        tiktokVideoId: seed.tiktokVideoId,
+        zeroInvestmentRequired: seed.zeroInvestmentRequired ?? true,
         updatedAt: new Date(),
       },
     });

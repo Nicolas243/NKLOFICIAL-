@@ -6,12 +6,16 @@ import { PARTNER_PROGRAM_SLUGS } from '@/lib/partner-program-catalog';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { LeadCaptureForm } from '@/components/blog/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
+import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { OutboundLink } from '@/components/ui/outbound-link';
+import { TrustBadges } from '@/components/ui/trust-badges';
+import { SocialEmbed } from '@/components/video/social-embed';
 
 type Params = Promise<{ slug: string }>;
 
 export const revalidate = 900;
 export const dynamicParams = true;
+const UTEST_STRATEGIC_TIP = 'Dica: ao responder formulários de novos projetos, informe quando você foi indicado por uma referência experiente, se isso for verdadeiro e puder ser comprovado.';
 
 export function generateStaticParams(): Array<{ slug: string }> {
   return PARTNER_PROGRAM_SLUGS.map((slug) => ({ slug }));
@@ -124,6 +128,18 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             <section>
               <h2 className="font-playfair text-3xl font-bold">Como funciona</h2>
               <p className="mt-4 whitespace-pre-line text-base leading-relaxed opacity-80">{program.longDescription}</p>
+              <SocialEmbed youtubeId={program.youtubeVideoId} tiktokId={program.tiktokVideoId} programName={program.name} />
+              {program.slug === 'utest' && (
+                <section className="mt-6 rounded-xl border border-orange/35 bg-orange/5 p-5">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange">Dica para candidatura</p>
+                  <h2 className="mt-2 text-xl font-bold">Aumente a clareza do seu cadastro</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground/75">{UTEST_STRATEGIC_TIP}</p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <ClipboardCopy textToCopy={UTEST_STRATEGIC_TIP} />
+                    <span className="text-xs text-foreground/60">Use apenas informações verdadeiras e seus próprios dados.</span>
+                  </div>
+                </section>
+              )}
             </section>
             <div className="mt-8 grid gap-5 sm:grid-cols-2">
               {program.pros.length > 0 && (
@@ -145,6 +161,12 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             </div>
           </div>
           <aside className="space-y-5">
+            <TrustBadges
+              isZeroInvestment={program.zeroInvestmentRequired}
+              tags={program.tags}
+              requirements={program.requirements}
+              paymentMethods={program.paymentMethods}
+            />
             {program.requirements.length > 0 && (
               <section className="rounded-xl border border-border bg-background/45 p-5">
                 <h2 className="font-bold">O que você precisa</h2>

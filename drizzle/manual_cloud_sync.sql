@@ -1,6 +1,13 @@
 -- Copie este arquivo e cole no SQL Editor do Supabase Cloud para sincronizar o schema.
 -- O bundle foi escrito para ser reaplicavel com seguranca.
 
+ALTER TABLE "partner_programs"
+  ADD COLUMN IF NOT EXISTS "youtube_video_id" text;
+ALTER TABLE "partner_programs"
+  ADD COLUMN IF NOT EXISTS "tiktok_video_id" text;
+ALTER TABLE "partner_programs"
+  ADD COLUMN IF NOT EXISTS "zero_investment_required" boolean NOT NULL DEFAULT true;
+
 CREATE TABLE IF NOT EXISTS "password_change_attempts" (
   "user_id" uuid PRIMARY KEY NOT NULL,
   "attempt_count" integer DEFAULT 0 NOT NULL,

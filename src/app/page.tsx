@@ -75,7 +75,7 @@ return (
       {/* Radial Menu — PRIMEIRO após o header (Landing Page style) */}
       <section className="relative flex items-center justify-center pt-2">
         <div className="absolute right-2 top-2 z-20">
-          <PwaInstallButton />
+          <PwaInstallButton kind="music" />
         </div>
         <RadialMenu />
       </section>

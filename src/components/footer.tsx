@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useCallback, type FormEvent } from 'react';
+import { useState, useCallback, useEffect, type FormEvent } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
+const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
+const COMMUNITY_NOTIFICATION_KEY = 'notified_today';
 
 export function Footer() {
   const pathname = usePathname();
@@ -14,8 +17,36 @@ export function Footer() {
   const communityLabel = isPartnerPortal
     ? 'Entrar no grupo de renda extra do Portal NKL no WhatsApp'
     : 'Entrar na comunidade musical do Portal NKL no WhatsApp';
+  const whatsappMessages = isPartnerPortal
+    ? [
+      'Tire suas dúvidas com pessoas que já conhecem as plataformas.',
+      'Compartilhe uma oportunidade e descubra experiências reais.',
+      'Entre na comunidade de Renda Extra do Portal NKL.',
+    ]
+    : [
+      'Converse com músicos e profissionais da comunidade NKL.',
+      'Tire suas dúvidas sobre cordas, luteria e instrumentos.',
+      'Entre na comunidade musical do Portal NKL.',
+    ];
   const [pixOpen, setPixOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [whatsappMessageIndex, setWhatsappMessageIndex] = useState(0);
+  const [showWhatsappMessage, setShowWhatsappMessage] = useState(false);
+
+  useEffect(() => {
+    if (window.sessionStorage.getItem(COMMUNITY_NOTIFICATION_KEY)) return;
+    window.sessionStorage.setItem(COMMUNITY_NOTIFICATION_KEY, new Date().toISOString());
+    const showTimer = window.setTimeout(() => setShowWhatsappMessage(true), 0);
+    const visibilityTimer = window.setTimeout(() => setShowWhatsappMessage(false), WHATSAPP_MESSAGE_VISIBLE_MS);
+    const timer = window.setInterval(() => {
+      setWhatsappMessageIndex((index) => (index + 1) % whatsappMessages.length);
+    }, WHATSAPP_MESSAGE_INTERVAL_MS);
+    return () => {
+      window.clearTimeout(visibilityTimer);
+      window.clearTimeout(showTimer);
+      window.clearInterval(timer);
+    };
+  }, [whatsappMessages.length]);
 
   const copyEmail = useCallback(async () => {
     try {
@@ -41,9 +72,12 @@ export function Footer() {
 
   return (
     <>
-      <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label={communityLabel}>
-        <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
-      </a>
+      <div className="whatsapp-guide">
+        {showWhatsappMessage && <p key={whatsappMessageIndex} className="whatsapp-guide-message" aria-live="polite">{whatsappMessages[whatsappMessageIndex]}</p>}
+        <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label={communityLabel}>
+          <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
+        </a>
+      </div>
       <footer className="site-footer">
         {/* Toast de email copiado */}
         {toast && (

@@ -47,7 +47,7 @@ export function HomeMenuFallback() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Menu de navegação"
-        className="w-[38px] h-[38px] flex items-center justify-center rounded-md bg-surface/90 border border-border shadow-sm transition-colors hover:bg-accent"
+        className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-surface/90 shadow-sm transition-colors hover:border-orange hover:bg-accent"
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>

@@ -18,6 +18,8 @@ type ThemeContextValue = {
   setTheme: (theme: Theme) => void;
 };
 
+const THEME_CHANGE_THROTTLE_MS = 180;
+
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
 export function useTheme() {
@@ -31,6 +33,7 @@ export function useTheme() {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const defaultTheme = props.defaultTheme ?? 'light';
   const [theme, setThemeState] = React.useState<Theme>(defaultTheme);
+  const lastThemeChange = React.useRef(0);
 
   React.useEffect(() => {
     const storedTheme = window.localStorage.getItem('theme');
@@ -55,7 +58,12 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     window.localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const setTheme = (nextTheme: Theme) => setThemeState(nextTheme);
+  const setTheme = (nextTheme: Theme) => {
+    const now = Date.now();
+    if (now - lastThemeChange.current < THEME_CHANGE_THROTTLE_MS) return;
+    lastThemeChange.current = now;
+    setThemeState(nextTheme);
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme: theme, setTheme }}>

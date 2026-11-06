@@ -191,10 +191,10 @@ export function Header() {
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
             <span className="hidden">{authBtn}</span>
-            <PwaInstallButton />
+            <PwaInstallButton kind="income" />
             <ThemeToggle />
             <button
-              className="relative z-[110] flex h-[30px] w-[30px] items-center justify-center rounded-[3px] transition-colors hover:bg-accent lg:hidden"
+              className="relative z-[110] flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-accent lg:hidden"
               aria-label="Menu do Blog NKL"
               aria-expanded={menuOpen}
               aria-controls="partner-mobile-navigation"
@@ -250,11 +250,11 @@ export function Header() {
 
         <div className="relative z-[99999] flex items-start gap-2 sm:gap-3 shrink-0">
           <span className="inline-flex shrink-0">{authBtn}</span>
-          <PwaInstallButton />
+          <PwaInstallButton kind="music" />
           <LangDropdown />
           <ThemeToggle />
           <button
-            className="lg:hidden relative z-[110] w-[30px] h-[30px] p-0 flex items-center justify-center rounded-[3px] transition-colors hover:bg-accent"
+            className="lg:hidden relative z-[110] flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-accent"
             aria-label="Menu"
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"

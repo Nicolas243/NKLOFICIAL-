@@ -11,8 +11,8 @@ const lastUpdated = '4 de novembro de 2026';
 
 export default function PrivacidadePage() {
   return (
-    <main className="max-w-3xl w-full mx-auto px-4 pt-8 pb-12">
-      <article className="space-y-7 text-sm leading-relaxed">
+    <main className="mx-auto w-full max-w-3xl px-4 pt-8 pb-12">
+      <article className="mx-auto max-w-3xl space-y-7 text-sm leading-relaxed">
         <header>
           <p className="text-xs uppercase tracking-[0.2em] text-neon font-bold">Conformidade</p>
           <h1 className="font-playfair text-3xl font-bold mt-2">Política de Privacidade</h1>

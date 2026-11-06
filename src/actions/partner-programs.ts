@@ -40,7 +40,7 @@ type ProgramCardRow = Pick<
   ProgramRow,
   'id' | 'slug' | 'name' | 'shortDescription' | 'longDescription' | 'category' | 'difficulty'
   | 'tags' | 'websiteUrl' | 'affiliateUrl' | 'editorialRating' | 'editorialSource'
-> & Partial<Pick<ProgramRow, 'pros' | 'cons' | 'requirements' | 'paymentMethods' | 'earningPotential' | 'lastVerifiedAt'>>;
+> & Partial<Pick<ProgramRow, 'pros' | 'cons' | 'requirements' | 'paymentMethods' | 'earningPotential' | 'lastVerifiedAt' | 'youtubeVideoId' | 'tiktokVideoId' | 'zeroInvestmentRequired'>>;
 
 const PROGRAM_BASE_SELECTION = {
   id: partnerPrograms.id,
@@ -55,6 +55,19 @@ const PROGRAM_BASE_SELECTION = {
   affiliateUrl: partnerPrograms.affiliateUrl,
   editorialRating: partnerPrograms.editorialRating,
   editorialSource: partnerPrograms.editorialSource,
+  pros: partnerPrograms.pros,
+  cons: partnerPrograms.cons,
+  requirements: partnerPrograms.requirements,
+  paymentMethods: partnerPrograms.paymentMethods,
+  earningPotential: partnerPrograms.earningPotential,
+  lastVerifiedAt: partnerPrograms.lastVerifiedAt,
+};
+
+const PROGRAM_SOCIAL_SELECTION = {
+  id: partnerPrograms.id,
+  youtubeVideoId: partnerPrograms.youtubeVideoId,
+  tiktokVideoId: partnerPrograms.tiktokVideoId,
+  zeroInvestmentRequired: partnerPrograms.zeroInvestmentRequired,
 };
 
 function stringArray(value: unknown): string[] {
@@ -108,6 +121,17 @@ const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages
   'creator-space': { averageEarning: 'US$ 100 ± por campanha', languages: ['Português', 'Inglês'] },
   'canal-dark-youtube-notebooklm': { averageEarning: 'R$ 300 ± por mês', languages: ['Português'] },
 };
+
+function editorialProgramName(slug: string, name: string): string {
+  if (slug === 'crowdato') return 'Crowtado';
+  if (slug === 'aligner') return 'Alligner';
+  return name;
+}
+
+function editorialProgramTags(slug: string, tags: string[]): string[] {
+  if (slug !== 'sideshift' || tags.includes('UGC')) return tags;
+  return [...tags, 'UGC'];
+}
 
 function logoUrl(slug: string, websiteUrl: string): string {
   const highQualityLogo = HIGH_QUALITY_LOGOS[slug];
@@ -186,6 +210,9 @@ export type PartnerProgramCard = {
   paymentMethods: string[];
   earningPotential: string | null;
   lastVerifiedAt: string | null;
+  youtubeVideoId: string | null;
+  tiktokVideoId: string | null;
+  zeroInvestmentRequired: boolean;
   averageEarning: string;
   languages: string[];
   finalRating: number;
@@ -205,12 +232,12 @@ function toProgramCard(program: ProgramCardRow, programReviews: Array<{ rating: 
   return {
     id: program.id,
     slug: program.slug,
-    name: program.name,
+    name: editorialProgramName(program.slug, program.name),
     shortDescription: program.shortDescription,
     longDescription: program.longDescription,
     category: program.category,
     difficulty: program.difficulty,
-    tags: stringArray(program.tags),
+    tags: editorialProgramTags(program.slug, stringArray(program.tags)),
     websiteUrl: program.websiteUrl,
     logoUrl: logoUrl(program.slug, program.websiteUrl),
     affiliateUrl: program.affiliateUrl,
@@ -222,6 +249,9 @@ function toProgramCard(program: ProgramCardRow, programReviews: Array<{ rating: 
     paymentMethods: stringArray(program.paymentMethods),
     earningPotential: program.earningPotential ?? null,
     lastVerifiedAt: program.lastVerifiedAt?.toISOString() ?? null,
+    youtubeVideoId: program.youtubeVideoId ?? null,
+    tiktokVideoId: program.tiktokVideoId ?? null,
+    zeroInvestmentRequired: program.zeroInvestmentRequired ?? true,
     averageEarning: program.earningPotential ?? PROGRAM_EDITORIAL_META[program.slug]?.averageEarning ?? 'R$ 100 ±',
     languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Português', 'Inglês'],
     communityRating,
@@ -244,6 +274,17 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
     return [];
   }
 
+  let socialFields: Array<{ id: string; youtubeVideoId: string | null; tiktokVideoId: string | null; zeroInvestmentRequired: boolean | null }> = [];
+  try {
+    socialFields = await db
+      .select(PROGRAM_SOCIAL_SELECTION)
+      .from(partnerPrograms);
+  } catch (error) {
+    if (!isMissingEditorialColumnsError(error)) throw error;
+    console.warn('[partner-programs] Migração social 0029 ainda não aplicada; usando investimento zero como padrão.');
+  }
+  const socialByProgram = new Map(socialFields.map((fields) => [fields.id, fields]));
+
   const reviews = await db
     .select({
       programId: partnerProgramReviews.programId,
@@ -260,7 +301,11 @@ export async function getPartnerPrograms(): Promise<PartnerProgramCard[]> {
     reviewByProgram.set(review.programId, current);
   }
 
-  return programs.map((program) => toProgramCard(program, reviewByProgram.get(program.id) ?? []));
+  return programs.map((program) => toProgramCard({
+    ...program,
+    ...socialByProgram.get(program.id),
+    zeroInvestmentRequired: socialByProgram.get(program.id)?.zeroInvestmentRequired ?? true,
+  }, reviewByProgram.get(program.id) ?? []));
 }
 
 export async function getPartnerProgramBySlug(slug: string): Promise<PartnerProgramCard | null> {
@@ -292,6 +337,19 @@ export async function getPartnerProgramBySlug(slug: string): Promise<PartnerProg
     console.warn('[partner-programs] Migração editorial 0027 ainda não aplicada; usando metadados legados.');
   }
 
+  let socialFields: Partial<Pick<ProgramRow, 'youtubeVideoId' | 'tiktokVideoId' | 'zeroInvestmentRequired'>> = {};
+  try {
+    const [fields] = await db
+      .select(PROGRAM_SOCIAL_SELECTION)
+      .from(partnerPrograms)
+      .where(eq(partnerPrograms.id, program.id))
+      .limit(1);
+    socialFields = fields ?? {};
+  } catch (error) {
+    if (!isMissingEditorialColumnsError(error)) throw error;
+    console.warn('[partner-programs] Migração social 0029 ainda não aplicada; omitindo vídeo e mantendo selo padrão.');
+  }
+
   const reviews = await db
     .select({
       rating: partnerProgramReviews.rating,
@@ -300,7 +358,7 @@ export async function getPartnerProgramBySlug(slug: string): Promise<PartnerProg
     .from(partnerProgramReviews)
     .where(and(eq(partnerProgramReviews.programId, program.id), eq(partnerProgramReviews.status, 'published')));
 
-  return toProgramCard({ ...program, ...editorialFields }, reviews);
+  return toProgramCard({ ...program, ...editorialFields, ...socialFields }, reviews);
 }
 
 export async function submitPartnerReview(formData: FormData): Promise<void> {

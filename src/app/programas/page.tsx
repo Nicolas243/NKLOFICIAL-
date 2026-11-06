@@ -4,6 +4,7 @@ import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
 import { LeadCaptureForm } from '@/components/blog/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ProgramCompare } from '@/components/program-compare';
+import { IncomeWizard } from '@/components/blog/income-wizard';
 
 export const metadata: Metadata = {
   title: 'Programas de Parceria e Renda Extra | Portal NKL',
@@ -12,8 +13,15 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function PartnerProgramsPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function PartnerProgramsPage({ searchParams }: { searchParams?: SearchParams }) {
   const programs = await getPartnerPrograms();
+  const params = searchParams ? await searchParams : {};
+  const getParam = (key: string): string | undefined => {
+    const value = params[key];
+    return Array.isArray(value) ? value[0] : value;
+  };
   const categoryCount = new Set(programs.map((program) => program.category)).size;
 
   return (
@@ -29,10 +37,13 @@ export default async function PartnerProgramsPage() {
           url: `/programas/${program.slug}`,
         })),
       }} />
-      <header className="relative mb-8 overflow-hidden rounded-[1.5rem] border border-border bg-surface px-5 py-8 md:mb-12 md:rounded-[2rem] md:px-12 md:py-16">
+      <header className="relative mb-8 overflow-hidden rounded-[1.5rem] border border-border bg-surface px-5 py-8 pb-8 md:mb-12 md:rounded-[2rem] md:px-12 md:py-16 lg:pb-48">
         <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-neon/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-40 left-1/3 h-72 w-72 rounded-full bg-emerald-300/10 blur-3xl" />
         <div className="relative grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-10 lg:items-end">
+          <div className="relative z-10 mb-1 flex justify-end lg:absolute lg:right-0 lg:top-0 lg:mb-0">
+            <IncomeWizard programs={programs} />
+          </div>
           <div className="max-w-3xl">
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Blog NKL · mapa de oportunidades</p>
             <h1 className="font-playfair text-4xl font-bold leading-[1.05] md:text-7xl">
@@ -87,7 +98,12 @@ export default async function PartnerProgramsPage() {
       </details>
 
       <div id="catalogo">
-        <PartnerProgramsBrowser programs={programs} />
+        <PartnerProgramsBrowser
+          programs={programs}
+          initialObjective={getParam('objetivo')}
+          initialCurrency={getParam('moeda')}
+          initialEnglish={getParam('ingles')}
+        />
       </div>
       <div className="mt-8 md:mt-12">
         <ProgramCompare programs={programs} />

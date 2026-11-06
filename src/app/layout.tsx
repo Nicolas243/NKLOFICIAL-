@@ -6,8 +6,10 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ParallaxBackground } from '@/components/parallax-background'
 import { JsonLd } from '@/components/seo/json-ld'
-import { PwaRegister } from '@/components/pwa'
+import { PwaInstallReminder, PwaRegister } from '@/components/pwa'
 import { PrivacyScripts } from '@/components/privacy-scripts'
+import { SiteGuidance } from '@/components/site-guidance'
+import { OnboardingTutorial } from '@/components/ui/onboarding-tutorial'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -50,11 +52,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      {googleAdsVerification && (
-        <head>
-          <meta name="google-site-verification" content={googleAdsVerification} />
-        </head>
-      )}
+      <head>
+        {googleAdsVerification && <meta name="google-site-verification" content={googleAdsVerification} />}
+        <meta name="google-adsense-account" content="ca-pub-8249438839607534" />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
         <PrivacyScripts />
         <PwaRegister />
@@ -65,9 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             { '@type': 'WebSite', name: 'Portal NKL', url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nkl.com.br' },
           ],
         }} />
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <ParallaxBackground />
           <Header />
+          <SiteGuidance />
+          <OnboardingTutorial />
+          <PwaInstallReminder />
           <main className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col lg:pt-[77px]">
             {children}
           </main>

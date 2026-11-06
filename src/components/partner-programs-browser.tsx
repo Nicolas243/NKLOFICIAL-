@@ -2,9 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
-import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, CalendarPlus, Share2 } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
@@ -14,6 +14,9 @@ import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-mod
 
 type Props = {
   programs: PartnerProgramCard[];
+  initialObjective?: string;
+  initialCurrency?: string;
+  initialEnglish?: string;
 };
 
 const REVIEW_TAG_GROUPS = [
@@ -31,8 +34,9 @@ const REVIEW_TAG_GROUPS = [
   },
 ];
 const PROGRAMS_PER_PAGE = 9;
+const SAVED_PROGRAMS_KEY = 'nkl-saved-programs';
 const DISCOVERY_TAGS = [
-  { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer'] },
+  { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift'] },
   { label: 'Ganhar sem fazer nada', slugs: ['honeygain'] },
   { label: 'Ganhar com pesquisas', slugs: ['prolific', 'dataannotation', 'crowdato'] },
   { label: 'Testar apps e sites', slugs: ['aligner', 'utest', 'testlio'] },
@@ -163,7 +167,7 @@ const MARKETPLACE_STRATEGIES = [
   },
 ];
 
-export function PartnerProgramsBrowser({ programs }: Props) {
+export function PartnerProgramsBrowser({ programs, initialObjective, initialCurrency, initialEnglish }: Props) {
   const [suggestionState, suggestionAction] = useActionState(submitSuggestionAction, INITIAL_FORM_STATE);
   const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
   const [query, setQuery] = useState('');
@@ -178,7 +182,21 @@ export function PartnerProgramsBrowser({ programs }: Props) {
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
+  const [savedProgramSlugs, setSavedProgramSlugs] = useState<string[]>([]);
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
+    if (!stored) return;
+    try {
+      const parsed: unknown = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
+        window.setTimeout(() => setSavedProgramSlugs(parsed), 0);
+      }
+    } catch (error) {
+      console.error('[PARTNER_PROGRAMS] Não foi possível ler oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
+    }
+  }, []);
 
   useEffect(() => {
     const activeDialog = selectedProgram ?? reminderProgram;
@@ -238,7 +256,15 @@ export function PartnerProgramsBrowser({ programs }: Props) {
         ...program.communityTags,
       ].join(' ').toLocaleLowerCase('pt-BR');
 
-      return (!selectedSlugs || selectedSlugs.includes(program.slug))
+      const objectiveMatches = initialObjective !== 'celular'
+        || DISCOVERY_TAGS.find((tag) => tag.label === 'Renda extra pelo celular')?.slugs.includes(program.slug);
+      const currencyMatches = initialCurrency !== 'usd' || program.averageEarning.startsWith('US$');
+      const englishMatches = initialEnglish !== 'nao' || program.languages.includes('Português');
+
+      return objectiveMatches
+        && currencyMatches
+        && englishMatches
+        && (!selectedSlugs || selectedSlugs.includes(program.slug))
         && (!normalizedQuery || searchable.includes(normalizedQuery))
         && (category === 'todas' || program.category === category)
         && (difficulty === 'todas' || program.difficulty === difficulty);
@@ -249,7 +275,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       if (sort === 'nota') return right.finalRating - left.finalRating;
       return left.name.localeCompare(right.name, 'pt-BR');
     });
-  }, [category, difficulty, programs, query, selectedDiscoveryTag, sort]);
+  }, [category, difficulty, initialCurrency, initialEnglish, initialObjective, programs, query, selectedDiscoveryTag, sort]);
 
   const totalPages = Math.ceil(filteredPrograms.length / PROGRAMS_PER_PAGE);
   const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
@@ -266,6 +292,14 @@ export function PartnerProgramsBrowser({ programs }: Props) {
     setSelectedProgram(program);
     setShowReviewForm(false);
     setShowReferralModal(false);
+  }
+
+  function toggleSavedProgram(slug: string): void {
+    const nextSlugs = savedProgramSlugs.includes(slug)
+      ? savedProgramSlugs.filter((savedSlug) => savedSlug !== slug)
+      : [...savedProgramSlugs, slug];
+    setSavedProgramSlugs(nextSlugs);
+    window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(nextSlugs));
   }
 
   async function shareProgram(program: PartnerProgramCard, sharedUrl?: string, sharedTitle?: string): Promise<void> {
@@ -361,7 +395,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
           {shareMessage}
         </div>
       )}
-      <section className="rounded-2xl border border-border bg-surface p-4 md:p-5">
+      <section id="onboarding-filters" className="rounded-2xl border border-border bg-surface p-4 md:p-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Encontre seu próximo caminho</p>
@@ -447,14 +481,24 @@ export function PartnerProgramsBrowser({ programs }: Props) {
       <p className="text-sm opacity-60">{filteredPrograms.length} oportunidades encontradas</p>
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {visiblePrograms.map((program) => {
+        {visiblePrograms.map((program, index) => {
           const rating = program.finalRating;
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
 
           return (
+            <Fragment key={program.id}>
+            {index === 1 && (
+              <article className="flex flex-col justify-between rounded-xl border border-orange/35 bg-[linear-gradient(145deg,rgba(249,115,22,0.12),rgba(11,94,215,0.08))] p-5 shadow-sm">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange">Guia NKL</p>
+                  <h2 className="mt-2 font-playfair text-2xl font-bold">Renda extra com menos tentativa e erro</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-foreground/75">Um guia prático para filtrar oportunidades, organizar sua rotina e começar com mais clareza.</p>
+                </div>
+                <Link href="/guias/renda-extra" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white hover:bg-orange-dark">Conhecer o guia</Link>
+              </article>
+            )}
             <article
-              key={program.id}
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
@@ -475,7 +519,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                   <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                  <button id={index === 0 ? 'onboarding-community-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
                 </div>
@@ -498,7 +542,18 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                     </div>
                     <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
                   </div>
-                  {program.slug === 'quintoandar-indica-ai' ? (
+                    <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      id={index === 0 ? 'onboarding-save' : undefined}
+                      type="button"
+                      onClick={(event) => { event.stopPropagation(); toggleSavedProgram(program.slug); }}
+                      className={`inline-flex h-11 w-11 items-center justify-center rounded-lg border p-1.5 transition-colors ${savedProgramSlugs.includes(program.slug) ? 'border-orange bg-orange/10 text-orange' : 'border-border text-foreground/70 hover:border-orange hover:text-orange'}`}
+                      aria-label={savedProgramSlugs.includes(program.slug) ? `Remover ${program.name} dos salvos` : `Salvar ${program.name}`}
+                      title={savedProgramSlugs.includes(program.slug) ? 'Remover dos salvos' : 'Salvar para depois'}
+                    >
+                      <Bookmark size={18} fill={savedProgramSlugs.includes(program.slug) ? 'currentColor' : 'none'} aria-hidden="true" />
+                    </button>
+                    {program.slug === 'quintoandar-indica-ai' ? (
                     <button
                       type="button"
                       onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }}
@@ -521,22 +576,23 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                       <ProgramLogo program={program} />
                     </OutboundLink>
                   )}
+                  </div>
                 </div>
                 <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
-                  <Link href={`/programas/${program.slug}`} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-2 text-xs font-bold leading-none hover:border-neon">Ler mais</Link>
+                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon">Ler mais</button>
                   {program.slug === 'quintoandar-indica-ai' ? (
-                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
+                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
                       Quero começar
                     </button>
                   ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-9 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-xs font-bold leading-none text-black hover:opacity-90">
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
                       Acessar plataforma
                     </OutboundLink>
                   )}
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
                     aria-label={`Compartilhar ${program.name}`}
                     title="Compartilhar oportunidade"
                   >
@@ -545,7 +601,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
                     aria-label={`Criar lembrete para ${program.name}`}
                     title="Criar lembrete"
                   >
@@ -554,6 +610,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                 </div>
               </div>
             </article>
+            </Fragment>
           );
         })}
       </section>
@@ -649,7 +706,7 @@ export function PartnerProgramsBrowser({ programs }: Props) {
                         <OutboundLink href={project.href} trackingId={`aligner-${project.title}`} sponsored className="rounded-md bg-neon px-3 py-2 text-xs font-bold text-black hover:opacity-90">
                           Ver projeto
                         </OutboundLink>
-                        <button type="button" onClick={() => void shareProgram(selectedProgram, project.href, project.title)} className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar ${project.title}`}>
+                        <button type="button" onClick={() => void shareProgram(selectedProgram, project.href, project.title)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar ${project.title}`}>
                           <Share2 size={16} aria-hidden="true" />
                         </button>
                       </div>
