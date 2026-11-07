@@ -515,6 +515,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               }}
               role="button"
               tabIndex={0}
+              data-tutorial={index === 0 ? 'program-card-0' : undefined}
               className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
@@ -526,7 +527,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
-                  <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                  <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
                 </div>
