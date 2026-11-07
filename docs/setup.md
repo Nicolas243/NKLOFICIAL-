@@ -19,6 +19,7 @@ O servidor local padrão usa `http://localhost:3000`. Verifique `/api/health` qu
 - `.env.local` é local e contém segredos; nunca o exibir ou versionar.
 - `.env.example` documenta nomes de variáveis, não valores.
 - A aplicação local usa `DATABASE_URL`, Supabase e outras integrações conforme a funcionalidade.
+- A rota `/api/health/config` informa apenas se as variáveis obrigatórias estão configuradas, sem retornar valores secretos. Use-a depois do deploy para detectar drift de ambiente.
 - Não executar migrações, seeds ou sincronizações contra produção sem autorização específica.
 
 ## Recuperação
@@ -32,6 +33,13 @@ O servidor local padrão usa `http://localhost:3000`. Verifique `/api/health` qu
 ## Deploy
 
 Deploy não faz parte do setup automático. Primeiro valide localmente, obtenha aprovação e só então execute o procedimento da plataforma com os segredos já configurados.
+
+Para produção na Vercel:
+
+1. Configure as variáveis de `.env.example` no projeto e no ambiente `Production`, sem colar segredos em commits ou logs.
+2. Verifique `/api/health/config` e `/api/health` após o deploy.
+3. Configure no Mercado Pago o webhook de pagamento único em `/api/payments/webhook` e o webhook de assinaturas em `/api/payments/subscription-webhook`.
+4. Confirme no Supabase o schema remoto antes de aplicar `drizzle/0032_guide_sales_offers.sql`; não execute `push` ou `migrate` cegamente.
 
 ## Setup do toolkit
 

@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { guidePurchases } from '@/db/schema';
+import { guidePurchases, guideSubscriptions } from '@/db/schema';
+import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
+import { GUIDE_ASSETS } from '@/lib/guide-assets';
 
 export const metadata: Metadata = {
   title: 'Pagamento confirmado | Guia NKL',
@@ -17,21 +19,40 @@ type SuccessPageProps = {
     external_reference?: string;
     payment_id?: string;
     status?: string;
+    plan?: string;
   }>;
 };
 
 export default async function GuidePurchaseSuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
-  const purchaseId = z.string().uuid().safeParse(params.external_reference);
+  const purchaseReference = typeof params.external_reference === 'string'
+    ? params.external_reference.replace(/^guide_purchase:/u, '')
+    : '';
+  const purchaseId = z.string().uuid().safeParse(purchaseReference);
   const [purchase] = purchaseId.success
     ? await db.select({
       id: guidePurchases.id,
       status: guidePurchases.status,
       paymentId: guidePurchases.paymentId,
+      downloadCount: guidePurchases.downloadCount,
+      maxDownloads: guidePurchases.maxDownloads,
     }).from(guidePurchases).where(eq(guidePurchases.id, purchaseId.data)).limit(1)
     : [];
-  const paymentMatches = !params.payment_id || purchase?.paymentId === params.payment_id;
+  const [subscription] = params.plan === 'subscription' && params.external_reference
+    ? await db.select({
+      status: guideSubscriptions.status,
+      downloadCount: guideSubscriptions.downloadCount,
+      maxDownloads: guideSubscriptions.maxDownloads,
+    })
+      .from(guideSubscriptions)
+      .where(eq(guideSubscriptions.externalReference, params.external_reference))
+      .limit(1)
+    : [];
+  const paymentMatches = Boolean(params.payment_id) && purchase?.paymentId === params.payment_id;
   const isApproved = purchase?.status === 'approved' && paymentMatches;
+  const isSubscriptionActive = subscription?.status === 'active';
+  const purchaseDownloadsRemaining = purchase ? Math.max(purchase.maxDownloads - purchase.downloadCount, 0) : 0;
+  const subscriptionDownloadsRemaining = subscription ? Math.max(subscription.maxDownloads - subscription.downloadCount, 0) : 0;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
@@ -39,8 +60,27 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
         <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Acesso liberado</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Pagamento Confirmado! Seu acesso foi liberado.</h1>
-          <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. Baixe o material pelo botão abaixo e guarde este endereço para consultar o arquivo novamente.</p>
-          <a href="/guias/guia-renda-extra-nkl.pdf" download className="mt-6 inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-6 py-3 text-sm font-bold text-white transition hover:bg-orange-dark">Baixar Guia (PDF)</a>
+          <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. Os quatro materiais ficam disponíveis para download protegido e não devem ser compartilhados.</p>
+          {params.external_reference && params.payment_id && (
+            <GuideAssetDownloads
+              assets={GUIDE_ASSETS}
+              context={{ external_reference: params.external_reference, payment_id: params.payment_id }}
+              initialRemainingDownloads={purchaseDownloadsRemaining}
+            />
+          )}
+        </section>
+      ) : isSubscriptionActive ? (
+        <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Assinatura ativa</p>
+          <h1 className="mt-3 font-playfair text-4xl font-bold">Seu acesso mensal foi confirmado.</h1>
+          <p className="mt-4 leading-relaxed text-foreground/75">A assinatura dos Guias para Liberdade Financeira está ativa. Os materiais ficam disponíveis por download protegido enquanto o acesso estiver ativo.</p>
+          {params.external_reference && (
+            <GuideAssetDownloads
+              assets={GUIDE_ASSETS}
+              context={{ subscription_reference: params.external_reference }}
+              initialRemainingDownloads={subscriptionDownloadsRemaining}
+            />
+          )}
         </section>
       ) : (
         <section className="rounded-2xl border border-orange/30 bg-orange/5 p-8">

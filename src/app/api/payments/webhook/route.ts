@@ -1,19 +1,19 @@
-import crypto from 'node:crypto';
 import { after, NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings, guidePurchases, studentPlanEnrollments } from '@/db/schema';
+import { classBookings, guideOfferEvents, guidePurchases, studentPlanEnrollments } from '@/db/schema';
 import { env } from '@/env';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
+import { verifyMercadoPagoWebhookSignature } from '@/lib/mercadopago/webhook-signature';
 import { z } from 'zod';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const CLASS_ROOM_TTL_SECONDS = 7200;
-const HEX_SIGNATURE = /^[a-f0-9]{64}$/i;
+const GUIDE_PURCHASE_REFERENCE_PREFIX = 'guide_purchase:';
 
 type MercadoPagoNotification = {
   action?: unknown;
@@ -22,13 +22,10 @@ type MercadoPagoNotification = {
   type?: unknown;
 };
 
-type SignatureParts = {
-  timestamp: string;
-  signature: string;
-};
-
 function getBookingId(payment: { external_reference?: string; metadata?: unknown }): string | null {
-  if (payment.external_reference) return payment.external_reference;
+  if (payment.external_reference && !payment.external_reference.startsWith(GUIDE_PURCHASE_REFERENCE_PREFIX)) {
+    return payment.external_reference;
+  }
   if (
     typeof payment.metadata === 'object'
     && payment.metadata !== null
@@ -37,29 +34,25 @@ function getBookingId(payment: { external_reference?: string; metadata?: unknown
   ) {
     return payment.metadata.booking_id;
   }
+
   return null;
 }
 
-function parseSignature(value: string): SignatureParts | null {
-  const parts = new Map(value.split(',').map((part) => {
-    const [key, ...rest] = part.trim().split('=');
-    return [key, rest.join('=')];
-  }));
-  const timestamp = parts.get('ts');
-  const signature = parts.get('v1');
-  if (!timestamp || !signature || !/^\d+$/.test(timestamp) || !HEX_SIGNATURE.test(signature)) return null;
-  return { timestamp, signature };
+function getGuidePurchaseId(externalReference: unknown): string | null {
+  if (typeof externalReference !== 'string' || !externalReference.startsWith(GUIDE_PURCHASE_REFERENCE_PREFIX)) {
+    return null;
+  }
+  const parsed = z.string().uuid().safeParse(externalReference.slice(GUIDE_PURCHASE_REFERENCE_PREFIX.length));
+  return parsed.success ? parsed.data : null;
 }
 
-export function verifyMercadoPagoWebhookSignature(input: { xSignature: string; xRequestId: string; dataId: string; secret: string }): boolean {
-  const parts = parseSignature(input.xSignature);
-  if (!parts) return false;
-  const manifest = `id:${input.dataId};request-id:${input.xRequestId};ts:${parts.timestamp};`;
-  const expected = crypto.createHmac('sha256', input.secret).update(manifest).digest('hex');
-  const received = Buffer.from(parts.signature, 'hex');
-  const expectedBuffer = Buffer.from(expected, 'hex');
-  return received.length === expectedBuffer.length && crypto.timingSafeEqual(received, expectedBuffer);
+function getOfferExperiment(offerVariant: string | null): { experiment: string; variant: string } | null {
+  if (!offerVariant) return null;
+  const [experiment, variant] = offerVariant.split(':');
+  return experiment && variant ? { experiment, variant } : null;
 }
+
+export { verifyMercadoPagoWebhookSignature } from '@/lib/mercadopago/webhook-signature';
 
 function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {
   const xSignature = request.headers.get('x-signature');
@@ -77,20 +70,42 @@ async function processNotification(notification: MercadoPagoNotification, client
     const payment = await new Payment(client).get({ id: paymentId });
     if (payment.status !== 'approved') return;
 
-    const purchaseId = typeof payment.external_reference === 'string'
-      ? z.string().uuid().safeParse(payment.external_reference)
-      : { success: false as const };
-    if (purchaseId.success) {
+    const purchaseId = getGuidePurchaseId(payment.external_reference);
+    if (purchaseId) {
       const [guidePurchase] = await db.select({ id: guidePurchases.id })
         .from(guidePurchases)
-        .where(eq(guidePurchases.id, purchaseId.data))
+        .where(eq(guidePurchases.id, purchaseId))
         .limit(1);
       if (guidePurchase) {
+        const payerEmail = typeof payment.payer?.email === 'string' ? payment.payer.email : null;
         await db.update(guidePurchases).set({
           status: 'approved',
           paymentId: String(payment.id),
+          email: payerEmail,
           updatedAt: new Date(),
         }).where(eq(guidePurchases.id, guidePurchase.id));
+        const [purchaseDetails] = await db.select({ offerVariant: guidePurchases.offerVariant })
+          .from(guidePurchases)
+          .where(eq(guidePurchases.id, guidePurchase.id))
+          .limit(1);
+        const experiment = getOfferExperiment(purchaseDetails?.offerVariant ?? null);
+        if (experiment) {
+          const [existingConversion] = await db.select({ id: guideOfferEvents.id })
+            .from(guideOfferEvents)
+            .where(and(
+              eq(guideOfferEvents.purchaseId, guidePurchase.id),
+              eq(guideOfferEvents.eventType, 'conversion'),
+            ))
+            .limit(1);
+          if (!existingConversion) {
+            await db.insert(guideOfferEvents).values({
+              experiment: experiment.experiment,
+              variant: experiment.variant,
+              eventType: 'conversion',
+              purchaseId: guidePurchase.id,
+            });
+          }
+        }
         return;
       }
     }

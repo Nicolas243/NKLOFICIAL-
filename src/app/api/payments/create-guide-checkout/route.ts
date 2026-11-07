@@ -8,21 +8,21 @@ import { env } from '@/env';
 const GUIDE_PRICE_CENTS = 3900;
 const GUIDE_PRICE_REAIS = GUIDE_PRICE_CENTS / 100;
 const GUIDE_TITLE = 'Guia Definitivo de Renda Extra NKL';
-const emailSchema = z.object({
-  email: z.string().trim().email(),
-});
+const checkoutSchema = z.object({
+  offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
+}).default({});
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const body: unknown = await request.json();
-    const parsedBody = emailSchema.safeParse(body);
+    const body: unknown = await request.json().catch(() => ({}));
+    const parsedBody = checkoutSchema.safeParse(body);
     if (!parsedBody.success) {
-      return NextResponse.json({ error: 'invalid_email', message: 'Informe um e-mail válido para continuar.' }, { status: 400 });
+      return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
     }
 
     const [purchase] = await db.insert(guidePurchases).values({
-      email: parsedBody.data.email,
       amountCents: GUIDE_PRICE_CENTS,
+      offerVariant: parsedBody.data.offerVariant,
     }).returning({ id: guidePurchases.id });
 
     if (!purchase) {
@@ -31,6 +31,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const siteUrl = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
     const checkoutUrl = `${siteUrl}/guias/renda-extra/sucesso`;
+    const externalReference = `guide_purchase:${purchase.id}`;
     const client = new MercadoPagoConfig({
       accessToken: env.MERCADOPAGO_ACCESS_TOKEN,
     });
@@ -43,8 +44,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           quantity: 1,
           currency_id: 'BRL',
         }],
-        payer: { email: parsedBody.data.email },
-        external_reference: purchase.id,
+        external_reference: externalReference,
         back_urls: {
           success: checkoutUrl,
           failure: checkoutUrl,

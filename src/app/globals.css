@@ -6,6 +6,9 @@
   --background: #f7f8fa;
   --foreground: #101828;
   --surface: #ffffff;
+  --income-background: #e7e1d7;
+  --income-surface: #f1ece3;
+  --income-card: #ebe5da;
   --text: #101828;
   --border: #c8d0dc;
   --neon: #0B5ED7;
@@ -20,6 +23,9 @@
   --background: #0a0a0a;
   --foreground: #ededed;
   --surface: #121212;
+  --income-background: #181817;
+  --income-surface: #22211f;
+  --income-card: #292824;
   --text: #ffffff;
   --border: #2a2a2a;
   --neon: #1E90FF;
@@ -103,6 +109,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-income-background: var(--income-background);
+  --color-income-surface: var(--income-surface);
+  --color-income-card: var(--income-card);
   --color-text: var(--text);
   --color-border: var(--border);
   --color-neon: var(--neon);
@@ -167,6 +176,23 @@ body {
 
 .site-texture-partner {
   opacity: 0.05;
+}
+
+.income-portal-backdrop {
+  background-color: var(--income-background);
+  background:
+    linear-gradient(30deg, transparent 48%, rgba(11, 94, 215, 0.08) 49%, rgba(11, 94, 215, 0.08) 50%, transparent 51%) 0 0 / 150px 150px,
+    linear-gradient(150deg, transparent 48%, rgba(16, 24, 40, 0.07) 49%, rgba(16, 24, 40, 0.07) 50%, transparent 51%) 0 0 / 190px 190px,
+    radial-gradient(circle at 18% 12%, rgba(11, 94, 215, 0.1), transparent 26rem),
+    linear-gradient(135deg, var(--income-background) 0%, color-mix(in srgb, var(--income-background) 86%, #fff 14%) 52%, var(--income-background) 100%);
+}
+
+.dark .income-portal-backdrop {
+  background:
+    linear-gradient(30deg, transparent 48%, rgba(96, 165, 250, 0.11) 49%, rgba(96, 165, 250, 0.11) 50%, transparent 51%) 0 0 / 150px 150px,
+    linear-gradient(150deg, transparent 48%, rgba(255, 255, 255, 0.06) 49%, rgba(255, 255, 255, 0.06) 50%, transparent 51%) 0 0 / 190px 190px,
+    radial-gradient(circle at 82% 18%, rgba(30, 144, 255, 0.12), transparent 28rem),
+    linear-gradient(135deg, var(--income-background) 0%, color-mix(in srgb, var(--income-background) 92%, #000 8%) 52%, var(--income-background) 100%);
 }
 
 .whatsapp-guide {
@@ -787,7 +813,8 @@ body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
 /* ==========================================
    FOOTER & FORMS
 ========================================== */
-.site-footer { background: var(--bg); color: var(--text); padding: 3rem 0 2rem 0; border-top: 2px solid color-mix(in srgb, var(--orange) 35%, var(--border)); margin-top: 2rem; }
+.site-footer { background: #ffffff !important; color: #101828; padding: 3rem 0 2rem 0; border-top: 2px solid color-mix(in srgb, var(--orange) 35%, var(--border)); margin-top: 2rem; }
+.dark .site-footer { background: #000000 !important; color: #ffffff; }
 .footer-header { max-width: 1200px; margin: 0 auto 3rem auto; padding: 0 2rem; text-align: center; }
 .footer-header h3 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); margin: 0 0 0.5rem 0; font-weight: normal; }
 .footer-header p { font-size: 0.85rem; opacity: 0.8; margin: 0 0 1.5rem 0; }

@@ -294,12 +294,42 @@ export const guidePurchaseStatusEnum = pgEnum('guide_purchase_status', [
 
 export const guidePurchases = pgTable('guide_purchases', {
   id: uuid('id').primaryKey().defaultRandom(),
-  email: text('email').notNull(),
+  email: text('email'),
   status: guidePurchaseStatusEnum('status').notNull().default('pending'),
   paymentId: text('payment_id'),
   amountCents: integer('amount_cents').notNull(),
+  offerVariant: varchar('offer_variant', { length: 64 }),
+  downloadCount: integer('download_count').notNull().default(0),
+  maxDownloads: integer('max_downloads').notNull().default(3),
+  lastDownloadedAt: timestamp('last_downloaded_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const guideSubscriptions = pgTable('guide_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  externalReference: varchar('external_reference', { length: 120 }).notNull().unique(),
+  gatewaySubscriptionId: varchar('gateway_subscription_id', { length: 120 }).unique(),
+  email: text('email'),
+  status: varchar('status', { length: 30 }).notNull().default('pending'),
+  amountCents: integer('amount_cents').notNull(),
+  offerVariant: varchar('offer_variant', { length: 64 }),
+  downloadCount: integer('download_count').notNull().default(0),
+  maxDownloads: integer('max_downloads').notNull().default(3),
+  lastDownloadedAt: timestamp('last_downloaded_at'),
+  currentPeriodEnd: timestamp('current_period_end'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const guideOfferEvents = pgTable('guide_offer_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  experiment: varchar('experiment', { length: 40 }).notNull(),
+  variant: varchar('variant', { length: 64 }).notNull(),
+  eventType: varchar('event_type', { length: 20 }).notNull(),
+  purchaseId: uuid('purchase_id').references(() => guidePurchases.id, { onDelete: 'set null' }),
+  subscriptionId: uuid('subscription_id').references(() => guideSubscriptions.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 export const notifications = pgTable('notifications', {
@@ -764,3 +794,5 @@ export type ClassBooking = InferSelectModel<typeof classBookings>;
 export type NewClassBooking = InferInsertModel<typeof classBookings>;
 export type GuidePurchase = InferSelectModel<typeof guidePurchases>;
 export type NewGuidePurchase = InferInsertModel<typeof guidePurchases>;
+export type GuideSubscription = InferSelectModel<typeof guideSubscriptions>;
+export type NewGuideSubscription = InferInsertModel<typeof guideSubscriptions>;

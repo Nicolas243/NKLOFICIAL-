@@ -1,6 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { passwordChangeAttempts } from '@/db/schema';
+import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 
 /**
  * Rate limiter DISTRIBUÍDO para troca de senha.
@@ -101,4 +102,8 @@ export async function recordSuccessfulPasswordChange(userId: string): Promise<vo
         lastSuccessAt: now,
       },
     });
+}
+
+export async function enforceGuideDownloadRateLimit(identifier: string): Promise<void> {
+    await enforcePublicRateLimit('guide-download', identifier);
 }

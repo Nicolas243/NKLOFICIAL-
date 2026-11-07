@@ -13,6 +13,7 @@ import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
 import { NativeAdCard } from '@/components/income/native-ad-card';
 import { SmartTagList } from '@/components/income/smart-tag-list';
+import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { SocialEmbed } from '@/components/video/social-embed';
 
 type Props = {
@@ -396,7 +397,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           {shareMessage}
         </div>
       )}
-      <section id="filtros" className="rounded-2xl border border-border bg-surface p-4 md:p-5">
+      <section id="filtros" className="rounded-2xl border border-border bg-income-surface/90 p-4 md:p-5">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Encontre seu próximo caminho</p>
@@ -466,7 +467,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
         </div>
       </section>
 
-      <section aria-labelledby="discovery-tags-title" className="rounded-2xl border border-border bg-surface/40 p-4">
+      <section aria-labelledby="discovery-tags-title" className="rounded-2xl border border-border bg-income-surface/65 p-4">
         <h2 id="discovery-tags-title" className="mb-3 text-xs font-bold uppercase tracking-wide opacity-60">Explore por objetivo</h2>
         <div className="flex flex-wrap gap-3">
           {DISCOVERY_TAGS.map((tag) => (
@@ -514,7 +515,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               }}
               role="button"
               tabIndex={0}
-              className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-surface p-4 [container-type:inline-size] transition-colors hover:border-orange-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 md:gap-5 md:p-6"
+              className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div>
@@ -522,7 +523,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
                 </div>
                 <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
-                  <span className="inline-flex max-w-full items-center rounded-full border border-orange-500/40 bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">
+                  <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
                   <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
@@ -539,7 +540,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               </div>
               <p className={`text-sm leading-relaxed opacity-75 ${isDescriptionExpanded ? '' : 'line-clamp-2'}`}>{program.shortDescription}</p>
               {program.shortDescription.length > 150 && (
-                <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-orange-500 underline decoration-orange-500/40 underline-offset-2 hover:text-orange-400">
+                <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-neon underline decoration-neon/40 underline-offset-2 hover:text-neon-dark">
                   {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
                 </button>
               )}
@@ -547,8 +548,8 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 <div className="flex min-h-16 items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap content-start items-start gap-1.5">
-                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">{program.difficulty}</span>
-                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-orange-500/60 px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">Pode pagar em dólar</span>}
+                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">{program.difficulty}</span>
+                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
                       <SmartTagList tags={visibleTags} />
                     </div>
                     <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
@@ -618,10 +619,10 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
       <Pagination currentPage={safeCurrentPage} totalPages={totalPages} onPageChange={updatePage} />
 
-      {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
+      {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-income-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
-        <form id="news-suggest" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-surface p-6">
+        <form id="news-suggest" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-income-surface/90 p-6">
           <div>
             <p className="text-xs uppercase tracking-wide text-neon font-bold">Ajude a ampliar o catálogo</p>
             <h2 className="font-playfair text-2xl font-bold mt-1">Sugira uma oportunidade</h2>
@@ -633,7 +634,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           {suggestionState.success && <p role="status" className="text-sm text-neon">Sugestão enviada para análise.</p>}
           <SubmitButton idleLabel="Enviar sugestão" pendingLabel="Enviando..." />
         </form>
-        <div className="rounded-xl border border-border bg-surface p-6">
+        <div className="rounded-xl border border-border bg-income-surface/90 p-6">
           <p className="text-xs uppercase tracking-wide text-neon font-bold">Como funciona</p>
           <h2 className="font-playfair text-2xl font-bold mt-1">Notas transparentes</h2>
           <p className="mt-3 text-sm opacity-70 leading-relaxed">A nota editorial é uma referência inicial. Depois de cinco avaliações da comunidade, as tags exibidas passam a refletir exclusivamente a experiência de quem usou o serviço.</p>
@@ -643,7 +644,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
       {reminderProgram && (
         <div ref={dialogRef} className="fixed inset-0 z-[230] flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Criar lembrete para ${reminderProgram.name}`}>
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-income-surface p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não deixe para depois</p>
@@ -674,7 +675,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
       {selectedProgram && (
         <div ref={dialogRef} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`}>
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-surface p-6">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-income-surface p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-wide text-neon font-bold">{selectedProgram.category}</p>
@@ -703,6 +704,9 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 <Play size={16} aria-hidden="true" />
                 {showVideo ? 'Ocultar vídeo' : 'Vídeo'}
               </button>
+            </div>
+            <div className="mt-5">
+              <LeadCaptureForm program={selectedProgram} />
             </div>
             <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
             {showVideo && (
