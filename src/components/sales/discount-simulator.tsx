@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { GuideCheckoutButton } from '@/components/blog/guide-checkout-button';
+import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
 
 type Status = 'idle' | 'analyzing' | 'approved';
 type DisplayPhase = 'normal' | 'approved' | 'denied';
@@ -66,7 +66,7 @@ export function DiscountSimulator() {
         {status === 'approved' && (
           <>
             <p className="mt-2 text-lg font-bold">Análise concluída. Perfil validado para Desconto Especial.</p>
-            <p className="mt-2 text-sm">A condição promocional do lançamento é R$ 39,00. O checkout ainda está em preparação.</p>
+            <p className="mt-2 text-sm">A condição promocional do lançamento é R$ 39,00 em pagamento único. Informe seu e-mail abaixo para abrir o checkout seguro do Mercado Pago.</p>
           </>
         )}
       </div>

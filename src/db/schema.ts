@@ -286,6 +286,22 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }));
 
+export const guidePurchaseStatusEnum = pgEnum('guide_purchase_status', [
+  'pending',
+  'approved',
+  'rejected',
+]);
+
+export const guidePurchases = pgTable('guide_purchases', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull(),
+  status: guidePurchaseStatusEnum('status').notNull().default('pending'),
+  paymentId: text('payment_id'),
+  amountCents: integer('amount_cents').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -746,3 +762,5 @@ export type UserProfile = InferSelectModel<typeof userProfiles>;
 export type NewUserProfile = InferInsertModel<typeof userProfiles>;
 export type ClassBooking = InferSelectModel<typeof classBookings>;
 export type NewClassBooking = InferInsertModel<typeof classBookings>;
+export type GuidePurchase = InferSelectModel<typeof guidePurchases>;
+export type NewGuidePurchase = InferInsertModel<typeof guidePurchases>;

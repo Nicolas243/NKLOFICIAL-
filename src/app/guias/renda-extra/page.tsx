@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { DiscountSimulator } from '@/components/sales/discount-simulator';
+import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 
 export const metadata: Metadata = {
-  title: 'Guia Definitivo de Renda Extra',
+  title: 'Guia Definitivo de Renda Extra | Portal NKL',
   description: 'Um guia prático do Portal NKL para filtrar oportunidades e começar com mais clareza.',
+  alternates: {
+    canonical: INCOME_PORTAL_ROUTES.guide,
+  },
 };
 
 const INCLUDED_ITEMS = [
@@ -31,7 +35,7 @@ export default function IncomeGuidePage() {
           <div className="rounded-2xl border border-border bg-background/70 p-6 backdrop-blur">
             <p className="text-sm font-bold uppercase tracking-wide text-foreground/60">Condição de lançamento</p>
             <p className="mt-2 text-4xl font-bold text-foreground line-through decoration-orange">R$ 97,00</p>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/65">Veja a condição promocional na seção de verificação abaixo. Nenhuma cobrança é feita nesta versão.</p>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/65">Pagamento único de R$ 39,00 via Mercado Pago após a confirmação da condição promocional. A assinatura mensal de R$ 19,00 será oferecida em um fluxo separado.</p>
           </div>
         </div>
       </section>

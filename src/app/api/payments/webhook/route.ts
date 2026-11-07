@@ -3,10 +3,11 @@ import { after, NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { classBookings, studentPlanEnrollments } from '@/db/schema';
+import { classBookings, guidePurchases, studentPlanEnrollments } from '@/db/schema';
 import { env } from '@/env';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
+import { z } from 'zod';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -76,6 +77,24 @@ async function processNotification(notification: MercadoPagoNotification): Promi
     const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
     const payment = await new Payment(client).get({ id: paymentId });
     if (payment.status !== 'approved') return;
+
+    const purchaseId = typeof payment.external_reference === 'string'
+      ? z.string().uuid().safeParse(payment.external_reference)
+      : { success: false as const };
+    if (purchaseId.success) {
+      const [guidePurchase] = await db.select({ id: guidePurchases.id })
+        .from(guidePurchases)
+        .where(eq(guidePurchases.id, purchaseId.data))
+        .limit(1);
+      if (guidePurchase) {
+        await db.update(guidePurchases).set({
+          status: 'approved',
+          paymentId: String(payment.id),
+          updatedAt: new Date(),
+        }).where(eq(guidePurchases.id, guidePurchase.id));
+        return;
+      }
+    }
 
     const bookingId = getBookingId(payment);
     if (!bookingId) return;
