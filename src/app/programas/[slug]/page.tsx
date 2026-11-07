@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getPartnerProgramBySlug } from '@/actions/partner-programs';
 import { PARTNER_PROGRAM_SLUGS } from '@/lib/partner-program-catalog';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
-import { LeadCaptureForm } from '@/components/blog/lead-capture-form';
+import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { OutboundLink } from '@/components/ui/outbound-link';
@@ -73,6 +73,32 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
           '@type': 'Thing',
           name: program.name,
           description: program.longDescription,
+        },
+        mainEntity: {
+          '@type': 'SoftwareApplication',
+          name: program.name,
+          applicationCategory: program.category,
+          operatingSystem: 'Web',
+          inLanguage: program.languages,
+          description: `${program.shortDescription} Não representa ganho fixo.`,
+          featureList: program.tags,
+          additionalProperty: [
+            {
+              '@type': 'PropertyValue',
+              name: 'Dificuldade',
+              value: program.difficulty,
+            },
+            {
+              '@type': 'PropertyValue',
+              name: 'Remuneração de referência',
+              value: program.averageEarning,
+            },
+            {
+              '@type': 'PropertyValue',
+              name: 'Métodos de pagamento',
+              value: program.paymentMethods.join(', '),
+            },
+          ],
         },
         breadcrumb: {
           '@type': 'BreadcrumbList',

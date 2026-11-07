@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
@@ -120,6 +121,16 @@ const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages
   'ugc-roster': { averageEarning: 'US$ 300 ± por vídeo', languages: ['Português', 'Inglês'] },
   'creator-space': { averageEarning: 'US$ 100 ± por campanha', languages: ['Português', 'Inglês'] },
   'canal-dark-youtube-notebooklm': { averageEarning: 'R$ 300 ± por mês', languages: ['Português'] },
+  'pawns-app': { averageEarning: 'US$ 25 ±', languages: ['Português', 'Inglês'] },
+  attapoll: { averageEarning: 'US$ 30 ±', languages: ['Português', 'Inglês', 'Espanhol'] },
+  'testes-ux-narrados': { averageEarning: 'US$ 60 ±', languages: ['Português', 'Inglês'] },
+  'comunidades-pagas-skool-systeme': { averageEarning: 'US$ 150 ±', languages: ['Inglês', 'Português'] },
+  'montink-embaixador': { averageEarning: 'R$ 450 ±', languages: ['Português', 'Inglês'] },
+  'serp-raters-welocalize-telus': { averageEarning: 'US$ 180 ±', languages: ['Português', 'Inglês'] },
+  'entrevistas-b2b-respondent-user-interviews': { averageEarning: 'US$ 120 ±', languages: ['Inglês', 'Português'] },
+  'afiliados-b2b-tubebuddy-make': { averageEarning: 'US$ 100 ±', languages: ['Inglês', 'Português'] },
+  'redes-cpa-affiliaxe': { averageEarning: 'R$ 250 ±', languages: ['Português', 'Inglês'] },
+  'monetizacao-atencao-web': { averageEarning: 'US$ 80 ±', languages: ['Inglês', 'Português'] },
 };
 
 function editorialProgramName(slug: string, name: string): string {
@@ -421,7 +432,7 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
   });
 
   revalidatePath('/programas');
-  revalidatePath('/blog/renda-extra');
+  revalidatePath(INCOME_PORTAL_ROUTES.legacyCatalog);
 }
 
 export async function submitPartnerSuggestion(formData: FormData): Promise<void> {
@@ -477,7 +488,7 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
   });
 
   revalidatePath('/programas');
-  revalidatePath('/blog/renda-extra');
+  revalidatePath(INCOME_PORTAL_ROUTES.legacyCatalog);
 }
 
 export type PartnerAdminProgram = ProgramRow & {
@@ -526,7 +537,7 @@ export async function updatePartnerProgram(formData: FormData): Promise<void> {
   }).where(eq(partnerPrograms.id, id));
 
   revalidatePath('/programas');
-  revalidatePath('/blog/renda-extra');
+  revalidatePath(INCOME_PORTAL_ROUTES.legacyCatalog);
   revalidatePath('/programas/admin');
 }
 
