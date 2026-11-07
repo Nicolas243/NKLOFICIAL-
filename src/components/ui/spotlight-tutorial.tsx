@@ -33,6 +33,11 @@ const TOOLTIP_HEIGHT_ESTIMATE = 230;
 
 const DEFAULT_STEPS: TutorialStep[] = [
   {
+    targetSelector: '#income-wizard-trigger',
+    title: 'Descubra seu perfil ideal',
+    description: 'Responda às perguntas do guia para receber uma seleção inicial de oportunidades alinhadas ao seu momento.',
+  },
+  {
     targetSelector: '#search-input',
     title: 'Pesquise por uma oportunidade',
     description: 'Digite o nome de uma plataforma, categoria ou tag para reduzir o catálogo ao que interessa.',
@@ -41,11 +46,6 @@ const DEFAULT_STEPS: TutorialStep[] = [
     targetSelector: '#category-filters',
     title: 'Refine por categoria',
     description: 'Use o filtro de categoria para comparar caminhos parecidos sem misturar perfis muito diferentes.',
-  },
-  {
-    targetSelector: '#income-wizard-trigger',
-    title: 'Descubra seu perfil ideal',
-    description: 'Responda às perguntas do guia para receber uma seleção inicial de oportunidades alinhadas ao seu momento.',
   },
   {
     targetSelector: '.community-rating',
@@ -61,6 +61,11 @@ const DEFAULT_STEPS: TutorialStep[] = [
     targetSelector: '#footer-lead',
     title: 'Receba o resumo por e-mail',
     description: 'Cadastre seu contato para receber o Guia gratuito com critérios práticos antes de se cadastrar.',
+  },
+  {
+    targetSelector: '#programs-grid',
+    title: 'Compare as oportunidades',
+    description: 'Aqui você encontra os cartões do catálogo. Abra uma oportunidade para conferir nota, potencial e próximos passos.',
   },
 ];
 

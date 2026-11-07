@@ -93,7 +93,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95">
+        className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95">
         {label} <span className="text-xs">▾</span>
       </button>
       {open && (
@@ -101,7 +101,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
           <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="inline-flex items-center h-[30px] text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex min-h-11 items-center text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -123,7 +123,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
   return (
     <div ref={ref} className="relative">
       <button type="button" onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95 whitespace-nowrap">
+        className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors gap-1 active:scale-95 whitespace-nowrap">
         <span className={label === 'Encontre um...' ? 'max-[480px]:hidden' : ''}>{label}</span>
         {label === 'Encontre um...' && <span className="hidden max-[480px]:inline">Encontre</span>}
         <span className="text-xs max-[480px]:text-[9px]">▾</span>
@@ -133,7 +133,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
           <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-1 min-w-[200px] w-max max-w-[90vw]">
             {items.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="inline-flex items-center h-[30px] text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
+                <Link href={item.href} className="inline-flex min-h-11 items-center text-sm font-medium leading-relaxed px-4 rounded-md hover:bg-accent hover:text-neon transition-colors whitespace-nowrap"
                   onClick={() => setOpen(false)}>{item.label}</Link>
               </li>
             ))}
@@ -165,7 +165,7 @@ export function Header() {
 
   const authBtn = (
     <Link href={isLoggedIn ? '/perfil' : '/login'}
-      className="inline-flex items-center justify-center h-[30px] px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-all hover:opacity-90 active:scale-95 shrink-0">
+      className="inline-flex min-h-11 items-center justify-center px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-all hover:opacity-90 active:scale-95 shrink-0">
       {isLoggedIn ? 'Perfil' : 'Entrar'}
     </Link>
   )
@@ -173,15 +173,15 @@ export function Header() {
   if (isPartnerPortal) {
     const portalLinks = (
       <>
-        <Link href={INCOME_PORTAL_ROUTES.catalog} className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
-        <a href={`${INCOME_PORTAL_ROUTES.catalog}#sugestao`} className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
-        <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
+        <Link href={INCOME_PORTAL_ROUTES.catalog} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
+        <a href={`${INCOME_PORTAL_ROUTES.catalog}#sugestao`} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
+        <Link href="/contatos" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
       </>
     )
 
     return (
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
-        <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
+        <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
           <Link href={INCOME_PORTAL_ROUTES.catalog} className="group flex min-w-0 items-center gap-3">
             <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
@@ -217,13 +217,13 @@ export function Header() {
 
   const navLinks = (
     <>
-      <Link href="/" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Home</Link>
       {groups.map((g) => <Dropdown key={g.label} label={g.label} items={g.items} />)}
-      <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Contatos</Link>
+      <Link href="/contatos" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Contatos</Link>
     </>
   )
 
-  const navLinkCls = 'inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
+  const navLinkCls = 'inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap'
 
   const navLinksCompact = (
     <>
@@ -239,7 +239,7 @@ export function Header() {
   return (
     <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`relative z-[100] lg:fixed top-0 w-full bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-[72px] flex items-center justify-between min-w-0 bg-white dark:bg-black">
+      <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between min-w-0 bg-white dark:bg-black">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <Image src="/NKL/NKL.png" alt="NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
           <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
@@ -269,7 +269,7 @@ export function Header() {
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
         <div id="mobile-navigation" suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="relative z-[105] lg:hidden bg-white dark:bg-black border-t border-border">
-          <nav aria-label="Navegação secundária" className="flex w-full h-[72px] items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
+          <nav aria-label="Navegação secundária" className="flex w-full h-14 items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>
         </div>

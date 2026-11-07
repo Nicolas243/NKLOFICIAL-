@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, Bookmark, CalendarPlus, Share2 } from 'lucide-react';
+import { BellPlus, CalendarPlus, Play, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
@@ -12,6 +12,8 @@ import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
 import { NativeAdCard } from '@/components/income/native-ad-card';
+import { SmartTagList } from '@/components/income/smart-tag-list';
+import { SocialEmbed } from '@/components/video/social-embed';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -35,7 +37,6 @@ const REVIEW_TAG_GROUPS = [
   },
 ];
 const PROGRAMS_PER_PAGE = 9;
-const SAVED_PROGRAMS_KEY = 'nkl-saved-programs';
 const DISCOVERY_TAGS = [
   { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift'] },
   { label: 'Ganhar sem fazer nada', slugs: ['honeygain'] },
@@ -92,6 +93,11 @@ function SubmitButton({ idleLabel, pendingLabel }: { idleLabel: string; pendingL
 function extractReferralCode(description: string): string | null {
   const match = description.match(/(?:código|codigo)\s+(?:de\s+indicação|de\s+indicacao)?\s*[:\-]?\s*[`'"]?([A-Z0-9]{6,})/iu);
   return match?.[1] ?? null;
+}
+
+function earningValue(value: string): number {
+  const match = value.match(/\d+(?:[.,]\d+)?/u);
+  return match ? Number(match[0].replace(',', '.')) : 0;
 }
 
 function ProgramLogo({ program }: { program: PartnerProgramCard }) {
@@ -175,29 +181,18 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
   const [category, setCategory] = useState('todas');
   const [difficulty, setDifficulty] = useState('todas');
   const [sort, setSort] = useState('relevancia');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedProgram, setSelectedProgram] = useState<PartnerProgramCard | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDiscoveryTag, setSelectedDiscoveryTag] = useState<string | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [expandedDescriptionSlugs, setExpandedDescriptionSlugs] = useState<string[]>([]);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
-  const [savedProgramSlugs, setSavedProgramSlugs] = useState<string[]>([]);
   const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
-    if (!stored) return;
-    try {
-      const parsed: unknown = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
-        window.setTimeout(() => setSavedProgramSlugs(parsed), 0);
-      }
-    } catch (error) {
-      console.error('[PARTNER_PROGRAMS] Não foi possível ler oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
-    }
-  }, []);
 
   useEffect(() => {
     const activeDialog = selectedProgram ?? reminderProgram;
@@ -272,11 +267,17 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
     });
 
     return [...filtered].sort((left, right) => {
-      if (sort === 'nome') return left.name.localeCompare(right.name, 'pt-BR');
-      if (sort === 'nota') return right.finalRating - left.finalRating;
-      return left.name.localeCompare(right.name, 'pt-BR');
+      if (sort === 'relevancia') return left.name.localeCompare(right.name, 'pt-BR');
+
+      const comparison = sort === 'nome'
+        ? left.name.localeCompare(right.name, 'pt-BR')
+        : sort === 'ganhos'
+          ? earningValue(left.averageEarning) - earningValue(right.averageEarning)
+          : left.finalRating - right.finalRating;
+
+      return sortDirection === 'asc' ? comparison : comparison * -1;
     });
-  }, [category, difficulty, initialCurrency, initialEnglish, initialObjective, programs, query, selectedDiscoveryTag, sort]);
+  }, [category, difficulty, initialCurrency, initialEnglish, initialObjective, programs, query, selectedDiscoveryTag, sort, sortDirection]);
 
   const totalPages = Math.ceil(filteredPrograms.length / PROGRAMS_PER_PAGE);
   const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
@@ -292,15 +293,14 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
   function openProgram(program: PartnerProgramCard): void {
     setSelectedProgram(program);
     setShowReviewForm(false);
+    setShowVideo(false);
     setShowReferralModal(false);
   }
 
-  function toggleSavedProgram(slug: string): void {
-    const nextSlugs = savedProgramSlugs.includes(slug)
-      ? savedProgramSlugs.filter((savedSlug) => savedSlug !== slug)
-      : [...savedProgramSlugs, slug];
-    setSavedProgramSlugs(nextSlugs);
-    window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(nextSlugs));
+  function toggleDescription(slug: string): void {
+    setExpandedDescriptionSlugs((current) => current.includes(slug)
+      ? current.filter((item) => item !== slug)
+      : [...current, slug]);
   }
 
   async function shareProgram(program: PartnerProgramCard, sharedUrl?: string, sharedTitle?: string): Promise<void> {
@@ -404,7 +404,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           </div>
           <p className="max-w-xs text-right text-xs leading-relaxed opacity-55">Pesquise por uma ideia como “gravar vídeos em casa” ou “ganhar indicando”.</p>
         </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr_0.8fr]">
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
           <input
@@ -449,7 +449,18 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           }} className="w-full rounded-md border border-border bg-background px-3 py-2">
             <option value="relevancia">Relevância</option>
             <option value="nota">Nota</option>
+            <option value="ganhos">Ganhos</option>
             <option value="nome">Nome</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Direção</span>
+          <select value={sortDirection} onChange={(event) => {
+            setSortDirection(event.target.value as 'asc' | 'desc');
+            setCurrentPage(1);
+          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
+            <option value="desc">Decrescente</option>
+            <option value="asc">Crescente</option>
           </select>
         </label>
         </div>
@@ -482,15 +493,17 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
       <p className="text-sm opacity-60">{filteredPrograms.length} oportunidades encontradas</p>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <section id="programs-grid" className="programs-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {visiblePrograms.map((program, index) => {
           const rating = program.finalRating;
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
+          const isDescriptionExpanded = expandedDescriptionSlugs.includes(program.slug);
+          const adIndex = 3 + (safeCurrentPage % 3);
 
           return (
             <Fragment key={program.id}>
-            {index === 2 && <NativeAdCard currentPage={safeCurrentPage} />}
+            {index === adIndex && <NativeAdCard currentPage={safeCurrentPage} />}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
@@ -501,7 +514,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               }}
               role="button"
               tabIndex={0}
-              className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-surface p-4 [container-type:inline-size] transition-colors hover:border-neon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+              className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-surface p-4 [container-type:inline-size] transition-colors hover:border-orange-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 md:gap-5 md:p-6"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div>
@@ -509,7 +522,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
                 </div>
                 <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
-                  <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
+                  <span className="inline-flex max-w-full items-center rounded-full border border-orange-500/40 bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">
                     {program.averageEarning}
                   </span>
                   <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
@@ -524,35 +537,23 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   </span>
                 ))}
               </div>
-              <p className="text-sm opacity-75 leading-relaxed">{program.shortDescription}</p>
+              <p className={`text-sm leading-relaxed opacity-75 ${isDescriptionExpanded ? '' : 'line-clamp-2'}`}>{program.shortDescription}</p>
+              {program.shortDescription.length > 150 && (
+                <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-orange-500 underline decoration-orange-500/40 underline-offset-2 hover:text-orange-400">
+                  {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
+                </button>
+              )}
               <div className="mt-auto flex min-w-0 flex-col gap-2">
                 <div className="flex min-h-16 items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <div className="flex max-h-[5.25rem] flex-wrap content-start gap-1.5 overflow-hidden">
-                      {visibleTags.includes('Melhor para Começar') && (
-                        <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-1 text-xs font-bold text-green-700 dark:text-green-400">
-                          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
-                            <path fill="currentColor" d="M8 1.5 9.7 6l4.8.2-3.8 2.9 1.3 4.7L8 11.1l-4 2.7 1.3-4.7-3.8-2.9L6.3 6 8 1.5Z" />
-                          </svg>
-                          Melhor para Começar
-                        </span>
-                      )}
-                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
-                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
-                      {visibleTags.filter((tag) => tag !== 'Melhor para Começar').slice(0, 5).map((tag) => <span key={tag} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
+                    <div className="flex flex-wrap content-start items-start gap-1.5">
+                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">{program.difficulty}</span>
+                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-orange-500/60 px-2.5 py-1 text-xs font-bold text-orange-500 dark:text-orange-400">Pode pagar em dólar</span>}
+                      <SmartTagList tags={visibleTags} />
                     </div>
                     <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
                   </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(event) => { event.stopPropagation(); toggleSavedProgram(program.slug); }}
-                      className={`inline-flex h-11 w-11 items-center justify-center rounded-lg border p-1.5 transition-colors ${savedProgramSlugs.includes(program.slug) ? 'border-orange bg-orange/10 text-orange' : 'border-border text-foreground/70 hover:border-orange hover:text-orange'}`}
-                      aria-label={savedProgramSlugs.includes(program.slug) ? `Remover ${program.name} dos salvos` : `Salvar ${program.name}`}
-                      title={savedProgramSlugs.includes(program.slug) ? 'Remover dos salvos' : 'Salvar para depois'}
-                    >
-                      <Bookmark size={18} fill={savedProgramSlugs.includes(program.slug) ? 'currentColor' : 'none'} aria-hidden="true" />
-                    </button>
+                  <div className="flex shrink-0 items-center gap-2">
                     {program.slug === 'quintoandar-indica-ai' ? (
                     <button
                       type="button"
@@ -681,10 +682,36 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               </div>
               <button type="button" onClick={() => setSelectedProgram(null)} className="text-2xl opacity-60 hover:opacity-100" aria-label="Fechar">×</button>
             </div>
-            <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="mt-4 inline-flex text-sm font-bold text-neon hover:underline">
-              Abrir página completa da oportunidade
-            </Link>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-lg border border-orange-500/30 bg-orange-500/5 p-3">
+                <p className="text-xs font-bold uppercase tracking-wide text-orange-500 dark:text-orange-400">Nota editorial</p>
+                <p className="mt-1 text-2xl font-bold">{selectedProgram.editorialRating.toFixed(1)}/10</p>
+              </div>
+              <div className="rounded-lg border border-border bg-background p-3">
+                <p className="text-xs font-bold uppercase tracking-wide opacity-60">Potencial de ganho</p>
+                <p className="mt-1 text-lg font-bold">{selectedProgram.earningPotential ?? selectedProgram.averageEarning}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
+                Abrir página completa
+              </Link>
+              <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
+                {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
+              </button>
+              <button type="button" onClick={() => setShowVideo((visible) => !visible)} className="inline-flex min-h-11 items-center gap-2 rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
+                <Play size={16} aria-hidden="true" />
+                {showVideo ? 'Ocultar vídeo' : 'Vídeo'}
+              </button>
+            </div>
             <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
+            {showVideo && (
+              <SocialEmbed
+                youtubeId={selectedProgram.youtubeVideoId}
+                tiktokId={selectedProgram.tiktokVideoId}
+                programName={selectedProgram.name}
+              />
+            )}
             {selectedProgram.slug === 'claru-ia' && (
               <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm font-bold">Você tem uma empresa e quer divulgá-la?</p>
@@ -777,9 +804,6 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               ) : (
                 <OutboundLink href={selectedProgram.affiliateUrl ?? selectedProgram.websiteUrl} trackingId={selectedProgram.slug} sponsored={Boolean(selectedProgram.affiliateUrl)} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
               )}
-              <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-neon">
-                {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
-              </button>
             </div>
             {showReviewForm && <form action={reviewAction} className="mt-8 space-y-4 border-t border-border pt-6">
               <input type="hidden" name="programId" value={selectedProgram.id} />
