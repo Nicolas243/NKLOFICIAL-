@@ -69,12 +69,11 @@ function hasValidSignature(request: NextRequest, notification: MercadoPagoNotifi
   return verifyMercadoPagoWebhookSignature({ xSignature, xRequestId, dataId, secret: env.MERCADOPAGO_WEBHOOK_SECRET });
 }
 
-async function processNotification(notification: MercadoPagoNotification): Promise<void> {
+async function processNotification(notification: MercadoPagoNotification, client: MercadoPagoConfig): Promise<void> {
   const paymentId = notification.data?.id;
   if (typeof paymentId !== 'string' || !paymentId) return;
 
   try {
-    const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
     const payment = await new Payment(client).get({ id: paymentId });
     if (payment.status !== 'approved') return;
 
@@ -182,6 +181,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
   }
 
-  after(() => processNotification(notification));
+  const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
+  after(() => processNotification(notification, client));
   return NextResponse.json({ received: true }, { status: 200 });
 }

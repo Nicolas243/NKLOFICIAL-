@@ -11,7 +11,7 @@ import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
-import { NativeAdCard } from '@/components/blog/native-ad-card';
+import { NativeAdCard } from '@/components/income/native-ad-card';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -408,6 +408,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
           <input
+            id="search-input"
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -420,7 +421,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
         </label>
         <label className="text-sm">
           <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
-          <select value={category} onChange={(event) => {
+          <select id="category-filters" value={category} onChange={(event) => {
             setCategory(event.target.value);
             setCurrentPage(1);
           }} className="w-full rounded-md border border-border bg-background px-3 py-2">
@@ -511,7 +512,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
-                  <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                  <button id={index === 0 ? 'nota-comunidade' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
                 </div>
@@ -528,9 +529,17 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 <div className="flex min-h-16 items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex max-h-[5.25rem] flex-wrap content-start gap-1.5 overflow-hidden">
+                      {visibleTags.includes('Melhor para Começar') && (
+                        <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-emerald-400/60 bg-emerald-400/20 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-200">
+                          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                            <path fill="currentColor" d="M8 1.5 9.7 6l4.8.2-3.8 2.9 1.3 4.7L8 11.1l-4 2.7 1.3-4.7-3.8-2.9L6.3 6 8 1.5Z" />
+                          </svg>
+                          Melhor para Começar
+                        </span>
+                      )}
                       <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold">{program.difficulty}</span>
                       {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
-                      {visibleTags.slice(0, 5).map((tag) => <span key={tag} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
+                      {visibleTags.filter((tag) => tag !== 'Melhor para Começar').slice(0, 5).map((tag) => <span key={tag} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">{tag}</span>)}
                     </div>
                     <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
                   </div>
@@ -611,7 +620,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
       {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
-        <form id="sugestao" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-surface p-6">
+        <form id="news-suggest" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-surface p-6">
           <div>
             <p className="text-xs uppercase tracking-wide text-neon font-bold">Ajude a ampliar o catálogo</p>
             <h2 className="font-playfair text-2xl font-bold mt-1">Sugira uma oportunidade</h2>

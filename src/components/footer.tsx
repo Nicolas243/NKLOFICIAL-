@@ -4,15 +4,16 @@ import { useState, useCallback, useEffect, type FormEvent } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { isIncomePortalPath } from '@/lib/income-portal';
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
 const COMMUNITY_NOTIFICATION_KEY = 'community_notified';
 
 export function Footer() {
   const pathname = usePathname();
-  const isPartnerPortal = pathname.includes('/programas') || pathname.includes('/blog/renda-extra') || pathname.includes('/guias/renda-extra');
+  const isPartnerPortal = isIncomePortalPath(pathname);
   const communityUrl = isPartnerPortal
-    ? 'https://chat.whatsapp.com/Bp7YWQ1bjJQ39M0vvn9MED'
+    ? 'https://chat.whatsapp.com/Fegie9C05eG0cMidDUpzRk'
     : 'https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r';
   const communityLabel = isPartnerPortal
     ? 'Entrar no grupo de renda extra do Portal NKL no WhatsApp'
