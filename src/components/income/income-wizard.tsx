@@ -233,7 +233,7 @@ export function IncomeWizard({ programs }: Props) {
 
       {isOpen && (
         <div className="fixed inset-0 z-[260] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="income-wizard-title">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-orange/30 bg-surface p-5 text-foreground shadow-2xl sm:p-8">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-orange/30 bg-income-surface p-5 text-foreground shadow-2xl sm:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Guia interativo</p>
@@ -254,7 +254,7 @@ export function IncomeWizard({ programs }: Props) {
                 <p className="mt-2 text-sm leading-relaxed text-foreground/70">{question.description}</p>
                 <div className="mt-6 grid gap-3">
                   {question.options.map((option) => (
-                    <button key={option.value} type="button" onClick={() => chooseAnswer(option.value)} className="min-h-12 rounded-lg border border-border bg-background px-4 py-3 text-left text-sm font-bold transition hover:border-orange hover:bg-orange/5 focus:outline-none focus:ring-2 focus:ring-orange/40">
+                    <button key={option.value} type="button" onClick={() => chooseAnswer(option.value)} className="min-h-12 rounded-lg border border-border bg-income-card px-4 py-3 text-left text-sm font-bold transition hover:border-orange hover:bg-orange/5 focus:outline-none focus:ring-2 focus:ring-orange/40">
                       {option.label}
                     </button>
                   ))}
@@ -266,7 +266,7 @@ export function IncomeWizard({ programs }: Props) {
                 <p className="text-sm leading-relaxed text-foreground/70">Estas são as três opções mais alinhadas às respostas. Leia os detalhes e confirme as condições no site oficial.</p>
                 <div className="mt-5 grid gap-3">
                   {results.map((program, index) => (
-                    <article key={program.slug} className="rounded-xl border border-border bg-background p-4">
+                    <article key={program.slug} className="rounded-xl border border-border bg-income-card p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-xs font-bold uppercase tracking-wide text-orange">Opção {index + 1}</p>

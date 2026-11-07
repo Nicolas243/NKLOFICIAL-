@@ -42,7 +42,8 @@ As regras de reconhecimento de contexto ficam centralizadas em `src/lib/income-p
 - Links de afiliados devem preservar a URL cadastrada e ser tratados como conteúdo editorial sujeito a mudança.
 - Google Analytics e AdSense são recursos não essenciais e só são carregados após consentimento explícito.
 - Migrações devem ser aditivas, revisáveis e testadas localmente; não aplicar automaticamente em produção.
-- Antes de aplicar `drizzle/0032_guide_sales_offers.sql` em produção, confirme no Supabase as tabelas `guide_purchases`, `guide_subscriptions` e `guide_offer_events`, além do histórico real de migrações. O arquivo `drizzle/meta/_journal.json` não deve ser tratado como prova suficiente do estado remoto.
+- Os materiais pagos ficam no bucket privado `guide-assets-private`; o endpoint `/api/downloads/guide` libera URLs assinadas por 60 segundos e aplica cota atômica de oito tentativas.
+- Antes de aplicar `drizzle/0032_guide_sales_offers.sql` e `drizzle/0033_guide_download_quota.sql` em produção, confirme no Supabase as tabelas `guide_purchases`, `guide_subscriptions` e `guide_offer_events`, além do histórico real de migrações. O arquivo `drizzle/meta/_journal.json` não deve ser tratado como prova suficiente do estado remoto.
 - O catálogo público usa páginas individuais em `/programas/[slug]`, hubs em `/programas/iniciantes`
   e `/programas/dolar`, JSON-LD de página/lista e links de afiliado com `rel="sponsored"`.
 - A migração `0027_partner_editorial_fields.sql` adiciona campos estruturados e data de verificação;

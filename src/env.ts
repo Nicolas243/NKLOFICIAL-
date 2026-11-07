@@ -8,6 +8,7 @@ const envSchema = z.object({
   MERCADOPAGO_WEBHOOK_SECRET: z.string().min(1),
   DAILY_API_KEY: z.string().min(1),
   CRON_SECRET: z.string().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: z.string().min(1),
@@ -16,6 +17,11 @@ const envSchema = z.object({
   MERCADOPAGO_CLIENT_ID: z.string().min(1).optional(),
   MERCADOPAGO_CLIENT_SECRET: z.string().min(1).optional(),
   MERCADOPAGO_REDIRECT_URI: z.string().url().optional(),
+  HOTMART_WEBHOOK_TOKEN: z.string().min(1).optional(),
+  HOTMART_GUIDE_PRODUCT_ID: z.string().min(1).optional(),
+  HOTMART_SUBSCRIPTION_PRODUCT_ID: z.string().min(1).optional(),
+  HOTMART_GUIDE_CHECKOUT_URL: z.string().url().optional(),
+  HOTMART_SUBSCRIPTION_CHECKOUT_URL: z.string().url().optional(),
 });
 
 const parsedEnv = envSchema.parse(process.env);

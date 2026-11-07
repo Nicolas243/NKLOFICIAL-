@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
+import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
-type Status = 'idle' | 'analyzing' | 'approved';
+type Status = 'idle' | 'analyzing' | 'approved' | 'unavailable';
 type DisplayPhase = 'normal' | 'approved' | 'denied';
 type DiscountSimulatorProps = {
   offerVariant?: string;
+  hotmartCheckoutUrl?: string;
 };
-
-const ANALYSIS_STEP_MS = 200;
-const ANALYSIS_DURATION_MS = 3500;
 
 const PHASE_STYLES: Record<DisplayPhase, string> = {
   normal: 'border-border bg-background text-foreground',
@@ -21,37 +20,31 @@ const PHASE_STYLES: Record<DisplayPhase, string> = {
 const PHASE_LABELS: Record<DisplayPhase, string> = {
   normal: 'Preço normal',
   approved: 'Critério compatível',
-  denied: 'Critério não compatível',
+  denied: 'Oferta indisponível',
 };
 
-export function DiscountSimulator({ offerVariant = 'sales-page' }: DiscountSimulatorProps) {
+export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckoutUrl }: DiscountSimulatorProps) {
   const [status, setStatus] = useState<Status>('idle');
   const [displayPhase, setDisplayPhase] = useState<DisplayPhase>('normal');
 
-  useEffect(() => {
-    if (status !== 'analyzing') return;
-
-    let phaseIndex = 0;
-    const phases: DisplayPhase[] = ['approved', 'denied', 'normal'];
-    const interval = window.setInterval(() => {
-      setDisplayPhase(phases[phaseIndex % phases.length]);
-      phaseIndex += 1;
-    }, ANALYSIS_STEP_MS);
-    const timeout = window.setTimeout(() => {
-      window.clearInterval(interval);
-      setDisplayPhase('approved');
-      setStatus('approved');
-    }, ANALYSIS_DURATION_MS);
-
-    return () => {
-      window.clearInterval(interval);
-      window.clearTimeout(timeout);
-    };
-  }, [status]);
-
-  function startAnalysis(): void {
+  async function startAnalysis(): Promise<void> {
     setDisplayPhase('normal');
     setStatus('analyzing');
+    try {
+      const response = await fetch('/api/sales/verify-offer', { cache: 'no-store' });
+      const payload: { verified?: boolean; message?: string } = await response.json();
+      if (!response.ok || !payload.verified) {
+        setDisplayPhase('denied');
+        setStatus('unavailable');
+        return;
+      }
+      setDisplayPhase('approved');
+      setStatus('approved');
+    } catch (error) {
+      console.error('[DISCOUNT_SIMULATOR] Falha ao verificar oferta:', error instanceof Error ? error.message : 'erro desconhecido');
+      setDisplayPhase('denied');
+      setStatus('unavailable');
+    }
   }
 
   return (
@@ -59,7 +52,7 @@ export function DiscountSimulator({ offerVariant = 'sales-page' }: DiscountSimul
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta de lançamento</p>
       <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">O mapa completo para começar com clareza</h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">
-        Consulte a autenticidade da condição editorial antes de liberar o acesso. Não usamos dados pessoais nem prometemos renda.
+        Confirme a disponibilidade do checkout antes de liberar o acesso. Não usamos dados pessoais nem prometemos renda.
       </p>
 
       <div className="mt-6 flex items-end gap-3" aria-label="Preço promocional">
@@ -69,23 +62,29 @@ export function DiscountSimulator({ offerVariant = 'sales-page' }: DiscountSimul
       </div>
       <div className={`mt-5 rounded-xl border p-5 transition-colors duration-150 ${PHASE_STYLES[displayPhase]}`} aria-live="polite">
         <p className="text-xs font-bold uppercase tracking-[0.16em]">{PHASE_LABELS[displayPhase]}</p>
-        {status === 'idle' && <p className="mt-2 text-sm">Verifique a autenticidade da oferta para habilitar o botão de acesso.</p>}
-        {status === 'analyzing' && <p className="mt-2 text-sm font-bold">Verificando a condição editorial da oferta...</p>}
+        {status === 'idle' && <p className="mt-2 text-sm">Confirme a disponibilidade da oferta para habilitar o botão de acesso.</p>}
+        {status === 'analyzing' && <p className="mt-2 text-sm font-bold">Verificando disponibilidade no servidor...</p>}
         {status === 'approved' && (
           <>
             <p className="mt-2 text-lg font-bold">Oferta autenticada. O acesso está liberado.</p>
             <p className="mt-2 text-sm">O checkout será aberto imediatamente ao clicar no botão.</p>
           </>
         )}
+        {status === 'unavailable' && <p className="mt-2 text-sm">A oferta não pôde ser confirmada agora. Tente novamente em alguns instantes.</p>}
       </div>
 
       <div className="mt-5">
-        <button type="button" onClick={startAnalysis} disabled={status === 'analyzing' || status === 'approved'} className="inline-flex min-h-12 items-center justify-center rounded-md border border-orange px-6 py-3 text-sm font-bold text-orange transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-50">
-          {status === 'analyzing' ? 'Verificando autenticidade...' : status === 'approved' ? 'Oferta autenticada' : 'Verificar autenticidade'}
+        <button type="button" onClick={() => void startAnalysis()} disabled={status === 'analyzing' || status === 'approved'} className="inline-flex min-h-12 items-center justify-center rounded-md border border-orange px-6 py-3 text-sm font-bold text-orange transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-50">
+          {status === 'analyzing' ? 'Verificando disponibilidade...' : status === 'approved' ? 'Oferta confirmada' : 'Verificar oferta'}
         </button>
         <div className="mt-3">
           <GuideCheckoutButton label="Quero liberar meu acesso" enabled={status === 'approved'} offerVariant={offerVariant} />
         </div>
+        {status === 'approved' && hotmartCheckoutUrl && (
+          <div className="mt-3">
+            <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Pagar com Hotmart" />
+          </div>
+        )}
       </div>
     </section>
   );

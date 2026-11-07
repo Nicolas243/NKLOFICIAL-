@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
 type Props = {
   offerVariant: string;
   label?: string;
+  hotmartCheckoutUrl?: string;
 };
 
 type SubscriptionResponse = {
@@ -12,18 +14,23 @@ type SubscriptionResponse = {
   message?: string;
 };
 
-export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$ 19/mês' }: Props) {
+export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$ 19/mês', hotmartCheckoutUrl }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [payerEmail, setPayerEmail] = useState('');
 
   async function startSubscription(): Promise<void> {
+    if (!payerEmail.trim()) {
+      setMessage('Informe seu e-mail para continuar com a assinatura.');
+      return;
+    }
     setIsLoading(true);
     setMessage(null);
     try {
       const response = await fetch('/api/payments/create-guide-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offerVariant }),
+        body: JSON.stringify({ offerVariant, payerEmail }),
       });
       const payload: SubscriptionResponse = await response.json();
       if (!response.ok || !payload.initPoint) {
@@ -40,6 +47,18 @@ export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$
 
   return (
     <div>
+      <label htmlFor="guide-subscription-email" className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
+        E-mail para a assinatura
+      </label>
+      <input
+        id="guide-subscription-email"
+        type="email"
+        value={payerEmail}
+        onChange={(event) => setPayerEmail(event.target.value)}
+        placeholder="voce@exemplo.com"
+        autoComplete="email"
+        className="mb-3 min-h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+      />
       <button type="button" onClick={() => void startSubscription()} disabled={isLoading} className="inline-flex min-h-11 items-center justify-center rounded-md border border-orange px-4 py-2 text-sm font-bold text-orange transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-50">
         {isLoading ? 'Preparando acesso...' : label}
       </button>
@@ -52,6 +71,11 @@ export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$
         </span>
         Cobrança recorrente processada pelo Mercado Pago
       </p>
+      {hotmartCheckoutUrl && (
+        <div className="mt-3">
+          <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Assinar com Hotmart" />
+        </div>
+      )}
     </div>
   );
 }

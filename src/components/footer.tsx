@@ -86,19 +86,21 @@ export function Footer() {
             {toast}
           </div>
         )}
-        <div className="footer-header">
-          <h3 className="text-neon font-bold">{isPartnerPortal ? 'Guia gratuito - Receba o PDF com o resumo prático e comparativo das oportunidades antes de se cadastrar' : 'Receba o PDF completo em Alta Resolucao do Grafico de Cordas'}</h3>
-          <p>{isPartnerPortal ? 'Deixe seu contato para receber uma visão rápida antes de escolher uma plataforma.' : 'Deixe o seu contato para enviarmos o material de estudo diretamente para voce.'}</p>
-          <form className="capture-form" onSubmit={handleSubmit}>
-            <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
-            <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
-            <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
-          </form>
-        </div>
+        {!isPartnerPortal && (
+          <div className="footer-header">
+            <h3 className="text-neon font-bold">Receba o PDF completo em Alta Resolucao do Grafico de Cordas</h3>
+            <p>Deixe o seu contato para enviarmos o material de estudo diretamente para voce.</p>
+            <form className="capture-form" onSubmit={handleSubmit}>
+              <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
+              <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
+              <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
+            </form>
+          </div>
+        )}
         <div className="footer-grid">
           <div className="footer-box">
             <h4>Sua voz importa</h4>
-            <p>Ajude a construir o melhor portal de violino do Brasil.</p>
+            <p>{isPartnerPortal ? 'Ajude a manter o mapa de oportunidades claro e atualizado.' : 'Ajude a construir o melhor portal de violino do Brasil.'}</p>
             <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Deixar Feedback Rapido</a>
           </div>
           <div className="footer-box">
@@ -108,10 +110,10 @@ export function Footer() {
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
-            <p>Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.</p>
+            <p>{isPartnerPortal ? 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.' : 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.'}</p>
             <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
               <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>PayPal</button>
+              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>Apoiar por Pix</button>
             </div>
           </div>
         </div>
@@ -126,14 +128,14 @@ export function Footer() {
         <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.2</span></div>
       </footer>
 
-      {/* PayPal Modal */}
+      {/* Modal de apoio */}
       {pixOpen && (
         <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
           <div className="bg-surface border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
             <button className="absolute top-3 right-3 text-2xl opacity-50 hover:opacity-100" onClick={() => setPixOpen(false)}>&times;</button>
-            <h4 className="font-playfair text-xl font-bold mb-2 text-foreground">Apoiar o NKL pelo PayPal</h4>
-            <p className="text-sm opacity-70 mb-4">Escaneie o codigo abaixo para apoiar a manutencao do nosso Portal.</p>
-            <Image src="/NKL/1000343886.webp" alt="QR Code PayPal" width={220} height={220} className="block mx-auto rounded-lg border border-border" />
+            <h4 className="font-playfair text-xl font-bold mb-2 text-foreground">Apoiar o NKL por Pix</h4>
+            <p className="text-sm opacity-70 mb-4">Escaneie o código abaixo para apoiar a manutenção do Portal.</p>
+            <Image src="/NKL/1000343886.webp" alt="QR Code para apoiar o NKL por Pix" width={220} height={220} className="block mx-auto rounded-lg border border-border" />
           </div>
         </div>
       )}

@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { useState } from 'react';
 
 type CheckoutResponse = {
-  preferenceId?: string;
+  initPoint?: string;
   message?: string;
 };
 
@@ -15,17 +14,8 @@ type GuideCheckoutButtonProps = {
 };
 
 export function GuideCheckoutButton({ label = 'Liberar meu acesso', enabled = true, offerVariant = 'sales-page' }: GuideCheckoutButtonProps) {
-  const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const initializedKey = useRef<string | null>(null);
-  const publicKey = process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY;
-
-  useEffect(() => {
-    if (!publicKey || initializedKey.current === publicKey) return;
-    initMercadoPago(publicKey, { locale: 'pt-BR' });
-    initializedKey.current = publicKey;
-  }, [publicKey]);
 
   async function createCheckout(): Promise<void> {
     setIsLoading(true);
@@ -41,11 +31,11 @@ export function GuideCheckoutButton({ label = 'Liberar meu acesso', enabled = tr
         setMessage(payload.message ?? 'Não foi possível iniciar o checkout.');
         return;
       }
-      if (!payload.preferenceId) {
-        setMessage('O Mercado Pago não retornou uma preferência válida.');
+      if (!payload.initPoint) {
+        setMessage('O Mercado Pago não retornou um endereço de checkout válido.');
         return;
       }
-      setPreferenceId(payload.preferenceId);
+      window.location.assign(payload.initPoint);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Não foi possível iniciar o checkout.');
     } finally {
@@ -55,17 +45,9 @@ export function GuideCheckoutButton({ label = 'Liberar meu acesso', enabled = tr
 
   return (
     <div>
-      {!preferenceId && (
-        <button type="button" onClick={() => void createCheckout()} disabled={!enabled || isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:bg-foreground/20 disabled:text-foreground/45 disabled:shadow-none">
-            {isLoading ? 'Preparando checkout...' : label}
-        </button>
-      )}
-      {preferenceId && publicKey && (
-        <div className="mt-4 max-w-md">
-          <Wallet initialization={{ preferenceId }} />
-        </div>
-      )}
-      {preferenceId && !publicKey && <p className="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">O checkout está temporariamente indisponível.</p>}
+      <button type="button" onClick={() => void createCheckout()} disabled={!enabled || isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:bg-foreground/20 disabled:text-foreground/45 disabled:shadow-none">
+        {isLoading ? 'Preparando checkout...' : label}
+      </button>
       {message && <p className="mt-3 max-w-md text-sm leading-relaxed text-foreground/70" role="alert">{message}</p>}
       <p className="mt-3 flex items-center gap-2 text-xs font-medium text-foreground/60">
         <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-emerald-600/40 text-emerald-700 dark:text-emerald-300" aria-hidden="true">

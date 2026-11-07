@@ -4,10 +4,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { guidePurchases } from '@/db/schema';
 import { env } from '@/env';
-
-const GUIDE_PRICE_CENTS = 3900;
-const GUIDE_PRICE_REAIS = GUIDE_PRICE_CENTS / 100;
-const GUIDE_TITLE = 'Guia Definitivo de Renda Extra NKL';
+import { GUIDE_PRICE_CENTS, GUIDE_TITLE } from '@/lib/guide-offer';
 const checkoutSchema = z.object({
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
 }).default({});
@@ -40,7 +37,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         items: [{
           id: 'guia-renda-extra-nkl',
           title: GUIDE_TITLE,
-          unit_price: GUIDE_PRICE_REAIS,
+          unit_price: GUIDE_PRICE_CENTS / 100,
           quantity: 1,
           currency_id: 'BRL',
         }],
@@ -59,7 +56,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'preference_creation_failed', message: 'O Mercado Pago não retornou uma preferência válida.' }, { status: 502 });
     }
 
-    return NextResponse.json({ preferenceId: preference.id }, { status: 200 });
+    if (!preference.init_point || typeof preference.init_point !== 'string') {
+      return NextResponse.json({ error: 'checkout_url_missing', message: 'O Mercado Pago não retornou um endereço de checkout válido.' }, { status: 502 });
+    }
+
+    return NextResponse.json({ initPoint: preference.init_point }, { status: 200 });
   } catch (error) {
     console.error('[GUIDE_CHECKOUT] Falha ao criar preferência:', error instanceof Error ? error.message : 'erro desconhecido');
     return NextResponse.json({ error: 'checkout_creation_failed', message: 'Não foi possível iniciar o checkout. Tente novamente.' }, { status: 502 });

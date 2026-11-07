@@ -18,6 +18,8 @@ type SuccessPageProps = {
   searchParams: Promise<{
     external_reference?: string;
     payment_id?: string;
+    provider?: string;
+    subscription_reference?: string;
     status?: string;
     plan?: string;
   }>;
@@ -37,15 +39,24 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
       downloadCount: guidePurchases.downloadCount,
       maxDownloads: guidePurchases.maxDownloads,
     }).from(guidePurchases).where(eq(guidePurchases.id, purchaseId.data)).limit(1)
-    : [];
-  const [subscription] = params.plan === 'subscription' && params.external_reference
+    : params.provider === 'hotmart' && params.payment_id?.startsWith('hotmart:')
+      ? await db.select({
+        id: guidePurchases.id,
+        status: guidePurchases.status,
+        paymentId: guidePurchases.paymentId,
+        downloadCount: guidePurchases.downloadCount,
+        maxDownloads: guidePurchases.maxDownloads,
+      }).from(guidePurchases).where(eq(guidePurchases.paymentId, params.payment_id)).limit(1)
+      : [];
+  const subscriptionReference = params.subscription_reference ?? params.external_reference;
+  const [subscription] = params.plan === 'subscription' && subscriptionReference
     ? await db.select({
       status: guideSubscriptions.status,
       downloadCount: guideSubscriptions.downloadCount,
       maxDownloads: guideSubscriptions.maxDownloads,
     })
       .from(guideSubscriptions)
-      .where(eq(guideSubscriptions.externalReference, params.external_reference))
+      .where(eq(guideSubscriptions.externalReference, subscriptionReference))
       .limit(1)
     : [];
   const paymentMatches = Boolean(params.payment_id) && purchase?.paymentId === params.payment_id;
@@ -61,10 +72,12 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Acesso liberado</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Pagamento Confirmado! Seu acesso foi liberado.</h1>
           <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. Os quatro materiais ficam disponíveis para download protegido e não devem ser compartilhados.</p>
-          {params.external_reference && params.payment_id && (
+          {params.payment_id && (params.external_reference || params.provider === 'hotmart') && (
             <GuideAssetDownloads
               assets={GUIDE_ASSETS}
-              context={{ external_reference: params.external_reference, payment_id: params.payment_id }}
+              context={params.provider === 'hotmart'
+                ? { provider: 'hotmart', payment_id: params.payment_id }
+                : { external_reference: params.external_reference as string, payment_id: params.payment_id }}
               initialRemainingDownloads={purchaseDownloadsRemaining}
             />
           )}
@@ -74,10 +87,10 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Assinatura ativa</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Seu acesso mensal foi confirmado.</h1>
           <p className="mt-4 leading-relaxed text-foreground/75">A assinatura dos Guias para Liberdade Financeira está ativa. Os materiais ficam disponíveis por download protegido enquanto o acesso estiver ativo.</p>
-          {params.external_reference && (
+          {subscriptionReference && (
             <GuideAssetDownloads
               assets={GUIDE_ASSETS}
-              context={{ subscription_reference: params.external_reference }}
+              context={{ subscription_reference: subscriptionReference }}
               initialRemainingDownloads={subscriptionDownloadsRemaining}
             />
           )}
@@ -86,7 +99,9 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
         <section className="rounded-2xl border border-orange/30 bg-orange/5 p-8">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Pagamento em processamento</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Estamos confirmando seu pagamento.</h1>
-          <p className="mt-4 leading-relaxed text-foreground/75">O acesso será liberado após a confirmação do Mercado Pago. Se o pagamento já foi aprovado, aguarde alguns instantes e atualize esta página.</p>
+          <p className="mt-4 leading-relaxed text-foreground/75">
+            O acesso será liberado após a confirmação do {params.provider === 'hotmart' ? 'Hotmart' : 'Mercado Pago'}. Se o pagamento já foi aprovado, aguarde alguns instantes e atualize esta página.
+          </p>
         </section>
       )}
     </div>

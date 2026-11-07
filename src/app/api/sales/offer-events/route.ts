@@ -3,6 +3,7 @@ import { count, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { guideOfferEvents } from '@/db/schema';
+import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,11 +11,23 @@ export const dynamic = 'force-dynamic';
 const EXIT_POPUP_EXPERIMENT = 'exit-popup';
 const NATIVE_CARD_EXPERIMENT = 'native-card';
 const EXIT_POPUP_VARIANTS = ['0', '1', '2', '3', '4'] as const;
+const NATIVE_CARD_VARIANTS = ['0', '1', '2', '3', '4', '5'] as const;
 const MINIMUM_EXPOSURES_PER_VARIANT = 40;
 const eventSchema = z.object({
   experiment: z.enum([EXIT_POPUP_EXPERIMENT, NATIVE_CARD_EXPERIMENT]),
   variant: z.string().regex(/^[0-9]+$/u).max(64),
   eventType: z.enum(['impression', 'conversion']),
+}).superRefine((value, context) => {
+  const allowedVariants: readonly string[] = value.experiment === EXIT_POPUP_EXPERIMENT
+    ? EXIT_POPUP_VARIANTS
+    : NATIVE_CARD_VARIANTS;
+  if (!allowedVariants.includes(value.variant)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Variante de experimento inválida.',
+      path: ['variant'],
+    });
+  }
 });
 
 type VariantStats = {
@@ -72,6 +85,9 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const identifier = forwardedFor?.split(',')[0].trim() || request.headers.get('x-real-ip') || 'unknown';
+    await enforcePublicRateLimit('offer-event', identifier);
     const body: unknown = await request.json();
     const parsedBody = eventSchema.safeParse(body);
     if (!parsedBody.success) {

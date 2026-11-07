@@ -116,27 +116,27 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
       }} />
 
       <Link href="/programas" className="text-sm font-bold text-neon hover:underline">← Voltar ao catálogo</Link>
-      <article className="mt-5 overflow-hidden rounded-[1.5rem] border border-border bg-surface md:rounded-[2rem]">
+      <article className="mt-5 overflow-hidden rounded-[1.5rem] border border-border bg-income-surface/90 md:rounded-[2rem]">
         <header className="border-b border-border p-6 md:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">{program.category}</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold leading-tight md:text-6xl">{program.name}</h1>
           <AffiliateDisclaimer />
           <p className="mt-5 max-w-3xl text-lg leading-relaxed opacity-75">{program.shortDescription}</p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-border bg-background/50 p-4">
+            <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Remuneração de referência</p>
               <p className="mt-2 font-bold text-neon">{program.averageEarning}</p>
             </div>
-            <div className="rounded-xl border border-border bg-background/50 p-4">
+            <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Nota</p>
               <p className="mt-2 font-bold">{program.finalRating}/10</p>
               <p className="text-xs opacity-55">{program.communityReviewCount > 0 ? `${program.communityReviewCount} avaliações` : 'nota editorial'}</p>
             </div>
-            <div className="rounded-xl border border-border bg-background/50 p-4">
+            <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Idioma</p>
               <p className="mt-2 font-bold">{program.languages.join(' · ')}</p>
             </div>
-            <div className="rounded-xl border border-border bg-background/50 p-4">
+            <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Dificuldade</p>
               <p className="mt-2 font-bold capitalize">{program.difficulty}</p>
             </div>
@@ -189,7 +189,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
               paymentMethods={program.paymentMethods}
             />
             {program.requirements.length > 0 && (
-              <section className="rounded-xl border border-border bg-background/45 p-5">
+              <section className="rounded-xl border border-border bg-income-card/80 p-5">
                 <h2 className="font-bold">O que você precisa</h2>
                 <ul className="mt-3 space-y-2 text-sm leading-relaxed opacity-75">
                   {program.requirements.map((item) => <li key={item}>• {item}</li>)}
@@ -197,7 +197,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
               </section>
             )}
             {program.paymentMethods.length > 0 && (
-              <section className="rounded-xl border border-border bg-background/45 p-5">
+              <section className="rounded-xl border border-border bg-income-card/80 p-5">
                 <h2 className="font-bold">Pagamento</h2>
                 <ul className="mt-3 space-y-2 text-sm leading-relaxed opacity-75">
                   {program.paymentMethods.map((item) => <li key={item}>• {item}</li>)}
@@ -216,7 +216,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
         </div>
       </article>
       <div className="mt-8">
-        <LeadCaptureForm context={`programa-${program.slug}`} />
+        <LeadCaptureForm program={program} />
       </div>
     </div>
   );

@@ -6,15 +6,16 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { guideSubscriptions } from '@/db/schema';
 import { env } from '@/env';
-
-const SUBSCRIPTION_PRICE_CENTS = 1900;
-const SUBSCRIPTION_PRICE_REAIS = SUBSCRIPTION_PRICE_CENTS / 100;
-const SUBSCRIPTION_TITLE = 'Guias para Liberdade Financeira NKL';
+import {
+  GUIDE_SUBSCRIPTION_PRICE_CENTS,
+  GUIDE_SUBSCRIPTION_TITLE,
+} from '@/lib/guide-offer';
 const SUBSCRIPTION_REFERENCE_PREFIX = 'guide_subscription:';
 
 const requestSchema = z.object({
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
-}).default({});
+  payerEmail: z.string().trim().email(),
+});
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
@@ -29,8 +30,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     const [subscription] = await db.insert(guideSubscriptions).values({
       id: subscriptionId,
       externalReference,
-      amountCents: SUBSCRIPTION_PRICE_CENTS,
+      amountCents: GUIDE_SUBSCRIPTION_PRICE_CENTS,
       offerVariant: parsedBody.data.offerVariant,
+      email: parsedBody.data.payerEmail,
     }).returning({ id: guideSubscriptions.id });
 
     if (!subscription) {
@@ -41,12 +43,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
     const preapproval = await new PreApproval(client).create({
       body: {
-        reason: SUBSCRIPTION_TITLE,
+        reason: GUIDE_SUBSCRIPTION_TITLE,
+        payer_email: parsedBody.data.payerEmail,
         external_reference: externalReference,
         auto_recurring: {
           frequency: 1,
           frequency_type: 'months',
-          transaction_amount: SUBSCRIPTION_PRICE_REAIS,
+          transaction_amount: GUIDE_SUBSCRIPTION_PRICE_CENTS / 100,
           currency_id: 'BRL',
         },
         back_url: `${siteUrl}/guias/renda-extra/sucesso?plan=subscription&external_reference=${encodeURIComponent(externalReference)}`,

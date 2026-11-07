@@ -480,6 +480,7 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
   const programId = typeof formData.get('programId') === 'string' ? formData.get('programId') as string : '';
   const contactName = typeof formData.get('contactName') === 'string' ? (formData.get('contactName') as string).trim() : '';
   const phone = typeof formData.get('phone') === 'string' ? (formData.get('phone') as string).trim() : '';
+  const consentConfirmed = formData.get('consentConfirmed') === 'on';
 
   if (!programId || contactName.length < 2 || contactName.length > 180) {
     throw new Error('Informe um nome válido.');
@@ -487,6 +488,10 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
 
   if (!/^[0-9+()\s-]{8,30}$/u.test(phone)) {
     throw new Error('Informe um telefone válido.');
+  }
+
+  if (!consentConfirmed) {
+    throw new Error('Confirme que a pessoa autorizou o uso dos dados.');
   }
 
   const [program] = await db
@@ -503,7 +508,7 @@ export async function submitPartnerReferralLead(formData: FormData): Promise<voi
     programId,
     contactName,
     phone,
-    consentConfirmed: false,
+    consentConfirmed: true,
   });
 
   revalidatePath('/programas');

@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
@@ -109,12 +109,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
   }
 
-  after(async () => {
-    try {
-      await processSubscription(notification);
-    } catch (error) {
-      console.error('[GUIDE_SUBSCRIPTION_WEBHOOK] Falha ao processar evento:', error instanceof Error ? error.message : 'erro desconhecido');
-    }
-  });
-  return NextResponse.json({ received: true }, { status: 200 });
+  try {
+    await processSubscription(notification);
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    console.error('[GUIDE_SUBSCRIPTION_WEBHOOK] Falha ao processar evento:', error instanceof Error ? error.message : 'erro desconhecido');
+    return NextResponse.json({ error: 'processing_failed' }, { status: 500 });
+  }
 }

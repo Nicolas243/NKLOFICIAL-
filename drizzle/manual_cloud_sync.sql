@@ -475,7 +475,7 @@ CREATE TABLE IF NOT EXISTS "guide_purchases" (
   "amount_cents" integer NOT NULL,
   "offer_variant" varchar(64),
   "download_count" integer DEFAULT 0 NOT NULL,
-  "max_downloads" integer DEFAULT 3 NOT NULL,
+  "max_downloads" integer DEFAULT 8 NOT NULL,
   "last_downloaded_at" timestamp,
   "created_at" timestamp DEFAULT now() NOT NULL,
   "updated_at" timestamp DEFAULT now() NOT NULL
@@ -488,7 +488,7 @@ ALTER TABLE "guide_purchases"
 ALTER TABLE "guide_purchases"
   ADD COLUMN IF NOT EXISTS "download_count" integer DEFAULT 0 NOT NULL;
 ALTER TABLE "guide_purchases"
-  ADD COLUMN IF NOT EXISTS "max_downloads" integer DEFAULT 3 NOT NULL;
+  ADD COLUMN IF NOT EXISTS "max_downloads" integer DEFAULT 8 NOT NULL;
 ALTER TABLE "guide_purchases"
   ADD COLUMN IF NOT EXISTS "last_downloaded_at" timestamp;
 
@@ -501,7 +501,7 @@ CREATE TABLE IF NOT EXISTS "guide_subscriptions" (
   "amount_cents" integer NOT NULL,
   "offer_variant" varchar(64),
   "download_count" integer DEFAULT 0 NOT NULL,
-  "max_downloads" integer DEFAULT 3 NOT NULL,
+  "max_downloads" integer DEFAULT 8 NOT NULL,
   "last_downloaded_at" timestamp,
   "current_period_end" timestamp,
   "created_at" timestamp DEFAULT now() NOT NULL,
@@ -511,9 +511,23 @@ CREATE TABLE IF NOT EXISTS "guide_subscriptions" (
 ALTER TABLE "guide_subscriptions"
   ADD COLUMN IF NOT EXISTS "download_count" integer DEFAULT 0 NOT NULL;
 ALTER TABLE "guide_subscriptions"
-  ADD COLUMN IF NOT EXISTS "max_downloads" integer DEFAULT 3 NOT NULL;
+  ADD COLUMN IF NOT EXISTS "max_downloads" integer DEFAULT 8 NOT NULL;
 ALTER TABLE "guide_subscriptions"
   ADD COLUMN IF NOT EXISTS "last_downloaded_at" timestamp;
+
+ALTER TABLE "guide_purchases"
+  ALTER COLUMN "max_downloads" SET DEFAULT 8;
+
+ALTER TABLE "guide_subscriptions"
+  ALTER COLUMN "max_downloads" SET DEFAULT 8;
+
+UPDATE "guide_purchases"
+SET "max_downloads" = 8
+WHERE "max_downloads" = 3;
+
+UPDATE "guide_subscriptions"
+SET "max_downloads" = 8
+WHERE "max_downloads" = 3;
 
 CREATE TABLE IF NOT EXISTS "guide_offer_events" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,

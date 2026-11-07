@@ -3,6 +3,7 @@ import { DiscountSimulator } from '@/components/sales/discount-simulator';
 import { GuideSubscriptionButton } from '@/components/sales/guide-subscription-button';
 import { OfferExitPopup } from '@/components/sales/offer-exit-popup';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
+import { env } from '@/env';
 
 export const metadata: Metadata = {
   title: 'Guia Definitivo de Renda Extra | Portal NKL',
@@ -56,14 +57,17 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
           </ul>
         </section>
         <aside className="md:sticky md:top-20">
-          <DiscountSimulator offerVariant={adVariant} />
+          <DiscountSimulator offerVariant={adVariant} hotmartCheckoutUrl={env.HOTMART_GUIDE_CHECKOUT_URL} />
           <div className="mt-5 rounded-2xl border border-border bg-income-surface p-5">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 dark:text-orange-400">Alternativa mensal</p>
             <h2 className="mt-2 font-playfair text-2xl font-bold">Guias para Liberdade Financeira</h2>
             <p className="mt-2 text-sm leading-relaxed text-foreground/70">Acesso mensal aos guias editoriais para comparar oportunidades e organizar seus próximos passos.</p>
             <p className="mt-4 font-playfair text-3xl font-bold text-orange-500">R$ 19/mês</p>
             <div className="mt-4">
-              <GuideSubscriptionButton offerVariant="sales-page:subscription" />
+              <GuideSubscriptionButton
+                offerVariant="sales-page:subscription"
+                hotmartCheckoutUrl={env.HOTMART_SUBSCRIPTION_CHECKOUT_URL}
+              />
             </div>
           </div>
           <p className="mt-4 text-center text-xs leading-relaxed text-foreground/55">Pagamento processado pelo Mercado Pago. O acesso é liberado após a confirmação.</p>

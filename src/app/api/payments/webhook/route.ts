@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
@@ -181,6 +181,7 @@ async function processNotification(notification: MercadoPagoNotification, client
     ]);
   } catch (error) {
     console.error('[WEBHOOK] Falha ao processar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
+    throw error;
   }
 }
 
@@ -197,6 +198,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const client = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
-  after(() => processNotification(notification, client));
-  return NextResponse.json({ received: true }, { status: 200 });
+  try {
+    await processNotification(notification, client);
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch {
+    return NextResponse.json({ error: 'processing_failed' }, { status: 500 });
+  }
 }

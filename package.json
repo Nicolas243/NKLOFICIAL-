@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "verify": "npm run lint && npm run typecheck && npm run build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "guides:upload": "tsx scripts/upload-guide-assets.ts"
   },
   "dependencies": {
     "@daily-co/daily-js": "^0.94.0",
