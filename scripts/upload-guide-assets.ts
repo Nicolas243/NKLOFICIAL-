@@ -19,7 +19,21 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   },
 });
 
-const assetsDirectory = path.join(process.cwd(), 'Conteudo de novembro');
+const assetsDirectories = [
+  path.join(process.cwd(), 'Conteudo de novembro'),
+  process.cwd(),
+];
+
+async function readAsset(filename: string): Promise<Buffer> {
+  for (const directory of assetsDirectories) {
+    try {
+      return await readFile(path.join(directory, filename));
+    } catch {
+      continue;
+    }
+  }
+  throw new Error(`Arquivo não encontrado: ${filename}`);
+}
 
 async function uploadGuideAssets(): Promise<void> {
   const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
@@ -31,7 +45,7 @@ async function uploadGuideAssets(): Promise<void> {
   }
 
   for (const asset of GUIDE_ASSETS) {
-    const content = await readFile(path.join(assetsDirectory, asset.filename));
+    const content = await readAsset(asset.filename);
     const { error } = await supabase.storage
       .from(GUIDE_ASSET_BUCKET)
       .upload(asset.storagePath, content, {

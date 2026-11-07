@@ -15,10 +15,11 @@ export function SiteGuidance() {
   const [themeHintOpen, setThemeHintOpen] = useState(false);
 
   useEffect(() => {
+    if (isPartnerPortal) return;
     if (window.localStorage.getItem('nkl-theme-hint-seen')) return;
     const themeTimer = window.setTimeout(() => setThemeHintOpen(true), THEME_HINT_DELAY_MS);
     return () => window.clearTimeout(themeTimer);
-  }, []);
+  }, [isPartnerPortal]);
 
   function closeThemeHint(): void {
     window.localStorage.setItem('nkl-theme-hint-seen', 'true');

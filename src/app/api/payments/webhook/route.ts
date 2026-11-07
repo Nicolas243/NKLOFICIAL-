@@ -52,8 +52,6 @@ function getOfferExperiment(offerVariant: string | null): { experiment: string; 
   return experiment && variant ? { experiment, variant } : null;
 }
 
-export { verifyMercadoPagoWebhookSignature } from '@/lib/mercadopago/webhook-signature';
-
 function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {
   const xSignature = request.headers.get('x-signature');
   const xRequestId = request.headers.get('x-request-id');

@@ -71,7 +71,7 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
         <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Acesso liberado</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Pagamento Confirmado! Seu acesso foi liberado.</h1>
-          <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. Os quatro materiais ficam disponíveis para download protegido e não devem ser compartilhados.</p>
+          <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. O Guia Essencial Renda Extra 2027 e os quatro materiais complementares ficam disponíveis para download protegido.</p>
           {params.payment_id && (params.external_reference || params.provider === 'hotmart') && (
             <GuideAssetDownloads
               assets={GUIDE_ASSETS}

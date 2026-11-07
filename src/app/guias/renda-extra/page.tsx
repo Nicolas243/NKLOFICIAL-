@@ -6,8 +6,8 @@ import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 import { env } from '@/env';
 
 export const metadata: Metadata = {
-  title: 'Guia Definitivo de Renda Extra | Portal NKL',
-  description: 'Um guia prático do Portal NKL para filtrar oportunidades e começar com mais clareza.',
+  title: 'Guia Essencial Renda Extra 2027 | Portal NKL',
+  description: 'O Guia Essencial Renda Extra 2027 do Portal NKL para filtrar oportunidades e começar com mais clareza.',
   alternates: {
     canonical: INCOME_PORTAL_ROUTES.guide,
   },
@@ -28,8 +28,8 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
       <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-8 md:grid-cols-2 md:items-start md:pt-14">
         <section className="md:pt-8">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">Guia NKL · produto digital</p>
-          <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">O Mapa de Renda Extra NKL</h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Um material direto para sair da pesquisa infinita e decidir qual oportunidade faz sentido para o seu momento.</p>
+          <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Guia Essencial Renda Extra 2027</h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">O PDF oficial do Portal NKL para sair da pesquisa infinita e decidir qual oportunidade faz sentido para o seu momento.</p>
           <div className="mt-8 rounded-2xl border border-orange/30 bg-income-surface p-5 shadow-sm">
             <div className="mx-auto flex aspect-[3/4] max-w-xs flex-col justify-between rounded-xl border border-orange/40 bg-[linear-gradient(145deg,#172554,#07152d)] p-6 text-white shadow-2xl">
               <div className="flex items-start justify-between gap-3">
@@ -38,7 +38,7 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
               </div>
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/60">Edição prática</p>
-                <p className="mt-3 font-playfair text-4xl font-bold leading-tight">Renda Extra sem ruído.</p>
+                <p className="mt-3 font-playfair text-4xl font-bold leading-tight">Renda extra sem ruído.</p>
               </div>
               <div className="space-y-2 text-xs text-white/65">
                 <p>Filtros de decisão</p>

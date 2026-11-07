@@ -50,7 +50,7 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
   return (
     <section className="rounded-2xl border border-orange/25 bg-income-surface p-6 shadow-sm md:p-8" aria-labelledby="discount-simulator-title">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta de lançamento</p>
-      <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">O mapa completo para começar com clareza</h2>
+      <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">Seu guia essencial para começar com clareza</h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">
         Confirme a disponibilidade do checkout antes de liberar o acesso. Não usamos dados pessoais nem prometemos renda.
       </p>

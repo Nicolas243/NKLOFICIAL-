@@ -3,6 +3,7 @@ export const GUIDE_SIGNED_URL_TTL_SECONDS = 60;
 export const GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET = 2;
 
 export const GUIDE_ASSET_IDS = [
+  'guia-essencial-renda-extra-2027',
   'escudo-black-friday',
   'dinheiro-para-ontem',
   'raiox-financeiro-mobile',
@@ -20,6 +21,13 @@ export type GuideAsset = {
 };
 
 export const GUIDE_ASSETS: readonly GuideAsset[] = [
+  {
+    id: 'guia-essencial-renda-extra-2027',
+    filename: 'Guia Essencial Renda Extra 2027 _ Portal NKL.pdf',
+    storagePath: 'guides/guia-essencial-renda-extra-2027/Guia Essencial Renda Extra 2027 _ Portal NKL.pdf',
+    label: 'Guia Essencial Renda Extra 2027',
+    contentType: 'application/pdf',
+  },
   {
     id: 'escudo-black-friday',
     filename: 'Escudo de Black Friday.pdf',

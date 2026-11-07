@@ -68,13 +68,22 @@ async function readGuideAsset(assetId: z.infer<typeof requestSchema>['assetId'])
   content: ArrayBuffer;
 } | null> {
   const asset = getGuideAsset(assetId);
-  const assetsDirectory = path.join(process.cwd(), 'Conteudo de novembro');
-  const absolutePath = path.join(assetsDirectory, asset.filename);
+  const candidatePaths = [
+    path.join(process.cwd(), 'Conteudo de novembro', asset.filename),
+    path.join(process.cwd(), asset.filename),
+  ];
   try {
-    const file = await readFile(absolutePath);
-    const content = new ArrayBuffer(file.byteLength);
-    new Uint8Array(content).set(file);
-    return { asset, content };
+    for (const candidatePath of candidatePaths) {
+      try {
+        const file = await readFile(candidatePath);
+        const content = new ArrayBuffer(file.byteLength);
+        new Uint8Array(content).set(file);
+        return { asset, content };
+      } catch {
+        continue;
+      }
+    }
+    throw new Error('Arquivo do ativo não encontrado.');
   } catch (error) {
     console.error('[GUIDE_DOWNLOAD] Ativo indisponível:', error instanceof Error ? error.message : 'erro desconhecido');
     return null;
