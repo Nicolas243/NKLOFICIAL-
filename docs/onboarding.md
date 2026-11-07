@@ -6,7 +6,7 @@
 2. Leia [AGENTS.md](../AGENTS.md), [PRODUCT.md](../PRODUCT.md) e [docs/setup.md](./setup.md).
 3. Configure `.env.local` a partir do `.env.example` sem copiar valores secretos para commits.
 4. Execute `npm run dev`.
-5. Abra `/`, `/catalogo`, `/programas` e `/blog/renda-extra`.
+5. Abra `/`, `/catalogo`, `/programas` e, para validar compatibilidade histórica, `/blog/renda-extra`.
 
 ## Antes de editar
 

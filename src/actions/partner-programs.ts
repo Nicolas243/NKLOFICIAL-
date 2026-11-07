@@ -35,6 +35,17 @@ const REVIEW_TAGS = [
 ];
 const REVIEW_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
 const REVIEW_PERIODS = ['hora', 'dia', 'semana', 'trabalho'] as const;
+const BEGINNER_EDITORIAL_TAG = 'Melhor para Começar';
+const BEGINNER_EDITORIAL_RATING = 9;
+const BEGINNER_EDITORIAL_SLUGS = new Set([
+  'pawns-app',
+  'attapoll',
+  'fluencify',
+  'apphub',
+  'aligner',
+  'canal-dark-youtube-notebooklm',
+  'quintoandar-indica-ai',
+]);
 
 type ProgramRow = typeof partnerPrograms.$inferSelect;
 type ProgramCardRow = Pick<
@@ -140,8 +151,16 @@ function editorialProgramName(slug: string, name: string): string {
 }
 
 function editorialProgramTags(slug: string, tags: string[]): string[] {
-  if (slug !== 'sideshift' || tags.includes('UGC')) return tags;
-  return [...tags, 'UGC'];
+  const withUgc = slug === 'sideshift' && !tags.includes('UGC')
+    ? [...tags, 'UGC']
+    : tags;
+  if (!BEGINNER_EDITORIAL_SLUGS.has(slug) || withUgc.includes(BEGINNER_EDITORIAL_TAG)) return withUgc;
+  return [BEGINNER_EDITORIAL_TAG, ...withUgc];
+}
+
+function editorialProgramRating(slug: string, rating: number): number {
+  if (BEGINNER_EDITORIAL_SLUGS.has(slug)) return BEGINNER_EDITORIAL_RATING;
+  return Math.min(9, Math.max(6, rating));
 }
 
 function logoUrl(slug: string, websiteUrl: string): string {
@@ -252,7 +271,7 @@ function toProgramCard(program: ProgramCardRow, programReviews: Array<{ rating: 
     websiteUrl: program.websiteUrl,
     logoUrl: logoUrl(program.slug, program.websiteUrl),
     affiliateUrl: program.affiliateUrl,
-    editorialRating: Math.min(9, Math.max(6, program.editorialRating)),
+    editorialRating: editorialProgramRating(program.slug, program.editorialRating),
     editorialSource: program.editorialSource,
     pros: stringArray(program.pros),
     cons: stringArray(program.cons),
@@ -267,8 +286,8 @@ function toProgramCard(program: ProgramCardRow, programReviews: Array<{ rating: 
     languages: PROGRAM_EDITORIAL_META[program.slug]?.languages ?? ['Português', 'Inglês'],
     communityRating,
     finalRating: communityRating === null
-      ? Math.min(9, Math.max(6, program.editorialRating))
-      : Math.min(10, Math.max(0, Number(((program.editorialRating + communityRating) / 2).toFixed(1)))),
+      ? editorialProgramRating(program.slug, program.editorialRating)
+      : Math.min(10, Math.max(0, Number(((editorialProgramRating(program.slug, program.editorialRating) + communityRating) / 2).toFixed(1)))),
     communityReviewCount: programReviews.length,
     communityTags,
   };

@@ -12,6 +12,16 @@
 - Webhook: a rota [src/app/api/webhooks/gateway/route.ts](./src/app/api/webhooks/gateway/route.ts) calcula HMAC SHA-256 em `src/app/api/webhooks/gateway/route.ts:64-68` e compara com `timingSafeEqual` em `src/app/api/webhooks/gateway/route.ts:37-43`.
 - Validação final: `npx tsc --noEmit`, `npx eslint src/ --max-warnings=0` e `npm run build` concluíram sem erros.
 
+## Auditoria de nomenclatura e preparação da expansão
+
+- `/programas` foi definido como catálogo canônico de Renda Extra.
+- `/blog/renda-extra` permanece como alias compatível; sua canonical aponta para `/programas`.
+- `/guias/renda-extra` é a superfície comercial do Guia Definitivo e tem canonical própria.
+- `src/lib/income-portal.ts` centraliza rotas e reconhecimento de contexto para evitar divergência entre Header, PWA, analytics, tema, rodapé e tutorial.
+- Componentes específicos de Renda Extra foram agrupados em `src/components/income/`; checkout e oferta ficam em `src/components/sales/`.
+- O componente legado `income-wizard-banner.tsx`, o cliente duplicado do comparador, o backup `profile.ts.bak` e dumps de inspeção do navegador foram removidos por não possuírem referências de runtime.
+- A árvore futura deve preservar nomes ASCII, uma rota canônica por produto e aliases somente no proxy ou em redirects explícitos.
+
 ## Correções e Conexões Executadas
 
 - [.gitignore](./.gitignore:30): adicionados `equipe_nkl.py`, `nul`, arquivos `.txt` e atalhos `.lnk` soltos na raiz ao ignore. O arquivo Python continha uma chave literal exposta e não foi incluído no staging.

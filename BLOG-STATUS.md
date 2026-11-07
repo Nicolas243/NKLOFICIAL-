@@ -13,6 +13,15 @@ O Portal NKL já possui duas frentes editoriais funcionais:
 
 A base técnica está funcional, mas a área de renda extra ainda funciona mais como um catálogo de oportunidades do que como um blog editorial completo. O principal próximo passo é transformar cada oportunidade em um conteúdo aprofundado, permanente e indexável, com informações práticas, critérios de confiança e transparência sobre links afiliados.
 
+## Nomenclatura e fronteiras atuais
+
+- `/programas` é a rota canônica do catálogo de Renda Extra.
+- `/blog/renda-extra` permanece como compatibilidade para links antigos e usa `/programas` como referência canônica.
+- `/guias/renda-extra` é a landing page do produto digital e não é uma segunda listagem de oportunidades.
+- Componentes do catálogo e da captura ficam em `src/components/income/`.
+- Componentes de produto, checkout e oferta ficam em `src/components/sales/`.
+- O reconhecimento de contexto usa `src/lib/income-portal.ts`; novas telas não devem duplicar listas de pathname.
+
 ## 1. Mural de Notícias e Eventos
 
 ### Implementado

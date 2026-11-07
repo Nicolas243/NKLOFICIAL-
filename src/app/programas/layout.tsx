@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { IncomeAnalytics } from '@/components/income-analytics';
+import { IncomeAnalytics } from '@/components/income/income-analytics';
 
 export const metadata: Metadata = {
   manifest: '/programas/manifest.webmanifest',

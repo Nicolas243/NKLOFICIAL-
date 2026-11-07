@@ -10,6 +10,7 @@ import { useSyncExternalStore } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
+import { INCOME_PORTAL_ROUTES, isIncomePortalPath } from '@/lib/income-portal'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -148,7 +149,7 @@ export function Header() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
   const isHome = pathname === '/'
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra'
+  const isPartnerPortal = isIncomePortalPath(pathname)
   const user = useSessionUser()
   const isLoggedIn = Boolean(user)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -172,8 +173,8 @@ export function Header() {
   if (isPartnerPortal) {
     const portalLinks = (
       <>
-        <Link href="/blog/renda-extra" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
-        <a href="/blog/renda-extra#sugestao" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
+        <Link href={INCOME_PORTAL_ROUTES.catalog} className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
+        <a href={`${INCOME_PORTAL_ROUTES.catalog}#sugestao`} className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
         <Link href="/contatos" className="inline-flex items-center h-[30px] text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
       </>
     )
@@ -181,11 +182,11 @@ export function Header() {
     return (
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
         <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
-          <Link href="/blog/renda-extra" className="group flex min-w-0 items-center gap-3">
+          <Link href={INCOME_PORTAL_ROUTES.catalog} className="group flex min-w-0 items-center gap-3">
             <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
-              <span className="block truncate font-playfair text-xl font-bold tracking-tight">Blog NKL</span>
-              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">Seu blog de confiança sobre tudo.</span>
+              <span className="block truncate font-playfair text-xl font-bold tracking-tight">Renda Extra</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">O mapa editorial do Portal NKL</span>
             </span>
           </Link>
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
@@ -195,7 +196,7 @@ export function Header() {
             <ThemeToggle />
             <button
               className="relative z-[110] flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-accent lg:hidden"
-              aria-label="Menu do Blog NKL"
+              aria-label="Menu de Renda Extra"
               aria-expanded={menuOpen}
               aria-controls="partner-mobile-navigation"
               onClick={() => setMenuOpen((value) => !value)}

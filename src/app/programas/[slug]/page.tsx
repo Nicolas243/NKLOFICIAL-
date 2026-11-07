@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getPartnerProgramBySlug } from '@/actions/partner-programs';
-import { PARTNER_PROGRAM_SLUGS } from '@/lib/partner-program-catalog';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -13,13 +12,9 @@ import { SocialEmbed } from '@/components/video/social-embed';
 
 type Params = Promise<{ slug: string }>;
 
-export const revalidate = 900;
 export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 const UTEST_STRATEGIC_TIP = 'Dica: ao responder formulários de novos projetos, informe quando você foi indicado por uma referência experiente, se isso for verdadeiro e puder ser comprovado.';
-
-export function generateStaticParams(): Array<{ slug: string }> {
-  return PARTNER_PROGRAM_SLUGS.map((slug) => ({ slug }));
-}
 
 async function loadProgram(slug: string) {
   return getPartnerProgramBySlug(slug);

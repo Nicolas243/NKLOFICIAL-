@@ -17,6 +17,14 @@ jobs:
       DATABASE_URL: postgres://ci_placeholder:ci_placeholder@localhost:5432/ci_placeholder
       NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+      UPSTASH_REDIS_REST_URL: https://ci-placeholder.upstash.io
+      UPSTASH_REDIS_REST_TOKEN: ci-placeholder-token
+      MERCADOPAGO_ACCESS_TOKEN: ci-placeholder-token
+      MERCADOPAGO_WEBHOOK_SECRET: ci-placeholder-secret
+      DAILY_API_KEY: ci-placeholder-key
+      CRON_SECRET: ci-placeholder-secret
+      NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: ci-placeholder-public-key
+      NEXT_PUBLIC_SITE_URL: https://ci-placeholder.example
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import PartnerProgramsPage from '@/app/programas/page';
+import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 
 export const metadata: Metadata = {
-  title: 'Renda extra: oportunidades e plataformas | Blog NKL',
+  title: 'Renda extra: oportunidades e plataformas | Portal NKL',
   description: 'Encontre plataformas para renda extra, pesquisas, conteúdo, indicações e trabalho remoto com contexto para decidir melhor.',
   alternates: {
-    canonical: '/blog/renda-extra',
+    canonical: INCOME_PORTAL_ROUTES.catalog,
   },
 };
 

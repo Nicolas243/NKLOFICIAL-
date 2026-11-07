@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Compare oportunidades do Portal NKL que exibem remuneração de referência em dólar.',
 };
 
-export const revalidate = 900;
+export const dynamic = 'force-dynamic';
 
 export default async function DollarProgramsPage() {
   const programs = await getPartnerPrograms();

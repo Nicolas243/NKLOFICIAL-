@@ -3,13 +3,14 @@
 import { HelpCircle, Palette, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { isIncomePortalPath } from '@/lib/income-portal';
 
 const THEME_HINT_DELAY_MS = 14000;
 const OPEN_ONBOARDING_EVENT = 'nkl:open-onboarding';
 
 export function SiteGuidance() {
   const pathname = usePathname();
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra';
+  const isPartnerPortal = isIncomePortalPath(pathname);
   const appLabel = isPartnerPortal ? 'Renda Extra' : 'NKL Música';
   const [themeHintOpen, setThemeHintOpen] = useState(false);
 

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Um caminho editorial para começar com oportunidades de renda extra de menor dificuldade.',
 };
 
-export const revalidate = 900;
+export const dynamic = 'force-dynamic';
 
 export default async function BeginnersProgramsPage() {
   const programs = await getPartnerPrograms();

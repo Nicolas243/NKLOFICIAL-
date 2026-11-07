@@ -3,6 +3,7 @@
 import { Download, ExternalLink, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { isIncomePortalPath } from '@/lib/income-portal';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -30,7 +31,7 @@ function isIosDevice(): boolean {
 }
 
 function getAppKind(pathname: string): AppKind {
-  return pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra'
+  return isIncomePortalPath(pathname)
     ? 'income'
     : 'music';
 }

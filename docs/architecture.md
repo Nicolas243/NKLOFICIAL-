@@ -25,6 +25,15 @@
 - `public/`: assets públicos, incluindo logos de parceiros.
 - `public/guias/`: materiais editoriais entregues após a captura de lead.
 
+## Produtos e rotas públicas
+
+- **NKL Música**: home, catálogo de cordas, diretórios, aulas, notícias e recursos para músicos.
+- **Renda Extra — catálogo canônico**: `/programas`, incluindo `/programas/[slug]`, `/programas/iniciantes` e `/programas/dolar`.
+- **Renda Extra — compatibilidade histórica**: `/blog/renda-extra` continua disponível para links antigos, mas aponta semanticamente para `/programas`.
+- **Renda Extra — produto digital**: `/guias/renda-extra` é a landing page do Guia Definitivo de Renda Extra e não deve ser confundida com o catálogo.
+
+As regras de reconhecimento de contexto ficam centralizadas em `src/lib/income-portal.ts`. Novas telas da área de Renda Extra devem reutilizar essa fonte em vez de repetir comparações de pathname.
+
 ## Regras de integração
 
 - Webhooks devem validar assinatura antes de alterar dados.

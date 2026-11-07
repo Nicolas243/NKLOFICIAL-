@@ -31,9 +31,10 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const siteUrl = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
     const checkoutUrl = `${siteUrl}/guias/renda-extra/sucesso`;
-    const preference = await new Preference(new MercadoPagoConfig({
+    const client = new MercadoPagoConfig({
       accessToken: env.MERCADOPAGO_ACCESS_TOKEN,
-    })).create({
+    });
+    const preference = await new Preference(client).create({
       body: {
         items: [{
           id: 'guia-renda-extra-nkl',

@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
-import { LeadCaptureForm } from '@/components/blog/lead-capture-form';
+import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ProgramCompare } from '@/components/program-compare';
-import { IncomeWizard } from '@/components/blog/income-wizard';
+import { IncomeWizard } from '@/components/income/income-wizard';
+import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 
 export const metadata: Metadata = {
   title: 'Programas de Parceria e Renda Extra | Portal NKL',
   description: 'Um mapa editorial para encontrar oportunidades de renda extra, freelancing, pesquisas, conteúdo e trabalho remoto.',
+  alternates: {
+    canonical: INCOME_PORTAL_ROUTES.catalog,
+  },
 };
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +49,7 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
             <IncomeWizard programs={programs} />
           </div>
           <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Blog NKL · mapa de oportunidades</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Renda Extra NKL · mapa de oportunidades</p>
             <h1 className="font-playfair text-4xl font-bold leading-[1.05] md:text-7xl">
               Renda extra sem cair em promessa fácil.
             </h1>

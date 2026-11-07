@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Script from 'next/script';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { isIncomePortalPath } from '@/lib/income-portal';
 
 export const CONSENT_STORAGE_KEY = 'nkl_privacy_consent';
 export const CONSENT_EVENT = 'nkl:privacy-consent';
@@ -12,12 +13,7 @@ type Consent = 'accepted' | 'rejected';
 export function PrivacyScripts() {
   const pathname = usePathname();
   const [consent, setConsent] = useState<Consent | null>(null);
-  const isIncomePortal = pathname === '/programas'
-    || pathname.startsWith('/programas/')
-    || pathname === '/blog/renda-extra'
-    || pathname.startsWith('/blog/renda-extra/')
-    || pathname === '/guias/renda-extra'
-    || pathname.startsWith('/guias/renda-extra/');
+  const isIncomePortal = isIncomePortalPath(pathname);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);

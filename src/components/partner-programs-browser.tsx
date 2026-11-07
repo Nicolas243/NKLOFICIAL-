@@ -490,7 +490,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
           return (
             <Fragment key={program.id}>
-            {index === 1 && <NativeAdCard currentPage={safeCurrentPage} />}
+            {index === 2 && <NativeAdCard currentPage={safeCurrentPage} />}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
@@ -530,7 +530,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   <div className="min-w-0 flex-1">
                     <div className="flex max-h-[5.25rem] flex-wrap content-start gap-1.5 overflow-hidden">
                       {visibleTags.includes('Melhor para Começar') && (
-                        <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-emerald-400/60 bg-emerald-400/20 px-2.5 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-200">
+                        <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-1 text-xs font-bold text-green-700 dark:text-green-400">
                           <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0" aria-hidden="true">
                             <path fill="currentColor" d="M8 1.5 9.7 6l4.8.2-3.8 2.9 1.3 4.7L8 11.1l-4 2.7 1.3-4.7-3.8-2.9L6.3 6 8 1.5Z" />
                           </svg>

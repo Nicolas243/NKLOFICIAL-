@@ -1,10 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { isIncomePortalPath } from '@/lib/income-portal';
 
 export function ParallaxBackground() {
   const pathname = usePathname();
-  const isPartnerPortal = pathname === '/programas' || pathname.startsWith('/programas/') || pathname === '/blog/renda-extra';
+  const isPartnerPortal = isIncomePortalPath(pathname);
 
   return (
     <>

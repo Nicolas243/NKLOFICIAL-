@@ -20,10 +20,10 @@
 **Públicas / marketing (SSR):**
 - `/` — Home: 3 queries paralelas (top cordas por `communityScore`, luthiers premium `planType='premium'`, últimas notícias).
 - `/catalogo` e `/catalogo/[id]` — catálogo facetado (busca, core material, faixa de preço, paginação; client `catalog-client.tsx`).
-- `/comparador` (`comparador-client.tsx`) · `/comparar` (rota paralela) · `/recomendados` (`recommended-client.tsx` + `src/data/recomendados.ts`).
+- `/comparar` — comparador canônico de cordas · `/recomendados` (`recommended-client.tsx` + `src/data/recomendados.ts`).
 - `/guia-de-cordas` · `/clinica` · `/lojas` · `/professores` · `/luthiers` + `/luthiers/[id]` · `/contatos` · `/meu-setup`.
-- `/fisica-do-som` (canônica) ⚠️ e `/fisica do som` (duplicata com espaço na URL).
-- `/importacao` ⚠️ e `/importação` (duplicata com acento, path não-ASCII; pasta `src/app/importação`).
+- `/fisica-do-som` — página canônica de física do som.
+- `/importacao` — fluxo de importação com URL ASCII.
 - `/noticias` e `/noticias/anunciar`.
 - `/sitemap.ts` (SEO) · `/error.tsx` e `/not-found.tsx` global.
 
@@ -67,7 +67,7 @@
 - `favorite-button.tsx` · `notification-bell.tsx` — estado do usuário logado.
 - `premium-checkout-button.tsx` · `copy-coupon-button.tsx` · `whatsapp-lead-button.tsx` — CTAs de monetização/lead.
 - `privacy-actions.tsx` — LGPD (export + exclusão lógica).
-- Client pages: `catalog-client.tsx` · `comparador-client.tsx` · `recommended-client.tsx` · `login-form.tsx` · `registro-form.tsx` · `news-form.tsx` · `suggest-news-modal.tsx`.
+- Client pages: `catalog-client.tsx` · `recommended-client.tsx` · `login-form.tsx` · `registro-form.tsx` · `news-form.tsx` · `suggest-news-modal.tsx`.
 
 ## 5. Dívida Técnica e Pendências
 
@@ -79,9 +79,9 @@
 - **Secrets ausentes no `.env.local`:** `CRON_SECRET` e `GATEWAY_WEBHOOK_SECRET` não configurados → cron responde 401 em dev; webhook aceita payload sem assinatura (modo dev documentado no código).
 - **Sem RLS no Postgres:** dependência total do gating manual nas actions; qualquer action sem check de role vira vetor de acesso.
 - **FKs `ON DELETE no action` em todo o grafo:** exclusão real de `user_profiles` impossível; `deleteUserAccount` (LGPD) contorna com anonimização lógica, mas `subscriptions`/`luthier_*` não são tocados (restos identificáveis).
-- **Rotas sujas duplicadas:** `src/app/fisica do som/` (espaço) e `src/app/importação/` (acento) — URLs com espaço/acento quebram SEO, links e geração de rotas; coexistem com as canônicas.
+- **Aliases legados de rota:** `/fisica do som` e `/importação` são tratados pelo `src/proxy.ts` e redirecionados para `/fisica-do-som` e `/importacao`; não criar novas pastas com espaço ou acento.
 - **e2e defasado:** `critical-path.spec.ts` espera H1 "Portal NKL" na home; a home atual renderiza "O Cuidado Oculto por trás da Voz do Instrumento" → a suíte deve falhar.
-- **Artefatos/lixo no repo:** `nul` (arquivo-lixo de redirect no Windows, untracked, contém stderr de `dir`), `src/actions/profile.ts.bak`, `seed-output.sql` (SQL gerado, 138KB), `schema_backup.txt`, `write_profile.py` (vazio).
+- **Artefatos/lixo fora do código-fonte:** `nul` (arquivo-lixo de redirect no Windows, untracked, contém stderr de `dir`), `seed-output.sql` (SQL gerado, 138KB), `schema_backup.txt`, `write_profile.py` (vazio). Backups e dumps que estavam dentro de `src/` foram removidos na auditoria estrutural.
 - **WIP não commitado:** `globals.css`, `curtain-intro.tsx`, `radial-menu.tsx` modificados no working tree.
 - **Herança legada no repo:** `AntigoNKL/` (site estático HTML/JS/imagens) e `public/NKL/` (assets duplicados) — candidatos a mover/remover do monorepo do app.
 - **Config hardcoded:** hostname do Supabase fixo no `next.config.ts` (~`vgogceknmqdqzzpztkrr`) em vez de env.

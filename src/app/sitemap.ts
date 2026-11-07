@@ -1,8 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
+import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://nkl.com.br';
+
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
@@ -10,16 +13,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     { url: `${BASE_URL}/`, lastModified, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${BASE_URL}/programas`, lastModified, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${BASE_URL}/programas/iniciantes`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/programas/dolar`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}${INCOME_PORTAL_ROUTES.catalog}`, lastModified, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE_URL}${INCOME_PORTAL_ROUTES.beginnerPrograms}`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE_URL}${INCOME_PORTAL_ROUTES.dollarPrograms}`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
     ...programs.map((program) => ({
       url: `${BASE_URL}/programas/${program.slug}`,
       lastModified: program.lastVerifiedAt ? new Date(program.lastVerifiedAt) : lastModified,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     })),
-    { url: `${BASE_URL}/blog/renda-extra`, lastModified, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${BASE_URL}${INCOME_PORTAL_ROUTES.guide}`, lastModified, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/catalogo`, lastModified, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${BASE_URL}/luthiers`, lastModified, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/professores`, lastModified, changeFrequency: 'weekly', priority: 0.7 },

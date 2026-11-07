@@ -14,7 +14,7 @@ O Portal NKL é uma plataforma brasileira para músicos, luthiers, professores e
 ## Fluxos críticos
 
 1. navegação pública da home, catálogo e conteúdo;
-2. descoberta e acesso às oportunidades em `/blog/renda-extra` e `/programas`;
+2. descoberta e acesso às oportunidades em `/programas`, com compatibilidade para links antigos em `/blog/renda-extra`;
 3. cadastro, login e atualização de sessão pelo Supabase;
 4. diretórios, leads e favoritos;
 5. ações administrativas e sincronização de assinaturas;

@@ -62,11 +62,6 @@ const DEFAULT_STEPS: TutorialStep[] = [
     title: 'Receba o resumo por e-mail',
     description: 'Cadastre seu contato para receber o Guia gratuito com critérios práticos antes de se cadastrar.',
   },
-  {
-    targetSelector: '#filtros',
-    title: 'Filtre o catálogo',
-    description: 'Pesquise por nome, categoria ou dificuldade para encontrar opções que façam sentido para você.',
-  },
 ];
 
 export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialStep[] }) {
@@ -75,13 +70,13 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
   const [viewport, setViewport] = useState<Viewport | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const isPartnerPortal = isIncomeCatalogPath(pathname);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      setIsMounted(true);
+      setMounted(true);
       setViewport({ width: window.innerWidth, height: window.innerHeight });
     });
     return () => window.cancelAnimationFrame(frame);
@@ -176,7 +171,8 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
     setStepIndex((index) => index + 1);
   }
 
-  if (!isMounted || !isOpen || !spotlight || !viewport || !steps[stepIndex]) return null;
+  if (!mounted) return null;
+  if (!isOpen || !spotlight || !viewport || !steps[stepIndex]) return null;
 
   const step = steps[stepIndex];
   const cardWidth = Math.min(360, viewport.width - VIEWPORT_PADDING * 2);
@@ -191,18 +187,22 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   return createPortal(
     <div className="pointer-events-none fixed inset-0 z-[310]" role="dialog" aria-modal="true" aria-labelledby="spotlight-tutorial-title">
       <div
-        className="pointer-events-auto fixed left-0 top-0 w-full bg-black/70 backdrop-blur-md transition-all duration-300"
+        className="pointer-events-auto fixed left-0 right-0 top-0 bg-black/70 backdrop-blur-md transition-all duration-300"
         style={{ height: Math.max(0, spotlight.top) }}
         aria-hidden="true"
       />
       <div
         className="pointer-events-auto fixed right-0 bg-black/70 backdrop-blur-md transition-all duration-300"
-        style={{ top: spotlight.top, width: Math.max(0, viewport.width - spotlight.left - spotlight.width), height: spotlight.height }}
+        style={{
+          top: spotlight.top,
+          left: spotlight.left + spotlight.width,
+          height: spotlight.height,
+        }}
         aria-hidden="true"
       />
       <div
-        className="pointer-events-auto fixed bottom-0 left-0 w-full bg-black/70 backdrop-blur-md transition-all duration-300"
-        style={{ top: spotlight.top + spotlight.height, height: Math.max(0, viewport.height - spotlight.top - spotlight.height) }}
+        className="pointer-events-auto fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md transition-all duration-300"
+        style={{ top: spotlight.top + spotlight.height }}
         aria-hidden="true"
       />
       <div
