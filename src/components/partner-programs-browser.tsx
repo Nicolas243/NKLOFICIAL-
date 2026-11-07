@@ -11,6 +11,7 @@ import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
+import { NativeAdCard } from '@/components/blog/native-ad-card';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -488,16 +489,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
           return (
             <Fragment key={program.id}>
-            {index === 1 && (
-              <article className="flex flex-col justify-between rounded-xl border border-orange/35 bg-[linear-gradient(145deg,rgba(249,115,22,0.12),rgba(11,94,215,0.08))] p-5 shadow-sm">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange">Especial NKL</p>
-                  <h2 className="mt-2 font-playfair text-2xl font-bold">Renda extra com menos tentativa e erro</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-foreground/75">Um guia prático para filtrar oportunidades, organizar sua rotina e começar com mais clareza.</p>
-                </div>
-                <Link href="/guias/renda-extra" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white hover:bg-orange-dark">Conhecer o guia</Link>
-              </article>
-            )}
+            {index === 1 && <NativeAdCard currentPage={safeCurrentPage} />}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
