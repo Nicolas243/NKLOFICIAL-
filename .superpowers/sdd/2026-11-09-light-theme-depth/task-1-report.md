@@ -27,3 +27,13 @@ Addressed both review findings:
 ### Fix validation
 - `npm run lint`: PASS with 12 pre-existing warnings in `AntigoNKL`, 0 errors.
 - `npm run typecheck`: PASS.
+
+## Fix round 2
+
+Addressed final review findings:
+- Added dark-theme overrides for all newly introduced income and music parallax depth rules, restoring the approved dark field, dot, glow, particle, and music-layer behavior.
+- Removed the music-portal early exit from the parallax effect, assigned refs to all three music layers, and now applies the same scroll transforms and reduced-motion handling to both portals.
+
+### Fix round 2 validation
+- `npm run lint`: PASS with 12 pre-existing warnings in `AntigoNKL`, 0 errors.
+- `npm run typecheck`: PASS.
