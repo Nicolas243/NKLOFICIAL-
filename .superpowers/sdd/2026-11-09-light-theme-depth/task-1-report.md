@@ -17,3 +17,13 @@ Implementação concluída em `src/app/globals.css`, sem alterações em página
 
 ## Concerns
 A validação visual em `/programas` e `/` não foi executada neste ambiente sem servidor/credenciais. O build requer `.env.local` válido para concluir a coleta de páginas da API.
+
+## Fix round 1
+
+Addressed both review findings:
+- Musical portal now renders `music-parallax-field`, `music-parallax-notes`, `music-parallax-staves`, and `music-parallax-particles` in `ParallaxBackground`, so the new light-theme layers are active on `/programas`.
+- Added a dark-theme-specific `.product-card:hover` rule restoring the approved previous shadow (`rgba(0,0,0,0.05)`); light mode retains the stronger theme variable.
+
+### Fix validation
+- `npm run lint`: PASS with 12 pre-existing warnings in `AntigoNKL`, 0 errors.
+- `npm run typecheck`: PASS.

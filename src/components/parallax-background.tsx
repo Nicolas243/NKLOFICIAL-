@@ -47,10 +47,13 @@ export function ParallaxBackground() {
 
   if (!isPartnerPortal) {
     return (
-      <>
-        <div className="fixed inset-0 z-0 pointer-events-none bg-background/70" />
-        <div className="site-texture site-texture-music fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
-      </>
+      <div className="music-parallax-field fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="music-parallax-notes" />
+        <div className="music-parallax-staves" />
+        <div className="music-parallax-particles" />
+        <div className="fixed inset-0 bg-background/70" />
+        <div className="site-texture site-texture-music fixed inset-0" />
+      </div>
     );
   }
 
