@@ -6,6 +6,7 @@ import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
+import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { TrustBadges } from '@/components/ui/trust-badges';
 import { SocialEmbed } from '@/components/video/social-embed';
@@ -149,6 +150,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             <section>
               <h2 className="font-playfair text-3xl font-bold">Como funciona</h2>
               <p className="mt-4 whitespace-pre-line text-base leading-relaxed opacity-80">{program.longDescription}</p>
+              <ProgramSecondaryOffer programSlug={program.slug} currentPage={1} />
               <SocialEmbed youtubeId={program.youtubeVideoId} tiktokId={program.tiktokVideoId} programName={program.name} />
               {program.slug === 'utest' && (
                 <section className="mt-6 rounded-xl border border-orange/35 bg-orange/5 p-5">

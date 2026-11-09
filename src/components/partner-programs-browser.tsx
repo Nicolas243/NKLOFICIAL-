@@ -11,7 +11,6 @@ import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
-import { NativeAdCard } from '@/components/income/native-ad-card';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
 import { ProgramStrategies } from '@/components/income/program-strategies';
@@ -472,11 +471,9 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
           const isDescriptionExpanded = expandedDescriptionSlugs.includes(program.slug);
-          const adIndex = 3 + (safeCurrentPage % 3);
 
           return (
             <Fragment key={program.id}>
-            {index === adIndex && <NativeAdCard currentPage={safeCurrentPage} />}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {

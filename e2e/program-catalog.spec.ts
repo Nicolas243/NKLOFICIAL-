@@ -7,6 +7,7 @@ test.describe('catálogo de oportunidades', () => {
     const firstCard = page.locator('#programs-grid article').first();
     await expect(firstCard).toContainText('Melhor para Começar');
     await expect(firstCard.getByTestId('program-tags')).not.toContainText('Ler mais');
+    await expect(page.locator('#programs-grid')).not.toContainText('Conteúdo Premium');
   });
 
   test('abre a oportunidade pelo botão principal Ler mais', async ({ page }) => {
@@ -47,9 +48,22 @@ test.describe('catálogo de oportunidades', () => {
     await page.goto('/programas');
     await page.locator('#programs-grid article').first().locator('button').filter({ hasText: 'Ler mais' }).last().click();
 
+    await expect(page.getByTestId('compact-secondary-offer')).toBeVisible();
+    await expect(page.getByTestId('compact-secondary-offer')).not.toContainText('Conteúdo Premium');
     await expect(page.getByRole('heading', {
       name: /Melhor renda extra é saber economizar|Ganhe tempo escolhendo melhor|Comece com um plano claro/,
     })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Quero começar com clareza|Ver o mapa prático|Montar meu próximo passo/ }))
+      .toHaveAttribute('href', /\/guias\/renda-extra\?cta_variant=[012]$/u);
+  });
+
+  test('exibe CTA secundário compacto na página individual', async ({ page }) => {
+    await page.goto('/programas');
+    await page.locator('#programs-grid article').first().locator('button').filter({ hasText: 'Ler mais' }).last().click();
+    await page.getByRole('dialog', { name: /Detalhes de/ }).getByRole('link', { name: 'Abrir página completa' }).click();
+
+    await expect(page).toHaveURL(/\/programas\/[^/]+$/u);
+    await expect(page.getByTestId('compact-secondary-offer')).toBeVisible();
     await expect(page.getByRole('link', { name: /Quero começar com clareza|Ver o mapa prático|Montar meu próximo passo/ }))
       .toHaveAttribute('href', /\/guias\/renda-extra\?cta_variant=[012]$/u);
   });

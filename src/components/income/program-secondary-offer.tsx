@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { NativeAdCard } from '@/components/income/native-ad-card';
+import { CompactSecondaryOffer } from '@/components/income/compact-secondary-offer';
 import { parseProgramSecondaryCtaVariant, PROGRAM_SECONDARY_CTA_VARIANTS } from '@/lib/offer-experiment';
 
 const STORAGE_KEY = 'nkl_program_secondary_cta_variant_v1';
@@ -62,11 +62,10 @@ export function ProgramSecondaryOffer({ programSlug, currentPage }: ProgramSecon
 
   return (
     <section className="mt-5" aria-label="Recomendação editorial">
-      <NativeAdCard
-        currentPage={currentPage}
-        experiment="program-secondary-cta"
+      <CompactSecondaryOffer
         variant={variant}
-        impressionKey={`program-secondary-cta:${programSlug}`}
+        programSlug={programSlug}
+        currentPage={currentPage}
       />
     </section>
   );
