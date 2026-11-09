@@ -17,6 +17,32 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.getByRole('dialog', { name: /Detalhes de/ })).toBeVisible();
   });
 
+  test('recolhe a transparência editorial até o usuário abrir Ler mais', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('nkl_tutorial_seen', 'true');
+    });
+    await page.goto('/programas');
+
+    const transparency = page.getByText('Sobre links de parceria', { exact: true });
+    await expect(transparency).toBeVisible();
+    await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).not.toBeVisible();
+    await transparency.click();
+    await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).toBeVisible();
+  });
+
+  test('encerra o tutorial ao clicar no elemento destacado e mantém a ação', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem('nkl_tutorial_seen');
+    });
+    await page.goto('/programas');
+
+    const tutorial = page.locator('[role="dialog"][aria-labelledby="spotlight-tutorial-title"]');
+    await expect(tutorial).toBeVisible();
+    await page.locator('#income-wizard-trigger').click();
+    await expect(tutorial).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Vamos encontrar um ponto de partida' })).toBeVisible();
+  });
+
   test('exibe CTA secundário atribuído no modal da oportunidade', async ({ page }) => {
     await page.goto('/programas');
     await page.locator('#programs-grid article').first().locator('button').filter({ hasText: 'Ler mais' }).last().click();

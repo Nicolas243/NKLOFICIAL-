@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
-import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
 type Status = 'idle' | 'analyzing' | 'approved' | 'unavailable';
 type DisplayPhase = 'normal' | 'approved' | 'denied';
@@ -27,7 +26,7 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
   const [status, setStatus] = useState<Status>('idle');
   const [displayPhase, setDisplayPhase] = useState<DisplayPhase>('normal');
 
-  async function startAnalysis(): Promise<void> {
+  const startAnalysis = useCallback(async (): Promise<void> => {
     setDisplayPhase('normal');
     setStatus('analyzing');
     try {
@@ -45,14 +44,21 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
       setDisplayPhase('denied');
       setStatus('unavailable');
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void startAnalysis();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [startAnalysis]);
 
   return (
     <section className="rounded-2xl border border-orange/25 bg-income-surface p-6 shadow-sm md:p-8" aria-labelledby="discount-simulator-title">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta de lançamento</p>
       <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">Seu guia essencial para começar com clareza</h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">
-        Confirme a disponibilidade do checkout antes de liberar o acesso. Não usamos dados pessoais nem prometemos renda.
+        Estamos confirmando a disponibilidade do checkout enquanto você conhece a oferta. Não usamos dados pessoais nem prometemos renda.
       </p>
 
       <div className="mt-6 flex items-end gap-3" aria-label="Preço promocional">
@@ -62,29 +68,24 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
       </div>
       <div className={`mt-5 rounded-xl border p-5 transition-colors duration-150 ${PHASE_STYLES[displayPhase]}`} aria-live="polite">
         <p className="text-xs font-bold uppercase tracking-[0.16em]">{PHASE_LABELS[displayPhase]}</p>
-        {status === 'idle' && <p className="mt-2 text-sm">Confirme a disponibilidade da oferta para habilitar o botão de acesso.</p>}
+        {status === 'idle' && <p className="mt-2 text-sm">Preparando a oferta...</p>}
         {status === 'analyzing' && <p className="mt-2 text-sm font-bold">Verificando disponibilidade no servidor...</p>}
         {status === 'approved' && (
           <>
             <p className="mt-2 text-lg font-bold">Oferta autenticada. O acesso está liberado.</p>
-            <p className="mt-2 text-sm">O checkout será aberto imediatamente ao clicar no botão.</p>
+            <p className="mt-2 text-sm">Escolha o meio de pagamento ao clicar no botão.</p>
           </>
         )}
         {status === 'unavailable' && <p className="mt-2 text-sm">A oferta não pôde ser confirmada agora. Tente novamente em alguns instantes.</p>}
       </div>
 
       <div className="mt-5">
-        <button type="button" onClick={() => void startAnalysis()} disabled={status === 'analyzing' || status === 'approved'} className="inline-flex min-h-12 items-center justify-center rounded-md border border-orange px-6 py-3 text-sm font-bold text-orange transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-50">
-          {status === 'analyzing' ? 'Verificando disponibilidade...' : status === 'approved' ? 'Oferta confirmada' : 'Verificar oferta'}
-        </button>
-        <div className="mt-3">
-          <GuideCheckoutButton label="Quero liberar meu acesso" enabled={status === 'approved'} offerVariant={offerVariant} />
-        </div>
-        {status === 'approved' && hotmartCheckoutUrl && (
-          <div className="mt-3">
-            <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Pagar com Hotmart" />
-          </div>
-        )}
+        <GuideCheckoutButton
+          label="Quero liberar meu acesso"
+          enabled={status === 'approved'}
+          offerVariant={offerVariant}
+          hotmartCheckoutUrl={hotmartCheckoutUrl}
+        />
       </div>
     </section>
   );

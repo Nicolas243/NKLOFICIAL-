@@ -179,6 +179,20 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   }, [activeSteps, isOpen, stepIndex]);
 
   useEffect(() => {
+    if (!isOpen || !activeSteps[stepIndex]) return;
+
+    const target = document.querySelector(activeSteps[stepIndex].targetSelector);
+    if (!target) return;
+
+    const handleTargetClick = (): void => {
+      completeTutorial();
+    };
+
+    target.addEventListener('click', handleTargetClick, true);
+    return () => target.removeEventListener('click', handleTargetClick, true);
+  }, [activeSteps, isOpen, stepIndex]);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     function closeWithEscape(event: KeyboardEvent): void {

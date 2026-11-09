@@ -84,6 +84,10 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
   volume atual; `conversion` só é escrito após confirmação de pagamento.
 - Os eventos de GA/PostHog dependem de consentimento aceito; falhas de telemetria são registradas
   no console e não impedem abrir o modal ou iniciar o checkout.
+- A transparência de parceria na página `/programas` permanece recolhida por padrão e pode ser
+  aberta por “Sobre links de parceria”.
+- Durante o tutorial, clicar no elemento destacado encerra o tutorial sem impedir a ação original
+  do elemento; o fluxo é coberto pelo teste E2E do catálogo.
 
 ## Catálogo — onda de correções da atribuição (2026-11-09)
 
