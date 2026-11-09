@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { guidePurchases } from '@/db/schema';
 import { env } from '@/env';
 import { GUIDE_PRICE_CENTS, GUIDE_TITLE } from '@/lib/guide-offer';
+import { parseValidatedOfferVariant } from '@/lib/offer-experiment';
 const checkoutSchema = z.object({
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
 }).default({});
@@ -16,10 +17,16 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!parsedBody.success) {
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
     }
+    const offerVariant = parsedBody.data.offerVariant
+      ? parseValidatedOfferVariant(parsedBody.data.offerVariant)
+      : undefined;
+    if (parsedBody.data.offerVariant && !offerVariant) {
+      return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
+    }
 
     const [purchase] = await db.insert(guidePurchases).values({
       amountCents: GUIDE_PRICE_CENTS,
-      offerVariant: parsedBody.data.offerVariant,
+      offerVariant,
     }).returning({ id: guidePurchases.id });
 
     if (!purchase) {

@@ -44,6 +44,7 @@ As regras de reconhecimento de contexto ficam centralizadas em `src/lib/income-p
 - Migrações devem ser aditivas, revisáveis e testadas localmente; não aplicar automaticamente em produção.
 - Os materiais pagos ficam no bucket privado `guide-assets-private`; o endpoint `/api/downloads/guide` libera URLs assinadas por 60 segundos e aplica cota atômica de oito tentativas.
 - Antes de aplicar `drizzle/0032_guide_sales_offers.sql` e `drizzle/0033_guide_download_quota.sql` em produção, confirme no Supabase as tabelas `guide_purchases`, `guide_subscriptions` e `guide_offer_events`, além do histórico real de migrações. O arquivo `drizzle/meta/_journal.json` não deve ser tratado como prova suficiente do estado remoto.
+- `drizzle/0034_partner_affiliate_links.sql` é uma migração de dados versionada: antes de executá-la em um ambiente remoto, confirme no Supabase o histórico aplicado e os seis slugs-alvo em `partner_programs`; aplique o SQL revisado uma única vez pelo fluxo aprovado de migrações (sem `push` cego) e verifique depois os seis `affiliate_url` e `updated_at`. Em ambiente local, use um banco descartável ou autorizado e registre a consulta de verificação; não aplicar em produção sem aprovação.
 - O catálogo público usa páginas individuais em `/programas/[slug]`, hubs em `/programas/iniciantes`
   e `/programas/dolar`, JSON-LD de página/lista e links de afiliado com `rel="sponsored"`.
 - URLs públicas de SEO são centralizadas em `src/lib/site.ts`: `SITE_URL` usa

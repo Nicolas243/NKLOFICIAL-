@@ -10,6 +10,7 @@ import {
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
   GUIDE_SUBSCRIPTION_TITLE,
 } from '@/lib/guide-offer';
+import { parseValidatedOfferVariant } from '@/lib/offer-experiment';
 const SUBSCRIPTION_REFERENCE_PREFIX = 'guide_subscription:';
 
 const requestSchema = z.object({
@@ -24,6 +25,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!parsedBody.success) {
       return NextResponse.json({ error: 'invalid_subscription_request', message: 'Não foi possível preparar a assinatura.' }, { status: 400 });
     }
+    const offerVariant = parsedBody.data.offerVariant
+      ? parseValidatedOfferVariant(parsedBody.data.offerVariant)
+      : undefined;
+    if (parsedBody.data.offerVariant && !offerVariant) {
+      return NextResponse.json({ error: 'invalid_subscription_request', message: 'Não foi possível preparar a assinatura.' }, { status: 400 });
+    }
 
     const subscriptionId = crypto.randomUUID();
     const externalReference = `${SUBSCRIPTION_REFERENCE_PREFIX}${subscriptionId}`;
@@ -31,7 +38,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       id: subscriptionId,
       externalReference,
       amountCents: GUIDE_SUBSCRIPTION_PRICE_CENTS,
-      offerVariant: parsedBody.data.offerVariant,
+      offerVariant,
       email: parsedBody.data.payerEmail,
     }).returning({ id: guideSubscriptions.id });
 

@@ -84,3 +84,12 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
   volume atual; `conversion` só é escrito após confirmação de pagamento.
 - Os eventos de GA/PostHog dependem de consentimento aceito; falhas de telemetria são registradas
   no console e não impedem abrir o modal ou iniciar o checkout.
+
+## Catálogo — onda de correções da atribuição (2026-11-09)
+
+- `npx playwright test e2e/program-catalog.spec.ts --reporter=line`: 9 passaram e 1 foi ignorado porque `HOTMART_GUIDE_CHECKOUT_URL` não estava configurada no ambiente local; os testes existentes de atribuição, checkout, deduplicação de impressão, fallback 503 e eventos permaneceram ativos.
+- `npx eslint` (`npm run lint`): passou com 12 warnings preexistentes em `AntigoNKL/`, sem erros.
+- `npm run typecheck`: passou.
+- `npm run build`: passou; permanecem os avisos conhecidos de acesso dinâmico ao filesystem em `/api/downloads/guide` e falhas de consulta de diretórios sem banco local.
+- `npm run verify`: passou (lint, tipagem e build).
+- A cobertura Hotmart valida `sck` somente para `program-secondary-cta:0|1|2`; a verificação de clique foi ignorada sem URL Hotmart local. O webhook lê `purchase.origin.sck`/`subscription.origin.sck` (com fallback direto `sck`) e não cria conversão para valores fora do contrato.

@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { guideOfferEvents, guideSubscriptions } from '@/db/schema';
 import { env } from '@/env';
 import { verifyMercadoPagoWebhookSignature } from '@/lib/mercadopago/webhook-signature';
+import { getOfferExperimentFromVariant, parseValidatedOfferVariant } from '@/lib/offer-experiment';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,8 +63,8 @@ async function processSubscription(notification: SubscriptionNotification): Prom
   }).where(eq(guideSubscriptions.id, subscription.id));
 
   if (normalizedStatus === 'active' && subscription.offerVariant) {
-    const [experiment, variant] = subscription.offerVariant.split(':');
-    if (experiment && variant) {
+    const attribution = getOfferExperimentFromVariant(parseValidatedOfferVariant(subscription.offerVariant));
+    if (attribution) {
       const [existingConversion] = await db.select({ id: guideOfferEvents.id })
         .from(guideOfferEvents)
         .where(and(
@@ -73,8 +74,8 @@ async function processSubscription(notification: SubscriptionNotification): Prom
         .limit(1);
       if (!existingConversion) {
         await db.insert(guideOfferEvents).values({
-          experiment,
-          variant,
+          experiment: attribution.experiment,
+          variant: attribution.variant,
           eventType: 'conversion',
           subscriptionId: subscription.id,
         });

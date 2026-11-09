@@ -41,8 +41,9 @@ Para produção na Vercel:
 3. Configure no Mercado Pago o webhook de pagamento único em `/api/payments/webhook` e o webhook de assinaturas em `/api/payments/subscription-webhook`.
 4. Configure `SUPABASE_SERVICE_ROLE_KEY` apenas no ambiente local e na Vercel. Essa chave é usada exclusivamente no servidor para gerar URLs assinadas do bucket privado.
 5. Confirme no Supabase o schema remoto antes de aplicar `drizzle/0032_guide_sales_offers.sql` e `drizzle/0033_guide_download_quota.sql`; não execute `push` ou `migrate` cegamente.
-6. Depois de confirmar o schema, envie os cinco ativos pagos para o Storage privado com `npm run guides:upload`. O script procura primeiro em `Conteudo de novembro/` e depois na raiz para também localizar `Guia Essencial Renda Extra 2027 _ Portal NKL.pdf`; nenhum ativo deve ser copiado para `public/`.
-7. Após o deploy, valide a compra sandbox, a página de sucesso, um download de cada ativo e o bloqueio ao atingir a cota de dez tentativas.
+6. Para `drizzle/0034_partner_affiliate_links.sql`, confirme primeiro o histórico remoto e os slugs `montink-embaixador`, `pawns-app`, `fiverr`, `attapoll`, `afiliados-b2b-tubebuddy-make` e `flambra`. Aplique o arquivo revisado uma única vez pelo fluxo aprovado de migrações (ou pelo SQL Editor autorizado quando esse for o procedimento do ambiente), sem alterar o arquivo para “forçar” uma segunda execução. Verifique com `SELECT slug, affiliate_url, updated_at FROM partner_programs WHERE slug IN (...);` e registre o resultado; esta tarefa não aplica a migração.
+7. Depois de confirmar o schema, envie os cinco ativos pagos para o Storage privado com `npm run guides:upload`. O script procura primeiro em `Conteudo de novembro/` e depois na raiz para também localizar `Guia Essencial Renda Extra 2027 _ Portal NKL.pdf`; nenhum ativo deve ser copiado para `public/`.
+8. Após o deploy, valide a compra sandbox, a página de sucesso, um download de cada ativo e o bloqueio ao atingir a cota de dez tentativas.
 
 ## Alternativa Hotmart
 

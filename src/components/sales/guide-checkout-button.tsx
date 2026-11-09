@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { trackOfferFunnelEvent } from '@/lib/analytics';
+import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
 type CheckoutResponse = {
   initPoint?: string;
@@ -101,9 +102,7 @@ export function GuideCheckoutButton({
               <button type="button" onClick={() => void createCheckout()} disabled={isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:opacity-60">
                 {isLoading ? 'Preparando Mercado Pago...' : 'Pagar com Mercado Pago'}
               </button>
-              <a href={hotmartCheckoutUrl} onClick={() => trackOfferFunnelEvent(offerVariant, 'checkout')} className="inline-flex min-h-12 items-center justify-center rounded-md border border-foreground/25 px-4 py-3 text-sm font-bold text-foreground transition hover:border-foreground/50 hover:bg-foreground/5">
-                Pagar com Hotmart
-              </a>
+              <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Pagar com Hotmart" offerVariant={offerVariant} />
             </div>
             <p className="mt-4 text-center text-xs text-foreground/55">A confirmação e a liberação do acesso acontecem após o pagamento.</p>
           </div>

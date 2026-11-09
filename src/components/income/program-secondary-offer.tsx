@@ -26,9 +26,14 @@ export function ProgramSecondaryOffer({ programSlug, currentPage }: ProgramSecon
     }
 
     let cancelled = false;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 5000);
     const loadVariant = async (): Promise<void> => {
       try {
-        const response = await fetch('/api/sales/offer-events?experiment=program-secondary-cta', { cache: 'no-store' });
+        const response = await fetch('/api/sales/offer-events?experiment=program-secondary-cta', {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error(`Resposta ${response.status}`);
         const payload: { variant?: string } = await response.json();
         const selectedVariant = parseProgramSecondaryCtaVariant(payload.variant);
@@ -40,12 +45,16 @@ export function ProgramSecondaryOffer({ programSlug, currentPage }: ProgramSecon
         const fallback = randomVariant();
         window.localStorage.setItem(STORAGE_KEY, fallback);
         if (!cancelled) setVariant(fallback);
+      } finally {
+        window.clearTimeout(timeout);
       }
     };
 
     void loadVariant();
     return () => {
       cancelled = true;
+      controller.abort();
+      window.clearTimeout(timeout);
     };
   }, []);
 

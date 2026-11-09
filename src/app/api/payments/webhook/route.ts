@@ -7,6 +7,7 @@ import { env } from '@/env';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 import { verifyMercadoPagoWebhookSignature } from '@/lib/mercadopago/webhook-signature';
+import { getOfferExperimentFromVariant, parseValidatedOfferVariant } from '@/lib/offer-experiment';
 import { z } from 'zod';
 
 export const runtime = 'nodejs';
@@ -47,9 +48,7 @@ function getGuidePurchaseId(externalReference: unknown): string | null {
 }
 
 function getOfferExperiment(offerVariant: string | null): { experiment: string; variant: string } | null {
-  if (!offerVariant) return null;
-  const [experiment, variant] = offerVariant.split(':');
-  return experiment && variant ? { experiment, variant } : null;
+  return getOfferExperimentFromVariant(parseValidatedOfferVariant(offerVariant));
 }
 
 function hasValidSignature(request: NextRequest, notification: MercadoPagoNotification): boolean {

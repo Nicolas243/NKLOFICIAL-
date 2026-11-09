@@ -2,12 +2,18 @@ import crypto from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { guidePurchases, guideSubscriptions } from '@/db/schema';
+import { guideOfferEvents, guidePurchases, guideSubscriptions } from '@/db/schema';
 import { env } from '@/env';
 import {
   GUIDE_PRICE_CENTS,
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
 } from '@/lib/guide-offer';
+import {
+  getOfferExperimentFromVariant,
+  parseProgramSecondaryCtaVariant,
+  parseValidatedOfferVariant,
+  PROGRAM_SECONDARY_CTA_EXPERIMENT,
+} from '@/lib/offer-experiment';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -83,42 +89,100 @@ function isRejectedEvent(event: string): boolean {
   ].includes(event);
 }
 
+function getValidatedCtaVariant(data: JsonRecord, subscription: boolean): string | null {
+  const paths = subscription
+    ? [
+      ['subscription', 'origin', 'sck'],
+      ['subscription', 'sck'],
+    ]
+    : [
+      ['purchase', 'origin', 'sck'],
+      ['purchase', 'sck'],
+    ];
+  for (const path of paths) {
+    const rawValue = getPathString(data, path);
+    const validated = parseValidatedOfferVariant(rawValue);
+    const attribution = getOfferExperimentFromVariant(validated);
+    if (
+      validated
+      && attribution?.experiment === PROGRAM_SECONDARY_CTA_EXPERIMENT
+      && parseProgramSecondaryCtaVariant(attribution.variant) !== null
+    ) {
+      return validated;
+    }
+  }
+  return null;
+}
+
+async function recordConversion(
+  offerVariant: string | null,
+  relation: { purchaseId?: string; subscriptionId?: string },
+): Promise<void> {
+  const attribution = getOfferExperimentFromVariant(parseValidatedOfferVariant(offerVariant));
+  if (!attribution || (!relation.purchaseId && !relation.subscriptionId)) return;
+  const where = relation.purchaseId
+    ? and(eq(guideOfferEvents.purchaseId, relation.purchaseId), eq(guideOfferEvents.eventType, 'conversion'))
+    : and(eq(guideOfferEvents.subscriptionId, relation.subscriptionId!), eq(guideOfferEvents.eventType, 'conversion'));
+  const [existingConversion] = await db.select({ id: guideOfferEvents.id })
+    .from(guideOfferEvents)
+    .where(where)
+    .limit(1);
+  if (!existingConversion) {
+    await db.insert(guideOfferEvents).values({
+      experiment: attribution.experiment,
+      variant: attribution.variant,
+      eventType: 'conversion',
+      purchaseId: relation.purchaseId,
+      subscriptionId: relation.subscriptionId,
+    });
+  }
+}
+
 async function processPurchase(data: JsonRecord, event: string): Promise<void> {
   const transaction = getPathString(data, ['purchase', 'transaction']);
   if (!transaction) return;
   const paymentId = `${HOTMART_PAYMENT_PREFIX}${transaction}`;
-  const [existing] = await db.select({ id: guidePurchases.id })
+  const offerVariant = getValidatedCtaVariant(data, false);
+  const [existingDetails] = await db.select({
+    id: guidePurchases.id,
+    offerVariant: guidePurchases.offerVariant,
+  })
     .from(guidePurchases)
     .where(eq(guidePurchases.paymentId, paymentId))
     .limit(1);
 
   if (isRejectedEvent(event)) {
-    if (existing) {
+    if (existingDetails) {
       await db.update(guidePurchases).set({
         status: 'rejected',
         updatedAt: new Date(),
-      }).where(eq(guidePurchases.id, existing.id));
+      }).where(eq(guidePurchases.id, existingDetails.id));
     }
     return;
   }
   if (!isApprovedEvent(event)) return;
 
   const email = getPathString(data, ['buyer', 'email']);
-  if (existing) {
+  if (existingDetails) {
+    const persistedOfferVariant = existingDetails.offerVariant ?? offerVariant;
     await db.update(guidePurchases).set({
       status: 'approved',
       email,
+      offerVariant: persistedOfferVariant,
       updatedAt: new Date(),
-    }).where(eq(guidePurchases.id, existing.id));
+    }).where(eq(guidePurchases.id, existingDetails.id));
+    await recordConversion(persistedOfferVariant, { purchaseId: existingDetails.id });
     return;
   }
 
-  await db.insert(guidePurchases).values({
+  const [purchase] = await db.insert(guidePurchases).values({
     paymentId,
     email,
     amountCents: GUIDE_PRICE_CENTS,
     status: 'approved',
-  });
+    offerVariant,
+  }).returning({ id: guidePurchases.id });
+  await recordConversion(offerVariant, { purchaseId: purchase?.id });
 }
 
 async function processSubscription(data: JsonRecord, event: string): Promise<void> {
@@ -129,6 +193,7 @@ async function processSubscription(data: JsonRecord, event: string): Promise<voi
   const gatewaySubscriptionId = `${HOTMART_SUBSCRIPTION_PREFIX}${subscriberCode}`;
   const externalReference = gatewaySubscriptionId;
   const email = getPathString(data, ['buyer', 'email']);
+  const offerVariant = getValidatedCtaVariant(data, true);
   const status = isRejectedEvent(event) ? 'canceled' : isApprovedEvent(event) ? 'active' : 'pending';
   const [existing] = await db.select({ id: guideSubscriptions.id })
     .from(guideSubscriptions)
@@ -139,21 +204,36 @@ async function processSubscription(data: JsonRecord, event: string): Promise<voi
     .limit(1);
 
   if (existing) {
+    const [existingDetails] = await db.select({
+      id: guideSubscriptions.id,
+      offerVariant: guideSubscriptions.offerVariant,
+    }).from(guideSubscriptions)
+      .where(eq(guideSubscriptions.id, existing.id))
+      .limit(1);
+    const persistedOfferVariant = existingDetails?.offerVariant ?? offerVariant;
     await db.update(guideSubscriptions).set({
       status,
       email,
+      offerVariant: persistedOfferVariant,
       updatedAt: new Date(),
     }).where(eq(guideSubscriptions.id, existing.id));
+    if (status === 'active') {
+      await recordConversion(persistedOfferVariant, { subscriptionId: existing.id });
+    }
     return;
   }
 
-  await db.insert(guideSubscriptions).values({
+  const [subscription] = await db.insert(guideSubscriptions).values({
     externalReference,
     gatewaySubscriptionId,
     email,
     amountCents: GUIDE_SUBSCRIPTION_PRICE_CENTS,
     status,
-  });
+    offerVariant,
+  }).returning({ id: guideSubscriptions.id });
+  if (status === 'active') {
+    await recordConversion(offerVariant, { subscriptionId: subscription?.id });
+  }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {

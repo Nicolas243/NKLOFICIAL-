@@ -28,6 +28,35 @@ test.describe('catálogo de oportunidades', () => {
       .toHaveAttribute('href', /\/guias\/renda-extra\?cta_variant=[012]$/u);
   });
 
+  test('deduplica a impressão ao fechar e reabrir a mesma oportunidade', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('nkl_tutorial_seen', 'true');
+    });
+    const impressions: Array<{ experiment?: string; eventType?: string; variant?: string }> = [];
+    await page.route('/api/sales/offer-events', async (route) => {
+      if (route.request().method() === 'POST') {
+        const payload = route.request().postDataJSON() as { experiment?: string; eventType?: string; variant?: string };
+        if (payload.experiment === 'program-secondary-cta' && payload.eventType === 'impression') impressions.push(payload);
+        await route.fulfill({ status: 201, body: JSON.stringify({ received: true }) });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.goto('/programas');
+    const openFirstProgram = async (): Promise<void> => {
+      await page.locator('#programs-grid article').first().locator('button').filter({ hasText: 'Ler mais' }).last().click();
+      await expect(page.getByRole('heading', {
+        name: /Melhor renda extra é saber economizar|Ganhe tempo escolhendo melhor|Comece com um plano claro/,
+      })).toBeVisible();
+    };
+    await openFirstProgram();
+    await expect.poll(() => impressions.length).toBe(1);
+    await page.getByRole('dialog', { name: /Detalhes de/ }).getByRole('button', { name: 'Fechar' }).click();
+    await openFirstProgram();
+    await expect.poll(() => impressions.length).toBe(1);
+  });
+
   test('mantém a variante secundária salva no navegador', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('nkl_program_secondary_cta_variant_v1', '1');
@@ -43,12 +72,41 @@ test.describe('catálogo de oportunidades', () => {
 
   test('preserva a oferta com atribuição válida ou inválida', async ({ page }) => {
     await page.goto('/guias/renda-extra?cta_variant=1');
+    await expect(page.locator('#discount-simulator-title')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Guias para Liberdade Financeira' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Começar por R$ 19/mês' })).toBeVisible();
 
     await page.goto('/guias/renda-extra?cta_variant=invalid');
     await expect(page.getByRole('heading', { name: 'Guias para Liberdade Financeira' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Começar por R$ 19/mês' })).toBeVisible();
+  });
+
+  test('atribui o checkout Hotmart quando o link avulso está configurado', async ({ page }) => {
+    const events: Array<{ experiment?: string; variant?: string; eventType?: string }> = [];
+    await page.route('/api/sales/offer-events', async (route) => {
+      if (route.request().method() === 'POST') {
+        events.push(route.request().postDataJSON() as { experiment?: string; variant?: string; eventType?: string });
+        await route.fulfill({ status: 201, body: JSON.stringify({ received: true }) });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.goto('/guias/renda-extra?cta_variant=1');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByRole('button', { name: 'Quero liberar meu acesso' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Quero liberar meu acesso' }).click();
+    const simulatorHotmartLink = page.getByRole('link', { name: 'Pagar com Hotmart' });
+    if (await simulatorHotmartLink.count() === 0) {
+      test.skip(true, 'HOTMART_GUIDE_CHECKOUT_URL não está configurada neste ambiente.');
+    }
+    await expect(simulatorHotmartLink).toHaveAttribute('href', /sck=program-secondary-cta(%3A|:)1/u);
+    await simulatorHotmartLink.click({ noWaitAfter: true });
+    await expect.poll(() => events.some((event) => (
+      event.experiment === 'program-secondary-cta'
+      && event.variant === '1'
+      && event.eventType === 'checkout'
+    ))).toBeTruthy();
   });
 
   test('registra checkout antes da escolha do provedor', async ({ page }) => {

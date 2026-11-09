@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { trackOfferFunnelEvent } from '@/lib/analytics';
+import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
 type Props = {
   offerVariant: string;
@@ -108,9 +109,7 @@ export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$
               <button type="button" onClick={() => void startSubscription()} disabled={isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:opacity-60">
                 {isLoading ? 'Preparando Mercado Pago...' : 'Assinar com Mercado Pago'}
               </button>
-              <a href={hotmartCheckoutUrl} onClick={() => trackOfferFunnelEvent(offerVariant, 'checkout')} className="inline-flex min-h-12 items-center justify-center rounded-md border border-foreground/25 px-4 py-3 text-sm font-bold text-foreground transition hover:border-foreground/50 hover:bg-foreground/5">
-                Assinar com Hotmart
-              </a>
+              <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Assinar com Hotmart" offerVariant={offerVariant} />
             </div>
             {message && <p className="mt-3 text-xs text-red-700 dark:text-red-300" role="alert">{message}</p>}
           </div>

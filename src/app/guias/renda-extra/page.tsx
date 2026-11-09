@@ -63,8 +63,9 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
           </ul>
         </section>
         <aside className="md:sticky md:top-20">
-          <div className="rounded-2xl border border-orange/35 bg-income-surface p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 dark:text-orange-400">Oferta principal</p>
+          <DiscountSimulator offerVariant={purchaseOfferVariant} hotmartCheckoutUrl={env.HOTMART_GUIDE_CHECKOUT_URL} />
+          <div className="mt-5 rounded-2xl border border-border bg-income-surface p-5">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 dark:text-orange-400">Alternativa mensal</p>
             <h2 className="mt-2 font-playfair text-2xl font-bold">Guias para Liberdade Financeira</h2>
             <p className="mt-2 text-sm leading-relaxed text-foreground/70">Acesso mensal ao acervo e a um novo arquivo editorial por semana, com pagamento recorrente de R$ 19.</p>
             <p className="mt-4 font-playfair text-3xl font-bold text-orange-500">R$ 19/mês</p>
@@ -74,9 +75,6 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
                 hotmartCheckoutUrl={env.HOTMART_SUBSCRIPTION_CHECKOUT_URL}
               />
             </div>
-          </div>
-          <div className="mt-5">
-            <DiscountSimulator offerVariant={purchaseOfferVariant} hotmartCheckoutUrl={env.HOTMART_GUIDE_CHECKOUT_URL} />
           </div>
           <p className="mt-4 text-center text-xs leading-relaxed text-foreground/55">Escolha Mercado Pago ou Hotmart. O acesso é liberado após a confirmação.</p>
         </aside>
