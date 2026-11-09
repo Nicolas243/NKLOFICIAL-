@@ -3,20 +3,22 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f7f8fa;
+  --background: #f1f5fb;
   --foreground: #101828;
-  --surface: #ffffff;
-  --income-background: #e7e1d7;
-  --income-surface: #f1ece3;
-  --income-card: #ebe5da;
+  --surface: #fbfdff;
+  --income-background: #e8eef7;
+  --income-surface: #f4f8fd;
+  --income-card: #ffffff;
   --text: #101828;
-  --border: #c8d0dc;
+  --border: #b7c7da;
   --neon: #0B5ED7;
   --neon-dark: #003d99;
   --orange: #f97316;
   --orange-dark: #c2410c;
   --header-bg: rgba(255, 255, 255, 0.95);
   --accent: rgba(30, 144, 255, 0.1);
+  --surface-shadow: 0 8px 24px rgba(30, 62, 100, 0.1);
+  --card-shadow: 0 8px 25px rgba(30, 62, 100, 0.14);
 }
 
 .dark {
@@ -34,6 +36,8 @@
   --orange-dark: #fdba74;
   --header-bg: rgba(10, 10, 10, 0.95);
   --accent: rgba(30, 144, 255, 0.15);
+  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0);
+  --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .radial-menu-mobile-copy {
@@ -152,7 +156,7 @@ body {
 }
 
 .bg-surface {
-  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.06);
+  box-shadow: var(--surface-shadow);
 }
 
 .site-texture {
@@ -179,7 +183,10 @@ body {
 }
 
 .income-parallax-field {
-  background: var(--income-background);
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--orange) 10%, transparent), transparent 34%),
+    radial-gradient(circle at 88% 86%, color-mix(in srgb, var(--neon) 11%, transparent), transparent 38%),
+    var(--income-background);
   contain: paint;
 }
 
@@ -191,14 +198,16 @@ body {
 }
 
 .income-parallax-dots {
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 20%, transparent) 1px, transparent 1.5px);
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--neon) 22%, transparent) 1px, transparent 1.5px),
+    linear-gradient(90deg, color-mix(in srgb, var(--neon) 4%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
-  opacity: 0.3;
+  opacity: 0.34;
 }
 
 .income-parallax-glow {
   filter: blur(72px);
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 .income-parallax-glow span {
@@ -222,10 +231,42 @@ body {
 
 .income-parallax-particles {
   background-image:
-    linear-gradient(118deg, transparent 0 49.5%, color-mix(in srgb, var(--foreground) 10%, transparent) 49.5% 50%, transparent 50%),
+    linear-gradient(118deg, transparent 0 49.5%, color-mix(in srgb, var(--neon) 10%, transparent) 49.5% 50%, transparent 50%),
     radial-gradient(circle, color-mix(in srgb, var(--neon) 22%, transparent) 2px, transparent 2.5px);
   background-size: 180px 180px, 96px 96px;
   background-position: 12px 18px, 42px 8px;
+  opacity: 0.22;
+}
+
+.music-parallax-field {
+  background:
+    radial-gradient(circle at 15% 12%, color-mix(in srgb, var(--orange) 8%, transparent), transparent 36%),
+    radial-gradient(circle at 84% 78%, color-mix(in srgb, var(--neon) 9%, transparent), transparent 42%),
+    var(--background);
+}
+
+.music-parallax-notes,
+.music-parallax-staves,
+.music-parallax-particles {
+  pointer-events: none;
+  position: absolute;
+  inset: -10%;
+}
+
+.music-parallax-notes {
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--orange) 16%, transparent) 1px, transparent 2px);
+  background-size: 112px 112px;
+  opacity: 0.3;
+}
+
+.music-parallax-staves {
+  background-image: repeating-linear-gradient(0deg, color-mix(in srgb, var(--neon) 8%, transparent) 0 1px, transparent 1px 24px);
+  opacity: 0.24;
+}
+
+.music-parallax-particles {
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--neon) 14%, transparent) 1px, transparent 2px);
+  background-size: 76px 76px;
   opacity: 0.22;
 }
 
@@ -349,6 +390,7 @@ height: auto;
 .filters-sidebar,
 .top-controls {
     background-color: var(--surface) !important;
+    box-shadow: var(--surface-shadow);
 }
 
 .site-header.hide {
@@ -913,7 +955,7 @@ input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--surface) inset !im
 ========================================== */
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
 .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; }
-.product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--neon); }
+.product-card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow); border-color: var(--neon); }
 .product-thumb { width: 100%; height: 120px; background: var(--bg); border-radius: 6px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: var(--text); opacity: 0.6; font-style: italic; font-size: 0.9rem; font-weight: bold; border: 1px dashed var(--border); overflow: hidden; text-align: center; padding: 1rem; }
 .product-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; }
 .product-comment { font-size: 0.85rem; font-style: italic; color: var(--text); opacity: 0.8; margin-bottom: 1.2rem; flex-grow: 1; line-height: 1.5; }
@@ -985,7 +1027,7 @@ input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--surface) inset !im
 
 .strings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 .string-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; transition: 0.3s; position: relative; }
-.string-card:hover { transform: translateY(-3px); border-color: var(--neon); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+.string-card:hover { transform: translateY(-3px); border-color: var(--neon); box-shadow: var(--card-shadow); }
 .btn-improve-data { background: rgba(255,255,255,0.05); border: 1px dashed var(--border); color: var(--text); font-size: 0.75rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 8px; transition: 0.2s; }
 .btn-improve-data:hover { background: var(--text); color: var(--bg); border-style: solid; }
 
