@@ -50,6 +50,8 @@ yarn-error.log*
 .vercel
 supabase/.temp/
 
+/.worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
