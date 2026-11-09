@@ -4,9 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Share2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { trackOfferFunnelEvent } from '@/lib/analytics';
 
 type NativeAdCardProps = {
   currentPage: number;
+  experiment?: 'native-card' | 'program-secondary-cta';
+  variant?: string;
+  impressionKey?: string;
 };
 
 type NativeAdStrategy = {
@@ -69,15 +73,62 @@ const strategies = [
   },
 ] as const satisfies readonly NativeAdStrategy[];
 
-export function NativeAdCard({ currentPage }: NativeAdCardProps) {
-  const adIndex = (currentPage - 1) % strategies.length;
-  const ad = strategies[adIndex];
+const secondaryStrategies = [
+  {
+    title: 'Melhor renda extra é saber economizar',
+    description: 'Compare custos, tempo e critérios antes de escolher uma plataforma e evite desperdiçar energia.',
+    tags: ['Comparação prática', 'Decisão clara'],
+    cta: 'Quero começar com clareza',
+    image: '/NKL/nkl-logo.png',
+    imageAlt: 'Guia editorial Portal NKL',
+  },
+  {
+    title: 'Ganhe tempo escolhendo melhor',
+    description: 'Use um mapa prático para separar oportunidades compatíveis com sua rotina das que só parecem promissoras.',
+    tags: ['Mapa prático', 'Mais contexto'],
+    cta: 'Ver o mapa prático',
+    image: '/NKL/nkl-logo.png',
+    imageAlt: 'Mapa prático Portal NKL',
+  },
+  {
+    title: 'Comece com um plano claro',
+    description: 'Siga um roteiro de primeiros passos, aprovação e organização para sair da pesquisa e agir.',
+    tags: ['Primeiros passos', 'Roteiro direto'],
+    cta: 'Montar meu próximo passo',
+    image: '/NKL/nkl-logo.png',
+    imageAlt: 'Plano editorial Portal NKL',
+  },
+] as const satisfies readonly NativeAdStrategy[];
+
+export function NativeAdCard({ currentPage, experiment = 'native-card', variant, impressionKey }: NativeAdCardProps) {
+  const isSecondary = experiment === 'program-secondary-cta';
+  const adIndex = isSecondary
+    ? Math.min(Math.max(Number(variant ?? 0), 0), secondaryStrategies.length - 1)
+    : (currentPage - 1) % strategies.length;
+  const ad = isSecondary ? secondaryStrategies[adIndex] : strategies[adIndex];
+  const offerVariant = isSecondary ? `program-secondary-cta:${adIndex}` : null;
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const hasTrackedImpression = useRef(false);
 
   useEffect(() => {
     if (hasTrackedImpression.current) return;
+    if (impressionKey) {
+      try {
+        const storageKey = `nkl_offer_impression:${impressionKey}`;
+        if (window.sessionStorage.getItem(storageKey)) {
+          hasTrackedImpression.current = true;
+          return;
+        }
+        window.sessionStorage.setItem(storageKey, 'true');
+      } catch (error) {
+        console.error('[NATIVE_CARD] Não foi possível deduplicar impressão:', error instanceof Error ? error.message : 'armazenamento indisponível');
+      }
+    }
     hasTrackedImpression.current = true;
+    if (offerVariant) {
+      trackOfferFunnelEvent(offerVariant, 'impression');
+      return;
+    }
     void fetch('/api/sales/offer-events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -85,10 +136,14 @@ export function NativeAdCard({ currentPage }: NativeAdCardProps) {
     }).catch((error: unknown) => {
       console.error('[NATIVE_CARD] Falha ao registrar impressão:', error instanceof Error ? error.message : 'erro desconhecido');
     });
-  }, [adIndex]);
+  }, [adIndex, impressionKey, offerVariant]);
+
+  const href = isSecondary
+    ? `/guias/renda-extra?cta_variant=${adIndex}`
+    : `/guias/renda-extra?ad_variant=${adIndex}`;
 
   async function shareCard(): Promise<void> {
-    const url = `${window.location.origin}/guias/renda-extra?ad_variant=${adIndex}`;
+    const url = `${window.location.origin}${href}`;
     try {
       if (navigator.share) {
         await navigator.share({
@@ -114,7 +169,7 @@ export function NativeAdCard({ currentPage }: NativeAdCardProps) {
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-neon">Conteúdo Premium</p>
-            <Link href={`/guias/renda-extra?ad_variant=${adIndex}`} className="relative z-20 block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500">
+            <Link href={href} onClick={() => { if (offerVariant) trackOfferFunnelEvent(offerVariant, 'click'); }} className="relative z-20 block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500">
               <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{ad.title}</h2>
             </Link>
           </div>
@@ -136,15 +191,15 @@ export function NativeAdCard({ currentPage }: NativeAdCardProps) {
                 </span>
               ))}
             </div>
-            <Link href={`/guias/renda-extra?ad_variant=${adIndex}`} className="relative z-20 inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neon/40 bg-white p-1.5" aria-label={`Abrir oferta: ${ad.title}`}>
+            <Link href={href} onClick={() => { if (offerVariant) trackOfferFunnelEvent(offerVariant, 'click'); }} className="relative z-20 inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neon/40 bg-white p-1.5" aria-label={`Abrir oferta: ${ad.title}`}>
               <Image src={ad.image} alt={ad.imageAlt} width={64} height={64} className="h-full w-full object-contain" />
             </Link>
           </div>
           <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
-            <Link href={`/guias/renda-extra?ad_variant=${adIndex}`} className="relative z-20 inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon">
+            <Link href={href} onClick={() => { if (offerVariant) trackOfferFunnelEvent(offerVariant, 'click'); }} className="relative z-20 inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon">
               Ler mais
             </Link>
-            <Link href={`/guias/renda-extra?ad_variant=${adIndex}`} className="relative z-20 inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
+            <Link href={href} onClick={() => { if (offerVariant) trackOfferFunnelEvent(offerVariant, 'click'); }} className="relative z-20 inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
               {ad.cta}
             </Link>
             <button type="button" onClick={() => void shareCard()} className="relative z-20 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10" aria-label={`Compartilhar ${ad.title}`} title="Compartilhar oferta">

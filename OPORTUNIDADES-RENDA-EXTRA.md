@@ -100,7 +100,7 @@ pagamento e autorização de uso de imagem.
 - **Idiomas:** Português
 - **Tags:** estrategias-de-conteudo; ia; video; renda-passiva; trabalho-remoto
 - **Link oficial:** https://www.youtube.com/creators/
-- **Link de afiliado:** Não cadastrado
+- **Link de afiliado:** https://www.fiverr.com/pe/gvv64y9
 
 Esta estratégia combina pesquisa, roteiro, revisão humana, edição e distribuição de vídeos
 sem exigir que a pessoa apareça na câmera. Crescimento e monetização não são garantidos:
@@ -381,6 +381,7 @@ avaliações. Não copie trabalhos de terceiros e confirme o escopo antes de ace
 - **Tags:** remoto; freelance; digital; gravar vídeos em casa
 - **Link oficial:** https://flambra.com/
 - **Link de afiliado:** Não cadastrado
+- **Código informado para tarefas residenciais do Minute:** `MHT3TVKF`
 
 ### O que é
 

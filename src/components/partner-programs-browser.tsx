@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, CalendarPlus, Play, Share2 } from 'lucide-react';
+import { BellPlus, CalendarPlus, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
 import { ClipboardCopy } from '@/components/ui/clipboard-copy';
@@ -12,9 +12,12 @@ import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
 import { NativeAdCard } from '@/components/income/native-ad-card';
+import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
+import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
+import { ProgramStrategies } from '@/components/income/program-strategies';
 import { SmartTagList } from '@/components/income/smart-tag-list';
-import { LeadCaptureForm } from '@/components/income/lead-capture-form';
 import { SocialEmbed } from '@/components/video/social-embed';
+import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -145,36 +148,6 @@ const ALIGNERR_PROJECTS = [
     href: 'https://app.alignerr.com/signin?referral-code=5b904321-66d0-4369-bf89-5b230408747a&program=b7f918c0-4ef7-11f1-9dec-3d76718b1a77&referralJobId=f4b9a0e2-e6c2-4388-b01d-b7655b313d9b',
   },
 ];
-const MARKETPLACE_STRATEGIES = [
-  {
-    title: 'Estratégia 1 · Um nicho, uma vitrine',
-    steps: [
-      'Escolha um tema que você realmente conhece, como cozinha econômica, beleza ou acessórios para celular.',
-      'Compare produtos em pelo menos dois marketplaces e anote preço, avaliação, frete e prazo.',
-      'Publique uma seleção curta com contexto real: para quem serve, o que observar e qual é a limitação.',
-      'Atualize os links quando o preço ou o estoque mudar; confiança vale mais que volume.',
-    ],
-  },
-  {
-    title: 'Estratégia 2 · Conteúdo que resolve uma dúvida',
-    steps: [
-      'Anote cinco perguntas que as pessoas fazem antes de comprar no seu nicho.',
-      'Transforme cada pergunta em um vídeo curto, carrossel ou mensagem explicativa.',
-      'Mostre o produto em uso e indique alternativas para orçamentos diferentes.',
-      'Use o link de afiliado apenas depois de entregar a resposta, sem prometer economia garantida.',
-    ],
-  },
-  {
-    title: 'Estratégia 3 · Rotina de ofertas úteis',
-    steps: [
-      'Crie uma lista pequena de ofertas verificadas para compartilhar em um grupo ou canal próprio.',
-      'Defina um limite, como três recomendações por semana, para não virar spam.',
-      'Registre cliques, vendas e dúvidas recebidas para entender o que realmente ajuda seu público.',
-      'Remova ofertas expiradas e deixe claro quando houver comissão ou publicidade.',
-    ],
-  },
-];
-
 export function PartnerProgramsBrowser({ programs, initialObjective, initialCurrency, initialEnglish }: Props) {
   const [suggestionState, suggestionAction] = useActionState(submitSuggestionAction, INITIAL_FORM_STATE);
   const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
@@ -187,7 +160,6 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDiscoveryTag, setSelectedDiscoveryTag] = useState<string | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
   const [expandedDescriptionSlugs, setExpandedDescriptionSlugs] = useState<string[]>([]);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
@@ -228,10 +200,11 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
     }
 
     document.addEventListener('keydown', handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
       previousFocus?.focus();
     };
   }, [selectedProgram, reminderProgram]);
@@ -268,7 +241,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
     });
 
     return [...filtered].sort((left, right) => {
-      if (sort === 'relevancia') return left.name.localeCompare(right.name, 'pt-BR');
+      if (sort === 'relevancia') return comparePartnerProgramRelevance(left, right);
 
       const comparison = sort === 'nome'
         ? left.name.localeCompare(right.name, 'pt-BR')
@@ -294,7 +267,6 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
   function openProgram(program: PartnerProgramCard): void {
     setSelectedProgram(program);
     setShowReviewForm(false);
-    setShowVideo(false);
     setShowReferralModal(false);
   }
 
@@ -644,8 +616,8 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
       </section>
 
       {reminderProgram && (
-        <div ref={dialogRef} className="fixed inset-0 z-[230] flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Criar lembrete para ${reminderProgram.name}`}>
-          <div className="w-full max-w-md rounded-2xl border border-border bg-income-surface p-6 shadow-2xl">
+        <div ref={dialogRef} className="fixed inset-0 z-[230] flex items-center justify-center bg-black/75 p-4" role="dialog" aria-modal="true" aria-label={`Criar lembrete para ${reminderProgram.name}`} onMouseDown={(event) => { if (event.target === event.currentTarget) setReminderProgram(null); }}>
+          <div className="w-full max-w-md rounded-2xl border border-border bg-income-surface p-6 shadow-2xl" onMouseDown={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não deixe para depois</p>
@@ -675,8 +647,8 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
       )}
 
       {selectedProgram && (
-        <div ref={dialogRef} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`}>
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-income-surface p-6">
+        <div ref={dialogRef} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProgram(null); }}>
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-income-surface p-6" onMouseDown={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-wide text-neon font-bold">{selectedProgram.category}</p>
@@ -694,6 +666,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 <p className="mt-1 text-lg font-bold">{selectedProgram.earningPotential ?? selectedProgram.averageEarning}</p>
               </div>
             </div>
+            <ProgramSecondaryOffer programSlug={selectedProgram.slug} currentPage={safeCurrentPage} />
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
                 Abrir página completa
@@ -701,22 +674,14 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
                 {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
               </button>
-              <button type="button" onClick={() => setShowVideo((visible) => !visible)} className="inline-flex min-h-11 items-center gap-2 rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
-                <Play size={16} aria-hidden="true" />
-                {showVideo ? 'Ocultar vídeo' : 'Vídeo'}
-              </button>
-            </div>
-            <div className="mt-5">
-              <LeadCaptureForm program={selectedProgram} />
-            </div>
-            <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
-            {showVideo && (
               <SocialEmbed
                 youtubeId={selectedProgram.youtubeVideoId}
                 tiktokId={selectedProgram.tiktokVideoId}
                 programName={selectedProgram.name}
+                triggerLabel="Ver vídeo"
               />
-            )}
+            </div>
+            <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
             {selectedProgram.slug === 'claru-ia' && (
               <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm font-bold">Você tem uma empresa e quer divulgá-la?</p>
@@ -777,19 +742,10 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                     </li>
                   ))}
                 </ul>
-                <div className="mt-5 space-y-2">
-                  <p className="text-sm font-bold">Três estratégias para começar</p>
-                  {MARKETPLACE_STRATEGIES.map((strategy) => (
-                    <details key={strategy.title} className="rounded-md border border-border px-3 py-2">
-                      <summary className="cursor-pointer text-sm font-bold">{strategy.title}</summary>
-                      <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-relaxed opacity-80">
-                        {strategy.steps.map((step) => <li key={step}>{step}</li>)}
-                      </ol>
-                    </details>
-                  ))}
-                </div>
               </section>
             )}
+            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} />
+            <ProgramStrategies slug={selectedProgram.slug} category={selectedProgram.category} tags={selectedProgram.tags} />
             {extractReferralCode(selectedProgram.longDescription) && (
               <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
                 <div>

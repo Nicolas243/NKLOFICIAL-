@@ -33,6 +33,7 @@ export function Footer() {
   const [toast, setToast] = useState<string | null>(null);
   const [whatsappMessageIndex, setWhatsappMessageIndex] = useState(0);
   const [showWhatsappMessage, setShowWhatsappMessage] = useState(false);
+  const [captureStatus, setCaptureStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (window.sessionStorage.getItem(COMMUNITY_NOTIFICATION_KEY)) return;
@@ -61,14 +62,26 @@ export function Footer() {
     }
   }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    // Captura Formspree - fetch nativo
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    fetch('https://formspree.io/f/maqzkwwb', { method: 'POST', body: data, headers: { Accept: 'application/json' } })
-      .then(() => { alert('Obrigado! Enviaremos o material em breve.'); form.reset(); })
-      .catch(() => { alert('Erro ao enviar. Tente novamente.'); });
+    setCaptureStatus(null);
+    try {
+      const response = await fetch('https://formspree.io/f/maqzkwwb', {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        setCaptureStatus('Não foi possível enviar agora. Tente novamente em instantes.');
+        return;
+      }
+      form.reset();
+      setCaptureStatus('Obrigado! Enviaremos o material em breve.');
+    } catch {
+      setCaptureStatus('Não foi possível enviar agora. Tente novamente em instantes.');
+    }
   };
 
   return (
@@ -93,7 +106,15 @@ export function Footer() {
             <form className="capture-form" onSubmit={handleSubmit}>
               <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
               <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
+              <label className="flex items-start gap-2 text-left text-xs opacity-75">
+                <input type="checkbox" name="privacyConsent" value="yes" required className="mt-0.5 accent-neon" />
+                <span>
+                  Autorizo o envio do material e o tratamento desses dados para essa finalidade.
+                  Consulte a <Link href="/privacidade" className="font-bold text-neon hover:underline">Política de Privacidade</Link>.
+                </span>
+              </label>
               <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
+              {captureStatus && <p className="text-sm opacity-80" role="status">{captureStatus}</p>}
             </form>
           </div>
         )}
@@ -111,9 +132,11 @@ export function Footer() {
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
             <p>{isPartnerPortal ? 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.' : 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.'}</p>
-            <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200" style={{ flex: 1 }}>Apoiar por Pix</button>
+            <div className="flex w-full flex-wrap gap-2">
+              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar NKL</a>
+              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar por Pix</button>
+              <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Buy Me a Coffee</a>
+              <a href="https://www.buymeacoffee.com/invite/ni2co3san9c" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Convidar no Buy Me a Coffee</a>
             </div>
           </div>
         </div>

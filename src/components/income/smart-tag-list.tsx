@@ -19,7 +19,6 @@ function isTagClicks(value: unknown): value is TagClicks {
 
 export function SmartTagList({ tags }: SmartTagListProps) {
   const [tagClicks, setTagClicks] = useState<TagClicks>({});
-  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(TAG_CLICKS_KEY);
@@ -56,7 +55,7 @@ export function SmartTagList({ tags }: SmartTagListProps) {
 
   return (
     <div className="min-w-0">
-      <div className={`flex flex-wrap content-start gap-1.5 ${isExpanded ? '' : 'max-h-[5.25rem] overflow-hidden'}`}>
+      <div data-testid="program-tags" className="flex flex-wrap content-start gap-1.5">
         {orderedTags.map((tag) => (
           <button
             key={tag}
@@ -78,18 +77,6 @@ export function SmartTagList({ tags }: SmartTagListProps) {
           </button>
         ))}
       </div>
-      {orderedTags.length > 4 && (
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            setIsExpanded((expanded) => !expanded);
-          }}
-          className="mt-1 min-h-8 text-xs font-bold text-orange-500 underline decoration-orange-500/40 underline-offset-2 hover:text-orange-400"
-        >
-          {isExpanded ? 'Ler menos' : 'Ler mais'}
-        </button>
-      )}
     </div>
   );
 }

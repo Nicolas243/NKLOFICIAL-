@@ -269,7 +269,7 @@ const partnerSeeds: PartnerSeed[] = [
     difficulty: 'médio',
     tags: ['freelance', 'serviços', 'internacional', 'remoto', 'vender serviços', 'trabalhar pela internet'],
     websiteUrl: 'https://www.fiverr.com/',
-    affiliateUrl: 'https://www.fiverr.com/pe/AGGXVpq',
+    affiliateUrl: 'https://www.fiverr.com/pe/gvv64y9',
     editorialRating: 8,
     editorialSource: 'Nota editorial inicial do Portal NKL, baseada em reputação pública geral.',
   },
