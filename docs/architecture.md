@@ -71,3 +71,9 @@ As regras de reconhecimento de contexto ficam centralizadas em `src/lib/income-p
   confirmados pelos webhooks. Google Analytics e PostHog recebem os eventos somente após consentimento,
   sem e-mail, URL de afiliado ou dados livres; o mínimo de 40 impressões por variante é uma limitação
   operacional, não uma conclusão estatística.
+- A oferta secundária é uma superfície compacta e retangular exibida somente no modal e na página
+  individual da oportunidade; os cards iniciais de `/programas` não a renderizam.
+- O disclosure de parceria é um `<details>` fechado por padrão, com o resumo “Sobre links de parceria”,
+  e mantém o texto legal acessível quando expandido.
+- O convite “Convidar no Buy Me a Coffee” é escopado ao slug da oportunidade correspondente e não é
+  renderizado no rodapé nem em oportunidades não relacionadas.

@@ -97,3 +97,13 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
 - `npm run build`: passou; permanecem os avisos conhecidos de acesso dinâmico ao filesystem em `/api/downloads/guide` e falhas de consulta de diretórios sem banco local.
 - `npm run verify`: passou (lint, tipagem e build).
 - A cobertura Hotmart valida `sck` somente para `program-secondary-cta:0|1|2`; a verificação de clique foi ignorada sem URL Hotmart local. O webhook lê `purchase.origin.sck`/`subscription.origin.sck` (com fallback direto `sck`) e não cria conversão para valores fora do contrato.
+
+## Catálogo — oferta secundária e disclosure (2026-11-09)
+
+- `npx playwright test e2e/program-catalog.spec.ts --reporter=line`: a execução inicial teve 13 testes passados e 1 ignorado porque `HOTMART_GUIDE_CHECKOUT_URL` não estava configurada no ambiente local. Duas repetições locais expuseram uma instabilidade preexistente: o tutorial e o aviso de privacidade ocasionalmente interceptam o clique do teste da página individual antes do timeout.
+- `CI=1 npx playwright test e2e/program-catalog.spec.ts --reporter=line`: 13 testes passaram e 1 foi ignorado (o mesmo provedor Hotmart); as tentativas CI habilitadas concluíram a suíte.
+- A suíte confirmou que a oferta secundária compacta aparece somente no modal e na página individual da oportunidade; os cards iniciais permanecem focados em descoberta.
+- O disclosure de parceria usa `<details>` fechado por padrão e revela o texto legal somente após a ativação de “Sobre links de parceria”.
+- O convite “Convidar no Buy Me a Coffee” aparece apenas na oportunidade correspondente, não no rodapé nem em uma oportunidade não relacionada.
+- `npm run verify`: passou (lint, tipagem e build); permanecem os 12 warnings legados em `AntigoNKL/` e os avisos conhecidos de acesso dinâmico ao filesystem e diretórios sem dados locais.
+- Não houve deploy nem verificação HTTP de produção: o repositório não fornece um comando aprovado de deploy Vercel e a publicação exige aprovação explícita.
