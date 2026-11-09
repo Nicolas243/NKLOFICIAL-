@@ -106,4 +106,5 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
 - O disclosure de parceria usa `<details>` fechado por padrão e revela o texto legal somente após a ativação de “Sobre links de parceria”.
 - O convite “Convidar no Buy Me a Coffee” aparece apenas na oportunidade correspondente, não no rodapé nem em uma oportunidade não relacionada.
 - `npm run verify`: passou (lint, tipagem e build); permanecem os 12 warnings legados em `AntigoNKL/` e os avisos conhecidos de acesso dinâmico ao filesystem e diretórios sem dados locais.
-- Não houve deploy nem verificação HTTP de produção: o repositório não fornece um comando aprovado de deploy Vercel e a publicação exige aprovação explícita.
+- Deploy aprovado pelo usuário com `npx vercel --prod --yes`: `dpl_G8gynoBbqWQzx6PHD9PgNjzTwfNx`, estado `READY`, produção em `https://nkloficial.com.br`.
+- Verificação HTTP pós-deploy: `/programas`, `/programas/monetizacao-atencao-web`, `/programas/mercado-pago` e `/guias/renda-extra` retornaram HTTP 200. O convite do Buy Me a Coffee apareceu somente na oportunidade correspondente e o resumo de parceria permaneceu disponível nas páginas de oportunidade.
