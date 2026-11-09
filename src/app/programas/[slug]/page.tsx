@@ -16,6 +16,8 @@ type Params = Promise<{ slug: string }>;
 export const dynamicParams = true;
 export const dynamic = 'force-dynamic';
 const UTEST_STRATEGIC_TIP = 'Dica: ao responder formulários de novos projetos, informe quando você foi indicado por uma referência experiente, se isso for verdadeiro e puder ser comprovado.';
+const BUY_ME_A_COFFEE_SLUG = 'monetizacao-atencao-web';
+const BUY_ME_A_COFFEE_INVITE_URL = 'https://www.buymeacoffee.com/invite/ni2co3san9c';
 
 async function loadProgram(slug: string) {
   return getPartnerProgramBySlug(slug);
@@ -151,6 +153,19 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
               <h2 className="font-playfair text-3xl font-bold">Como funciona</h2>
               <p className="mt-4 whitespace-pre-line text-base leading-relaxed opacity-80">{program.longDescription}</p>
               <ProgramSecondaryOffer programSlug={program.slug} currentPage={1} />
+              {program.slug === BUY_ME_A_COFFEE_SLUG && (
+                <section className="mt-5 rounded-xl border border-neon/25 bg-neon/5 p-5">
+                  <p className="text-sm leading-relaxed">Convide outras pessoas para conhecer esta oportunidade.</p>
+                  <OutboundLink
+                    href={BUY_ME_A_COFFEE_INVITE_URL}
+                    trackingId="buy-me-a-coffee-invite"
+                    sponsored
+                    className="mt-3 inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90"
+                  >
+                    Convidar no Buy Me a Coffee
+                  </OutboundLink>
+                </section>
+              )}
               <SocialEmbed youtubeId={program.youtubeVideoId} tiktokId={program.tiktokVideoId} programName={program.name} />
               {program.slug === 'utest' && (
                 <section className="mt-6 rounded-xl border border-orange/35 bg-orange/5 p-5">

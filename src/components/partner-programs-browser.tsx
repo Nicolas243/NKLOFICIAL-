@@ -133,6 +133,8 @@ const MARKETPLACE_AFFILIATE_LINKS = [
 ];
 
 const CLARU_PARTNER_URL = 'https://app.claru.ai/signup?ref=yzv3jv9q&mode=partner';
+const BUY_ME_A_COFFEE_SLUG = 'monetizacao-atencao-web';
+const BUY_ME_A_COFFEE_INVITE_URL = 'https://www.buymeacoffee.com/invite/ni2co3san9c';
 const ALIGNERR_PROJECTS = [
   {
     title: 'Senior Software Engineer',
@@ -664,6 +666,19 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               </div>
             </div>
             <ProgramSecondaryOffer programSlug={selectedProgram.slug} currentPage={safeCurrentPage} />
+            {selectedProgram.slug === BUY_ME_A_COFFEE_SLUG && (
+              <section className="mt-4 rounded-lg border border-neon/25 bg-neon/5 p-4">
+                <p className="text-sm leading-relaxed">Convide outras pessoas para conhecer esta oportunidade.</p>
+                <OutboundLink
+                  href={BUY_ME_A_COFFEE_INVITE_URL}
+                  trackingId="buy-me-a-coffee-invite"
+                  sponsored
+                  className="mt-3 inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90"
+                >
+                  Convidar no Buy Me a Coffee
+                </OutboundLink>
+              </section>
+            )}
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
                 Abrir página completa

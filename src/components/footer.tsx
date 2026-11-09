@@ -136,7 +136,6 @@ export function Footer() {
               <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar NKL</a>
               <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar por Pix</button>
               <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Buy Me a Coffee</a>
-              <a href="https://www.buymeacoffee.com/invite/ni2co3san9c" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Convidar no Buy Me a Coffee</a>
             </div>
           </div>
         </div>

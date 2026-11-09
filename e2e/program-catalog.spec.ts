@@ -18,17 +18,40 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.getByRole('dialog', { name: /Detalhes de/ })).toBeVisible();
   });
 
-  test('recolhe a transparência editorial até o usuário abrir Ler mais', async ({ page }) => {
+  test('mantém o disclosure de transparência editorial recolhido até o usuário ativar o resumo', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('nkl_tutorial_seen', 'true');
     });
     await page.goto('/programas');
 
-    const transparency = page.getByText('Sobre links de parceria', { exact: true });
+    const transparency = page.locator('details').filter({ hasText: 'Sobre links de parceria' });
     await expect(transparency).toBeVisible();
+    await expect(transparency).not.toHaveAttribute('open', '');
     await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).not.toBeVisible();
-    await transparency.click();
+    await transparency.getByText('Sobre links de parceria', { exact: true }).click();
     await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).toBeVisible();
+  });
+
+  test('limita o convite do Buy Me a Coffee à oportunidade correspondente', async ({ page }) => {
+    const inviteLink = page.getByRole('link', { name: 'Convidar no Buy Me a Coffee' });
+
+    await page.goto('/programas');
+    await expect(page.locator('footer')).not.toContainText('Convidar no Buy Me a Coffee');
+
+    await page.locator('#search-input').fill('Buy Me a Coffee');
+    const buyMeACoffeeCard = page.locator('#programs-grid article').filter({ hasText: 'Buy Me a Coffee' });
+    await expect(buyMeACoffeeCard).toHaveCount(1);
+    await buyMeACoffeeCard.getByRole('button', { name: 'Ler mais' }).click();
+    const opportunityDialog = page.getByRole('dialog', { name: /Detalhes de/ });
+    await expect(opportunityDialog.getByRole('link', { name: 'Convidar no Buy Me a Coffee' }))
+      .toHaveAttribute('href', 'https://www.buymeacoffee.com/invite/ni2co3san9c');
+
+    await page.goto('/programas/monetizacao-atencao-web');
+    await expect(inviteLink).toHaveAttribute('href', 'https://www.buymeacoffee.com/invite/ni2co3san9c');
+    await expect(inviteLink).toHaveAttribute('rel', /noopener noreferrer sponsored/u);
+
+    await page.goto('/programas/mercado-pago');
+    await expect(page.locator('body')).not.toContainText('Convidar no Buy Me a Coffee');
   });
 
   test('encerra o tutorial ao clicar no elemento destacado e mantém a ação', async ({ page }) => {
