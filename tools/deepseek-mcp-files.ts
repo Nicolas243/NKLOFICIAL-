@@ -265,8 +265,17 @@ async function openDirectoryAtUse(
       throw new Error("Workspace directory changed while opening");
     }
 
-    const directory = await opendir(target, { bufferSize: 1 });
-    return { directory, anchor, path: target };
+    const directory = await openDirectoryCursor(anchor, target);
+    try {
+      await assertDirectoryAnchor(
+        { directory, anchor, path: target },
+        workspaceRoot,
+      );
+      return { directory, anchor, path: target };
+    } catch (error) {
+      await directory.close();
+      throw error;
+    }
   } catch (error) {
     await anchor.close();
     if (isNotDirectoryError(error)) {
@@ -274,6 +283,24 @@ async function openDirectoryAtUse(
     }
     throw error;
   }
+}
+
+async function openDirectoryCursor(
+  anchor: FileHandle,
+  target: string,
+): Promise<Dir> {
+  const handlePath = directoryHandlePath(anchor);
+  return opendir(handlePath ?? target, { bufferSize: 1 });
+}
+
+function directoryHandlePath(anchor: FileHandle): string | undefined {
+  if (process.platform === "linux") {
+    return `/proc/self/fd/${anchor.fd}`;
+  }
+  if (process.platform === "darwin" || process.platform.endsWith("bsd")) {
+    return `/dev/fd/${anchor.fd}`;
+  }
+  return undefined;
 }
 
 async function closeDirectory(directory: SecureDirectory): Promise<void> {
@@ -309,6 +336,10 @@ async function visitDirectory(
     if (!entry) {
       return false;
     }
+    await assertDirectoryAnchor(
+      directory,
+      workspaceRoot,
+    );
     if (files.length >= maxEntries) {
       return true;
     }
