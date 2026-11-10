@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { login, registerWithProfile } from '@/actions/auth'
+import { login, registerWithProfile, retryProfileSync } from '@/actions/auth'
 import { GoogleSignInButton } from '@/components/auth/google-signin-button'
 
 const INPUT = 'p-3.5 bg-black/20 border border-white/10 rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40 transition-all'
@@ -24,6 +24,7 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
   const [error, setError] = useState<string | null>(serverError)
   const [isPending, startTransition] = useTransition()
   const [pw, setPw] = useState('')
+  const [profileSyncPending, setProfileSyncPending] = useState(false)
 
   const isRedirect = (err: unknown): boolean => {
     // redirect() do Next lança erro com digest "NEXT_REDIRECT" — deve
@@ -58,10 +59,30 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
     })
   }
 
+  const handleProfileSyncRetry = () => {
+    setProfileSyncPending(true)
+    startTransition(async () => {
+      const result = await retryProfileSync()
+      if (result.error) {
+        setError(result.error)
+      } else {
+        window.location.assign('/')
+      }
+      setProfileSyncPending(false)
+    })
+  }
+
   return (
     <form className="flex flex-col gap-4" action={isRegistering ? handleRegister : handleLogin}>
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">{error}</div>
+        <div className="flex flex-col gap-3 p-4 bg-red-500/10 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
+          <span>{error}</span>
+          {(serverError?.includes('sincronizar') || serverError === 'oauth_callback_failed') && (
+            <button type="button" onClick={handleProfileSyncRetry} disabled={profileSyncPending} className="rounded-md border border-red-400/60 px-3 py-2 font-bold hover:bg-red-400/10 disabled:opacity-50">
+              {profileSyncPending ? 'Tentando novamente...' : 'Tentar sincronizar novamente'}
+            </button>
+          )}
+        </div>
       )}
 
       <input type="email" name="email" placeholder="E-mail" required autoComplete="email" className={INPUT} />

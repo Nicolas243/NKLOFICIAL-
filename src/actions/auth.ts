@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
+import { getLoginErrorMessage } from '@/lib/auth/errors';
+import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
 
 /**
  * IDENTIDADE (LGPD / integridade do grafo): o `user_profiles` DEVE ser
@@ -71,20 +73,15 @@ export async function login(formData: FormData) {
   const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect('/login?error=Credenciais inválidas');
+    redirect(`/login?error=${encodeURIComponent(getLoginErrorMessage(error))}`);
   }
 
   // Usuários legados podem não ter user_profiles (perfil nascia só no bootstrap
   // luthier). Garantir a linha de identidade no login evita FKs quebradas.
   if (data.user?.id) {
-    try {
-      await upsertUserProfile({
-        userId: data.user.id,
-        email: data.user.email ?? email,
-        role: 'user',
-      });
-    } catch (profileError) {
-      console.error('[login] Falha ao garantir perfil:', profileError);
+    const profileSync = await syncAuthenticatedProfile(data.user);
+    if (!profileSync.ok) {
+      redirect(`/login?error=${encodeURIComponent(profileSync.message)}`);
     }
   }
 
@@ -194,4 +191,16 @@ export async function signout() {
   
   revalidatePath('/', 'layout');
   redirect('/');
+}
+
+export async function retryProfileSync(): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data.user) {
+    return { error: 'Sua sessão expirou. Entre novamente para sincronizar o perfil.' };
+  }
+
+  const result = await syncAuthenticatedProfile(data.user);
+  return result.ok ? {} : { error: result.message };
 }
