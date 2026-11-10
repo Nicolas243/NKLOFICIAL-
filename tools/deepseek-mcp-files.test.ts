@@ -143,16 +143,26 @@ test("does not expose the API key in configuration errors", () => {
 });
 
 test("lists and reads a relative source path", async () => {
-  const listed = await listWorkspaceFiles({
-    path: path.join(fixtureRelativeRoot, "src"),
-  });
-  assert.equal(listed.truncated, false);
-  assert.equal(
-    listed.files.includes(
-      path.join(fixtureRelativeRoot, "src", "source.ts").split(path.sep).join("/"),
-    ),
-    true,
-  );
+  if (supportsHandleBackedDirectoryListing()) {
+    const listed = await listWorkspaceFiles({
+      path: path.join(fixtureRelativeRoot, "src"),
+    });
+    assert.equal(listed.truncated, false);
+    assert.equal(
+      listed.files.includes(
+        path
+          .join(fixtureRelativeRoot, "src", "source.ts")
+          .split(path.sep)
+          .join("/"),
+      ),
+      true,
+    );
+  } else {
+    await assert.rejects(
+      listWorkspaceFiles({ path: path.join(fixtureRelativeRoot, "src") }),
+      /handle-backed directory API/,
+    );
+  }
 
   const result = await readWorkspaceFile({
     path: path.join(fixtureRelativeRoot, "src", "source.ts"),
@@ -192,6 +202,13 @@ test("rejects symlink escapes", async (t) => {
 });
 
 test("does not list entries exposed through a symlinked directory", async (t) => {
+  if (!supportsHandleBackedDirectoryListing()) {
+    await assert.rejects(
+      listWorkspaceFiles({ path: fixtureRelativeRoot }),
+      /handle-backed directory API/,
+    );
+    return;
+  }
   if (!symlinkAvailable) {
     t.skip("symbolic links are unavailable in this environment");
     return;
@@ -220,18 +237,25 @@ test("rejects sensitive workspace paths", async () => {
 });
 
 test("sets truncated when directory and file limits are reached", async () => {
-  const empty = await listWorkspaceFiles({
-    path: path.join(fixtureRelativeRoot, "src"),
-    maxEntries: 0,
-  });
-  assert.deepEqual(empty, { files: [], truncated: true });
+  if (supportsHandleBackedDirectoryListing()) {
+    const empty = await listWorkspaceFiles({
+      path: path.join(fixtureRelativeRoot, "src"),
+      maxEntries: 0,
+    });
+    assert.deepEqual(empty, { files: [], truncated: true });
 
-  const listed = await listWorkspaceFiles({
-    path: path.join(fixtureRelativeRoot, "src"),
-    maxEntries: 1,
-  });
-  assert.equal(listed.files.length, 1);
-  assert.equal(listed.truncated, true);
+    const listed = await listWorkspaceFiles({
+      path: path.join(fixtureRelativeRoot, "src"),
+      maxEntries: 1,
+    });
+    assert.equal(listed.files.length, 1);
+    assert.equal(listed.truncated, true);
+  } else {
+    await assert.rejects(
+      listWorkspaceFiles({ path: path.join(fixtureRelativeRoot, "src") }),
+      /handle-backed directory API/,
+    );
+  }
 
   const result = await readWorkspaceFile({
     path: path.join(fixtureRelativeRoot, "src", "large.txt"),
@@ -241,6 +265,42 @@ test("sets truncated when directory and file limits are reached", async () => {
   assert.equal(result.truncated, true);
 });
 
+test("refuses directory listing when handle-backed APIs are unavailable", async () => {
+  await withPlatform("win32", async () => {
+    await assert.rejects(
+      listWorkspaceFiles({ path: fixtureRelativeRoot }),
+      /handle-backed directory API/,
+    );
+  });
+});
+
 function cLineEnv(values: Record<string, string>): NodeJS.ProcessEnv {
   return values as NodeJS.ProcessEnv;
+}
+
+function supportsHandleBackedDirectoryListing(): boolean {
+  return (
+    process.platform === "linux" ||
+    process.platform === "darwin" ||
+    process.platform.endsWith("bsd")
+  );
+}
+
+async function withPlatform(
+  platform: NodeJS.Platform,
+  callback: () => Promise<void>,
+): Promise<void> {
+  const originalPlatform = process.platform;
+  Object.defineProperty(process, "platform", {
+    configurable: true,
+    value: platform,
+  });
+  try {
+    await callback();
+  } finally {
+    Object.defineProperty(process, "platform", {
+      configurable: true,
+      value: originalPlatform,
+    });
+  }
 }

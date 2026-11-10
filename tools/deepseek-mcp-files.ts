@@ -8,6 +8,8 @@ const DEFAULT_MAX_ENTRIES = 200;
 const MAX_ENTRIES = 1_000;
 const DEFAULT_MAX_BYTES = 64 * 1024;
 const MAX_BYTES = 1024 * 1024;
+const HANDLE_BACKED_DIRECTORY_LISTING_ERROR =
+  "Workspace directory listing requires a handle-backed directory API";
 
 const blockedFileNames = new Set([
   "credentials",
@@ -109,7 +111,8 @@ export async function listWorkspaceFiles(input: {
   } catch (error) {
     if (
       error instanceof Error &&
-      error.message === "Workspace path is not a readable directory"
+      (error.message === "Workspace path is not a readable directory" ||
+        error.message === HANDLE_BACKED_DIRECTORY_LISTING_ERROR)
     ) {
       throw error;
     }
@@ -265,7 +268,7 @@ async function openDirectoryAtUse(
       throw new Error("Workspace directory changed while opening");
     }
 
-    const directory = await openDirectoryCursor(anchor, target);
+    const directory = await openDirectoryCursor(anchor);
     try {
       await assertDirectoryAnchor(
         { directory, anchor, path: target },
@@ -287,10 +290,12 @@ async function openDirectoryAtUse(
 
 async function openDirectoryCursor(
   anchor: FileHandle,
-  target: string,
 ): Promise<Dir> {
   const handlePath = directoryHandlePath(anchor);
-  return opendir(handlePath ?? target, { bufferSize: 1 });
+  if (!handlePath) {
+    throw new Error(HANDLE_BACKED_DIRECTORY_LISTING_ERROR);
+  }
+  return opendir(handlePath, { bufferSize: 1 });
 }
 
 function directoryHandlePath(anchor: FileHandle): string | undefined {
