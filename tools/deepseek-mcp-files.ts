@@ -1,6 +1,7 @@
 import { open, opendir, realpath, stat } from "node:fs/promises";
 import { constants } from "node:fs";
 import type { Dir } from "node:fs";
+import type { FileHandle } from "node:fs/promises";
 import path from "node:path";
 
 const DEFAULT_MAX_ENTRIES = 200;
@@ -97,14 +98,13 @@ export async function listWorkspaceFiles(input: {
     try {
       const truncated = await visitDirectory(
         directory,
-        resolvedPath,
         workspaceRoot,
         files,
         maxEntries,
       );
       return { files, truncated };
     } finally {
-      await directory.close();
+      await closeDirectory(directory);
     }
   } catch (error) {
     if (
@@ -231,13 +231,21 @@ async function openFileAtUse(
   }
 }
 
+interface SecureDirectory {
+  directory: Dir;
+  anchor: FileHandle;
+  path: string;
+}
+
 async function openDirectoryAtUse(
   target: string,
   workspaceRoot: string,
-): Promise<Dir | undefined> {
-  let directory: Dir;
+): Promise<SecureDirectory | undefined> {
+  const noFollow = (constants as { O_NOFOLLOW?: number }).O_NOFOLLOW ?? 0;
+  const directoryOnly = (constants as { O_DIRECTORY?: number }).O_DIRECTORY ?? 0;
+  let anchor: FileHandle;
   try {
-    directory = await opendir(target);
+    anchor = await open(target, constants.O_RDONLY | noFollow | directoryOnly);
   } catch (error) {
     if (isNotDirectoryError(error)) {
       return undefined;
@@ -246,27 +254,58 @@ async function openDirectoryAtUse(
   }
 
   try {
-    await validateCurrentTarget(
+    const anchorInfo = await anchor.stat();
+    const currentTarget = await validateCurrentTarget(
       target,
       workspaceRoot,
       "Workspace path is not a readable directory",
     );
-    return directory;
+    const currentInfo = await stat(currentTarget);
+    if (!anchorInfo.isDirectory() || !sameFile(anchorInfo, currentInfo)) {
+      throw new Error("Workspace directory changed while opening");
+    }
+
+    const directory = await opendir(target, { bufferSize: 1 });
+    return { directory, anchor, path: target };
   } catch (error) {
-    await directory.close();
+    await anchor.close();
+    if (isNotDirectoryError(error)) {
+      return undefined;
+    }
     throw error;
   }
 }
 
+async function closeDirectory(directory: SecureDirectory): Promise<void> {
+  await directory.directory.close();
+  await directory.anchor.close();
+}
+
+async function assertDirectoryAnchor(
+  directory: SecureDirectory,
+  workspaceRoot: string,
+): Promise<void> {
+  const anchorInfo = await directory.anchor.stat();
+  const currentTarget = await validateCurrentTarget(
+    directory.path,
+    workspaceRoot,
+    "Workspace directory is no longer readable",
+  );
+  const currentInfo = await stat(currentTarget);
+  if (!anchorInfo.isDirectory() || !sameFile(anchorInfo, currentInfo)) {
+    throw new Error("Workspace directory changed while reading");
+  }
+}
+
 async function visitDirectory(
-  directory: Dir,
-  directoryPath: string,
+  directory: SecureDirectory,
   workspaceRoot: string,
   files: string[],
   maxEntries: number,
 ): Promise<boolean> {
   while (true) {
-    const entry = await directory.read();
+    await assertDirectoryAnchor(directory, workspaceRoot);
+    const entry = await directory.directory.read();
     if (!entry) {
       return false;
     }
@@ -274,7 +313,7 @@ async function visitDirectory(
       return true;
     }
 
-    const entryPath = path.join(directoryPath, entry.name);
+    const entryPath = path.join(directory.path, entry.name);
     const relativeEntryPath = path.relative(workspaceRoot, entryPath);
     if (isBlockedPath(relativeEntryPath) || entry.isSymbolicLink()) {
       continue;
@@ -283,7 +322,7 @@ async function visitDirectory(
     // Node's Dir does not expose a descriptor identity; validate every entry
     // against a newly opened handle before returning or descending.
     if (entry.isDirectory()) {
-      let childDirectory: Dir | undefined;
+      let childDirectory: SecureDirectory | undefined;
       try {
         childDirectory = await openDirectoryAtUse(entryPath, workspaceRoot);
       } catch {
@@ -294,7 +333,6 @@ async function visitDirectory(
           if (
             await visitDirectory(
               childDirectory,
-              entryPath,
               workspaceRoot,
               files,
               maxEntries,
@@ -303,7 +341,7 @@ async function visitDirectory(
             return true;
           }
         } finally {
-          await childDirectory.close();
+          await closeDirectory(childDirectory);
         }
       }
       continue;
