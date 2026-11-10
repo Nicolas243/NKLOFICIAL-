@@ -207,6 +207,12 @@ test("rejects sensitive workspace paths", async () => {
 });
 
 test("sets truncated when directory and file limits are reached", async () => {
+  const empty = await listWorkspaceFiles({
+    path: path.join(fixtureRelativeRoot, "src"),
+    maxEntries: 0,
+  });
+  assert.deepEqual(empty, { files: [], truncated: true });
+
   const listed = await listWorkspaceFiles({
     path: path.join(fixtureRelativeRoot, "src"),
     maxEntries: 1,

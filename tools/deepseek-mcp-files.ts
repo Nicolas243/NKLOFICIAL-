@@ -1,10 +1,6 @@
-import {
-  access,
-  open,
-  readdir,
-  realpath,
-  stat,
-} from "node:fs/promises";
+import { open, opendir, realpath, stat } from "node:fs/promises";
+import { constants } from "node:fs";
+import type { Dir } from "node:fs";
 import path from "node:path";
 
 const DEFAULT_MAX_ENTRIES = 200;
@@ -79,60 +75,42 @@ export async function listWorkspaceFiles(input: {
     process.cwd(),
     "Workspace root is not readable",
   );
+  if (maxEntries === 0) {
+    return { files: [], truncated: true };
+  }
 
   try {
-    const pathInfo = await stat(resolvedPath);
     const files: string[] = [];
-    let truncated = false;
-
-    if (pathInfo.isFile()) {
-      if (maxEntries === 0) {
-        return { files, truncated: true };
+    const directory = await openDirectoryAtUse(resolvedPath, workspaceRoot);
+    if (!directory) {
+      const file = await openFileAtUse(resolvedPath, workspaceRoot);
+      try {
+        return {
+          files: [workspaceRelativePath(workspaceRoot, resolvedPath)],
+          truncated: false,
+        };
+      } finally {
+        await file.close();
       }
-      return {
-        files: [workspaceRelativePath(workspaceRoot, resolvedPath)],
-        truncated: false,
-      };
-    }
-    if (!pathInfo.isDirectory()) {
-      throw new Error("Workspace path is not a readable directory");
     }
 
-    const visit = async (directory: string): Promise<void> => {
-      const entries = (await readdir(directory, { withFileTypes: true })).sort(
-        (left, right) => left.name.localeCompare(right.name),
+    try {
+      const truncated = await visitDirectory(
+        directory,
+        resolvedPath,
+        workspaceRoot,
+        files,
+        maxEntries,
       );
-
-      for (const entry of entries) {
-        const entryPath = path.join(directory, entry.name);
-        const relativeEntryPath = path.relative(workspaceRoot, entryPath);
-        if (isBlockedPath(relativeEntryPath) || entry.isSymbolicLink()) {
-          continue;
-        }
-
-        if (entry.isDirectory()) {
-          await visit(entryPath);
-          if (truncated) {
-            return;
-          }
-          continue;
-        }
-        if (!entry.isFile()) {
-          continue;
-        }
-        if (files.length >= maxEntries) {
-          truncated = true;
-          return;
-        }
-
-        files.push(workspaceRelativePath(workspaceRoot, entryPath));
-      }
-    };
-
-    await visit(resolvedPath);
-    return { files, truncated };
+      return { files, truncated };
+    } finally {
+      await directory.close();
+    }
   } catch (error) {
-    if (error instanceof Error && error.message === "Workspace path is not a readable directory") {
+    if (
+      error instanceof Error &&
+      error.message === "Workspace path is not a readable directory"
+    ) {
       throw error;
     }
     throw new Error("Workspace listing failed");
@@ -155,19 +133,12 @@ export async function readWorkspaceFile(input: {
     "Workspace root is not readable",
   );
 
-  let pathInfo;
+  let file;
   try {
-    pathInfo = await stat(resolvedPath);
+    file = await openFileAtUse(resolvedPath, workspaceRoot);
   } catch {
     throw new Error("Workspace file is not readable");
   }
-  if (!pathInfo.isFile()) {
-    throw new Error("Workspace path is not a file");
-  }
-
-  const file = await open(resolvedPath, "r").catch(() => {
-    throw new Error("Workspace file is not readable");
-  });
   try {
     const buffer = Buffer.alloc(maxBytes + 1);
     const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
@@ -200,7 +171,6 @@ function boundedLimit(
 
 async function resolveRealpath(target: string, message: string): Promise<string> {
   try {
-    await access(target);
     return await realpath(target);
   } catch {
     throw new Error(message);
@@ -235,4 +205,144 @@ function isBlockedPath(relativePath: string): boolean {
 
 function workspaceRelativePath(root: string, target: string): string {
   return path.relative(root, target).split(path.sep).join("/");
+}
+
+async function openFileAtUse(
+  target: string,
+  workspaceRoot: string,
+) {
+  const noFollow = (constants as { O_NOFOLLOW?: number }).O_NOFOLLOW ?? 0;
+  const file = await open(target, constants.O_RDONLY | noFollow);
+  try {
+    const openedInfo = await file.stat();
+    const currentTarget = await validateCurrentTarget(
+      target,
+      workspaceRoot,
+      "Workspace file is not readable",
+    );
+    const currentInfo = await stat(currentTarget);
+    if (!openedInfo.isFile() || !sameFile(openedInfo, currentInfo)) {
+      throw new Error("Workspace file changed while opening");
+    }
+    return file;
+  } catch (error) {
+    await file.close();
+    throw error;
+  }
+}
+
+async function openDirectoryAtUse(
+  target: string,
+  workspaceRoot: string,
+): Promise<Dir | undefined> {
+  let directory: Dir;
+  try {
+    directory = await opendir(target);
+  } catch (error) {
+    if (isNotDirectoryError(error)) {
+      return undefined;
+    }
+    throw error;
+  }
+
+  try {
+    await validateCurrentTarget(
+      target,
+      workspaceRoot,
+      "Workspace path is not a readable directory",
+    );
+    return directory;
+  } catch (error) {
+    await directory.close();
+    throw error;
+  }
+}
+
+async function visitDirectory(
+  directory: Dir,
+  directoryPath: string,
+  workspaceRoot: string,
+  files: string[],
+  maxEntries: number,
+): Promise<boolean> {
+  while (true) {
+    const entry = await directory.read();
+    if (!entry) {
+      return false;
+    }
+    if (files.length >= maxEntries) {
+      return true;
+    }
+
+    const entryPath = path.join(directoryPath, entry.name);
+    const relativeEntryPath = path.relative(workspaceRoot, entryPath);
+    if (isBlockedPath(relativeEntryPath) || entry.isSymbolicLink()) {
+      continue;
+    }
+
+    if (entry.isDirectory()) {
+      const childDirectory = await openDirectoryAtUse(entryPath, workspaceRoot);
+      if (childDirectory) {
+        try {
+          if (
+            await visitDirectory(
+              childDirectory,
+              entryPath,
+              workspaceRoot,
+              files,
+              maxEntries,
+            )
+          ) {
+            return true;
+          }
+        } finally {
+          await childDirectory.close();
+        }
+      }
+      continue;
+    }
+    if (!entry.isFile()) {
+      continue;
+    }
+
+    files.push(workspaceRelativePath(workspaceRoot, entryPath));
+    if (files.length >= maxEntries) {
+      return true;
+    }
+  }
+}
+
+async function validateCurrentTarget(
+  target: string,
+  workspaceRoot: string,
+  errorMessage: string,
+): Promise<string> {
+  let currentTarget: string;
+  try {
+    currentTarget = await realpath(target);
+  } catch {
+    throw new Error(errorMessage);
+  }
+  if (
+    !isContained(workspaceRoot, currentTarget) ||
+    isBlockedPath(path.relative(workspaceRoot, currentTarget))
+  ) {
+    throw new Error("Workspace path resolves outside the workspace");
+  }
+  return currentTarget;
+}
+
+function sameFile(
+  left: { dev: number; ino: number },
+  right: { dev: number; ino: number },
+): boolean {
+  return left.dev === right.dev && left.ino === right.ino;
+}
+
+function isNotDirectoryError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    (error as NodeJS.ErrnoException).code === "ENOTDIR"
+  );
 }
