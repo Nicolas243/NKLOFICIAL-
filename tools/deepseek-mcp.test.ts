@@ -3,15 +3,19 @@ import { test } from "node:test";
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import {
+  createDeepSeekMcpServer,
   createDeepSeekToolHandler,
   delegateToDeepSeekInputSchema,
   formatStartupError,
+  hasNklRouterConfiguration,
 } from "./deepseek-mcp.js";
 import {
   CURRENT_CLINE_TOOL_IDS,
   runDeepSeekTask,
   type WorkerSessionOptions,
 } from "./deepseek-mcp-worker.js";
+import type { NklRouterConfig } from "./nkl-router-config.js";
+import type { NklOrchestrationResult } from "./nkl-subagent-orchestrator.js";
 
 const secret = "test-api-key-that-must-never-leak";
 const config = {
@@ -20,6 +24,23 @@ const config = {
   modelId: "deepseek-test",
   apiKey: secret,
   baseUrl: "https://provider.invalid/v1",
+};
+
+const nklConfig: NklRouterConfig = {
+  cline: config,
+  router: {
+    providerId: "openai-compatible",
+    baseUrl: "https://router.invalid/v1",
+    apiKey: "router-secret",
+    models: {
+      orchestrator: "NKL-ORQUESTRADOR",
+      worker: "NKL-OPERARIOS",
+      reviewer: "NKL-REVISOR",
+    },
+    maxWorkers: 3,
+    reviewerRequired: true,
+    retryLimit: 1,
+  },
 };
 
 test("delegate_to_deepseek requires a non-empty task", () => {
@@ -329,4 +350,100 @@ test("MCP handler returns structured success and error results without secrets",
   });
   const redacted = await secretHandler({ task: "inspect" });
   assert.equal(JSON.stringify(redacted).includes(secret), false);
+});
+
+test("combined MCP handler routes tasks to the NKL orchestrator", async () => {
+  let receivedTask = "";
+  const orchestration: NklOrchestrationResult = {
+    status: "completed",
+    text: "compact combined result",
+    plan: "inspect the repository",
+    workers: [],
+    review: {
+      role: "reviewer",
+      status: "completed",
+      text: "review passed",
+      evidence: [],
+    },
+    fallbackUsed: false,
+  };
+  const handler = createDeepSeekToolHandler({
+    config,
+    nklConfig,
+    runOrchestrator: async (task) => {
+      receivedTask = task;
+      return orchestration;
+    },
+  });
+
+  const result = await handler({ task: "inspect the repository" });
+
+  assert.equal(receivedTask, "inspect the repository");
+  assert.deepEqual(result.structuredContent, orchestration);
+  assert.deepEqual(result.content, [
+    { type: "text", text: "compact combined result" },
+  ]);
+  assert.equal(result.isError, undefined);
+});
+
+test("combined MCP handler marks mandatory reviewer failures as MCP errors", async () => {
+  const handler = createDeepSeekToolHandler({
+    config,
+    nklConfig,
+    runOrchestrator: async () => ({
+      status: "incomplete",
+      text: "review unavailable",
+      plan: "inspect",
+      workers: [],
+      review: {
+        role: "reviewer",
+        status: "failed",
+        text: "review failed",
+        evidence: [],
+      },
+      fallbackUsed: false,
+    }),
+  });
+
+  const result = await handler({ task: "inspect" });
+
+  assert.equal(result.isError, true);
+  assert.equal(result.structuredContent?.status, "incomplete");
+});
+
+test("combined handler serializes requests and startup detects partial router configuration", async () => {
+  const order: string[] = [];
+  const handler = createDeepSeekToolHandler({
+    config,
+    nklConfig,
+    runOrchestrator: async (task) => {
+      order.push(`start:${task}`);
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      order.push(`end:${task}`);
+      return {
+        status: "completed",
+        text: task,
+        plan: task,
+        workers: [],
+        review: {
+          role: "reviewer",
+          status: "completed",
+          text: "ok",
+          evidence: [],
+        },
+        fallbackUsed: false,
+      };
+    },
+  });
+
+  await Promise.all([handler({ task: "one" }), handler({ task: "two" })]);
+  assert.deepEqual(order, ["start:one", "end:one", "start:two", "end:two"]);
+  assert.equal(
+    hasNklRouterConfiguration({ NINE_ROUTER_API_KEY: "present" }),
+    true,
+  );
+  assert.equal(hasNklRouterConfiguration({ CLINE_API_KEY: "present" }), false);
+
+  const server = createDeepSeekMcpServer({ config, nklConfig });
+  assert.ok(server);
 });

@@ -11,6 +11,15 @@ import {
   type DeepSeekTaskResult,
   type WorkerDependencies,
 } from "./deepseek-mcp-worker.js";
+import {
+  loadNklRouterConfig,
+  type NklRouterConfig,
+} from "./nkl-router-config.js";
+import {
+  orchestrateNklTask,
+  type NklOrchestrationResult,
+  type OrchestratorDependencies,
+} from "./nkl-subagent-orchestrator.js";
 
 export const delegateToDeepSeekInputSchema = z.object({
   task: z.string().trim().min(1, "task must not be empty"),
@@ -18,10 +27,15 @@ export const delegateToDeepSeekInputSchema = z.object({
 
 export interface DeepSeekToolHandlerOptions extends WorkerDependencies {
   config: DeepSeekMcpConfig;
+  nklConfig?: NklRouterConfig;
   runTask?: (
     task: string,
     deps?: WorkerDependencies,
   ) => Promise<DeepSeekTaskResult>;
+  runOrchestrator?: (
+    task: string,
+    deps: OrchestratorDependencies,
+  ) => Promise<NklOrchestrationResult>;
 }
 
 export function createDeepSeekToolHandler(
@@ -39,6 +53,16 @@ export function createDeepSeekToolHandler(
     });
     await previous;
     try {
+      if (options.nklConfig) {
+        const runOrchestrator =
+          options.runOrchestrator ?? orchestrateNklTask;
+        const result = await runOrchestrator(parsed.task, {
+          config: options.nklConfig,
+        });
+        return orchestrationToCallToolResult(
+          redactOrchestration(result, options.nklConfig.router.apiKey),
+        );
+      }
       const result = await runTask(parsed.task, {
         config: options.config,
         deadlineMs: options.deadlineMs,
@@ -48,6 +72,16 @@ export function createDeepSeekToolHandler(
     } finally {
       release();
     }
+  };
+}
+
+export function orchestrationToCallToolResult(
+  result: NklOrchestrationResult,
+): CallToolResult {
+  return {
+    content: [{ type: "text", text: result.text }],
+    structuredContent: { ...result },
+    ...(result.status === "completed" ? {} : { isError: true }),
   };
 }
 
@@ -75,7 +109,29 @@ export function formatStartupError(error: unknown): string {
   if (message === "Workspace root is not readable") {
     return "DeepSeek MCP configuration error: the fixed workspace is not readable\n";
   }
+  if (message.startsWith("NKL router configuration error:")) {
+    const variable = message.match(
+      /\b(?:CLINE_API_KEY|CLINE_MODEL_ID|CLINE_BASE_URL|NINE_ROUTER_[A-Z_]+)\b/,
+    )?.[0];
+    return `DeepSeek MCP configuration error: set ${variable ?? "the required local variables"} in .env.local\n`;
+  }
   return "DeepSeek MCP startup error: local runtime initialization failed\n";
+}
+
+export function hasNklRouterConfiguration(
+  env: NodeJS.ProcessEnv,
+): boolean {
+  return [
+    "NINE_ROUTER_PROVIDER_ID",
+    "NINE_ROUTER_BASE_URL",
+    "NINE_ROUTER_API_KEY",
+    "NINE_ROUTER_ORQUESTRADOR_MODEL",
+    "NINE_ROUTER_WORKER_MODEL",
+    "NINE_ROUTER_REVIEWER_MODEL",
+    "NINE_ROUTER_ALL_ALIAS",
+    "NINE_ROUTER_MAX_WORKERS",
+    "NINE_ROUTER_RETRY_LIMIT",
+  ].some((name) => Boolean(env[name]?.trim()));
 }
 
 export function createDeepSeekMcpServer(
@@ -104,9 +160,49 @@ export function createDeepSeekMcpServer(
 
 export async function main(): Promise<void> {
   const config = loadDeepSeekMcpConfig(process.env, process.cwd());
-  const server = createDeepSeekMcpServer({ config });
+  const nklConfig = hasNklRouterConfiguration(process.env)
+    ? loadNklRouterConfig(process.env, process.cwd())
+    : undefined;
+  const server = createDeepSeekMcpServer({
+    config,
+    ...(nklConfig ? { nklConfig } : {}),
+  });
   const transport = new StdioServerTransport();
   await server.connect(transport);
+}
+
+function redactOrchestration(
+  result: NklOrchestrationResult,
+  apiKey: string,
+): NklOrchestrationResult {
+  const redact = (value: string) => value.replaceAll(apiKey, "[redacted]");
+  return {
+    ...result,
+    text: redact(result.text),
+    plan: redact(result.plan),
+    workers: result.workers.map((worker) => ({
+      ...worker,
+      text: redact(worker.text),
+      ...(worker.uncertainty
+        ? { uncertainty: redact(worker.uncertainty) }
+        : {}),
+      evidence: worker.evidence.map((item) => ({
+        ...item,
+        note: redact(item.note),
+      })),
+    })),
+    review: {
+      ...result.review,
+      text: redact(result.review.text),
+      ...(result.review.uncertainty
+        ? { uncertainty: redact(result.review.uncertainty) }
+        : {}),
+      evidence: result.review.evidence.map((item) => ({
+        ...item,
+        note: redact(item.note),
+      })),
+    },
+  };
 }
 
 function isEntrypoint(): boolean {
