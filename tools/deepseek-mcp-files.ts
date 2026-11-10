@@ -280,8 +280,15 @@ async function visitDirectory(
       continue;
     }
 
+    // Node's Dir does not expose a descriptor identity; validate every entry
+    // against a newly opened handle before returning or descending.
     if (entry.isDirectory()) {
-      const childDirectory = await openDirectoryAtUse(entryPath, workspaceRoot);
+      let childDirectory: Dir | undefined;
+      try {
+        childDirectory = await openDirectoryAtUse(entryPath, workspaceRoot);
+      } catch {
+        continue;
+      }
       if (childDirectory) {
         try {
           if (
@@ -305,6 +312,13 @@ async function visitDirectory(
       continue;
     }
 
+    let file;
+    try {
+      file = await openFileAtUse(entryPath, workspaceRoot);
+    } catch {
+      continue;
+    }
+    await file.close();
     files.push(workspaceRelativePath(workspaceRoot, entryPath));
     if (files.length >= maxEntries) {
       return true;

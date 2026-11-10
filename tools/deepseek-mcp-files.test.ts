@@ -191,6 +191,19 @@ test("rejects symlink escapes", async (t) => {
   );
 });
 
+test("does not list entries exposed through a symlinked directory", async (t) => {
+  if (!symlinkAvailable) {
+    t.skip("symbolic links are unavailable in this environment");
+    return;
+  }
+
+  const listed = await listWorkspaceFiles({ path: fixtureRelativeRoot });
+  assert.equal(
+    listed.files.some((file) => file.includes("outside.txt")),
+    false,
+  );
+});
+
 test("rejects sensitive workspace paths", async () => {
   for (const blockedPath of [
     path.join(fixtureRelativeRoot, ".env.local"),
