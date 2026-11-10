@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { safeNextPath } from '@/lib/auth/oauth';
+import { profileSyncFailurePath, safeNextPath } from '@/lib/auth/oauth';
 import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const profileSync = await syncAuthenticatedProfile(userData.user);
   if (!profileSync.ok) {
-    return NextResponse.redirect(new URL('/login?error=oauth_callback_failed', request.url));
+    return NextResponse.redirect(new URL(profileSyncFailurePath(nextPath), request.url));
   }
 
   return NextResponse.redirect(new URL(nextPath, request.url));

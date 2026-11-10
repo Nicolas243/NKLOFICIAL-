@@ -19,7 +19,7 @@ function passwordStrength(pw: string): { level: string; color: string; width: st
   return { level: 'Forte', color: 'bg-green-500', width: 'w-full' }
 }
 
-export function LoginForm({ serverError }: { serverError: string | null }) {
+export function LoginForm({ serverError, nextPath = '/' }: { serverError: string | null; nextPath?: string }) {
   const [isRegistering, setIsRegistering] = useState(false)
   const [error, setError] = useState<string | null>(serverError)
   const [isPending, startTransition] = useTransition()
@@ -62,11 +62,11 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
   const handleProfileSyncRetry = () => {
     setProfileSyncPending(true)
     startTransition(async () => {
-      const result = await retryProfileSync()
+      const result = await retryProfileSync(nextPath)
       if (result.error) {
         setError(result.error)
       } else {
-        window.location.assign('/')
+        window.location.assign(result.redirectTo ?? '/')
       }
       setProfileSyncPending(false)
     })
@@ -77,7 +77,7 @@ export function LoginForm({ serverError }: { serverError: string | null }) {
       {error && (
         <div className="flex flex-col gap-3 p-4 bg-red-500/10 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
           <span>{error}</span>
-          {(serverError?.includes('sincronizar') || serverError === 'oauth_callback_failed') && (
+          {serverError?.includes('sincronizado') && (
             <button type="button" onClick={handleProfileSyncRetry} disabled={profileSyncPending} className="rounded-md border border-red-400/60 px-3 py-2 font-bold hover:bg-red-400/10 disabled:opacity-50">
               {profileSyncPending ? 'Tentando novamente...' : 'Tentar sincronizar novamente'}
             </button>

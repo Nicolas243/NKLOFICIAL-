@@ -18,7 +18,7 @@ export async function syncAuthenticatedProfile(
   } catch (error) {
     console.error(
       '[AUTH] Falha ao sincronizar perfil:',
-      error instanceof Error ? error.message : 'erro desconhecido',
+      error instanceof Error ? error.name : 'erro desconhecido',
     );
     return {
       ok: false,

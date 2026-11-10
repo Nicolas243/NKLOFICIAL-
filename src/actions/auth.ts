@@ -7,6 +7,7 @@ import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
 import { getLoginErrorMessage } from '@/lib/auth/errors';
+import { safeNextPath } from '@/lib/auth/oauth';
 import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
 
 /**
@@ -193,7 +194,7 @@ export async function signout() {
   redirect('/');
 }
 
-export async function retryProfileSync(): Promise<{ error?: string }> {
+export async function retryProfileSync(nextPath = '/'): Promise<{ error?: string; redirectTo?: string }> {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
 
@@ -202,5 +203,7 @@ export async function retryProfileSync(): Promise<{ error?: string }> {
   }
 
   const result = await syncAuthenticatedProfile(data.user);
-  return result.ok ? {} : { error: result.message };
+  return result.ok
+    ? { redirectTo: safeNextPath(nextPath) }
+    : { error: result.message };
 }

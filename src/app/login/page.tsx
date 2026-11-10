@@ -9,7 +9,13 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
 export default async function LoginPage(props: { searchParams: SearchParams }) {
   const search = await props.searchParams
-  const error = typeof search.error === 'string' ? search.error : null
+  const errorCode = typeof search.error === 'string' ? search.error : null
+  const error = errorCode === 'profile_sync_failed'
+    ? 'Sua conta foi autenticada, mas o perfil ainda não foi sincronizado. Tente novamente.'
+    : errorCode === 'oauth_callback_failed'
+      ? 'Não foi possível concluir o login com Google. Tente novamente.'
+      : errorCode
+  const nextPath = typeof search.next === 'string' ? search.next : '/'
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20">
@@ -21,7 +27,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
             <p className="text-sm opacity-60 mt-1">Entre no ecossistema da lutheria</p>
           </div>
 
-          <LoginForm serverError={error} />
+          <LoginForm serverError={error} nextPath={nextPath} />
         </div>
 
         <div className="absolute inset-0 -z-0 bg-neon/5 blur-3xl rounded-full transform -translate-y-1/4" />
