@@ -61,6 +61,23 @@ export function resultToCallToolResult(
   };
 }
 
+export function formatStartupError(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message === "Missing required CLINE_API_KEY") {
+    return "DeepSeek MCP configuration error: set CLINE_API_KEY in .env.local\n";
+  }
+  if (message === "Missing required CLINE_MODEL_ID") {
+    return "DeepSeek MCP configuration error: set CLINE_MODEL_ID in .env.local\n";
+  }
+  if (message === "Missing required CLINE_BASE_URL for openai-compatible provider") {
+    return "DeepSeek MCP configuration error: set CLINE_BASE_URL in .env.local\n";
+  }
+  if (message === "Workspace root is not readable") {
+    return "DeepSeek MCP configuration error: the fixed workspace is not readable\n";
+  }
+  return "DeepSeek MCP startup error: local runtime initialization failed\n";
+}
+
 export function createDeepSeekMcpServer(
   options: DeepSeekToolHandlerOptions,
 ): McpServer {
@@ -98,8 +115,8 @@ function isEntrypoint(): boolean {
 }
 
 if (isEntrypoint()) {
-  main().catch(() => {
-    process.stderr.write("DeepSeek MCP worker failed to start\n");
+  main().catch((error: unknown) => {
+    process.stderr.write(formatStartupError(error));
     process.exitCode = 1;
   });
 }

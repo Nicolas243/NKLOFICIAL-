@@ -22,11 +22,6 @@ export interface WorkerSessionOptions {
   enableTools: true;
   enableSpawnAgent: false;
   enableAgentTeams: false;
-  enableEditing: false;
-  enableCommands: false;
-  enableWeb: false;
-  enableSkills: false;
-  enableMcp: false;
   disableMcpSettingsTools: true;
   extraTools: AgentTool[];
   toolPolicies: Record<string, { enabled: false }>;
@@ -38,6 +33,33 @@ export interface WorkerSession {
   dispose(): Promise<void> | void;
 }
 
+interface WorkerCore {
+  start(input: unknown): Promise<{
+    sessionId: string;
+    result?: AgentResult;
+  }>;
+  subscribe(
+    listener: (event: WorkerCoreEvent) => void,
+  ): () => void;
+  abort(sessionId: string): Promise<void>;
+  dispose(): Promise<void>;
+}
+
+interface WorkerCoreEvent {
+  type: "agent_event" | "ended";
+  payload: {
+    sessionId: string;
+    event?: {
+      type: "done" | "error";
+      reason?: string;
+      text?: string;
+      usage?: Record<string, unknown>;
+      error?: unknown;
+    };
+    reason?: string;
+  };
+}
+
 export interface WorkerDependencies {
   config?: DeepSeekMcpConfig;
   deadlineMs?: number;
@@ -45,38 +67,43 @@ export interface WorkerDependencies {
     options: WorkerSessionOptions,
     task: string,
   ) => Promise<WorkerSession> | WorkerSession;
+  createCore?: (options: {
+    backendMode: "local";
+    clientName: string;
+  }) => Promise<WorkerCore>;
 }
 
 const DEFAULT_DEADLINE_MS = 120_000;
-const DISABLED_BUILTIN_TOOLS = [
-  "ask_followup_question",
-  "read_file",
-  "write_to_file",
-  "apply_diff",
-  "replace_in_file",
-  "search_files",
-  "list_files",
-  "list_code_definition_names",
-  "execute_command",
-  "bash",
-  "browser_action",
-  "use_mcp",
-  "access_mcp_resource",
-  "use_mcp_tool",
-  "use_skill",
-  "new_task",
-  "spawn_agent",
-  "spawn_team",
-  "manage_task",
-  "editor",
-  "run_commands",
-  "search_codebase",
+export const CURRENT_CLINE_TOOL_IDS = [
   "read_files",
-  "web",
+  "search_codebase",
+  "run_commands",
+  "fetch_web_content",
+  "apply_patch",
+  "editor",
   "skills",
-  "mcp",
-  "spawn",
-  "team",
+  "ask_question",
+  "submit_and_exit",
+  "tasks",
+  "spawn_agent",
+  "team_spawn_teammate",
+  "team_shutdown_teammate",
+  "team_status",
+  "team_task",
+  "team_run_task",
+  "team_cancel_run",
+  "team_list_runs",
+  "team_await_runs",
+  "team_send_message",
+  "team_broadcast",
+  "team_read_mailbox",
+  "team_mission_log",
+  "team_cleanup",
+  "team_create_outcome",
+  "team_attach_outcome_fragment",
+  "team_review_outcome_fragment",
+  "team_finalize_outcome",
+  "team_list_outcomes",
 ] as const;
 
 const SAFE_SYSTEM_PROMPT =
@@ -90,7 +117,10 @@ export async function runDeepSeekTask(
   const config =
     deps.config ??
     loadDeepSeekMcpConfig(process.env, process.cwd());
-  const createSession = deps.createSession ?? createClineSession;
+  const createSession =
+    deps.createSession ??
+    ((options: WorkerSessionOptions, prompt: string) =>
+      createClineSession(options, prompt, deps.createCore));
   const options = createWorkerOptions(config);
   let session: WorkerSession;
   try {
@@ -110,12 +140,18 @@ export async function runDeepSeekTask(
       session.run(),
       new Promise<DeepSeekTaskResult>((resolve) => {
         timer = setTimeout(() => {
-          void Promise.resolve(session.abort?.()).catch(() => undefined);
-          resolve({
-            status: "aborted",
-            text: "DeepSeek task timed out",
-            finishReason: "aborted",
-          });
+          void (async () => {
+            try {
+              await session.abort?.();
+            } catch {
+              // The timeout result remains safe even when the SDK abort reports an error.
+            }
+            resolve({
+              status: "aborted",
+              text: "DeepSeek task timed out",
+              finishReason: "aborted",
+            });
+          })();
         }, deadlineMs);
       }),
     ]);
@@ -144,7 +180,7 @@ export function createWorkerOptions(
 ): WorkerSessionOptions {
   const extraTools = createSafeTools();
   const toolPolicies = Object.fromEntries(
-    DISABLED_BUILTIN_TOOLS.map((name) => [name, { enabled: false as const }]),
+    CURRENT_CLINE_TOOL_IDS.map((name) => [name, { enabled: false as const }]),
   );
 
   return {
@@ -159,11 +195,6 @@ export function createWorkerOptions(
     enableTools: true,
     enableSpawnAgent: false,
     enableAgentTeams: false,
-    enableEditing: false,
-    enableCommands: false,
-    enableWeb: false,
-    enableSkills: false,
-    enableMcp: false,
     disableMcpSettingsTools: true,
     extraTools,
     toolPolicies,
@@ -173,11 +204,39 @@ export function createWorkerOptions(
 async function createClineSession(
   options: WorkerSessionOptions,
   task: string,
+  createCore: WorkerDependencies["createCore"] = createRealCore,
 ): Promise<WorkerSession> {
-  const { ClineCore } = await import("@cline/sdk");
-  const core = await ClineCore.create({
+  const core = await createCore({
     clientName: "portal-nkl-deepseek-mcp",
     backendMode: options.backendMode,
+  });
+  let startedSessionId: string | undefined;
+  const pendingEvents = new Map<string, DeepSeekTaskResult>();
+  let resolveCompletion!: (result: DeepSeekTaskResult) => void;
+  const completion = new Promise<DeepSeekTaskResult>((resolve) => {
+    resolveCompletion = resolve;
+  });
+  const unsubscribe = core.subscribe((event) => {
+    if (event.type === "agent_event" && event.payload.event) {
+      const { sessionId, event: agentEvent } = event.payload;
+      const result = agentEventToResult(agentEvent);
+      if (result) {
+        if (sessionId === startedSessionId) {
+          resolveCompletion(result);
+        } else {
+          pendingEvents.set(sessionId, result);
+        }
+      }
+    } else if (event.type === "ended" && event.payload.sessionId === startedSessionId) {
+      resolveCompletion({
+        status: event.payload.reason === "aborted" ? "aborted" : "failed",
+        text:
+          event.payload.reason === "aborted"
+            ? "DeepSeek task aborted"
+            : "DeepSeek task failed",
+        finishReason: event.payload.reason,
+      });
+    }
   });
 
   try {
@@ -206,28 +265,67 @@ async function createClineSession(
       source: "app",
       mode: "plan",
     });
+    startedSessionId = started.sessionId;
+    const pending = pendingEvents.get(startedSessionId);
+    if (pending) {
+      pendingEvents.delete(startedSessionId);
+      resolveCompletion(pending);
+    }
 
     return {
       async run() {
         return started.result
           ? normalizeResult(started.result)
-          : {
-              status: "failed",
-              text: "DeepSeek task failed",
-              finishReason: "missing_result",
-            };
+          : completion;
       },
       async abort() {
         await core.abort(started.sessionId);
       },
       async dispose() {
+        unsubscribe();
         await core.dispose();
       },
     };
   } catch (error) {
+    unsubscribe();
     await core.dispose().catch(() => undefined);
     throw error;
   }
+}
+
+async function createRealCore(options: {
+  backendMode: "local";
+  clientName: string;
+}): Promise<WorkerCore> {
+  const { ClineCore } = await import("@cline/sdk");
+  return (await ClineCore.create(options)) as unknown as WorkerCore;
+}
+
+function agentEventToResult(
+  event: NonNullable<WorkerCoreEvent["payload"]["event"]>,
+): DeepSeekTaskResult | undefined {
+  if (event.type === "done") {
+    const finishReason = event.reason ?? "completed";
+    return {
+      status:
+        finishReason === "aborted"
+          ? "aborted"
+          : finishReason === "error" || finishReason === "mistake_limit"
+            ? "failed"
+            : "completed",
+      text: event.text ?? "",
+      finishReason,
+      ...(event.usage ? { usage: event.usage } : {}),
+    };
+  }
+  if (event.type === "error") {
+    return {
+      status: "failed",
+      text: "DeepSeek task failed",
+      finishReason: "error",
+    };
+  }
+  return undefined;
 }
 
 function createSafeTools(): AgentTool[] {
