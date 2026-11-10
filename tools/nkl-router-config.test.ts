@@ -12,6 +12,7 @@ const routerSecret = "router-secret-that-must-not-leak";
 
 function validEnv(): NodeJS.ProcessEnv {
   return {
+    NODE_ENV: "test",
     CLINE_API_KEY: "cline-test-key",
     CLINE_MODEL_ID: "cline-model",
     CLINE_PROVIDER_ID: "openai-compatible",

@@ -439,10 +439,16 @@ test("combined handler serializes requests and startup detects partial router co
   await Promise.all([handler({ task: "one" }), handler({ task: "two" })]);
   assert.deepEqual(order, ["start:one", "end:one", "start:two", "end:two"]);
   assert.equal(
-    hasNklRouterConfiguration({ NINE_ROUTER_API_KEY: "present" }),
+    hasNklRouterConfiguration({
+      NODE_ENV: "test",
+      NINE_ROUTER_API_KEY: "present",
+    }),
     true,
   );
-  assert.equal(hasNklRouterConfiguration({ CLINE_API_KEY: "present" }), false);
+  assert.equal(
+    hasNklRouterConfiguration({ NODE_ENV: "test", CLINE_API_KEY: "present" }),
+    false,
+  );
 
   const server = createDeepSeekMcpServer({ config, nklConfig });
   assert.ok(server);

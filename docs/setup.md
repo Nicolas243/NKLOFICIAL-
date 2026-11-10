@@ -18,6 +18,8 @@ O servidor local padrão usa `http://localhost:3000`. Verifique `/api/health` qu
 
 - `.env.local` é local e contém segredos; nunca o exibir ou versionar.
 - `.env.example` documenta nomes de variáveis, não valores.
+- O worker MCP e a rede auxiliar exigem Node.js 22 ou superior e são
+  destinados ao uso local via transporte stdio.
 - A aplicação local usa `DATABASE_URL`, Supabase e outras integrações conforme a funcionalidade.
 - A rota `/api/health/config` informa apenas se as variáveis obrigatórias estão configuradas, sem retornar valores secretos. Use-a depois do deploy para detectar drift de ambiente.
 - Não executar migrações, seeds ou sincronizações contra produção sem autorização específica.
@@ -59,3 +61,48 @@ O webhook valida o token, filtra o produto pelo ID configurado e grava a compra 
 ## Setup do toolkit
 
 O escopo aplicado e as decisões de compatibilidade estão em [docs/toolkit-setup.md](./toolkit-setup.md). A revisão consultada foi registrada para evitar misturar instruções de versões diferentes.
+
+## Worker MCP e rede NKL
+
+O comando `npm run deepseek:mcp` inicia o worker local pelo transporte MCP
+stdio. O processo não abre listener HTTP; o host MCP deve iniciá-lo com o
+diretório raiz deste repositório. O worker mantém o workspace fixo e só expõe
+os leitores seguros de listagem e leitura de arquivos.
+
+Para habilitar a rede combinada, configure em `.env.local` os grupos completos
+`CLINE_*` e `NINE_ROUTER_*` documentados em `.env.example`. O Cline permanece
+como coordenador principal; `NKL-ORQUESTRADOR`, `NKL-OPERARIOS` e `NKL-REVISOR`
+são aliases auxiliares enviados ao endpoint OpenAI-compatible do 9router.
+`Alll` é literal e é resolvido pelo gateway. Configuração parcial falha
+explicitamente, sem fallback silencioso.
+
+O fluxo executa no máximo três operários em paralelo, tenta novamente um papel
+falho uma vez e marca o trabalho restante como fallback do coordenador. A
+revisão é obrigatória; se o revisor não estiver disponível, a resposta fica
+`incomplete`. Não há cache automático na primeira versão.
+
+Nenhum agente pode editar arquivos, executar shell/testes, acessar a web,
+usar MCP externo, fazer deploy ou criar subagentes/equipes. Nunca coloque
+valores de chaves, conteúdo de `.env.local` ou respostas de provedor em
+prompts, logs, commits ou documentação.
+
+Exemplo de registro MCP local, sem segredos:
+
+```json
+{
+  "mcpServers": {
+    "portal-nkl-deepseek": {
+      "command": "npm",
+      "args": ["run", "deepseek:mcp"],
+      "cwd": "C:\\caminho\\para\\portal-nkl"
+    }
+  }
+}
+```
+
+Valide alterações com:
+
+```powershell
+npm run test:deepseek-mcp
+npx tsx --test tools/nkl-router-runner.test.ts tools/nkl-subagent-orchestrator.test.ts
+```
