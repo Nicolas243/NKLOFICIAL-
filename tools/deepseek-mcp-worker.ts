@@ -22,6 +22,11 @@ export interface WorkerSessionOptions {
   enableTools: true;
   enableSpawnAgent: false;
   enableAgentTeams: false;
+  enableEditing: false;
+  enableCommands: false;
+  enableWeb: false;
+  enableSkills: false;
+  enableMcp: false;
   disableMcpSettingsTools: true;
   extraTools: AgentTool[];
   toolPolicies: Record<string, { enabled: false }>;
@@ -136,27 +141,35 @@ export async function runDeepSeekTask(
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   try {
-    const result = await Promise.race([
-      session.run(),
-      new Promise<DeepSeekTaskResult>((resolve) => {
-        timer = setTimeout(() => {
-          void (async () => {
-            try {
-              await session.abort?.();
-            } catch {
-              // The timeout result remains safe even when the SDK abort reports an error.
-            }
-            resolve({
-              status: "aborted",
-              text: "DeepSeek task timed out",
-              finishReason: "aborted",
-            });
-          })();
-        }, deadlineMs);
-      }),
-    ]);
+    const runOutcome = Promise.resolve()
+      .then(() => session.run())
+      .then(
+        (result) => ({ kind: "run" as const, result }),
+        (error) => ({ kind: "error" as const, error }),
+      );
+    const timeoutOutcome = new Promise<{ kind: "timeout" }>((resolve) => {
+      timer = setTimeout(() => resolve({ kind: "timeout" }), deadlineMs);
+    });
+    const outcome = await Promise.race([runOutcome, timeoutOutcome]);
 
-    return redactResult(normalizeResult(result), config.apiKey);
+    if (outcome.kind === "timeout") {
+      try {
+        await session.abort?.();
+      } catch {
+        // The timeout result remains safe even when the SDK abort reports an error.
+      }
+      return {
+        status: "aborted",
+        text: "DeepSeek task timed out",
+        finishReason: "aborted",
+      };
+    }
+
+    if (outcome.kind === "error") {
+      throw outcome.error;
+    }
+
+    return redactResult(normalizeResult(outcome.result), config.apiKey);
   } catch {
     return {
       status: "failed",
@@ -195,6 +208,11 @@ export function createWorkerOptions(
     enableTools: true,
     enableSpawnAgent: false,
     enableAgentTeams: false,
+    enableEditing: false,
+    enableCommands: false,
+    enableWeb: false,
+    enableSkills: false,
+    enableMcp: false,
     disableMcpSettingsTools: true,
     extraTools,
     toolPolicies,
@@ -252,6 +270,11 @@ async function createClineSession(
         enableTools: options.enableTools,
         enableSpawnAgent: options.enableSpawnAgent,
         enableAgentTeams: options.enableAgentTeams,
+        enableEditing: options.enableEditing,
+        enableCommands: options.enableCommands,
+        enableWeb: options.enableWeb,
+        enableSkills: options.enableSkills,
+        enableMcp: options.enableMcp,
         disableMcpSettingsTools: options.disableMcpSettingsTools,
         toolPolicies: options.toolPolicies,
         checkpoint: { enabled: false },

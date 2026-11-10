@@ -118,6 +118,46 @@ test("deadline aborts the session and disposes it", async () => {
   assert.equal(disposed, true);
 });
 
+test("timeout waits for abort before disposing when run resolves during abort", async () => {
+  const events: string[] = [];
+  let resolveRun!: (result: { status: "completed"; text: string }) => void;
+  const result = await runDeepSeekTask("wait forever", {
+    config,
+    deadlineMs: 10,
+    createSession: async () => ({
+      run() {
+        return new Promise<{ status: "completed"; text: string }>((resolve) => {
+          resolveRun = resolve;
+        });
+      },
+      abort() {
+        events.push("abort-start");
+        return new Promise<void>((resolve) => {
+          setTimeout(() => {
+            events.push("run-resolved");
+            resolveRun({ status: "completed", text: "late" });
+            setTimeout(() => {
+              events.push("abort-settled");
+              resolve();
+            }, 10);
+          }, 0);
+        });
+      },
+      dispose() {
+        events.push("dispose");
+      },
+    }),
+  });
+
+  assert.equal(result.status, "aborted");
+  assert.deepEqual(events, [
+    "abort-start",
+    "run-resolved",
+    "abort-settled",
+    "dispose",
+  ]);
+});
+
 test("ClineCore lifecycle waits for the asynchronous agent completion event", async () => {
   let listener:
     | ((event: {
@@ -140,6 +180,11 @@ test("ClineCore lifecycle waits for the asynchronous agent completion event", as
           enableTools: boolean;
           enableSpawnAgent: boolean;
           enableAgentTeams: boolean;
+          enableEditing: boolean;
+          enableCommands: boolean;
+          enableWeb: boolean;
+          enableSkills: boolean;
+          enableMcp: boolean;
           disableMcpSettingsTools: boolean;
           toolPolicies: Record<string, { enabled: boolean }>;
         };
@@ -190,6 +235,11 @@ test("ClineCore lifecycle waits for the asynchronous agent completion event", as
   assert.equal(startInput.config.enableTools, true);
   assert.equal(startInput.config.enableSpawnAgent, false);
   assert.equal(startInput.config.enableAgentTeams, false);
+  assert.equal(startInput.config.enableEditing, false);
+  assert.equal(startInput.config.enableCommands, false);
+  assert.equal(startInput.config.enableWeb, false);
+  assert.equal(startInput.config.enableSkills, false);
+  assert.equal(startInput.config.enableMcp, false);
   assert.equal(startInput.config.disableMcpSettingsTools, true);
   assert.equal(startInput.config.toolPolicies.fetch_web_content.enabled, false);
   assert.equal(startInput.config.toolPolicies.ask_question.enabled, false);
@@ -218,6 +268,11 @@ test("worker uses a fixed local read-only Cline configuration", async () => {
   assert.equal(options?.cwd, config.workspaceRoot);
   assert.equal(options?.enableSpawnAgent, false);
   assert.equal(options?.enableAgentTeams, false);
+  assert.equal(options?.enableEditing, false);
+  assert.equal(options?.enableCommands, false);
+  assert.equal(options?.enableWeb, false);
+  assert.equal(options?.enableSkills, false);
+  assert.equal(options?.enableMcp, false);
   assert.deepEqual(options?.extraTools.map((tool) => tool.name), [
     "list_workspace_files",
     "read_workspace_file",
