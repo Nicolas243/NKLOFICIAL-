@@ -10,11 +10,15 @@
     "typecheck": "tsc --noEmit",
     "verify": "npm run lint && npm run typecheck && npm run build",
     "test:e2e": "playwright test",
+    "deepseek:mcp": "tsx tools/deepseek-mcp.ts",
+    "test:deepseek-mcp": "tsx --test tools/deepseek-mcp.test.ts tools/deepseek-mcp-files.test.ts",
     "guides:upload": "tsx scripts/upload-guide-assets.ts"
   },
   "dependencies": {
+    "@cline/sdk": "^0.2.0",
     "@daily-co/daily-js": "^0.94.0",
     "@mercadopago/sdk-react": "^1.0.7",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@supabase/server": "^1.9.2",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
