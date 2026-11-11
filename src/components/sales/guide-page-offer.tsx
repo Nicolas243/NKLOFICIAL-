@@ -8,6 +8,7 @@ import {
   GUIDE_PAGE_CTA_VARIANTS,
   type GuidePageCtaVariant,
 } from '@/lib/guide-offer';
+import type { GuideResumeIntent } from '@/lib/auth/return-intent';
 
 const STORAGE_KEY = 'nkl_guide_page_cta_variant_v1';
 const IMPRESSION_KEY_PREFIX = `${STORAGE_KEY}:impression:`;
@@ -16,8 +17,7 @@ type GuidePageOfferProps = {
   initialVariant: GuidePageCtaVariant | null;
   purchaseOfferVariant?: string;
   subscriptionOfferVariant?: string;
-  hotmartCheckoutUrl?: string;
-  subscriptionHotmartCheckoutUrl?: string;
+  resumeIntent?: GuideResumeIntent | null;
 };
 
 function randomVariant(): GuidePageCtaVariant {
@@ -48,8 +48,7 @@ export function GuidePageOffer({
   initialVariant,
   purchaseOfferVariant = 'sales-page',
   subscriptionOfferVariant = 'sales-page:subscription',
-  hotmartCheckoutUrl,
-  subscriptionHotmartCheckoutUrl,
+  resumeIntent = null,
 }: GuidePageOfferProps) {
   const [variantId, setVariantId] = useState<GuidePageCtaVariant | null>(initialVariant);
   const variant = useMemo(
@@ -86,6 +85,7 @@ export function GuidePageOffer({
         persistVariant(selected);
         if (!cancelled) setVariantId(selected);
       } catch (error) {
+        if (controller.signal.aborted || cancelled) return;
         console.error('[GUIDE_PAGE_CTA] Falha ao escolher variante:', error instanceof Error ? error.message : 'erro desconhecido');
         const fallback = randomVariant();
         persistVariant(fallback);
@@ -133,10 +133,10 @@ export function GuidePageOffer({
     <aside className="md:sticky md:top-20">
       <DiscountSimulator
         offerVariant={purchaseVariant}
-        hotmartCheckoutUrl={hotmartCheckoutUrl}
         ctaLabel={variant.ctaLabel}
         title={variant.title}
         summary={variant.summary}
+        resumeIntent={resumeIntent}
       />
       <div className="mt-5 rounded-2xl border border-border bg-income-surface p-5">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 dark:text-orange-400">Alternativa mensal</p>
@@ -146,11 +146,11 @@ export function GuidePageOffer({
         <div className="mt-4">
           <GuideSubscriptionButton
             offerVariant={subscriptionVariant}
-            hotmartCheckoutUrl={subscriptionHotmartCheckoutUrl}
+            resumeIntent={resumeIntent}
           />
         </div>
       </div>
-      <p className="mt-4 text-center text-xs leading-relaxed text-foreground/55">Escolha Mercado Pago ou Hotmart. O acesso é liberado após a confirmação.</p>
+      <p className="mt-4 text-center text-xs leading-relaxed text-foreground/55">O pagamento é processado pelo Stripe e o acesso é liberado após a confirmação.</p>
     </aside>
   );
 }

@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { GuidePageOffer } from '@/components/sales/guide-page-offer';
 import { OfferExitPopup } from '@/components/sales/offer-exit-popup';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
-import { env } from '@/env';
 import { absoluteSiteUrl } from '@/lib/site';
 import { parseGuidePageCtaVariant } from '@/lib/offer-experiment';
+import { parseGuideResumeIntent } from '@/lib/auth/return-intent';
 
 export const metadata: Metadata = {
   title: 'Guia Essencial Renda Extra 2027 | Portal NKL',
@@ -15,12 +15,13 @@ export const metadata: Metadata = {
 };
 
 type IncomeGuidePageProps = {
-  searchParams?: Promise<{ ad_variant?: string; cta_variant?: string }>;
+  searchParams?: Promise<{ ad_variant?: string; cta_variant?: string; resume?: string }>;
 };
 
 export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageProps) {
   const params = searchParams ? await searchParams : {};
   const ctaVariant = parseGuidePageCtaVariant(params.cta_variant);
+  const resumeIntent = parseGuideResumeIntent(params.resume ?? null);
   const adVariant = typeof params.ad_variant === 'string' && /^[0-9]+$/u.test(params.ad_variant)
     ? `native-card:${params.ad_variant}`
     : 'sales-page';
@@ -73,8 +74,7 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
           initialVariant={ctaVariant}
           purchaseOfferVariant={purchaseOfferVariant}
           subscriptionOfferVariant={subscriptionOfferVariant}
-          hotmartCheckoutUrl={env.HOTMART_GUIDE_CHECKOUT_URL}
-          subscriptionHotmartCheckoutUrl={env.HOTMART_SUBSCRIPTION_CHECKOUT_URL}
+          resumeIntent={resumeIntent}
         />
       </div>
       <OfferExitPopup />

@@ -24,7 +24,7 @@ test.describe('oferta do Guia de novembro', () => {
       'Escudo de Black Friday',
       'Raio-X Financeiro (computador e mobile)',
     ]) {
-      await expect(page.getByText(material, { exact: true })).toBeVisible();
+      await expect(page.getByText(material, { exact: true }).first()).toBeVisible();
     }
   });
 
@@ -42,6 +42,9 @@ test.describe('oferta do Guia de novembro', () => {
 
   test('registra a atribuição de checkout sem acionar um pagamento real', async ({ page }) => {
     const events: Array<{ experiment?: string; variant?: string; eventType?: string }> = [];
+    await page.route('/api/sales/verify-offer', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ verified: true }) });
+    });
     await page.route('/api/sales/offer-events', async (route) => {
       if (route.request().method() === 'POST') {
         events.push(route.request().postDataJSON() as { experiment?: string; variant?: string; eventType?: string });
@@ -66,7 +69,8 @@ test.describe('oferta do Guia de novembro', () => {
       && event.eventType === 'checkout'
     ))).toBeTruthy();
 
-    await page.getByLabel('E-mail para a assinatura').fill('teste@example.com');
+    await page.locator('#guide-subscription-cpf').fill('529.982.247-25');
+    await page.getByText('Concordo que o CPF seja usado apenas para personalizar e proteger meus materiais.').last().click();
     await page.getByRole('button', { name: 'Começar por R$ 19/mês' }).click();
     const stripeSubscriptionButton = page.getByRole('button', { name: 'Assinar com Stripe' });
     if (await stripeSubscriptionButton.isVisible()) {
@@ -77,5 +81,53 @@ test.describe('oferta do Guia de novembro', () => {
       && event.variant === '0'
       && event.eventType === 'checkout'
     ))).toHaveLength(2);
+  });
+
+  test('redireciona compra não autenticada para login com a intenção preservada', async ({ page }) => {
+    await page.route('/api/sales/verify-offer', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ verified: true }) });
+    });
+    await page.route('/api/payments/create-guide-checkout', async (route) => {
+      await route.fulfill({
+        status: 401,
+        body: JSON.stringify({ error: 'authentication_required', message: 'Entre na sua conta para comprar o guia.' }),
+      });
+    });
+
+    await page.goto('/guias/renda-extra?cta_variant=0');
+    await page.getByRole('button', { name: 'Quero o pacote de novembro' }).click();
+    await expect(page).toHaveURL(/\/login\?next=%2Fguias%2Frenda-extra&resume=purchase/u);
+  });
+
+  test('redireciona assinatura não autenticada e retoma o campo de CPF', async ({ page }) => {
+    await page.route('/api/payments/create-guide-subscription', async (route) => {
+      await route.fulfill({
+        status: 401,
+        body: JSON.stringify({ error: 'authentication_required', message: 'Entre na sua conta para assinar o pacote.' }),
+      });
+    });
+
+    await page.goto('/guias/renda-extra?cta_variant=0');
+    await page.locator('#guide-subscription-cpf').fill('529.982.247-25');
+    await page.getByText('Concordo que o CPF seja usado apenas para personalizar e proteger meus materiais.').last().click();
+    await page.getByRole('button', { name: 'Começar por R$ 19/mês' }).click();
+    await expect(page).toHaveURL(/\/login\?next=%2Fguias%2Frenda-extra&resume=subscription/u);
+
+    await page.goto('/guias/renda-extra?cta_variant=0&resume=subscription');
+    await expect(page.locator('#guide-subscription-cpf')).toBeFocused();
+  });
+
+  test('mantém outros erros do checkout na própria página', async ({ page }) => {
+    await page.route('/api/sales/verify-offer', async (route) => {
+      await route.fulfill({ status: 200, body: JSON.stringify({ verified: true }) });
+    });
+    await page.route('/api/payments/create-guide-checkout', async (route) => {
+      await route.fulfill({ status: 503, body: JSON.stringify({ error: 'stripe_not_configured', message: 'Stripe indisponível.' }) });
+    });
+
+    await page.goto('/guias/renda-extra?cta_variant=0');
+    await page.getByRole('button', { name: 'Quero o pacote de novembro' }).click();
+    await expect(page.getByText('Stripe indisponível.', { exact: true })).toBeVisible();
+    await expect(page).not.toHaveURL(/\/login/u);
   });
 });
