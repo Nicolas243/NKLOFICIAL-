@@ -35,7 +35,7 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
         <section className="md:pt-8">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">Guia NKL · produto digital</p>
           <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Guia Essencial Renda Extra 2027</h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Assine o acervo editorial do Portal NKL e receba um novo arquivo prático toda semana para decidir qual oportunidade faz sentido para o seu momento.</p>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Encontre oportunidades de renda extra com mais facilidade. Receba um novo PDF toda semana com ideias, passos simples, links diretos e informações para você escolher por onde começar.</p>
           <div className="mt-8 rounded-2xl border border-orange/30 bg-income-surface p-5 shadow-sm">
             <div className="mx-auto flex aspect-[3/4] max-w-xs flex-col justify-between rounded-xl border border-orange/40 bg-[linear-gradient(145deg,#172554,#07152d)] p-6 text-white shadow-2xl">
               <div className="flex items-start justify-between gap-3">
@@ -44,17 +44,17 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
               </div>
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/60">Edição prática</p>
-                <p className="mt-3 font-playfair text-4xl font-bold leading-tight">Renda extra sem ruído.</p>
+                <p className="mt-3 font-playfair text-4xl font-bold leading-tight">Renda extra mais simples</p>
               </div>
               <div className="space-y-2 text-xs text-white/65">
-                <p>Filtros de decisão</p>
-                <p>Roteiros de aprovação</p>
-                <p>Links e critérios verificáveis</p>
+                <p>Ideias de renda extra</p>
+                <p>Passo a passo simples</p>
+                <p>Links diretos para começar</p>
               </div>
             </div>
           </div>
           <ul className="mt-8 space-y-3 text-sm font-medium">
-            {['Um novo arquivo prático toda semana', 'Roteiros de aprovação', 'Links diretos e critérios claros', 'Organize seus próximos passos em um único mapa'].map((item) => (
+            {['Um PDF novo toda semana', 'Ideias de renda extra', 'Passo a passo simples', 'Links diretos para começar'].map((item) => (
               <li key={item} className="flex items-start gap-3">
                 <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-orange" aria-hidden="true" />
                 <span>{item}</span>
@@ -67,7 +67,7 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
           <div className="mt-5 rounded-2xl border border-border bg-income-surface p-5">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500 dark:text-orange-400">Alternativa mensal</p>
             <h2 className="mt-2 font-playfair text-2xl font-bold">Guias para Liberdade Financeira</h2>
-            <p className="mt-2 text-sm leading-relaxed text-foreground/70">Acesso mensal ao acervo e a um novo arquivo editorial por semana, com pagamento recorrente de R$ 19.</p>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/70">Acesso mensal a novos PDFs com ideias de renda extra, passos simples e links diretos para começar.</p>
             <p className="mt-4 font-playfair text-3xl font-bold text-orange-500">R$ 19/mês</p>
             <div className="mt-4">
               <GuideSubscriptionButton
