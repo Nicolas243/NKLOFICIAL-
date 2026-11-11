@@ -5,6 +5,7 @@ import NewsForm from './news-form';
 import SuggestNewsModal from './suggest-news-modal';
 import { SuggestNewsBannerButton } from './suggest-news-banner-button';
 import { NewsEngagement } from '@/components/news-engagement';
+import { getHiddenScrollbarClassName } from '@/lib/ui/support-layout';
 
 export const metadata = {
   title: 'Mural de Notícias | Portal NKL',
@@ -66,7 +67,7 @@ export default async function NoticiasPage() {
               />
             </div>
             <div className="news-content">
-              <div className="news-tags nkl-scrollbar-hidden overflow-x-auto">
+              <div className={`news-tags ${getHiddenScrollbarClassName()}`}>
                 {item.tags?.split(',').map((tag) => (
                   <span key={tag.trim()} className="news-tag highlight">
                     {tag.trim()}

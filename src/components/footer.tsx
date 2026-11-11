@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { isIncomePortalPath } from '@/lib/income-portal';
 import { SharePageButton } from '@/components/ui/share-page-button';
-import { getHiddenScrollbarClassName, getSupportLinkClassName } from '@/lib/ui/support-layout';
+import { getSupportLinkClassName } from '@/lib/ui/support-layout';
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
 const COMMUNITY_NOTIFICATION_KEY = 'community_notified';

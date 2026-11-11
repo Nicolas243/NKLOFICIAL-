@@ -154,7 +154,7 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
     setSuggestionVisible(false);
     setActiveSteps([]);
     setSpotlight(null);
-  }, [area, pathname]);
+  }, [area, pathname, tutorialRoute?.key]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -192,7 +192,7 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
       window.clearTimeout(timer);
       document.removeEventListener(OPEN_EVENT, handleOpenTutorial);
     };
-  }, [area, pathname, steps]);
+  }, [area, pathname, steps, tutorialRoute?.key]);
 
   useEffect(() => {
     if (!isOpen || activeSteps.length === 0) return;
