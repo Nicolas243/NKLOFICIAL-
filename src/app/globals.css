@@ -6,34 +6,34 @@
   --background: #f7f8fa;
   --foreground: #101828;
   --surface: #ffffff;
-  --income-background: #e7e1d7;
-  --income-surface: #f1ece3;
-  --income-card: #ebe5da;
+  --income-background: #ece9e3;
+  --income-surface: #f3f0ea;
+  --income-card: #eeebe5;
   --text: #101828;
   --border: #c8d0dc;
-  --neon: #0B5ED7;
-  --neon-dark: #003d99;
-  --orange: #f97316;
-  --orange-dark: #c2410c;
+  --neon: #2a63ae;
+  --neon-dark: #254d85;
+  --orange: #c76538;
+  --orange-dark: #9f4f2e;
   --header-bg: rgba(255, 255, 255, 0.95);
-  --accent: rgba(30, 144, 255, 0.1);
+  --accent: rgba(57, 91, 128, 0.08);
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
   --surface: #121212;
-  --income-background: #181817;
-  --income-surface: #22211f;
-  --income-card: #292824;
+  --income-background: #1b1b1a;
+  --income-surface: #242422;
+  --income-card: #2b2b29;
   --text: #ffffff;
   --border: #2a2a2a;
-  --neon: #1E90FF;
-  --neon-dark: #60A5FA;
-  --orange: #fb923c;
-  --orange-dark: #fdba74;
+  --neon: #4b78ad;
+  --neon-dark: #7294bd;
+  --orange: #d2855d;
+  --orange-dark: #bb704d;
   --header-bg: rgba(10, 10, 10, 0.95);
-  --accent: rgba(30, 144, 255, 0.15);
+  --accent: rgba(77, 102, 130, 0.12);
 }
 
 .radial-menu-mobile-copy {
@@ -174,6 +174,89 @@ body {
   opacity: 0.035;
 }
 
+.music-parallax-field {
+  background: var(--background);
+}
+
+.music-parallax-layer {
+  position: absolute;
+  inset: -18vh -10vw;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.music-parallax-notes {
+  color: color-mix(in srgb, var(--neon) 24%, var(--foreground));
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  opacity: 0.14;
+}
+
+.music-parallax-note {
+  position: absolute;
+  display: block;
+  line-height: 1;
+}
+
+.music-parallax-note-a {
+  top: 14%;
+  left: 12%;
+}
+
+.music-parallax-note-b {
+  top: 62%;
+  left: 24%;
+  font-size: 0.72em;
+}
+
+.music-parallax-note-c {
+  top: 30%;
+  right: 16%;
+  font-size: 0.8em;
+}
+
+.music-parallax-note-d {
+  right: 8%;
+  bottom: 18%;
+}
+
+.music-parallax-staves {
+  opacity: 0.09;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--neon) 34%, transparent) 0 1px,
+      transparent 1px 9px
+    );
+  background-size: 100% 160px;
+  background-position: 0 12%;
+}
+
+.music-parallax-particles {
+  opacity: 0.22;
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--orange) 36%, transparent) 1px, transparent 2px),
+    radial-gradient(circle, color-mix(in srgb, var(--neon) 28%, transparent) 1px, transparent 2px);
+  background-position: 12px 24px, 88px 72px;
+  background-size: 132px 132px, 184px 184px;
+}
+
+.dark .music-parallax-field {
+  background: var(--background);
+}
+
+.dark .music-parallax-notes {
+  opacity: 0.08;
+}
+
+.dark .music-parallax-staves {
+  opacity: 0.055;
+}
+
+.dark .music-parallax-particles {
+  opacity: 0.14;
+}
+
 .site-texture-partner {
   opacity: 0.05;
 }
@@ -193,12 +276,12 @@ body {
 .income-parallax-dots {
   background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 20%, transparent) 1px, transparent 1.5px);
   background-size: 24px 24px;
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 .income-parallax-glow {
   filter: blur(72px);
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
 .income-parallax-glow span {
@@ -211,7 +294,7 @@ body {
 .income-parallax-glow-orange {
   top: 6%;
   left: 8%;
-  background: rgb(249 115 22 / 10%);
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
 }
 
 .income-parallax-glow-cool {
@@ -226,11 +309,24 @@ body {
     radial-gradient(circle, color-mix(in srgb, var(--neon) 22%, transparent) 2px, transparent 2.5px);
   background-size: 180px 180px, 96px 96px;
   background-position: 12px 18px, 42px 8px;
+  opacity: 0.3;
+}
+
+.dark .income-parallax-dots {
+  opacity: 0.3;
+}
+
+.dark .income-parallax-glow {
+  opacity: 0.55;
+}
+
+.dark .income-parallax-particles {
   opacity: 0.22;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .income-parallax-layer {
+  .income-parallax-layer,
+  .music-parallax-layer {
     transform: translate3d(0, 0, 0) !important;
   }
 }
@@ -835,6 +931,8 @@ body.dark-theme .home-photo-img { filter: grayscale(100%) brightness(0.7); }
 .carousel-wrapper { position: relative; width: 90%; max-width: 1200px; height: 85vh; display: flex; align-items: center; }
 .carousel-container { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
 .carousel-container::-webkit-scrollbar { display: none; }
+.nkl-scrollbar-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+.nkl-scrollbar-hidden::-webkit-scrollbar { display: none; }
 .carousel-item { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; padding: 1rem; box-sizing: border-box; }
 .carousel-item img, .carousel-item video { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
 

@@ -55,7 +55,8 @@ export function SmartTagList({ tags }: SmartTagListProps) {
 
   return (
     <div className="min-w-0">
-      <div data-testid="program-tags" className="flex flex-wrap content-start gap-1.5">
+      <div data-testid="program-tags" className="nkl-scrollbar-hidden max-h-24 overflow-y-auto pr-1" tabIndex={0} aria-label="Tags da oportunidade. Role para ver todas.">
+        <div className="flex flex-wrap content-start gap-1.5">
         {orderedTags.map((tag) => (
           <button
             key={tag}
@@ -76,6 +77,7 @@ export function SmartTagList({ tags }: SmartTagListProps) {
             {tag}
           </button>
         ))}
+        </div>
       </div>
     </div>
   );

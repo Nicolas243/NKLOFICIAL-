@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { isIncomePortalPath } from '@/lib/income-portal';
+import { SharePageButton } from '@/components/ui/share-page-button';
+import { getHiddenScrollbarClassName, getSupportLinkClassName } from '@/lib/ui/support-layout';
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
 const COMMUNITY_NOTIFICATION_KEY = 'community_notified';
@@ -86,6 +88,9 @@ export function Footer() {
 
   return (
     <>
+      <div className="fixed bottom-[5.75rem] right-5 z-40 max-[768px]:bottom-[4.75rem] max-[768px]:right-3">
+        <SharePageButton compact />
+      </div>
       <div className="whatsapp-guide">
         {showWhatsappMessage && <p key={whatsappMessageIndex} className="whatsapp-guide-message" aria-live="polite">{whatsappMessages[whatsappMessageIndex]}</p>}
         <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label={communityLabel}>
@@ -132,10 +137,11 @@ export function Footer() {
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
             <p>{isPartnerPortal ? 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.' : 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.'}</p>
+            <p className="mt-2 text-sm opacity-70">Já apoiaram o projeto: <strong>0 pessoas</strong></p>
             <div className="flex w-full flex-wrap gap-2">
-              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Apoiar por Pix</button>
-              <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Buy Me a Coffee</a>
+              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar NKL</a>
+              <button type="button" onClick={() => setPixOpen(true)} className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar por Pix</button>
+              <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Buy Me a Coffee</a>
             </div>
           </div>
         </div>
@@ -152,7 +158,7 @@ export function Footer() {
 
       {/* Modal de apoio */}
       {pixOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
+        <div className="fixed inset-0 z-[320] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
           <div className="bg-surface border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
             <button className="absolute top-3 right-3 text-2xl opacity-50 hover:opacity-100" onClick={() => setPixOpen(false)}>&times;</button>
             <h4 className="font-playfair text-xl font-bold mb-2 text-foreground">Apoiar o NKL por Pix</h4>

@@ -66,7 +66,7 @@ export default async function NoticiasPage() {
               />
             </div>
             <div className="news-content">
-              <div className="news-tags">
+              <div className="news-tags nkl-scrollbar-hidden overflow-x-auto">
                 {item.tags?.split(',').map((tag) => (
                   <span key={tag.trim()} className="news-tag highlight">
                     {tag.trim()}
