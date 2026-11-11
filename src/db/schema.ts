@@ -294,7 +294,10 @@ export const guidePurchaseStatusEnum = pgEnum('guide_purchase_status', [
 
 export const guidePurchases = pgTable('guide_purchases', {
   id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => userProfiles.id, { onDelete: 'set null' }),
   email: text('email'),
+  cpf: text('cpf'),
+  cpfConsentConfirmed: boolean('cpf_consent_confirmed').notNull().default(false),
   status: guidePurchaseStatusEnum('status').notNull().default('pending'),
   paymentId: text('payment_id'),
   amountCents: integer('amount_cents').notNull(),
@@ -308,9 +311,12 @@ export const guidePurchases = pgTable('guide_purchases', {
 
 export const guideSubscriptions = pgTable('guide_subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => userProfiles.id, { onDelete: 'set null' }),
   externalReference: varchar('external_reference', { length: 120 }).notNull().unique(),
   gatewaySubscriptionId: varchar('gateway_subscription_id', { length: 120 }).unique(),
   email: text('email'),
+  cpf: text('cpf'),
+  cpfConsentConfirmed: boolean('cpf_consent_confirmed').notNull().default(false),
   status: varchar('status', { length: 30 }).notNull().default('pending'),
   amountCents: integer('amount_cents').notNull(),
   offerVariant: varchar('offer_variant', { length: 64 }),
@@ -358,6 +364,17 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [userProfiles.id],
   }),
 }));
+
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .references(() => userProfiles.id, { onDelete: 'cascade' })
+    .notNull(),
+  endpoint: text('endpoint').notNull().unique(),
+  subscription: jsonb('subscription').$type<Record<string, unknown>>().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
 
 export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   businessDirectory: many(businessDirectory),

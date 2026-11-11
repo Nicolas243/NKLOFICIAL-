@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getUserNotifications, markAllAsRead } from '@/actions/notifications';
 import { getNotificationHref, getNotificationLabel } from '@/lib/notifications/types';
+import { PushToggle } from '@/components/notifications/push-toggle';
 
 export const metadata = {
   title: 'Notificações | Portal NKL',
@@ -39,6 +40,7 @@ export default async function NotificacoesPage() {
           ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}`
           : 'Você está em dia com todas as notificações.'}
       </p>
+      <PushToggle />
 
       <div className="flex flex-col gap-3">
         {notifications.map((item) => (
