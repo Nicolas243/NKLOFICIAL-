@@ -2,8 +2,13 @@
 
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { isIncomeCatalogPath } from '@/lib/income-portal';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  getTutorialRoute,
+  getTutorialSuggestionKey,
+  HOME_TUTORIAL_SEEN_KEY,
+  type TutorialArea,
+} from '@/lib/tutorial-areas';
 
 type TutorialStep = {
   targetSelector: string;
@@ -23,7 +28,6 @@ type Viewport = {
   height: number;
 };
 
-const TUTORIAL_SEEN_KEY = 'nkl_tutorial_seen';
 const OPEN_EVENT = 'nkl:open-onboarding';
 const CARD_GAP = 16;
 const VIEWPORT_PADDING = 16;
@@ -65,6 +69,60 @@ const DEFAULT_STEPS: TutorialStep[] = [
   },
 ];
 
+const MUSIC_STEPS: TutorialStep[] = [
+  {
+    targetSelector: '.radial-menu-intro',
+    title: 'Explore o mapa musical',
+    description: 'Passe pelas fatias para encontrar cordas, luthiers, professores e guias do Portal NKL.',
+  },
+  {
+    targetSelector: 'a[href="/catalogo"]',
+    title: 'Compare cordas',
+    description: 'Abra o catálogo para consultar especificações e avaliações da comunidade.',
+  },
+  {
+    targetSelector: 'a[href="/luthiers"]',
+    title: 'Encontre um profissional',
+    description: 'Consulte o diretório de luthiers e veja as opções de contato disponíveis.',
+  },
+];
+
+const ROUTE_STEPS: Record<string, TutorialStep[]> = {
+  'music:/catalogo': [
+    {
+      targetSelector: 'main',
+      title: 'Encontre uma corda',
+      description: 'Pesquise por marca, modelo ou característica para reduzir o catálogo.',
+    },
+    {
+      targetSelector: 'main h1',
+      title: 'Compare os filtros',
+      description: 'Use os filtros para comparar materiais, tensão e faixas de preço.',
+    },
+  ],
+  'music:/noticias/:slug': [
+    {
+      targetSelector: 'main',
+      title: 'Leia a notícia',
+      description: 'Confira o conteúdo completo e use as tags para encontrar assuntos relacionados.',
+    },
+  ],
+  'music:/luthiers': [
+    {
+      targetSelector: 'main',
+      title: 'Encontre um luthier',
+      description: 'Explore os profissionais listados e abra um cartão para ver os contatos disponíveis.',
+    },
+  ],
+};
+
+function getStepsForRoute(routeKey: string | undefined, area: TutorialArea, fallback: TutorialStep[]): TutorialStep[] {
+  if (routeKey && ROUTE_STEPS[routeKey]) return ROUTE_STEPS[routeKey];
+  return area === 'music' ? MUSIC_STEPS : fallback;
+}
+
+type OpenTutorialEvent = CustomEvent<{ area?: TutorialArea }>;
+
 function getVisibleSteps(steps: TutorialStep[]): TutorialStep[] {
   return steps.filter((step) => {
     const target = document.querySelector(step.targetSelector);
@@ -82,8 +140,21 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
   const [viewport, setViewport] = useState<Viewport | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [suggestionVisible, setSuggestionVisible] = useState(false);
 
-  const isPartnerPortal = isIncomeCatalogPath(pathname);
+  const tutorialRoute = getTutorialRoute(pathname);
+  const area = tutorialRoute?.area ?? null;
+
+  const completeTutorial = useCallback((): void => {
+    if (area) {
+      window.localStorage.setItem(getTutorialSuggestionKey(tutorialRoute?.key ?? area), 'true');
+      if (pathname === '/') window.localStorage.setItem(HOME_TUTORIAL_SEEN_KEY, 'true');
+    }
+    setIsOpen(false);
+    setSuggestionVisible(false);
+    setActiveSteps([]);
+    setSpotlight(null);
+  }, [area, pathname]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -94,29 +165,34 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   }, []);
 
   useEffect(() => {
-    if (!isPartnerPortal) return;
+    if (!area) return;
 
-    function openTutorial(): void {
-      const availableSteps = getVisibleSteps(steps);
+    function openTutorial(event?: OpenTutorialEvent): void {
+      if (event?.detail.area && event.detail.area !== area) return;
+      const currentArea = area;
+      if (!currentArea) return;
+      const availableSteps = getVisibleSteps(getStepsForRoute(tutorialRoute?.key, currentArea, steps));
       if (availableSteps.length === 0) return;
+      setSuggestionVisible(false);
       setActiveSteps(availableSteps);
       setStepIndex(0);
       setSpotlight(null);
       setIsOpen(true);
     }
 
-    document.addEventListener(OPEN_EVENT, openTutorial);
+    const handleOpenTutorial = (event: Event): void => openTutorial(event as OpenTutorialEvent);
+    document.addEventListener(OPEN_EVENT, handleOpenTutorial);
     const timer = window.setTimeout(() => {
-      if (!window.localStorage.getItem(TUTORIAL_SEEN_KEY)) {
-        openTutorial();
-      }
+      const suggestionKey = getTutorialSuggestionKey(tutorialRoute?.key ?? area);
+      const homeAlreadySeen = pathname === '/' && window.localStorage.getItem(HOME_TUTORIAL_SEEN_KEY);
+      if (!window.localStorage.getItem(suggestionKey) && !homeAlreadySeen) setSuggestionVisible(true);
     }, INITIAL_DELAY_MS);
 
     return () => {
       window.clearTimeout(timer);
-      document.removeEventListener(OPEN_EVENT, openTutorial);
+      document.removeEventListener(OPEN_EVENT, handleOpenTutorial);
     };
-  }, [isPartnerPortal, steps]);
+  }, [area, pathname, steps]);
 
   useEffect(() => {
     if (!isOpen || activeSteps.length === 0) return;
@@ -176,7 +252,7 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
       window.removeEventListener('resize', handleViewportChange);
       window.removeEventListener('scroll', handleViewportChange);
     };
-  }, [activeSteps, isOpen, stepIndex]);
+  }, [activeSteps, completeTutorial, isOpen, stepIndex]);
 
   useEffect(() => {
     if (!isOpen || !activeSteps[stepIndex]) return;
@@ -190,7 +266,7 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
 
     target.addEventListener('click', handleTargetClick, true);
     return () => target.removeEventListener('click', handleTargetClick, true);
-  }, [activeSteps, isOpen, stepIndex]);
+  }, [activeSteps, completeTutorial, isOpen, stepIndex]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -201,13 +277,16 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
 
     document.addEventListener('keydown', closeWithEscape);
     return () => document.removeEventListener('keydown', closeWithEscape);
-  }, [isOpen]);
+  }, [completeTutorial, isOpen]);
 
-  function completeTutorial(): void {
-    window.localStorage.setItem(TUTORIAL_SEEN_KEY, 'true');
-    setIsOpen(false);
-    setActiveSteps([]);
-    setSpotlight(null);
+  function dismissSuggestion(): void {
+    if (tutorialRoute) window.localStorage.setItem(getTutorialSuggestionKey(tutorialRoute.key), 'true');
+    setSuggestionVisible(false);
+  }
+
+  function openFromSuggestion(): void {
+    dismissSuggestion();
+    document.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { area } }));
   }
 
   function nextStep(): void {
@@ -220,7 +299,24 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   }
 
   if (!mounted) return null;
-  if (!isOpen || !spotlight || !viewport || !activeSteps[stepIndex]) return null;
+
+  const suggestion = suggestionVisible && !isOpen && area
+    ? createPortal(
+      <aside className="fixed bottom-[10.5rem] right-5 z-[180] w-[min(22rem,calc(100vw-2.5rem))] rounded-2xl border border-orange/30 bg-surface p-4 text-foreground shadow-xl" aria-label="Sugestão de guia rápido">
+        <p className="text-sm font-bold">Quer uma ajuda rápida?</p>
+        <p className="mt-1 text-xs leading-relaxed text-foreground/70">
+          Veja como explorar esta página do Portal NKL.
+        </p>
+        <div className="mt-3 flex items-center justify-end gap-3">
+          <button type="button" onClick={dismissSuggestion} className="min-h-10 px-2 text-xs font-bold text-foreground/60 underline hover:text-foreground">Agora não</button>
+          <button type="button" onClick={openFromSuggestion} className="min-h-10 rounded-md bg-orange px-3 py-2 text-xs font-bold text-white hover:bg-orange-dark">Ver guia</button>
+        </div>
+      </aside>,
+      document.body,
+    )
+    : null;
+
+  if (!isOpen || !spotlight || !viewport || !activeSteps[stepIndex]) return suggestion;
 
   const step = activeSteps[stepIndex];
   const cardWidth = Math.min(360, viewport.width - VIEWPORT_PADDING * 2);
@@ -233,11 +329,13 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
     : spotlight.top + spotlight.height + CARD_GAP;
 
   return createPortal(
-    <div className="pointer-events-none fixed inset-0 z-[310]" role="dialog" aria-modal="true" aria-labelledby="spotlight-tutorial-title">
-      <div className="pointer-events-auto fixed left-0 right-0 top-0 bg-black/70 backdrop-blur-md transition-all duration-300" style={{ height: Math.max(0, spotlight.top) }} aria-hidden="true" />
-      <div className="pointer-events-auto fixed right-0 bg-black/70 backdrop-blur-md transition-all duration-300" style={{ top: spotlight.top, left: spotlight.left + spotlight.width, height: spotlight.height }} aria-hidden="true" />
-      <div className="pointer-events-auto fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md transition-all duration-300" style={{ top: spotlight.top + spotlight.height }} aria-hidden="true" />
-      <div className="pointer-events-auto fixed left-0 bg-black/70 backdrop-blur-md transition-all duration-300" style={{ top: spotlight.top, width: Math.max(0, spotlight.left), height: spotlight.height }} aria-hidden="true" />
+    <>
+      {suggestion}
+      <div className="pointer-events-none fixed inset-0 z-[310]" role="dialog" aria-modal="true" aria-labelledby="spotlight-tutorial-title">
+      <div className="pointer-events-auto fixed left-0 right-0 top-0 bg-black/40 transition-all duration-300" style={{ height: Math.max(0, spotlight.top) }} aria-hidden="true" />
+      <div className="pointer-events-auto fixed right-0 bg-black/40 transition-all duration-300" style={{ top: spotlight.top, left: spotlight.left + spotlight.width, height: spotlight.height }} aria-hidden="true" />
+      <div className="pointer-events-auto fixed bottom-0 left-0 right-0 bg-black/40 transition-all duration-300" style={{ top: spotlight.top + spotlight.height }} aria-hidden="true" />
+      <div className="pointer-events-auto fixed left-0 bg-black/40 transition-all duration-300" style={{ top: spotlight.top, width: Math.max(0, spotlight.left), height: spotlight.height }} aria-hidden="true" />
       <div className="pointer-events-none fixed rounded-xl border-2 border-orange bg-transparent transition-all duration-300" style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }} aria-hidden="true" />
       <section className="pointer-events-auto fixed rounded-2xl border border-orange/40 bg-surface p-5 text-foreground shadow-2xl transition-all duration-300" style={{ top: cardTop, left: cardLeft, width: cardWidth }}>
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Guia rápido · {stepIndex + 1}/{activeSteps.length}</p>
@@ -248,7 +346,8 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
           <button type="button" onClick={nextStep} className="min-h-11 rounded-md bg-orange px-5 py-3 text-sm font-bold text-white hover:bg-orange-dark">{stepIndex === activeSteps.length - 1 ? 'Entendi' : 'Entendi (Próximo)'}</button>
         </div>
       </section>
-    </div>,
+      </div>
+    </>,
     document.body,
   );
 }

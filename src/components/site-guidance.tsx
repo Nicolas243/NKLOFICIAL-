@@ -39,7 +39,7 @@ export function SiteGuidance() {
         aria-label={`Abrir guia do ${appLabel}`}
       >
         <HelpCircle size={18} aria-hidden="true" />
-        <span className="hidden sm:inline">Guia rápido</span>
+        <span className="inline">Guia rápido</span>
       </button>
 
       {themeHintOpen && (
