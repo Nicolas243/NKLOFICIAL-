@@ -1,16 +1,23 @@
-import { safeNextPath } from '@/lib/auth/oauth';
-
 export type GuideResumeIntent = 'purchase' | 'subscription';
+
+export function safeNextPath(value: string | null): string {
+  return value
+    && value.startsWith('/')
+    && !value.startsWith('//')
+    && !value.includes('\\')
+    ? value
+    : '/';
+}
 
 export function parseGuideResumeIntent(value: string | null): GuideResumeIntent | null {
   return value === 'purchase' || value === 'subscription' ? value : null;
 }
 
-export function buildLoginPath(nextPath: string, intent: GuideResumeIntent): string {
+export function buildLoginPath(nextPath: string, intent: GuideResumeIntent | null): string {
   const search = new URLSearchParams({
     next: safeNextPath(nextPath),
-    resume: intent,
   });
+  if (intent) search.set('resume', intent);
   return `/login?${search.toString()}`;
 }
 

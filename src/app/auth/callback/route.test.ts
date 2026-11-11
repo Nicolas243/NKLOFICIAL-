@@ -12,11 +12,11 @@ test('allows only local next paths', () => {
 
 test('preserves the validated destination when profile sync needs a retry', () => {
   assert.equal(
-    profileSyncFailurePath('/programas/utest'),
-    '/login?error=profile_sync_failed&next=%2Fprogramas%2Futest',
+    profileSyncFailurePath('/programas/utest', 'subscription'),
+    '/login?error=profile_sync_failed&next=%2Fprogramas%2Futest&resume=subscription',
   );
   assert.equal(
-    profileSyncFailurePath('//evil.example'),
-    '/login?error=profile_sync_failed&next=%2F',
+    profileSyncFailurePath('//evil.example', 'purchase'),
+    '/login?error=profile_sync_failed&next=%2F&resume=purchase',
   );
 });

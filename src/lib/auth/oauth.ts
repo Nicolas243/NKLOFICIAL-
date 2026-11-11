@@ -1,16 +1,23 @@
-export function safeNextPath(value: string | null): string {
-  return value
-    && value.startsWith('/')
-    && !value.startsWith('//')
-    && !value.includes('\\')
-    ? value
-    : '/';
-}
+import {
+  buildLoginPath,
+  buildReturnPath,
+  safeNextPath,
+  type GuideResumeIntent,
+} from '@/lib/auth/return-intent';
 
-export function profileSyncFailurePath(nextPath: string): string {
+export function profileSyncFailurePath(
+  nextPath: string,
+  resumeIntent: GuideResumeIntent | null = null,
+): string {
+  const loginUrl = new URL(buildLoginPath(nextPath, resumeIntent), 'http://localhost');
   const search = new URLSearchParams({
     error: 'profile_sync_failed',
-    next: safeNextPath(nextPath),
+    next: loginUrl.searchParams.get('next') ?? '/',
   });
-  return `/login?${search.toString()}`;
+  const resume = loginUrl.searchParams.get('resume');
+  if (resume) search.set('resume', resume);
+  return `${loginUrl.pathname}?${search.toString()}`;
 }
+
+export { buildReturnPath };
+export { safeNextPath };

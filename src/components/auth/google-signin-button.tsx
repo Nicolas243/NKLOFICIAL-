@@ -2,8 +2,17 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { getLoginErrorMessage } from '@/lib/auth/errors';
+import { safeNextPath } from '@/lib/auth/oauth';
+import type { GuideResumeIntent } from '@/lib/auth/return-intent';
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({
+  nextPath = '/',
+  resumeIntent = null,
+}: {
+  nextPath?: string;
+  resumeIntent?: GuideResumeIntent | null;
+}) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,16 +21,19 @@ export function GoogleSignInButton() {
     setError(null);
 
     const supabase = createClient();
+    const callbackUrl = new URL('/auth/callback', window.location.origin);
+    callbackUrl.searchParams.set('next', safeNextPath(nextPath));
+    if (resumeIntent) callbackUrl.searchParams.set('resume', resumeIntent);
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
       },
     });
 
     if (signInError) {
       console.error('[AUTH] Falha no login Google:', signInError.message);
-      setError('Não foi possível iniciar o login com Google.');
+      setError(getLoginErrorMessage(signInError));
       setIsPending(false);
     }
   };

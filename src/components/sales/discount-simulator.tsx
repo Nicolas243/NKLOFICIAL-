@@ -2,15 +2,16 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
+import type { GuideResumeIntent } from '@/lib/auth/return-intent';
 
 type Status = 'idle' | 'analyzing' | 'approved' | 'unavailable';
 type DisplayPhase = 'normal' | 'approved' | 'denied';
 type DiscountSimulatorProps = {
   offerVariant?: string;
-  hotmartCheckoutUrl?: string;
   title?: string;
   summary?: string;
   ctaLabel?: string;
+  resumeIntent?: GuideResumeIntent | null;
 };
 
 const PHASE_STYLES: Record<DisplayPhase, string> = {
@@ -27,10 +28,10 @@ const PHASE_LABELS: Record<DisplayPhase, string> = {
 
 export function DiscountSimulator({
   offerVariant = 'sales-page',
-  hotmartCheckoutUrl,
   title = 'Seu guia essencial para começar com clareza',
   summary = 'Estamos confirmando a disponibilidade do checkout enquanto você conhece a oferta. Não usamos dados pessoais nem prometemos renda.',
   ctaLabel = 'Quero liberar meu acesso',
+  resumeIntent = null,
 }: DiscountSimulatorProps) {
   const [status, setStatus] = useState<Status>('idle');
   const [displayPhase, setDisplayPhase] = useState<DisplayPhase>('normal');
@@ -91,7 +92,7 @@ export function DiscountSimulator({
           label={ctaLabel}
           enabled={status === 'approved'}
           offerVariant={offerVariant}
-          hotmartCheckoutUrl={hotmartCheckoutUrl}
+          resumeIntent={resumeIntent}
         />
       </div>
     </section>

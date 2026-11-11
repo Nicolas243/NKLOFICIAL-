@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { login, registerWithProfile, retryProfileSync } from '@/actions/auth'
 import { GoogleSignInButton } from '@/components/auth/google-signin-button'
+import type { GuideResumeIntent } from '@/lib/auth/return-intent'
 
 const INPUT = 'p-3.5 bg-black/20 border border-white/10 rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40 transition-all'
 
@@ -19,7 +20,15 @@ function passwordStrength(pw: string): { level: string; color: string; width: st
   return { level: 'Forte', color: 'bg-green-500', width: 'w-full' }
 }
 
-export function LoginForm({ serverError, nextPath = '/' }: { serverError: string | null; nextPath?: string }) {
+export function LoginForm({
+  serverError,
+  nextPath = '/',
+  resumeIntent = null,
+}: {
+  serverError: string | null
+  nextPath?: string
+  resumeIntent?: GuideResumeIntent | null
+}) {
   const [isRegistering, setIsRegistering] = useState(false)
   const [error, setError] = useState<string | null>(serverError)
   const [isPending, startTransition] = useTransition()
@@ -86,6 +95,8 @@ export function LoginForm({ serverError, nextPath = '/' }: { serverError: string
       )}
 
       <input type="email" name="email" placeholder="E-mail" required autoComplete="email" className={INPUT} />
+      <input type="hidden" name="next" value={nextPath} />
+      {resumeIntent && <input type="hidden" name="resume" value={resumeIntent} />}
 
       {isRegistering && (
         <>
@@ -132,7 +143,7 @@ export function LoginForm({ serverError, nextPath = '/' }: { serverError: string
       </div>
 
       <div className="flex gap-3">
-        <GoogleSignInButton />
+        <GoogleSignInButton nextPath={nextPath} resumeIntent={resumeIntent} />
         <a href="/api/auth/facebook" className="flex-1 py-3 bg-white/10 border border-white/10 rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-white/20">
           <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           <span className="text-sm font-medium text-text">Facebook</span>

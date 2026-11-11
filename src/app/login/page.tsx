@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import { LoginForm } from './login-form'
+import { parseGuideResumeIntent } from '@/lib/auth/return-intent'
+import { safeNextPath } from '@/lib/auth/oauth'
 
 export const metadata = {
   title: 'Entrar | Portal NKL',
@@ -15,7 +17,8 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
     : errorCode === 'oauth_callback_failed'
       ? 'Não foi possível concluir o login com Google. Tente novamente.'
       : errorCode
-  const nextPath = typeof search.next === 'string' ? search.next : '/'
+  const nextPath = safeNextPath(typeof search.next === 'string' ? search.next : null)
+  const resumeIntent = parseGuideResumeIntent(typeof search.resume === 'string' ? search.resume : null)
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20">
@@ -27,7 +30,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
             <p className="text-sm opacity-60 mt-1">Entre no ecossistema da lutheria</p>
           </div>
 
-          <LoginForm serverError={error} nextPath={nextPath} />
+          <LoginForm serverError={error} nextPath={nextPath} resumeIntent={resumeIntent} />
         </div>
 
         <div className="absolute inset-0 -z-0 bg-neon/5 blur-3xl rounded-full transform -translate-y-1/4" />
