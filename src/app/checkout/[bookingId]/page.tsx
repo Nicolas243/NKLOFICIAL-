@@ -59,7 +59,6 @@ export default async function BookingCheckoutPage(props: { params: Params }) {
         total={pricing.totalStudentPaysCents / CENTS_PER_UNIT}
         modalityLabel={modality.label}
         includedClasses={modality.includedClasses}
-        maxInstallments={modality.maxInstallments}
       />
     </div>
   );

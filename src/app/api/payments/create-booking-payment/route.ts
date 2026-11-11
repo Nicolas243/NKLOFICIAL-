@@ -1,25 +1,12 @@
 import { and, eq } from 'drizzle-orm';
-import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classBookings, userProfiles } from '@/db/schema';
+import { classBookings } from '@/db/schema';
 import { env } from '@/env';
 import { createClient } from '@/lib/supabase/server';
-import { calculateClassPricing, CENTS_PER_UNIT, getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
-import { getValidTeacherMpAccessToken } from '@/lib/mercadopago/oauth';
-
-type PaymentInput = {
-  bookingId?: unknown;
-  token?: unknown;
-  payment_method_id?: unknown;
-  installments?: unknown;
-  issuer_id?: unknown;
-  payer?: unknown;
-};
-
-function isPaymentInput(value: unknown): value is PaymentInput {
-  return typeof value === 'object' && value !== null;
-}
+import { calculateClassPricing, getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
+import { createCheckoutSession } from '@/lib/stripe/checkout';
+import { buildBookingCheckoutParams } from '@/lib/stripe/premium-booking';
 
 export async function POST(request: Request): Promise<NextResponse> {
   const supabase = await createClient();
@@ -28,7 +15,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     const body: unknown = await request.json();
-    if (!isPaymentInput(body) || typeof body.bookingId !== 'string' || !body.bookingId) {
+    if (typeof body !== 'object' || body === null || !('bookingId' in body) || typeof body.bookingId !== 'string' || !body.bookingId) {
       return NextResponse.json({ error: 'invalid_payment_data' }, { status: 400 });
     }
 
@@ -38,53 +25,26 @@ export async function POST(request: Request): Promise<NextResponse> {
         priceCents: classBookings.priceCents,
         planModality: classBookings.planModality,
         studentId: classBookings.studentId,
-        teacherId: classBookings.teacherId,
         paymentStatus: classBookings.paymentStatus,
       })
       .from(classBookings)
-      .innerJoin(userProfiles, eq(userProfiles.id, classBookings.teacherId))
       .where(and(eq(classBookings.id, body.bookingId), eq(classBookings.studentId, user.id)))
       .limit(1);
 
     if (!booking) return NextResponse.json({ error: 'booking_not_found' }, { status: 404 });
     if (booking.paymentStatus !== 'pending') return NextResponse.json({ error: 'booking_not_payable' }, { status: 409 });
-    const teacherAccessToken = await getValidTeacherMpAccessToken(booking.teacherId);
-    if (process.env.NODE_ENV === 'production' && !teacherAccessToken) {
-      return NextResponse.json({ error: 'teacher_mp_account_not_connected' }, { status: 422 });
-    }
-
     const pricing = calculateClassPricing(booking.priceCents, booking.planModality as ClassPlanModality);
     const modality = getModalityMetadata(booking.planModality as ClassPlanModality);
-    const installments = typeof body.installments === 'number' && Number.isInteger(body.installments)
-      ? body.installments
-      : 1;
-    if (installments < 1 || installments > modality.maxInstallments) {
-      return NextResponse.json({ error: 'invalid_installments', maxInstallments: modality.maxInstallments }, { status: 400 });
+    const session = await createCheckoutSession(buildBookingCheckoutParams({
+      bookingId: booking.id,
+      siteUrl: env.NEXT_PUBLIC_SITE_URL,
+      totalCents: pricing.totalStudentPaysCents,
+      description: `Aula individual Portal NKL — ${modality.label}`,
+    }));
+    if (!session.url) {
+      return NextResponse.json({ error: 'checkout_url_missing' }, { status: 502 });
     }
-    const accessToken = teacherAccessToken || env.MERCADOPAGO_ACCESS_TOKEN;
-    const paymentBody: Record<string, unknown> = {
-      token: body.token,
-      payment_method_id: body.payment_method_id,
-      installments,
-      issuer_id: body.issuer_id,
-      payer: body.payer,
-      transaction_amount: pricing.totalStudentPaysCents / CENTS_PER_UNIT,
-      description: 'Aula individual Portal NKL',
-      external_reference: booking.id,
-      metadata: {
-        booking_id: booking.id,
-        plan_modality: booking.planModality,
-        included_classes: modality.includedClasses,
-        student_id: booking.studentId,
-        teacher_id: booking.teacherId,
-      },
-    };
-    if (teacherAccessToken) {
-      paymentBody.application_fee = pricing.platformApplicationFeeCents / CENTS_PER_UNIT;
-    }
-
-    const payment = await new Payment(new MercadoPagoConfig({ accessToken })).create({ body: paymentBody });
-    return NextResponse.json({ id: payment.id, status: payment.status });
+    return NextResponse.json({ checkoutUrl: session.url }, { status: 200 });
   } catch (error) {
     console.error('[BOOKING_PAYMENT] Falha ao criar pagamento:', error instanceof Error ? error.message : 'erro desconhecido');
     return NextResponse.json({ error: 'payment_creation_failed' }, { status: 502 });

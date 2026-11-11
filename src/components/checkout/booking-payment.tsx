@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { PaymentBrick } from '@/components/payment-brick';
 
 type BookingPaymentProps = {
   bookingId: string;
@@ -11,12 +9,10 @@ type BookingPaymentProps = {
   total: number;
   modalityLabel: string;
   includedClasses: number;
-  maxInstallments: number;
 };
 
-export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses, maxInstallments }: BookingPaymentProps) {
-  const [message, setMessage] = useState('');
-  const router = useRouter();
+export function BookingPayment({ bookingId, basePrice, studentFee, total, modalityLabel, includedClasses }: BookingPaymentProps) {
+  const [message, setMessage] = useState<string | null>(null);
 
   return (
     <section className="rounded-2xl border border-border bg-surface p-6">
@@ -32,33 +28,28 @@ export function BookingPayment({ bookingId, basePrice, studentFee, total, modali
         <div className="flex justify-between"><dt>Taxa da plataforma (5%)</dt><dd>R$ {studentFee.toFixed(2).replace('.', ',')}</dd></div>
         <div className="flex justify-between border-t border-border pt-2 font-bold text-foreground"><dt>Total</dt><dd>R$ {total.toFixed(2).replace('.', ',')}</dd></div>
       </dl>
-      <p className="mb-6 text-sm opacity-75">Parcelamento em até {maxInstallments}x disponível. Eventuais juros da operadora são assumidos pelo comprador.</p>
+      <p className="mb-6 text-sm opacity-75">O Stripe exibirá as formas de pagamento disponíveis para esta cobrança.</p>
       {includedClasses > 1 && <p className="mb-6 text-sm opacity-75">Após a aprovação, as {includedClasses} aulas do pacote serão liberadas automaticamente na sua carteira.</p>}
-      <PaymentBrick
-        amount={total}
-        maxInstallments={maxInstallments}
-        onSubmitPayment={async (formData) => {
+      <button
+        type="button"
+        className="w-full rounded-md bg-neon px-5 py-3 text-sm font-bold text-black transition hover:opacity-90"
+        onClick={async () => {
+          setMessage(null);
           const response = await fetch('/api/payments/create-booking-payment', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ...formData, bookingId }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingId }),
           });
           const result: unknown = await response.json();
-          if (!response.ok) {
+          if (!response.ok || typeof result !== 'object' || result === null || !('checkoutUrl' in result) || typeof result.checkoutUrl !== 'string') {
             setMessage('Não foi possível iniciar o pagamento. Tente novamente.');
-            throw new Error('booking_payment_failed');
+            return;
           }
-          if (typeof result === 'object' && result !== null && 'status' in result && typeof result.status === 'string'
-            && ['approved', 'in_process', 'pending'].includes(result.status)) {
-            router.push(`/checkout/${bookingId}/sucesso`);
-            return result;
-          }
-          setMessage('Pagamento enviado. Aguarde a confirmação para liberar a sala.');
-          return result;
+          window.location.assign(result.checkoutUrl);
         }}
-      />
+      >
+        Ir para o checkout Stripe
+      </button>
       {message && <p className="mt-4 text-sm text-neon" role="status">{message}</p>}
     </section>
   );

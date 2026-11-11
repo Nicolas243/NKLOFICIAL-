@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { env } from '@/env';
+import { createCheckoutSession } from '@/lib/stripe/checkout';
+import { buildPremiumCheckoutParams } from '@/lib/stripe/premium-booking';
 
 export type CheckoutResult = {
   ok: boolean;
@@ -12,12 +15,7 @@ export type CheckoutResult = {
 };
 
 /**
- * Gera a URL de checkout do plano Premium.
- *
- * NOTA DE IMPLEMENTAÇÃO (mock): Sem integração com gateway (Mercado Pago/Stripe)
- * aprovada, esta action retorna uma URL de checkout simulada. Em produção, o
- * gateway real deve ser acionado aqui — o webhook (FASE 68) é o receptor dos
- * eventos de confirmação de pagamento. Nenhuma dependência externa é injetada.
+ * Gera a URL de checkout do plano Premium no Stripe.
  */
 export async function startPremiumCheckout(): Promise<CheckoutResult> {
   const supabase = await createClient();
@@ -39,10 +37,18 @@ export async function startPremiumCheckout(): Promise<CheckoutResult> {
     throw new Error('Apenas luthiers podem assinar o plano Premium.');
   }
 
+  const session = await createCheckoutSession(buildPremiumCheckoutParams({
+    userId: user.id,
+    siteUrl: env.NEXT_PUBLIC_SITE_URL,
+    priceCents: 4990,
+  }));
+  if (!session.url) {
+    throw new Error('O Stripe não retornou um endereço de checkout válido.');
+  }
+
   return {
     ok: true,
-    checkoutUrl: `/dashboard/luthier/planos?checkout=inserido&usuario=${user.id}`,
-    message:
-      'Checkout simulado. Em produção este link acionará o gateway de pagamento e o webhook confirmará a assinatura.',
+    checkoutUrl: session.url,
+    message: 'Você será encaminhado para o checkout seguro do Stripe.',
   };
 }
