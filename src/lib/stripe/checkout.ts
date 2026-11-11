@@ -26,5 +26,6 @@ export async function createCheckoutSession(
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
     customer_email: params.customerEmail,
+    ...(params.mode === 'subscription' ? { subscription_data: { metadata: params.metadata } } : {}),
   });
 }

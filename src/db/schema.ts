@@ -332,6 +332,13 @@ export const guideOfferEvents = pgTable('guide_offer_events', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const stripeWebhookEvents = pgTable('stripe_webhook_events', {
+  id: text('id').primaryKey(),
+  type: varchar('type', { length: 100 }).notNull(),
+  processedAt: timestamp('processed_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
