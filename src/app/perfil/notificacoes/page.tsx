@@ -2,15 +2,10 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getUserNotifications, markAllAsRead } from '@/actions/notifications';
+import { getNotificationHref, getNotificationLabel } from '@/lib/notifications/types';
 
 export const metadata = {
   title: 'Notificações | Portal NKL',
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  lead_received: 'Lead',
-  review_received: 'Avaliação',
-  system_alert: 'Sistema',
 };
 
 export default async function NotificacoesPage() {
@@ -54,7 +49,7 @@ export default async function NotificacoesPage() {
             <div className="flex items-center justify-between gap-4 mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-neon">
-                  {TYPE_LABELS[item.type] ?? 'Notificação'}
+                  {getNotificationLabel(item.type)}
                 </span>
                 {!item.isRead && (
                   <span className="w-2 h-2 rounded-full bg-neon" aria-label="Não lida" />
@@ -69,7 +64,7 @@ export default async function NotificacoesPage() {
             {item.relatedId && (
               <div className="mt-3">
                 <Link
-                  href={`/luthiers/${item.relatedId}`}
+                  href={getNotificationHref(item.type, item.relatedId)}
                   className="text-xs text-neon hover:underline"
                 >
                   Ver perfil do profissional →

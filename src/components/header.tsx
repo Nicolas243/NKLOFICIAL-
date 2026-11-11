@@ -11,6 +11,7 @@ import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
 import { INCOME_PORTAL_ROUTES, isIncomePortalPath } from '@/lib/income-portal'
+import { NotificationBell } from '@/components/notification-bell'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -193,6 +194,7 @@ export function Header() {
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
             <span className="inline-flex">{authBtn}</span>
+            {isLoggedIn && <NotificationBell />}
             <PwaInstallButton kind="income" />
             <ThemeToggle />
             <button
@@ -251,6 +253,7 @@ export function Header() {
 
         <div className="relative z-[99999] flex items-start gap-2 sm:gap-3 shrink-0">
           <span className="inline-flex shrink-0">{authBtn}</span>
+          {isLoggedIn && <NotificationBell />}
           <PwaInstallButton kind="music" />
           <LangDropdown />
           <ThemeToggle />
