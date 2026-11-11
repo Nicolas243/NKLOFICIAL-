@@ -11,7 +11,7 @@ type Props = {
 };
 
 type SubscriptionResponse = {
-  initPoint?: string;
+  checkoutUrl?: string;
   message?: string;
 };
 
@@ -36,11 +36,11 @@ export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$
         body: JSON.stringify({ offerVariant, payerEmail }),
       });
       const payload: SubscriptionResponse = await response.json();
-      if (!response.ok || !payload.initPoint) {
+      if (!response.ok || !payload.checkoutUrl) {
         setMessage(payload.message ?? 'Não foi possível iniciar a assinatura.');
         return;
       }
-      window.location.assign(payload.initPoint);
+      window.location.assign(payload.checkoutUrl);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Não foi possível iniciar a assinatura.');
     } finally {
@@ -107,7 +107,7 @@ export function GuideSubscriptionButton({ offerVariant, label = 'Começar por R$
             <p className="mt-3 text-sm leading-relaxed text-foreground/70">A assinatura custa R$ 19 por mês e pode ser cancelada conforme as regras do meio escolhido.</p>
             <div className="mt-6 grid gap-3">
               <button type="button" onClick={() => void startSubscription()} disabled={isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:opacity-60">
-                {isLoading ? 'Preparando Mercado Pago...' : 'Assinar com Mercado Pago'}
+                {isLoading ? 'Preparando Stripe...' : 'Assinar com Stripe'}
               </button>
               <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Assinar com Hotmart" offerVariant={offerVariant} />
             </div>

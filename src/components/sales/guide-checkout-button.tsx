@@ -5,7 +5,7 @@ import { trackOfferFunnelEvent } from '@/lib/analytics';
 import { HotmartCheckoutLink } from '@/components/sales/hotmart-checkout-link';
 
 type CheckoutResponse = {
-  initPoint?: string;
+  checkoutUrl?: string;
   message?: string;
 };
 
@@ -41,11 +41,11 @@ export function GuideCheckoutButton({
         setMessage(payload.message ?? 'Não foi possível iniciar o checkout.');
         return;
       }
-      if (!payload.initPoint) {
-        setMessage('O Mercado Pago não retornou um endereço de checkout válido.');
+      if (!payload.checkoutUrl) {
+        setMessage('O Stripe não retornou um endereço de checkout válido.');
         return;
       }
-      window.location.assign(payload.initPoint);
+      window.location.assign(payload.checkoutUrl);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Não foi possível iniciar o checkout.');
     } finally {
@@ -100,7 +100,7 @@ export function GuideCheckoutButton({
             <p className="mt-3 text-sm leading-relaxed text-foreground/70">Você será encaminhado para o ambiente seguro do meio escolhido.</p>
             <div className="mt-6 grid gap-3">
               <button type="button" onClick={() => void createCheckout()} disabled={isLoading} className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-dark disabled:cursor-not-allowed disabled:opacity-60">
-                {isLoading ? 'Preparando Mercado Pago...' : 'Pagar com Mercado Pago'}
+                {isLoading ? 'Preparando Stripe...' : 'Pagar com Stripe'}
               </button>
               <HotmartCheckoutLink href={hotmartCheckoutUrl} label="Pagar com Hotmart" offerVariant={offerVariant} />
             </div>
