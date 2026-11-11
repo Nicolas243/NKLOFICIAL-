@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { LoginForm } from './login-form'
+import { LoginForm, type LoginArea } from './login-form'
 import { parseGuideResumeIntent } from '@/lib/auth/return-intent'
 import { safeNextPath } from '@/lib/auth/oauth'
 
@@ -19,6 +19,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
       : errorCode
   const nextPath = safeNextPath(typeof search.next === 'string' ? search.next : null)
   const resumeIntent = parseGuideResumeIntent(typeof search.resume === 'string' ? search.resume : null)
+  const area: LoginArea = search.area === 'income' ? 'income' : 'music'
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20">
@@ -30,7 +31,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
             <p className="text-sm opacity-60 mt-1">Entre no ecossistema da lutheria</p>
           </div>
 
-          <LoginForm serverError={error} nextPath={nextPath} resumeIntent={resumeIntent} />
+          <LoginForm serverError={error} nextPath={nextPath} resumeIntent={resumeIntent} area={area} />
         </div>
 
         <div className="absolute inset-0 -z-0 bg-neon/5 blur-3xl rounded-full transform -translate-y-1/4" />

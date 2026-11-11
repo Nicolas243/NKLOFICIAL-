@@ -130,4 +130,12 @@ test.describe('oferta do Guia de novembro', () => {
     await expect(page.getByText('Stripe indisponível.', { exact: true })).toBeVisible();
     await expect(page).not.toHaveURL(/\/login/u);
   });
+
+  test('cabeçalho de renda extra exibe Entrar no desktop', async ({ page }) => {
+    await page.goto('/programas');
+
+    const loginLink = page.getByRole('link', { name: 'Entrar', exact: true });
+    await expect(loginLink).toBeVisible();
+    await expect(loginLink).toHaveAttribute('href', '/login?area=income');
+  });
 });

@@ -5,6 +5,8 @@ import { login, registerWithProfile, retryProfileSync } from '@/actions/auth'
 import { GoogleSignInButton } from '@/components/auth/google-signin-button'
 import type { GuideResumeIntent } from '@/lib/auth/return-intent'
 
+export type LoginArea = 'music' | 'income'
+
 const INPUT = 'p-3.5 bg-black/20 border border-white/10 rounded-xl focus:border-neon focus:ring-1 focus:ring-neon outline-none text-text placeholder:text-text/40 transition-all'
 
 function passwordStrength(pw: string): { level: string; color: string; width: string } {
@@ -24,16 +26,19 @@ export function LoginForm({
   serverError,
   nextPath = '/',
   resumeIntent = null,
+  area = 'music',
 }: {
   serverError: string | null
   nextPath?: string
   resumeIntent?: GuideResumeIntent | null
+  area?: LoginArea
 }) {
   const [isRegistering, setIsRegistering] = useState(false)
   const [error, setError] = useState<string | null>(serverError)
   const [isPending, startTransition] = useTransition()
   const [pw, setPw] = useState('')
   const [profileSyncPending, setProfileSyncPending] = useState(false)
+  const activeArea = area
 
   const isRedirect = (err: unknown): boolean => {
     // redirect() do Next lança erro com digest "NEXT_REDIRECT" — deve
@@ -97,6 +102,7 @@ export function LoginForm({
       <input type="email" name="email" placeholder="E-mail" required autoComplete="email" className={INPUT} />
       <input type="hidden" name="next" value={nextPath} />
       {resumeIntent && <input type="hidden" name="resume" value={resumeIntent} />}
+      <input type="hidden" name="area" value={activeArea} />
 
       {isRegistering && (
         <>
@@ -105,17 +111,21 @@ export function LoginForm({
             <input type="text" name="lastName" placeholder="Sobrenome" required className={INPUT} />
           </div>
           <input type="date" name="birthDate" className={INPUT} />
-          <select name="papel" required className={INPUT}>
-            <option value="">Perfil...</option>
-            <option value="Musico">Musico</option>
-            <option value="Loja">Loja</option>
-            <option value="Luthier">Luthier</option>
-            <option value="Professor">Professor</option>
-          </select>
-          <div className="grid grid-cols-2 gap-3">
-            <input type="text" name="instrumento" placeholder="Instrumento (opcional)" className={INPUT} />
-            <input type="number" name="anosExperiencia" placeholder="Anos que toca (opcional)" min={0} max={80} className={INPUT} />
-          </div>
+          {activeArea === 'music' && (
+            <>
+              <select name="papel" required className={INPUT} aria-label="Perfil...">
+                <option value="">Perfil...</option>
+                <option value="Musico">Musico</option>
+                <option value="Loja">Loja</option>
+                <option value="Luthier">Luthier</option>
+                <option value="Professor">Professor</option>
+              </select>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" name="instrumento" placeholder="Instrumento (opcional)" className={INPUT} />
+                <input type="number" name="anosExperiencia" placeholder="Anos que toca (opcional)" min={0} max={80} className={INPUT} />
+              </div>
+            </>
+          )}
         </>
       )}
 <input type="password" name="password" placeholder="Senha" required

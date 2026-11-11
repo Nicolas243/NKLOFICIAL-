@@ -152,6 +152,7 @@ export function Header() {
   const isPartnerPortal = isIncomePortalPath(pathname)
   const user = useSessionUser()
   const isLoggedIn = Boolean(user)
+  const loginArea = isPartnerPortal ? 'income' : 'music'
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -164,7 +165,7 @@ export function Header() {
   if (isHome) return null
 
   const authBtn = (
-    <Link href={isLoggedIn ? '/perfil' : '/login'}
+    <Link href={isLoggedIn ? '/perfil' : `/login?area=${loginArea}`}
       className="inline-flex min-h-11 items-center justify-center px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-all hover:opacity-90 active:scale-95 shrink-0">
       {isLoggedIn ? 'Perfil' : 'Entrar'}
     </Link>
@@ -191,7 +192,7 @@ export function Header() {
           </Link>
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="hidden">{authBtn}</span>
+            <span className="inline-flex">{authBtn}</span>
             <PwaInstallButton kind="income" />
             <ThemeToggle />
             <button
@@ -208,7 +209,6 @@ export function Header() {
         {menuOpen && (
           <nav id="partner-mobile-navigation" className="flex flex-col gap-1 border-t border-border bg-white px-4 py-4 text-black dark:bg-black dark:text-white lg:hidden">
             {portalLinks}
-            <span className="mt-2 sm:hidden">{authBtn}</span>
           </nav>
         )}
       </header>

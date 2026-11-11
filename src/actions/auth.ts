@@ -140,9 +140,10 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
   const lastName = (formData.get('lastName') as string) || '';
   const fullName = (formData.get('fullName') as string) || `${firstName} ${lastName}`.trim();
   const birthDate = formData.get('birthDate') as string;
-  const papel = (formData.get('papel') as string) || 'user';
-  const instrumento = (formData.get('instrumento') as string) || '';
-  const anosExperiencia = Number(formData.get('anosExperiencia')) || 0;
+  const area = formData.get('area') === 'income' ? 'income' : 'music';
+  const papel = area === 'music' ? ((formData.get('papel') as string) || 'user') : 'user';
+  const instrumento = area === 'music' ? ((formData.get('instrumento') as string) || '') : '';
+  const anosExperiencia = area === 'music' ? (Number(formData.get('anosExperiencia')) || 0) : 0;
   const newsletterOptIn = formData.get('newsletterOptIn') === 'on';
 
   if (!email || !password || password.length < 8) {
