@@ -1,5 +1,10 @@
 import { trackOfferFunnelEvent } from '@/lib/analytics';
-import { getOfferExperimentFromVariant, parseValidatedOfferVariant, PROGRAM_SECONDARY_CTA_EXPERIMENT } from '@/lib/offer-experiment';
+import {
+  getOfferExperimentFromVariant,
+  parseValidatedOfferVariant,
+  PROGRAM_SECONDARY_CTA_EXPERIMENT,
+  GUIDE_PAGE_CTA_EXPERIMENT,
+} from '@/lib/offer-experiment';
 
 type HotmartCheckoutLinkProps = {
   href?: string;
@@ -10,7 +15,10 @@ type HotmartCheckoutLinkProps = {
 function withValidatedAttribution(href: string, offerVariant: string | undefined): string {
   const validatedVariant = parseValidatedOfferVariant(offerVariant);
   const attribution = getOfferExperimentFromVariant(validatedVariant);
-  if (!validatedVariant || attribution?.experiment !== PROGRAM_SECONDARY_CTA_EXPERIMENT) return href;
+  if (
+    !validatedVariant
+    || (attribution?.experiment !== PROGRAM_SECONDARY_CTA_EXPERIMENT && attribution?.experiment !== GUIDE_PAGE_CTA_EXPERIMENT)
+  ) return href;
 
   try {
     const url = new URL(href);

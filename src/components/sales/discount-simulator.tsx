@@ -8,6 +8,9 @@ type DisplayPhase = 'normal' | 'approved' | 'denied';
 type DiscountSimulatorProps = {
   offerVariant?: string;
   hotmartCheckoutUrl?: string;
+  title?: string;
+  summary?: string;
+  ctaLabel?: string;
 };
 
 const PHASE_STYLES: Record<DisplayPhase, string> = {
@@ -22,7 +25,13 @@ const PHASE_LABELS: Record<DisplayPhase, string> = {
   denied: 'Oferta indisponível',
 };
 
-export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckoutUrl }: DiscountSimulatorProps) {
+export function DiscountSimulator({
+  offerVariant = 'sales-page',
+  hotmartCheckoutUrl,
+  title = 'Seu guia essencial para começar com clareza',
+  summary = 'Estamos confirmando a disponibilidade do checkout enquanto você conhece a oferta. Não usamos dados pessoais nem prometemos renda.',
+  ctaLabel = 'Quero liberar meu acesso',
+}: DiscountSimulatorProps) {
   const [status, setStatus] = useState<Status>('idle');
   const [displayPhase, setDisplayPhase] = useState<DisplayPhase>('normal');
 
@@ -56,10 +65,8 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
   return (
     <section className="rounded-2xl border border-orange/25 bg-income-surface p-6 shadow-sm md:p-8" aria-labelledby="discount-simulator-title">
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta de lançamento</p>
-      <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">Seu guia essencial para começar com clareza</h2>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">
-        Estamos confirmando a disponibilidade do checkout enquanto você conhece a oferta. Não usamos dados pessoais nem prometemos renda.
-      </p>
+      <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">{title}</h2>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">{summary}</p>
 
       <div className="mt-6 flex items-end gap-3" aria-label="Preço promocional">
         <span className="text-lg font-medium text-foreground/45 line-through">R$ 97,00</span>
@@ -81,7 +88,7 @@ export function DiscountSimulator({ offerVariant = 'sales-page', hotmartCheckout
 
       <div className="mt-5">
         <GuideCheckoutButton
-          label="Quero liberar meu acesso"
+          label={ctaLabel}
           enabled={status === 'approved'}
           offerVariant={offerVariant}
           hotmartCheckoutUrl={hotmartCheckoutUrl}
