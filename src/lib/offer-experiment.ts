@@ -1,9 +1,15 @@
 export const PROGRAM_SECONDARY_CTA_EXPERIMENT = 'program-secondary-cta';
 export const PROGRAM_SECONDARY_CTA_VARIANTS = ['0', '1', '2'] as const;
+export const GUIDE_PAGE_CTA_EXPERIMENT = 'guide-page-cta';
+export const GUIDE_PAGE_CTA_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const EXIT_POPUP_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const NATIVE_CARD_VARIANTS = ['0', '1', '2', '3', '4', '5'] as const;
 
-export type OfferExperimentName = 'exit-popup' | 'native-card' | typeof PROGRAM_SECONDARY_CTA_EXPERIMENT;
+export type OfferExperimentName =
+  | 'exit-popup'
+  | 'native-card'
+  | typeof PROGRAM_SECONDARY_CTA_EXPERIMENT
+  | typeof GUIDE_PAGE_CTA_EXPERIMENT;
 
 export type OfferVariantAttribution = {
   experiment: string;
@@ -13,6 +19,12 @@ export type OfferVariantAttribution = {
 export function parseProgramSecondaryCtaVariant(value: string | null | undefined): (typeof PROGRAM_SECONDARY_CTA_VARIANTS)[number] | null {
   return PROGRAM_SECONDARY_CTA_VARIANTS.includes(value as (typeof PROGRAM_SECONDARY_CTA_VARIANTS)[number])
     ? value as (typeof PROGRAM_SECONDARY_CTA_VARIANTS)[number]
+    : null;
+}
+
+export function parseGuidePageCtaVariant(value: string | null | undefined): (typeof GUIDE_PAGE_CTA_VARIANTS)[number] | null {
+  return GUIDE_PAGE_CTA_VARIANTS.includes(value as (typeof GUIDE_PAGE_CTA_VARIANTS)[number])
+    ? value as (typeof GUIDE_PAGE_CTA_VARIANTS)[number]
     : null;
 }
 
@@ -35,6 +47,12 @@ export function parseValidatedOfferVariant(value: string | null | undefined): st
     && parseProgramSecondaryCtaVariant(attribution.variant) !== null
   ) {
     return `${PROGRAM_SECONDARY_CTA_EXPERIMENT}:${attribution.variant}`;
+  }
+  if (
+    attribution.experiment === GUIDE_PAGE_CTA_EXPERIMENT
+    && parseGuidePageCtaVariant(attribution.variant) !== null
+  ) {
+    return `${GUIDE_PAGE_CTA_EXPERIMENT}:${attribution.variant}`;
   }
   if (
     attribution.experiment === 'native-card'
