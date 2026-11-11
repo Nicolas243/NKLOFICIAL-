@@ -4,6 +4,13 @@ import { Download, ExternalLink, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { isIncomePortalPath } from '@/lib/income-portal';
+import { trackAnalyticsEvent } from '@/lib/analytics';
+import {
+  detectInstallPlatform,
+  getInstallAction,
+  getInstallInstructions,
+  type InstallPlatform,
+} from '@/lib/pwa/install-state';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -18,16 +25,12 @@ const INSTALL_REMINDER_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 type InstallState = {
   prompt: BeforeInstallPromptEvent | null;
   installed: boolean;
-  ios: boolean;
+  platform: InstallPlatform;
 };
 
 function isStandalone(): boolean {
   return window.matchMedia('(display-mode: standalone)').matches
     || ('standalone' in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
-}
-
-function isIosDevice(): boolean {
-  return /iphone|ipad|ipod/iu.test(navigator.userAgent);
 }
 
 function getAppKind(pathname: string): AppKind {
@@ -40,32 +43,46 @@ function appName(kind: AppKind): string {
   return kind === 'income' ? 'Renda Extra' : 'NKL Música';
 }
 
-function useInstallState(): InstallState {
+function useInstallState(kind: AppKind): InstallState {
   const [prompt, setPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [ios, setIos] = useState(false);
+  const [platform, setPlatform] = useState<InstallPlatform>('other');
 
   useEffect(() => {
+    const installedStorageKey = `nkl-pwa-installed-${kind}`;
+    const displayModeQuery = window.matchMedia('(display-mode: standalone)');
+    const markInstalled = (): void => {
+      setInstalled(true);
+      setPrompt(null);
+      window.localStorage.setItem(installedStorageKey, 'true');
+    };
     const handleBeforeInstallPrompt = (event: Event): void => {
+      if (window.localStorage.getItem(installedStorageKey) === 'true') return;
       event.preventDefault();
       setPrompt(event as BeforeInstallPromptEvent);
     };
-    const updateDisplayMode = (): void => setInstalled(isStandalone());
+    const updateDisplayMode = (): void => {
+      if (isStandalone()) markInstalled();
+    };
 
     const initialStateTimer = window.setTimeout(() => {
-      setInstalled(isStandalone());
-      setIos(isIosDevice());
+      setInstalled(isStandalone() || window.localStorage.getItem(installedStorageKey) === 'true');
+      setPlatform(detectInstallPlatform(navigator.userAgent, isStandalone()));
     }, INITIAL_STATE_DELAY_MS);
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', updateDisplayMode);
+    window.addEventListener('appinstalled', markInstalled);
+    document.addEventListener('visibilitychange', updateDisplayMode);
+    displayModeQuery.addEventListener('change', updateDisplayMode);
     return () => {
       window.clearTimeout(initialStateTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', updateDisplayMode);
+      window.removeEventListener('appinstalled', markInstalled);
+      document.removeEventListener('visibilitychange', updateDisplayMode);
+      displayModeQuery.removeEventListener('change', updateDisplayMode);
     };
-  }, []);
+  }, [kind]);
 
-  return { prompt, installed, ios };
+  return { prompt, installed, platform };
 }
 
 export function PwaRegister() {
@@ -86,22 +103,51 @@ type InstallButtonProps = {
 export function PwaInstallButton({ kind }: InstallButtonProps) {
   const pathname = usePathname();
   const appKind = kind ?? getAppKind(pathname);
-  const { prompt, installed, ios } = useInstallState();
+  const { prompt, installed, platform } = useInstallState(appKind);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
 
-  if (installed || (!prompt && !ios)) return null;
+  useEffect(() => {
+    if (!instructionsOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setInstructionsOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [instructionsOpen]);
+
+  const installAction = getInstallAction({
+    installed,
+    nativePromptAvailable: Boolean(prompt),
+    platform,
+  });
+
+  if (installAction === 'hidden') return null;
+
+  function trackInstallEvent(eventName: string): void {
+    trackAnalyticsEvent(eventName, {
+      app_kind: appKind,
+      install_action: installAction,
+      platform,
+    });
+  }
 
   async function install(): Promise<void> {
     if (!prompt) {
+      trackInstallEvent('pwa_install_instructions_open');
       setInstructionsOpen(true);
       return;
     }
 
+    trackInstallEvent('pwa_install_prompt_open');
     await prompt.prompt();
     const choice = await prompt.userChoice;
-    if (choice.outcome === 'accepted') {
-      window.localStorage.setItem(`nkl-pwa-installed-${appKind}`, 'true');
-    }
+    trackInstallEvent(`pwa_install_${choice.outcome}`);
+    if (choice.outcome === 'dismissed') return;
   }
 
   return (
@@ -128,7 +174,9 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
                 <X size={21} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-4 text-base leading-relaxed text-foreground/75">No Safari do iPhone ou iPad, toque em Compartilhar e escolha <strong>Adicionar à Tela de Início</strong>.</p>
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-base leading-relaxed text-foreground/75">
+              {getInstallInstructions(platform, appName(appKind)).map((instruction) => <li key={instruction}>{instruction}</li>)}
+            </ol>
             <p className="mt-3 text-sm leading-relaxed text-foreground/65">Este atalho abre o app de {appKind === 'income' ? 'Renda Extra' : 'música'} sem misturar os dois espaços.</p>
             <button type="button" onClick={() => setInstructionsOpen(false)} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
               Entendi <ExternalLink size={16} aria-hidden="true" />
@@ -143,9 +191,23 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
 export function PwaInstallReminder() {
   const pathname = usePathname();
   const appKind = getAppKind(pathname);
-  const { prompt, installed, ios } = useInstallState();
+  const { prompt, installed, platform } = useInstallState(appKind);
   const [visible, setVisible] = useState(false);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!instructionsOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') setInstructionsOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [instructionsOpen]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -155,19 +217,35 @@ export function PwaInstallReminder() {
     return () => window.clearTimeout(timer);
   }, [appKind]);
 
-  if (!visible || installed || (!prompt && !ios)) return null;
+  const installAction = getInstallAction({
+    installed,
+    nativePromptAvailable: Boolean(prompt),
+    platform,
+  });
+
+  if (!visible || installAction === 'hidden') return null;
+
+  function trackInstallEvent(eventName: string): void {
+    trackAnalyticsEvent(eventName, {
+      app_kind: appKind,
+      install_action: installAction,
+      platform,
+    });
+  }
 
   async function install(): Promise<void> {
     if (!prompt) {
+      trackInstallEvent('pwa_install_instructions_open');
       setInstructionsOpen(true);
       return;
     }
+
+    trackInstallEvent('pwa_install_prompt_open');
     await prompt.prompt();
     const choice = await prompt.userChoice;
-    if (choice.outcome === 'accepted') {
-      setVisible(false);
-      window.localStorage.setItem(`nkl-pwa-installed-${appKind}`, 'true');
-    }
+    trackInstallEvent(`pwa_install_${choice.outcome}`);
+    if (choice.outcome === 'accepted') setVisible(false);
+    if (choice.outcome === 'dismissed') setVisible(false);
   }
 
   function dismiss(): void {
@@ -196,7 +274,9 @@ export function PwaInstallReminder() {
                 <X size={21} aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-4 text-base leading-relaxed text-foreground/75">No Safari, toque em Compartilhar e depois em <strong>Adicionar à Tela de Início</strong>.</p>
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-base leading-relaxed text-foreground/75">
+              {getInstallInstructions(platform, appName(appKind)).map((instruction) => <li key={instruction}>{instruction}</li>)}
+            </ol>
             <button type="button" onClick={() => setInstructionsOpen(false)} className="mt-6 min-h-11 rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">Entendi</button>
           </div>
         </div>
