@@ -9,7 +9,9 @@ import {
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
 } from '@/lib/guide-offer';
 import {
+  GUIDE_PAGE_CTA_EXPERIMENT,
   getOfferExperimentFromVariant,
+  parseGuidePageCtaVariant,
   parseProgramSecondaryCtaVariant,
   parseValidatedOfferVariant,
   PROGRAM_SECONDARY_CTA_EXPERIMENT,
@@ -89,7 +91,7 @@ function isRejectedEvent(event: string): boolean {
   ].includes(event);
 }
 
-function getValidatedCtaVariant(data: JsonRecord, subscription: boolean): string | null {
+export function getValidatedCtaVariant(data: JsonRecord, subscription: boolean): string | null {
   const paths = subscription
     ? [
       ['subscription', 'origin', 'sck'],
@@ -103,10 +105,16 @@ function getValidatedCtaVariant(data: JsonRecord, subscription: boolean): string
     const rawValue = getPathString(data, path);
     const validated = parseValidatedOfferVariant(rawValue);
     const attribution = getOfferExperimentFromVariant(validated);
+    if (!validated || !attribution) continue;
     if (
-      validated
-      && attribution?.experiment === PROGRAM_SECONDARY_CTA_EXPERIMENT
-      && parseProgramSecondaryCtaVariant(attribution.variant) !== null
+      (
+        attribution.experiment === PROGRAM_SECONDARY_CTA_EXPERIMENT
+        && parseProgramSecondaryCtaVariant(attribution.variant) !== null
+      )
+      || (
+        attribution.experiment === GUIDE_PAGE_CTA_EXPERIMENT
+        && parseGuidePageCtaVariant(attribution.variant) !== null
+      )
     ) {
       return validated;
     }

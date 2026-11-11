@@ -6,6 +6,8 @@ import { guideOfferEvents } from '@/db/schema';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 import {
   chooseBalancedVariant,
+  GUIDE_PAGE_CTA_EXPERIMENT,
+  GUIDE_PAGE_CTA_VARIANTS,
   PROGRAM_SECONDARY_CTA_EXPERIMENT,
   PROGRAM_SECONDARY_CTA_VARIANTS,
 } from '@/lib/offer-experiment';
@@ -22,12 +24,18 @@ const experimentVariants = {
   [EXIT_POPUP_EXPERIMENT]: EXIT_POPUP_VARIANTS,
   [NATIVE_CARD_EXPERIMENT]: NATIVE_CARD_VARIANTS,
   [PROGRAM_SECONDARY_CTA_EXPERIMENT]: PROGRAM_SECONDARY_CTA_VARIANTS,
+  [GUIDE_PAGE_CTA_EXPERIMENT]: GUIDE_PAGE_CTA_VARIANTS,
 } as const;
 
 type ExperimentName = keyof typeof experimentVariants;
 
 const eventSchema = z.object({
-  experiment: z.enum([EXIT_POPUP_EXPERIMENT, NATIVE_CARD_EXPERIMENT, PROGRAM_SECONDARY_CTA_EXPERIMENT]),
+  experiment: z.enum([
+    EXIT_POPUP_EXPERIMENT,
+    NATIVE_CARD_EXPERIMENT,
+    PROGRAM_SECONDARY_CTA_EXPERIMENT,
+    GUIDE_PAGE_CTA_EXPERIMENT,
+  ]),
   variant: z.string().regex(/^[0-9]+$/u).max(64),
   eventType: z.enum(['impression', 'click', 'checkout', 'conversion']),
 }).superRefine((value, context) => {
@@ -39,6 +47,14 @@ const eventSchema = z.object({
     });
   }
 });
+
+export function getOfferExperimentVariants(experiment: string): readonly string[] | null {
+  return isExperimentName(experiment) ? experimentVariants[experiment] : null;
+}
+
+export function validateOfferEvent(value: unknown): boolean {
+  return eventSchema.safeParse(value).success;
+}
 
 type VariantStats = {
   variant: string;
