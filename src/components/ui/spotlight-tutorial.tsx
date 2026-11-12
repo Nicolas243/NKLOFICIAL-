@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import {
   getTutorialRoute,
+  getTutorialEventArea,
   getTutorialSuggestionKey,
   HOME_TUTORIAL_SEEN_KEY,
   type TutorialArea,
@@ -167,10 +168,18 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
   useEffect(() => {
     if (!area) return;
 
+    const closeOverlays = (): void => {
+      setIsOpen(false);
+      setSuggestionVisible(false);
+    };
+    document.addEventListener('nkl:close-overlays', closeOverlays);
+
     function openTutorial(event?: OpenTutorialEvent): void {
-      if (event?.detail.area && event.detail.area !== area) return;
+      const requestedArea = event ? getTutorialEventArea(event) : undefined;
+      if (requestedArea && requestedArea !== area) return;
       const currentArea = area;
       if (!currentArea) return;
+      document.dispatchEvent(new Event('nkl:close-overlays'));
       const availableSteps = getVisibleSteps(getStepsForRoute(tutorialRoute?.key, currentArea, steps));
       if (availableSteps.length === 0) return;
       setSuggestionVisible(false);
@@ -191,11 +200,14 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
     return () => {
       window.clearTimeout(timer);
       document.removeEventListener(OPEN_EVENT, handleOpenTutorial);
+      document.removeEventListener('nkl:close-overlays', closeOverlays);
     };
   }, [area, pathname, steps, tutorialRoute?.key]);
 
   useEffect(() => {
     if (!isOpen || activeSteps.length === 0) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     let retryTimer: number | undefined;
     let frame: number | undefined;
@@ -246,6 +258,7 @@ export function SpotlightTutorial({ steps = DEFAULT_STEPS }: { steps?: TutorialS
     window.addEventListener('scroll', handleViewportChange, { passive: true });
 
     return () => {
+      document.body.style.overflow = previousOverflow;
       if (retryTimer !== undefined) window.clearTimeout(retryTimer);
       if (frame !== undefined) window.cancelAnimationFrame(frame);
       if (settleTimer !== undefined) window.clearTimeout(settleTimer);

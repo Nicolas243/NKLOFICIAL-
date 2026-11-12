@@ -27,7 +27,7 @@ export function SiteGuidance() {
   }
 
   function openTutorial(): void {
-    document.dispatchEvent(new Event(OPEN_ONBOARDING_EVENT));
+    document.dispatchEvent(new CustomEvent(OPEN_ONBOARDING_EVENT));
   }
 
   return (

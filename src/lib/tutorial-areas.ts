@@ -8,6 +8,12 @@ export type TutorialRoute = {
 
 export const HOME_TUTORIAL_SEEN_KEY = 'nkl_tutorial_seen';
 
+export function getTutorialEventArea(event: Event): TutorialArea | undefined {
+  if (!(event instanceof CustomEvent)) return undefined;
+  const area = event.detail?.area;
+  return area === 'income' || area === 'music' ? area : undefined;
+}
+
 const MUSIC_ROUTES = [
   '/',
   '/catalogo',

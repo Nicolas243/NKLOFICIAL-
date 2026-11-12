@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   getTutorialArea,
+  getTutorialEventArea,
   getTutorialRoute,
   getTutorialSuggestionKey,
   HOME_TUTORIAL_SEEN_KEY,
@@ -34,5 +35,13 @@ test('uses a route key for suggestion persistence', () => {
   assert.equal(
     getTutorialSuggestionKey('music:/catalogo'),
     'nkl_route_tutorial_suggestion_seen:music:/catalogo',
+  );
+});
+
+test('ignores tutorial events without detail instead of throwing', () => {
+  assert.equal(getTutorialEventArea(new Event('nkl:open-onboarding')), undefined);
+  assert.equal(
+    getTutorialEventArea(new CustomEvent('nkl:open-onboarding', { detail: { area: 'income' } })),
+    'income',
   );
 });
