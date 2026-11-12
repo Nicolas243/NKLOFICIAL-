@@ -96,6 +96,8 @@ export function ParallaxBackground() {
         }}
         className="music-parallax-layer music-parallax-particles"
       />
+      <div className="fixed inset-0 bg-background/70" />
+      <div className="site-texture site-texture-music fixed inset-0" />
     </div>
   );
 }
