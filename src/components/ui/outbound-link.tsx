@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 
 type OutboundLinkProps = {
   href: string;
@@ -28,6 +29,11 @@ export function OutboundLink({ href, children, className, trackingId, onClick, t
     }
 
     console.info('[ANALYTICS] Click registrado:', trackingId);
+    trackAnalyticsEvent('outbound_click', {
+      destination: href,
+      sponsored,
+      tracking_id: trackingId,
+    });
   }
 
   return (

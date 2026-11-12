@@ -12,8 +12,6 @@ export function ParallaxBackground() {
   const isPartnerPortal = isIncomePortalPath(pathname);
 
   useEffect(() => {
-    if (!isPartnerPortal) return;
-
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame: number | undefined;
 
@@ -45,37 +43,58 @@ export function ParallaxBackground() {
     };
   }, [isPartnerPortal]);
 
-  if (!isPartnerPortal) {
+  if (isPartnerPortal) {
     return (
-      <>
-        <div className="fixed inset-0 z-0 pointer-events-none bg-background/70" />
-        <div className="site-texture site-texture-music fixed inset-0 z-0 pointer-events-none" aria-hidden="true" />
-      </>
+      <div className="income-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div
+          ref={(layer) => {
+            layers.current[0] = layer;
+          }}
+          className="income-parallax-layer income-parallax-dots"
+        />
+        <div
+          ref={(layer) => {
+            layers.current[1] = layer;
+          }}
+          className="income-parallax-layer income-parallax-glow"
+        >
+          <span className="income-parallax-glow-orange" />
+          <span className="income-parallax-glow-cool" />
+        </div>
+        <div
+          ref={(layer) => {
+            layers.current[2] = layer;
+          }}
+          className="income-parallax-layer income-parallax-particles"
+        />
+      </div>
     );
   }
 
   return (
-    <div className="income-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div className="music-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
       <div
         ref={(layer) => {
           layers.current[0] = layer;
         }}
-        className="income-parallax-layer income-parallax-dots"
-      />
+        className="music-parallax-layer music-parallax-notes"
+      >
+        <span className="music-parallax-note music-parallax-note-a">♪</span>
+        <span className="music-parallax-note music-parallax-note-b">♫</span>
+        <span className="music-parallax-note music-parallax-note-c">♩</span>
+        <span className="music-parallax-note music-parallax-note-d">♬</span>
+      </div>
       <div
         ref={(layer) => {
           layers.current[1] = layer;
         }}
-        className="income-parallax-layer income-parallax-glow"
-      >
-        <span className="income-parallax-glow-orange" />
-        <span className="income-parallax-glow-cool" />
-      </div>
+        className="music-parallax-layer music-parallax-staves"
+      />
       <div
         ref={(layer) => {
           layers.current[2] = layer;
         }}
-        className="income-parallax-layer income-parallax-particles"
+        className="music-parallax-layer music-parallax-particles"
       />
     </div>
   );

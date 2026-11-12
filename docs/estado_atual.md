@@ -1,8 +1,37 @@
 # Estado Atual — Portal NKL (Relatório de Contexto)
 
-> Relatório gerado em 01/09/2026 a partir de varredura cirúrgica do working tree.
-> Branch `master` · HEAD `22d537b` · Stack: Next.js 16 (App Router) + TypeScript + Supabase + Drizzle ORM.
+> Relatório base gerado em 01/09/2026; a seção de atualização abaixo registra a revisão mais recente.
+> Branch `master` · HEAD `0400e8b` · Stack: Next.js 16.4.5 (App Router) + TypeScript + Supabase + Drizzle ORM.
 > Não foram lidos `node_modules/`, `.next/`, `dist/`, `out/` nem artefatos de build/log.
+
+## Atualização desta revisão
+
+- A landing de Renda Extra usa cabeçalho próprio, prioriza a assinatura de R$ 19/mês e oferece a escolha entre Stripe e Hotmart após um único CTA quando o link Hotmart está configurado.
+- O verificador da oferta avulsa de R$ 39 inicia automaticamente ao carregar a página.
+- O fundo musical global agora usa três camadas de paralaxe com `translate3d`, símbolos discretos e respeito a `prefers-reduced-motion`.
+- O seed do catálogo foi executado de forma idempotente para 118 cordas. Os links foram normalizados para `mercado_livre`, `shopee`, `amazon` e `ebay`, usando busca de fallback quando ainda não existe link afiliado autenticado.
+- `npm run typecheck`, `npm run lint` e `npm run build` passaram; permanecem 12 avisos legados em `AntigoNKL`.
+- A integração de links afiliados autenticados nos painéis externos e a auditoria do Google Ads continuam bloqueadas por sessão externa não disponível nesta execução.
+- O botão de vídeo do catálogo agora abre o pop-up diretamente. Quando não há ID de YouTube cadastrado, o pop-up oferece uma busca contextual em português em vez de carregar um player indisponível.
+- Os cliques de saída para afiliados são enviados como `outbound_click` e as aberturas do pop-up como `video_open`, respeitando a presença do `gtag` após o consentimento.
+- A verificação final desta revisão passou em `npm run verify`; o build ainda emite apenas os avisos conhecidos de acesso dinâmico a arquivos e diretórios sem dados de lojas/professores.
+- A página de detalhe de oportunidades ganhou cache de 5 minutos e `loading.tsx` para reduzir consultas repetidas entre conteúdo e metadados e mostrar uma resposta visual imediata.
+- O catálogo inicial permanece focado em descoberta, sem o bloco de estratégias. As visualizações secundárias
+  exibem um roteiro fechado e copiável até o primeiro saque para cada oportunidade; estratégias de múltiplos
+  caminhos aparecem apenas em modelos editoriais específicos, como canal dark, UGC, Creator Space e afiliados
+  de marketplaces. Compartilhar, criar lembrete e instalar o app também estão disponíveis na página individual.
+- Os modais de oportunidade, vídeo e instalação agora fecham com `Escape`, preservam o `overflow` anterior
+  da página e permitem fechamento pelo backdrop quando aplicável.
+- No catálogo, “Comece pela sua situação” fica minimizado por padrão, o espaço extra antes dos cards
+  foi reduzido e o parallax do tema claro ganhou contraste sem alterar a intensidade do tema escuro.
+- O botão e o lembrete de instalação desaparecem após confirmação do evento de instalação, entrada
+  em modo standalone ou marcador de instalação já reconhecido. A paleta foi suavizada em cerca de 25%
+  para reduzir fadiga visual mantendo legibilidade.
+- A medição opcional agora inclui Microsoft Clarity, PostHog e Vercel Analytics, inicializados somente após consentimento. Os provedores cobrem tanto a área de Renda Extra quanto a área musical; o PostHog registra a área contextual para separar os relatórios.
+- Os arquivos `public/googlea9035dd53b94a78b.html` e
+  `public/blog/renda-extra/googlea9035dd53b94a78b.html` atendem às duas possíveis
+  URLs informadas pelo Google Search Console; o segundo corresponde ao caminho
+  `/blog/renda-extra/`.
 
 ## 1. Visão Geral e Stack
 
@@ -75,7 +104,7 @@
 - **Duplicidade de tabelas de usuário:** `users` (migração 0000) órfã — nenhum código a usa (só `news_events` tem FK). O padrão real é `user_profiles` (23 arquivos).
 - **Tabela morta:** `news_events` só existe no schema; nenhuma action lê/grava (o app usa `news_feed`/`news_suggestions`).
 - **Signup/login não sincronizam perfil:** `login` e `signup` não criam/atualizam `user_profiles`; `signup` nem chama `registerWithProfile`.
-- **Checkout Premium simulado:** `startPremiumCheckout` retorna URL falsa (`?checkout=inserido&usuario=…`); sem chamada real ao gateway. O webhook nunca receberá eventos reais até integrar (Mercado Pago/Stripe).
+- **Checkout Premium:** `startPremiumCheckout` cria uma sessão real do Stripe e o webhook confirma a assinatura.
 - **Secrets ausentes no `.env.local`:** `CRON_SECRET` e `GATEWAY_WEBHOOK_SECRET` não configurados → cron responde 401 em dev; webhook aceita payload sem assinatura (modo dev documentado no código).
 - **Sem RLS no Postgres:** dependência total do gating manual nas actions; qualquer action sem check de role vira vetor de acesso.
 - **FKs `ON DELETE no action` em todo o grafo:** exclusão real de `user_profiles` impossível; `deleteUserAccount` (LGPD) contorna com anonimização lógica, mas `subscriptions`/`luthier_*` não são tocados (restos identificáveis).

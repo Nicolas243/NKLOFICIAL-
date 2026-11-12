@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import { LoginForm, type LoginArea } from './login-form'
-import { parseGuideResumeIntent } from '@/lib/auth/return-intent'
+import { LoginForm } from './login-form'
+import { parseGuideResumeIntent, parseLoginArea } from '@/lib/auth/return-intent'
 import { safeNextPath } from '@/lib/auth/oauth'
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default async function LoginPage(props: { searchParams: SearchParams }) {
       : errorCode
   const nextPath = safeNextPath(typeof search.next === 'string' ? search.next : null)
   const resumeIntent = parseGuideResumeIntent(typeof search.resume === 'string' ? search.resume : null)
-  const area: LoginArea = search.area === 'income' ? 'income' : 'music'
+  const area = parseLoginArea(typeof search.area === 'string' ? search.area : null)
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20">

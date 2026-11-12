@@ -34,7 +34,7 @@ não garante renda e não representa as plataformas externas listadas.
 - Serviços de terceiros possuem cadastro, cobrança, privacidade e reembolso próprios.
 - O guia de captura fica em `public/guias/guia-renda-extra-nkl.pdf` e o formulário usa o endpoint
   Formspree já existente; o download só aparece depois da confirmação do envio.
-- Pagamentos do Portal podem usar Mercado Pago; não tratar integração externa como disponível sem
+- Pagamentos do Portal usam Stripe Checkout; não tratar integração externa como disponível sem
   confirmar as variáveis de ambiente e o fluxo vigente.
 
 ## Arquitetura técnica
@@ -55,7 +55,7 @@ não garante renda e não representa as plataformas externas listadas.
 
 As variáveis são lidas por `src/env.ts` e devem existir apenas em `.env.local` ou no provedor de
 deploy. Nunca imprimir, copiar ou inventar valores. Integrações relevantes incluem Supabase,
-PostgreSQL, Mercado Pago, Upstash Redis, Daily, Google Analytics, Google AdSense e Formspree.
+PostgreSQL, Stripe, Upstash Redis, Daily, Google Analytics, Google AdSense e Formspree.
 
 ## Segurança e privacidade
 

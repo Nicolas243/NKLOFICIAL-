@@ -17,9 +17,15 @@ self.addEventListener('push', (event) => {
   const title = typeof payload.title === 'string' ? payload.title : 'Portal NKL'
   const options = {
     body: typeof payload.body === 'string' ? payload.body : 'Você tem uma nova notificação.',
-    data: typeof payload.href === 'string' && payload.href.startsWith(self.location.origin)
-      ? payload.href
-      : '/perfil/notificacoes',
+    data: (() => {
+      if (typeof payload.href !== 'string') return '/perfil/notificacoes'
+      try {
+        const url = new URL(payload.href, self.location.origin)
+        return url.origin === self.location.origin ? url.href : '/perfil/notificacoes'
+      } catch {
+        return '/perfil/notificacoes'
+      }
+    })(),
     icon: '/nkl.png',
     badge: '/nkl.png',
   }

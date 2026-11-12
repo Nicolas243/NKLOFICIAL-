@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { IncomeAnalytics } from '@/components/income/income-analytics';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 
 export const metadata: Metadata = {
@@ -7,10 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function IncomeBlogLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <>
-      {children}
-      <IncomeAnalytics />
-    </>
-  );
+  return children;
 }

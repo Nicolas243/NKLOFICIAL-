@@ -3,7 +3,6 @@ import { and, count, desc, eq, gte, lte } from 'drizzle-orm';
 import { AvailabilityManager } from '@/components/dashboard/availability-manager';
 import { db } from '@/db';
 import { classBookings, notifications, studentPlanEnrollments, teacherReviews, userProfiles, users } from '@/db/schema';
-import { MpConnectCard } from '@/components/dashboard/mp-connect-card';
 import { TeacherPricingForm } from '@/components/dashboard/teacher-pricing-form';
 import { createClient } from '@/lib/supabase/server';
 import { BookingRoom } from '@/components/video/booking-room';
@@ -29,8 +28,6 @@ export default async function ProfessorDashboardPage() {
     name: users.name,
     role: users.role,
     papel: userProfiles.papel,
-    mpCollectorId: userProfiles.mpCollectorId,
-    mpConnectedAt: userProfiles.mpConnectedAt,
     singleClassPriceCents: userProfiles.singleClassPriceCents,
     monthlyPlanPriceCents: userProfiles.monthlyPlanPriceCents,
     semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
@@ -104,10 +101,8 @@ export default async function ProfessorDashboardPage() {
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Planos ativos</span><strong className="mt-2 block text-2xl">{activePlans?.count ?? 0}</strong></div>
         <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Aulas futuras</span><strong className="mt-2 block text-2xl">{bookings.length}</strong></div>
-        <div className="rounded-xl border border-border bg-surface p-4"><span className="text-xs opacity-60">Split Mercado Pago</span><strong className="mt-2 block text-2xl">{profile.mpCollectorId ? 'Ativo' : 'Pendente'}</strong></div>
       </div>
       <div className="mb-6 space-y-6">
-        <MpConnectCard isConnected={Boolean(profile.mpCollectorId)} collectorId={profile.mpCollectorId} connectedAt={profile.mpConnectedAt?.toISOString() ?? null} isDevMode={process.env.NODE_ENV !== 'production'} />
         <TeacherPricingForm singleClassPriceCents={profile.singleClassPriceCents} monthlyPlanPriceCents={profile.monthlyPlanPriceCents} semiannualPlanPriceCents={profile.semiannualPlanPriceCents} annualPlanPriceCents={profile.annualPlanPriceCents} acceptsNewStudents={profile.acceptsNewStudents} />
       </div>
       <UpcomingClassBanner

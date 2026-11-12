@@ -52,6 +52,12 @@ export function Footer() {
     };
   }, [whatsappMessages.length]);
 
+  useEffect(() => {
+    const closeOverlays = (): void => setPixOpen(false);
+    document.addEventListener('nkl:close-overlays', closeOverlays);
+    return () => document.removeEventListener('nkl:close-overlays', closeOverlays);
+  }, []);
+
   const copyEmail = useCallback(async () => {
     try {
       await navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');

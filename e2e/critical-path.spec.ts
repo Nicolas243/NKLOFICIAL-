@@ -7,6 +7,10 @@ test.describe('Espinha dorsal crítica do Portal NKL', () => {
     const heading = page.getByRole('heading', { level: 1 });
     await expect(heading).toBeVisible();
     await expect(heading).toContainText('O Cuidado Oculto');
+
+    const loginLink = page.getByRole('link', { name: 'Entrar', exact: true });
+    await expect(loginLink).toBeVisible();
+    await expect(loginLink).toHaveAttribute('href', '/login?area=music');
   });
 
   test('Catálogo renderiza os filtros e o grid', async ({ page }) => {

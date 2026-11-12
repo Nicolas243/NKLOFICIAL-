@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'missing user reference' }, { status: 422 });
     }
 
-    const gatewayProvider = String(payload.provider ?? 'mercadopago');
+    const gatewayProvider = String(payload.provider ?? 'stripe');
     const gatewaySubscriptionId = String(
       (payload as { data?: { id?: unknown } }).data?.id ?? payload.id ?? 'unknown'
     );

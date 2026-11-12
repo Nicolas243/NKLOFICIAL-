@@ -15,8 +15,8 @@ export async function GET(): Promise<NextResponse> {
   try {
     await db.execute(sql`select 1`);
     const checkoutReady = Boolean(
-      env.MERCADOPAGO_ACCESS_TOKEN
-      && env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY
+      env.STRIPE_SECRET_KEY
+      && env.STRIPE_WEBHOOK_SECRET
       && env.NEXT_PUBLIC_SITE_URL,
     );
     if (!checkoutReady) {

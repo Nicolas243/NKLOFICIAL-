@@ -51,6 +51,13 @@ yarn-error.log*
 supabase/.temp/
 
 /.worktrees/
+/.agents/
+/.playwright-mcp/
+/Screenshot_*.jpg
+/index.html
+/task4-*.diff
+/*_Portal NKL.pdf
+/guia-definitivo-renda-extra-2027.pdf
 
 # typescript
 *.tsbuildinfo

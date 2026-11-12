@@ -24,7 +24,7 @@ visitante. A remuneração, aprovação e disponibilidade são sempre definidas 
 | UI | React 19.2.8, TypeScript strict, Tailwind CSS v4 |
 | Dados | Drizzle ORM + PostgreSQL/Supabase |
 | Auth e Storage | Supabase |
-| Integrações | Mercado Pago, Upstash Redis, Daily |
+| Integrações | Stripe, Upstash Redis, Daily |
 | Deploy | Vercel |
 
 ## Áreas principais

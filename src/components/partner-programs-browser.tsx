@@ -17,6 +17,8 @@ import { ProgramStrategies } from '@/components/income/program-strategies';
 import { SmartTagList } from '@/components/income/smart-tag-list';
 import { SocialEmbed } from '@/components/video/social-embed';
 import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
+import { getProgramShareUrl } from '@/lib/share-url';
+import { SITE_URL } from '@/lib/site';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -277,11 +279,11 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
       : [...current, slug]);
   }
 
-  async function shareProgram(program: PartnerProgramCard, sharedUrl?: string, sharedTitle?: string): Promise<void> {
-    const url = sharedUrl ?? program.affiliateUrl ?? program.websiteUrl;
+  async function shareProgram(program: PartnerProgramCard, specificUrl?: string): Promise<void> {
+    const url = getProgramShareUrl(program.slug, SITE_URL, specificUrl);
     const shareData = {
-      title: `${sharedTitle ?? program.name} · Portal NKL`,
-      text: `Oi! Encontrei esta oportunidade de renda extra e lembrei de você: ${sharedTitle ?? program.name}.`,
+      title: `${program.name} · Portal NKL`,
+      text: `Oi! Encontrei esta oportunidade de renda extra e lembrei de você: ${program.name}.`,
       url,
     };
 
@@ -715,7 +717,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                         <OutboundLink href={project.href} trackingId={`aligner-${project.title}`} sponsored className="rounded-md bg-neon px-3 py-2 text-xs font-bold text-black hover:opacity-90">
                           Ver projeto
                         </OutboundLink>
-                        <button type="button" onClick={() => void shareProgram(selectedProgram, project.href, project.title)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar ${project.title}`}>
+                        <button type="button" onClick={() => void shareProgram(selectedProgram, project.href)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar projeto ${project.title}`}>
                           <Share2 size={16} aria-hidden="true" />
                         </button>
                       </div>
@@ -756,7 +758,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 </ul>
               </section>
             )}
-            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} />
+            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} defaultOpen />
             <ProgramStrategies slug={selectedProgram.slug} category={selectedProgram.category} tags={selectedProgram.tags} />
             {extractReferralCode(selectedProgram.longDescription) && (
               <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">

@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getLoginErrorMessage } from '@/lib/auth/errors';
 import { safeNextPath } from '@/lib/auth/oauth';
-import type { GuideResumeIntent } from '@/lib/auth/return-intent';
+import type { GuideResumeIntent, LoginArea } from '@/lib/auth/return-intent';
 
 export function GoogleSignInButton({
   nextPath = '/',
   resumeIntent = null,
+  area = 'music',
 }: {
   nextPath?: string;
   resumeIntent?: GuideResumeIntent | null;
+  area?: LoginArea;
 }) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +26,7 @@ export function GoogleSignInButton({
     const callbackUrl = new URL('/auth/callback', window.location.origin);
     callbackUrl.searchParams.set('next', safeNextPath(nextPath));
     if (resumeIntent) callbackUrl.searchParams.set('resume', resumeIntent);
+    if (area === 'income') callbackUrl.searchParams.set('area', area);
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

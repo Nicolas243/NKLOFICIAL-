@@ -83,38 +83,43 @@ test.describe('oferta do Guia de novembro', () => {
     ))).toHaveLength(2);
   });
 
-  test('redireciona compra não autenticada para login com a intenção preservada', async ({ page }) => {
+  test('permite iniciar compra convidada sem redirecionar para login', async ({ page }) => {
     await page.route('/api/sales/verify-offer', async (route) => {
       await route.fulfill({ status: 200, body: JSON.stringify({ verified: true }) });
     });
     await page.route('/api/payments/create-guide-checkout', async (route) => {
       await route.fulfill({
-        status: 401,
-        body: JSON.stringify({ error: 'authentication_required', message: 'Entre na sua conta para comprar o guia.' }),
+        status: 503,
+        body: JSON.stringify({ error: 'stripe_not_configured', message: 'Stripe indisponível.' }),
       });
     });
 
     await page.goto('/guias/renda-extra?cta_variant=0');
+    await page.locator('#guide-purchase-name').fill('Nicolas Santos');
+    await page.locator('#guide-purchase-email').fill('buyer@example.com');
+    await page.locator('#guide-purchase-cpf').fill('529.982.247-25');
+    await page.locator('input[type="checkbox"]').first().check();
     await page.getByRole('button', { name: 'Quero o pacote de novembro' }).click();
-    await expect(page).toHaveURL(/\/login\?next=%2Fguias%2Frenda-extra&resume=purchase/u);
+    await expect(page.getByText('Stripe indisponível.', { exact: true })).toBeVisible();
+    await expect(page).not.toHaveURL(/\/login/u);
   });
 
-  test('redireciona assinatura não autenticada e retoma o campo de CPF', async ({ page }) => {
+  test('permite iniciar assinatura convidada sem redirecionar para login', async ({ page }) => {
     await page.route('/api/payments/create-guide-subscription', async (route) => {
       await route.fulfill({
-        status: 401,
-        body: JSON.stringify({ error: 'authentication_required', message: 'Entre na sua conta para assinar o pacote.' }),
+        status: 503,
+        body: JSON.stringify({ error: 'stripe_not_configured', message: 'Stripe indisponível.' }),
       });
     });
 
     await page.goto('/guias/renda-extra?cta_variant=0');
+    await page.locator('#guide-subscription-name').fill('Nicolas Santos');
+    await page.locator('#guide-subscription-email').fill('buyer@example.com');
     await page.locator('#guide-subscription-cpf').fill('529.982.247-25');
     await page.getByText('Concordo que o CPF seja usado apenas para personalizar e proteger meus materiais.').last().click();
     await page.getByRole('button', { name: 'Começar por R$ 19/mês' }).click();
-    await expect(page).toHaveURL(/\/login\?next=%2Fguias%2Frenda-extra&resume=subscription/u);
-
-    await page.goto('/guias/renda-extra?cta_variant=0&resume=subscription');
-    await expect(page.locator('#guide-subscription-cpf')).toBeFocused();
+    await expect(page.getByText('Stripe indisponível.', { exact: true })).toBeVisible();
+    await expect(page).not.toHaveURL(/\/login/u);
   });
 
   test('mantém outros erros do checkout na própria página', async ({ page }) => {

@@ -27,3 +27,17 @@ export async function createGuideAssetSignedUrl(asset: GuideAsset): Promise<stri
   }
   return data.signedUrl;
 }
+
+export async function downloadGuideAsset(asset: GuideAsset): Promise<Buffer | null> {
+  const storage = getGuideStorageAdmin();
+  if (!storage) return null;
+
+  const { data, error } = await storage.storage
+    .from(GUIDE_ASSET_BUCKET)
+    .download(asset.storagePath);
+  if (error || !data) {
+    console.error('[GUIDE_STORAGE] Não foi possível ler o ativo:', error?.message ?? 'arquivo ausente');
+    return null;
+  }
+  return Buffer.from(await data.arrayBuffer());
+}

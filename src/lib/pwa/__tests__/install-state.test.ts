@@ -4,6 +4,7 @@ import {
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
+  shouldClearInstallPrompt,
 } from '../install-state';
 
 test('detects iOS Safari instructions when the native prompt is unavailable', () => {
@@ -56,4 +57,9 @@ test('provides Chromium instructions when no native prompt is exposed', () => {
       'Confirme a instalação de Renda Extra.',
     ],
   );
+});
+
+test('clears a native prompt after either user choice', () => {
+  assert.equal(shouldClearInstallPrompt('accepted'), true);
+  assert.equal(shouldClearInstallPrompt('dismissed'), true);
 });

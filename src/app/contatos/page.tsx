@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
+import { absoluteSiteUrl } from '@/lib/site';
 
 // Dados portados do contatos.html legado
 const LINKS = [
@@ -19,6 +21,7 @@ const LINKS = [
 export const metadata: Metadata = {
   title: 'Contatos | Portal NKL',
   description: 'NKL_oficial — Engenheiro · Criador de conteudo. Links oficiais.',
+  alternates: { canonical: absoluteSiteUrl('/contatos') },
 };
 
 export default function ContatosPage() {
@@ -32,6 +35,7 @@ export default function ContatosPage() {
       <div className="flex items-center justify-center text-neon font-bold tracking-widest uppercase text-xs mb-8">
         <span className="flex-1 h-px bg-border" />&nbsp; Links &nbsp;<span className="flex-1 h-px bg-border" />
       </div>
+      <AffiliateDisclaimer />
       <div className="flex flex-col gap-4">
         {LINKS.map((link, i) => (
           <a

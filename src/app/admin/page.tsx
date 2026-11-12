@@ -95,8 +95,8 @@ export default async function AdminDashboardPage() {
               ))}
             </div>
           </section>
-          <section aria-label="Marketplace de Aulas e Split Mercado Pago">
-            <h2 className="mb-4 font-playfair text-xl font-bold">Marketplace de Aulas &amp; Split Mercado Pago</h2>
+          <section aria-label="Marketplace de Aulas">
+            <h2 className="mb-4 font-playfair text-xl font-bold">Marketplace de Aulas</h2>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               {[
                 ['Professores conectados', metrics?.connectedTeachers ?? 0],

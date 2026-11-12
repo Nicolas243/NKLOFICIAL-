@@ -43,24 +43,3 @@ export async function updateTeacherPricingAction(
   }).where(and(eq(userProfiles.id, user.id), eq(userProfiles.papel, 'Professor')));
   return { success: true, message: 'Planos atualizados.' };
 }
-
-export async function disconnectMercadoPagoAction(): Promise<void> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user?.id) return;
-  await db.update(userProfiles).set({
-    mpAccessToken: null,
-    mpRefreshToken: null,
-    mpCollectorId: null,
-    mpTokenExpiresAt: null,
-  }).where(eq(userProfiles.id, user.id));
-}
-
-export async function simulateDevMercadoPagoConnectAction(): Promise<TeacherFinanceState> {
-  if (process.env.NODE_ENV === 'production') return { success: false, message: 'Simulação indisponível em produção.' };
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user?.id) return { success: false, message: 'Sessão expirada.' };
-  await db.update(userProfiles).set({ mpCollectorId: `dev-${user.id}`, mpAccessToken: 'development-token', mpConnectedAt: new Date() }).where(eq(userProfiles.id, user.id));
-  return { success: true, message: 'Conta simulada para desenvolvimento.' };
-}

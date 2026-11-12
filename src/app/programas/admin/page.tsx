@@ -4,6 +4,10 @@ import { getPartnerAdminData, updatePartnerProgram, approvePartnerSuggestion, re
 
 export const metadata: Metadata = {
   title: 'Administração de Programas | Portal NKL',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function PartnerProgramsAdminPage() {

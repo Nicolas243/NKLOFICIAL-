@@ -57,6 +57,13 @@ export function loadAndMapRows() {
       ebay: `https://www.ebay.com/sch/i.html?_nkw=${internationalTerm}`,
       amazon: `https://www.amazon.com.br/s?k=${internationalTerm}`,
     }
+    const affiliateLinks: Record<string, string> = {
+      mercado_livre: readLegacyString(l, 'ml') || fallbackLinks.mercado_livre,
+      shopee: readLegacyString(l, 'shopee') || fallbackLinks.shopee,
+      ebay: readLegacyString(l, 'ebay') || fallbackLinks.ebay,
+      amazon: readLegacyString(l, 'amazon') || fallbackLinks.amazon,
+    }
+
     return {
       name,
       projection: readLegacyString(c, 'projecao'),
@@ -76,7 +83,7 @@ export function loadAndMapRows() {
       coating: readLegacyString(c, 'revestimento'),
       fixation: readLegacyString(c, 'fixacao'),
       arcTolerance: readLegacyString(c, 'tolerancia'),
-      affiliateLinks: l && Object.keys(l).length > 0 ? l : fallbackLinks,
+      affiliateLinks,
     }
 
     function recordValueOrZero(record: LegacyRecord, key: string): string | number {

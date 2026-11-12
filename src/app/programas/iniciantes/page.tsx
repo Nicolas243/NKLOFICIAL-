@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { ProgramHub } from '@/components/program-hub';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Oportunidades para iniciantes',
   description: 'Um caminho editorial para começar com oportunidades de renda extra de menor dificuldade.',
+  alternates: { canonical: absoluteSiteUrl('/programas/iniciantes') },
 };
 
 export const dynamic = 'force-dynamic';

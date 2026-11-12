@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata = {
   title: 'Termos de Uso | Portal NKL',
   description: 'Regras de utilização, responsabilidades e contratos do Portal NKL.',
+  alternates: { canonical: absoluteSiteUrl('/termos') },
 };
 
 const contracts = [
@@ -30,7 +32,7 @@ export default function TermosPage() {
         <header>
           <p className="text-xs uppercase tracking-[0.2em] text-neon font-bold">Regras da plataforma</p>
           <h1 className="font-playfair text-3xl font-bold mt-2">Termos de Uso</h1>
-          <p className="mt-3 opacity-70">Versão 1.1 · última atualização: 4 de novembro de 2026</p>
+          <p className="mt-3 opacity-70">Versão 1.2 · última atualização: 9 de novembro de 2026</p>
           <p className="mt-3 opacity-85">
             Ao acessar o Portal NKL, você concorda com estes termos e com a{' '}
             <Link href="/privacidade" className="text-neon font-bold hover:underline">Política de Privacidade</Link>.
@@ -88,7 +90,7 @@ export default function TermosPage() {
           <h2 className="font-playfair text-2xl font-bold">5. Serviços musicais e pagamentos</h2>
           <p className="mt-2 opacity-85">
             Quando o Portal intermediar aulas ou serviços, a oferta exibirá as condições aplicáveis.
-            Pagamentos podem ser processados por Mercado Pago ou outro provedor identificado na
+            Pagamentos podem ser processados por Stripe ou outro provedor identificado na
             contratação. Taxas, divisão de valores, cancelamento e reembolso devem ser apresentados
             antes da confirmação e não afastam direitos obrigatórios do consumidor. O prestador é
             responsável pela execução do serviço e o Portal atua somente no papel descrito na oferta.
@@ -96,7 +98,19 @@ export default function TermosPage() {
         </section>
 
         <section>
-          <h2 className="font-playfair text-2xl font-bold">6. Plataformas externas</h2>
+          <h2 className="font-playfair text-2xl font-bold">6. Guias, assinatura e conteúdo digital</h2>
+          <p className="mt-2 opacity-85">
+            Quando houver uma assinatura ou compra de guia, a página de oferta e o checkout
+            informarão preço, recorrência, forma de pagamento, conteúdo e condições de acesso.
+            A entrega semanal anunciada depende da assinatura ativa e não representa promessa de
+            renda, emprego ou resultado financeiro. O cancelamento e o eventual reembolso seguem
+            o provedor do pagamento e a <Link href="/reembolso" className="text-neon font-bold hover:underline">Política de Reembolso</Link>,
+            sem afastar direitos obrigatórios do consumidor.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-playfair text-2xl font-bold">7. Plataformas externas</h2>
           <p className="mt-2 opacity-85">
             Sites de terceiros têm cadastro, aprovação, privacidade, cobrança, suporte e regras
             próprios. O Portal não controla disponibilidade, decisões, pagamentos, segurança,
@@ -106,7 +120,7 @@ export default function TermosPage() {
         </section>
 
         <section>
-          <h2 className="font-playfair text-2xl font-bold">7. Propriedade intelectual</h2>
+          <h2 className="font-playfair text-2xl font-bold">8. Propriedade intelectual</h2>
           <p className="mt-2 opacity-85">
             Textos, identidade visual, código e componentes do Portal pertencem ao Portal NKL ou
             aos respectivos licenciadores. Marcas, logos e materiais de terceiros permanecem de
@@ -116,7 +130,7 @@ export default function TermosPage() {
         </section>
 
         <section>
-          <h2 className="font-playfair text-2xl font-bold">8. Suspensão, disponibilidade e alterações</h2>
+          <h2 className="font-playfair text-2xl font-bold">9. Suspensão, disponibilidade e alterações</h2>
           <p className="mt-2 opacity-85">
             Podemos limitar ou suspender contas para investigar fraude, abuso, risco à comunidade,
             inadimplemento ou violação destes termos, com oportunidade de esclarecimento quando
@@ -127,7 +141,7 @@ export default function TermosPage() {
         </section>
 
         <section>
-          <h2 className="font-playfair text-2xl font-bold">9. Lei aplicável e contato</h2>
+          <h2 className="font-playfair text-2xl font-bold">10. Lei aplicável e contato</h2>
           <p className="mt-2 opacity-85">
             Aplicam-se as leis brasileiras, sem prejuízo dos direitos inderrogáveis do consumidor.
             Para dúvidas, denúncias ou solicitações, use a página de{' '}

@@ -1,6 +1,6 @@
 'use server';
 
-import { count, eq, isNotNull, sum } from 'drizzle-orm';
+import { count, eq, sum } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles, subscriptions, luthierLeads, studentPlanEnrollments, classBookings } from '@/db/schema';
@@ -47,7 +47,7 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     db.select({ value: count() }).from(userProfiles),
     db.select({ value: count() }).from(subscriptions).where(eq(subscriptions.status, 'active')),
     db.select({ value: count() }).from(luthierLeads),
-    db.select({ value: count() }).from(userProfiles).where(isNotNull(userProfiles.mpCollectorId)),
+    db.select({ value: count() }).from(userProfiles).where(eq(userProfiles.papel, 'Professor')),
     db.select({ value: count() }).from(studentPlanEnrollments).where(eq(studentPlanEnrollments.status, 'active')),
     db.select({ value: sum(classBookings.priceCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),
     db.select({ value: sum(classBookings.platformFeeCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),

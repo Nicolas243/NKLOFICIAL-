@@ -1,4 +1,5 @@
 export type GuideResumeIntent = 'purchase' | 'subscription';
+export type LoginArea = 'music' | 'income';
 
 export function safeNextPath(value: string | null): string {
   return value
@@ -13,11 +14,20 @@ export function parseGuideResumeIntent(value: string | null): GuideResumeIntent 
   return value === 'purchase' || value === 'subscription' ? value : null;
 }
 
-export function buildLoginPath(nextPath: string, intent: GuideResumeIntent | null): string {
+export function parseLoginArea(value: string | null): LoginArea {
+  return value === 'income' ? 'income' : 'music';
+}
+
+export function buildLoginPath(
+  nextPath: string,
+  intent: GuideResumeIntent | null,
+  area: LoginArea = 'music',
+): string {
   const search = new URLSearchParams({
     next: safeNextPath(nextPath),
   });
   if (intent) search.set('resume', intent);
+  if (area === 'income') search.set('area', area);
   return `/login?${search.toString()}`;
 }
 

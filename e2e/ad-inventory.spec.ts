@@ -1,31 +1,29 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('prévia do inventário publicitário', () => {
-  test('renderiza o mural, as faixas e o aviso de prévia', async ({ page }) => {
+  test('renderiza a página de anúncios e o lote nativo', async ({ page }) => {
     await page.goto('/anuncie');
 
-    await expect(page.getByRole('heading', { name: 'Anuncie onde a comunidade pesquisa' })).toBeVisible();
-    await expect(page.getByText('ainda não há cobrança, assinatura ou publicação automática')).toBeVisible();
-    await expect(page.locator('[data-ad-inventory="mural"] [data-ad-slot]')).toHaveCount(40);
-    await expect(page.locator('[data-ad-inventory="band"]')).toHaveCount(3);
-
-    for (const band of await page.locator('[data-ad-inventory="band"]').all()) {
-      await expect(band.locator('[data-ad-slot]')).toHaveCount(10);
-    }
+    await expect(page.getByRole('heading', { name: 'Anuncie no Portal NKL' })).toBeVisible();
+    await expect(page.getByText('Sem checkout ativo nesta fase.', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Prévia de lote nativo')).toBeVisible();
+    await expect(page.getByTestId('ad-preview-tile')).toHaveCount(10);
   });
 
-  test('oferece apenas o CTA interno de anúncios', async ({ page }) => {
+  test('oferece apenas CTAs internos e nenhum checkout', async ({ page }) => {
     await page.goto('/anuncie');
 
-    await expect(page.getByRole('link', { name: 'Quero anunciar' })).toHaveAttribute('href', '/noticias/anunciar');
-    await expect(page.locator('[data-ad-inventory] a[href^="http"]')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Quero anunciar' }).first()).toHaveAttribute('href', '/anuncie');
+    await expect(page.locator('a[href^="http"]').filter({ hasText: /anunciar|mural/i })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /pagar|comprar|assinar/i })).toHaveCount(0);
   });
 
-  test('mantém as faixas roláveis em viewport mobile', async ({ page }) => {
+  test('mantém os tiles utilizáveis em viewport mobile', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/anuncie');
 
-    await expect(page.locator('[data-ad-inventory="band"].overflow-x-auto')).toHaveCount(3);
+    const tiles = page.getByTestId('ad-preview-tile');
+    await expect(tiles).toHaveCount(10);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 });

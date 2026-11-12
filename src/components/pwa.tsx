@@ -9,6 +9,7 @@ import {
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
+  shouldClearInstallPrompt,
   type InstallPlatform,
 } from '@/lib/pwa/install-state';
 
@@ -21,9 +22,11 @@ type AppKind = 'music' | 'income';
 const INITIAL_STATE_DELAY_MS = 0;
 const INSTALL_REMINDER_DELAY_MS = 22000;
 const INSTALL_REMINDER_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+const CLOSE_OVERLAYS_EVENT = 'nkl:close-overlays';
 
 type InstallState = {
   prompt: BeforeInstallPromptEvent | null;
+  consumePrompt: () => void;
   installed: boolean;
   platform: InstallPlatform;
 };
@@ -82,7 +85,7 @@ function useInstallState(kind: AppKind): InstallState {
     };
   }, [kind]);
 
-  return { prompt, installed, platform };
+  return { prompt, consumePrompt: () => setPrompt(null), installed, platform };
 }
 
 export function PwaRegister() {
@@ -103,11 +106,12 @@ type InstallButtonProps = {
 export function PwaInstallButton({ kind }: InstallButtonProps) {
   const pathname = usePathname();
   const appKind = kind ?? getAppKind(pathname);
-  const { prompt, installed, platform } = useInstallState(appKind);
+  const { prompt, consumePrompt, installed, platform } = useInstallState(appKind);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
 
   useEffect(() => {
     if (!instructionsOpen) return;
+    document.dispatchEvent(new Event(CLOSE_OVERLAYS_EVENT));
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const closeOnEscape = (event: KeyboardEvent): void => {
@@ -144,10 +148,12 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
     }
 
     trackInstallEvent('pwa_install_prompt_open');
-    await prompt.prompt();
-    const choice = await prompt.userChoice;
+    const activePrompt = prompt;
+    consumePrompt();
+    await activePrompt.prompt();
+    const choice = await activePrompt.userChoice;
     trackInstallEvent(`pwa_install_${choice.outcome}`);
-    if (choice.outcome === 'dismissed') return;
+    if (shouldClearInstallPrompt(choice.outcome)) return;
   }
 
   return (
@@ -191,12 +197,13 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
 export function PwaInstallReminder() {
   const pathname = usePathname();
   const appKind = getAppKind(pathname);
-  const { prompt, installed, platform } = useInstallState(appKind);
+  const { prompt, consumePrompt, installed, platform } = useInstallState(appKind);
   const [visible, setVisible] = useState(false);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
 
   useEffect(() => {
     if (!instructionsOpen) return;
+    document.dispatchEvent(new Event(CLOSE_OVERLAYS_EVENT));
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const closeOnEscape = (event: KeyboardEvent): void => {
@@ -241,8 +248,10 @@ export function PwaInstallReminder() {
     }
 
     trackInstallEvent('pwa_install_prompt_open');
-    await prompt.prompt();
-    const choice = await prompt.userChoice;
+    const activePrompt = prompt;
+    consumePrompt();
+    await activePrompt.prompt();
+    const choice = await activePrompt.userChoice;
     trackInstallEvent(`pwa_install_${choice.outcome}`);
     if (choice.outcome === 'accepted') setVisible(false);
     if (choice.outcome === 'dismissed') setVisible(false);

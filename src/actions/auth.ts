@@ -8,7 +8,7 @@ import { userProfiles } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
 import { getLoginErrorMessage } from '@/lib/auth/errors';
 import { safeNextPath } from '@/lib/auth/oauth';
-import { buildReturnPath, parseGuideResumeIntent } from '@/lib/auth/return-intent';
+import { buildReturnPath, parseGuideResumeIntent, parseLoginArea, type GuideResumeIntent } from '@/lib/auth/return-intent';
 import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
 
 /**
@@ -73,8 +73,10 @@ export async function login(formData: FormData) {
   const password = formData.get('password') as string;
   const nextValue = formData.get('next');
   const resumeValue = formData.get('resume');
+  const areaValue = formData.get('area');
   const nextPath = safeNextPath(typeof nextValue === 'string' ? nextValue : null);
   const resumeIntent = parseGuideResumeIntent(typeof resumeValue === 'string' ? resumeValue : null);
+  const area = parseLoginArea(typeof areaValue === 'string' ? areaValue : null);
 
   const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -83,6 +85,7 @@ export async function login(formData: FormData) {
     loginPath.searchParams.set('error', getLoginErrorMessage(error));
     loginPath.searchParams.set('next', nextPath);
     if (resumeIntent) loginPath.searchParams.set('resume', resumeIntent);
+    if (area === 'income') loginPath.searchParams.set('area', area);
     redirect(`${loginPath.pathname}?${loginPath.searchParams.toString()}`);
   }
 
@@ -95,6 +98,7 @@ export async function login(formData: FormData) {
       loginPath.searchParams.set('error', profileSync.message);
       loginPath.searchParams.set('next', nextPath);
       if (resumeIntent) loginPath.searchParams.set('resume', resumeIntent);
+      if (area === 'income') loginPath.searchParams.set('area', area);
       redirect(`${loginPath.pathname}?${loginPath.searchParams.toString()}`);
     }
   }
@@ -208,7 +212,10 @@ export async function signout() {
   redirect('/');
 }
 
-export async function retryProfileSync(nextPath = '/'): Promise<{ error?: string; redirectTo?: string }> {
+export async function retryProfileSync(
+  nextPath = '/',
+  resumeIntent: GuideResumeIntent | null = null,
+): Promise<{ error?: string; redirectTo?: string }> {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
 
@@ -218,6 +225,6 @@ export async function retryProfileSync(nextPath = '/'): Promise<{ error?: string
 
   const result = await syncAuthenticatedProfile(data.user);
   return result.ok
-    ? { redirectTo: safeNextPath(nextPath) }
+    ? { redirectTo: buildReturnPath(nextPath, resumeIntent) }
     : { error: result.message };
 }

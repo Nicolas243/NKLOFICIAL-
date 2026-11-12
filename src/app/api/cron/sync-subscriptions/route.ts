@@ -1,19 +1,16 @@
 import crypto from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { MercadoPagoConfig, PreApproval } from 'mercadopago';
-import { and, eq, gte, isNull, isNotNull, lt, lte } from 'drizzle-orm';
+import { and, eq, gte, isNull, lt, lte } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   businessDirectory,
   classBookings,
-  guideSubscriptions,
   studentPlanEnrollments,
   subscriptions,
   userProfiles,
 } from '@/db/schema';
 import { env } from '@/env';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
-import { getValidTeacherMpAccessToken } from '@/lib/mercadopago/oauth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,21 +19,6 @@ const REMINDER_WINDOW_MIN_MINUTES = 5;
 const REMINDER_WINDOW_MAX_MINUTES = 75;
 const CLASS_ROOM_TTL_SECONDS = 7200;
 const CLASS_COMPLETION_GRACE_MINUTES = 60;
-
-function normalizeGuideSubscriptionStatus(status: unknown): string {
-  if (typeof status !== 'string') return 'pending';
-  const normalized = status.toLowerCase();
-  if (['authorized', 'active'].includes(normalized)) return 'active';
-  if (['cancelled', 'canceled'].includes(normalized)) return 'canceled';
-  return normalized;
-}
-
-function parsePeriodEnd(value: unknown): Date | null {
-  if (typeof value === 'number' && Number.isFinite(value)) return new Date(value * 1000);
-  if (typeof value !== 'string') return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
 
 function hasValidAuthorization(request: NextRequest): boolean {
   const value = request.headers.get('authorization') ?? '';
@@ -63,32 +45,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   try {
     const now = new Date();
-    const guideSubscriptionRows = await db.select({
-      id: guideSubscriptions.id,
-      gatewaySubscriptionId: guideSubscriptions.gatewaySubscriptionId,
-    }).from(guideSubscriptions).where(and(
-      isNotNull(guideSubscriptions.gatewaySubscriptionId),
-    ));
-    const mercadoPago = new MercadoPagoConfig({ accessToken: env.MERCADOPAGO_ACCESS_TOKEN });
-    let guideSubscriptionsSyncedCount = 0;
-    let guideSubscriptionSyncErrors = 0;
-    for (const subscription of guideSubscriptionRows) {
-      if (!subscription.gatewaySubscriptionId) continue;
-      try {
-        const preapproval = await new PreApproval(mercadoPago).get({ id: subscription.gatewaySubscriptionId });
-        await db.update(guideSubscriptions).set({
-          status: normalizeGuideSubscriptionStatus(preapproval.status),
-          email: typeof preapproval.payer_email === 'string' ? preapproval.payer_email : null,
-          currentPeriodEnd: parsePeriodEnd(preapproval.next_payment_date),
-          updatedAt: new Date(),
-        }).where(eq(guideSubscriptions.id, subscription.id));
-        guideSubscriptionsSyncedCount += 1;
-      } catch (error) {
-        guideSubscriptionSyncErrors += 1;
-        console.error('[CRON] Falha ao sincronizar assinatura de guias:', error instanceof Error ? error.message : 'erro desconhecido');
-      }
-    }
-
     const expired = await db.update(studentPlanEnrollments)
       .set({ status: 'expired' })
       .where(and(eq(studentPlanEnrollments.status, 'active'), lt(studentPlanEnrollments.expiresAt, now)))
@@ -116,15 +72,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       gte(classBookings.scheduledAt, from),
       lte(classBookings.scheduledAt, to),
     ));
-    const teacherIds = [...new Set(bookings.map((booking) => booking.teacherId))];
-    await Promise.all(teacherIds.map(async (teacherId) => {
-      try {
-        await getValidTeacherMpAccessToken(teacherId);
-      } catch (error) {
-        console.error('[CRON] Falha ao renovar credencial Mercado Pago:', error instanceof Error ? error.message : 'erro desconhecido');
-      }
-    }));
-
     let remindersDispatchedCount = 0;
     for (const booking of bookings) {
       let meetingUrl = booking.meetingUrl;
@@ -147,8 +94,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     return NextResponse.json({
-      guideSubscriptionsSyncedCount,
-      guideSubscriptionSyncErrors,
+      guideSubscriptionsSyncedCount: 0,
+      guideSubscriptionSyncErrors: 0,
       expiredEnrollmentsCount: expired.length,
       autoCompletedClasses: autoCompleted.length,
       remindersDispatchedCount,

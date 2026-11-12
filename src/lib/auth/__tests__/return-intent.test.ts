@@ -4,6 +4,7 @@ import {
   buildLoginPath,
   buildReturnPath,
   parseGuideResumeIntent,
+  parseLoginArea,
 } from '../return-intent';
 
 test('builds a purchase login path with a validated local destination', () => {
@@ -11,6 +12,16 @@ test('builds a purchase login path with a validated local destination', () => {
     buildLoginPath('/guias/renda-extra', 'purchase'),
     '/login?next=%2Fguias%2Frenda-extra&resume=purchase',
   );
+});
+
+test('preserves the income context in the login path', () => {
+  assert.equal(
+    buildLoginPath('/guias/renda-extra', 'purchase', 'income'),
+    '/login?next=%2Fguias%2Frenda-extra&resume=purchase&area=income',
+  );
+  assert.equal(parseLoginArea('income'), 'income');
+  assert.equal(parseLoginArea('music'), 'music');
+  assert.equal(parseLoginArea('invalid'), 'music');
 });
 
 test('builds a subscription return path with a validated local destination', () => {

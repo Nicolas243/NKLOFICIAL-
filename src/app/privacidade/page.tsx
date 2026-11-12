@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PrivacyPreferencesButton } from '@/components/privacy-preferences-button';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Política de Privacidade',
   description: 'Como o Portal NKL trata dados pessoais, cookies e direitos dos titulares.',
+  alternates: { canonical: absoluteSiteUrl('/privacidade') },
 };
 
-const lastUpdated = '4 de novembro de 2026';
+const lastUpdated = '9 de novembro de 2026';
 
 export default function PrivacidadePage() {
   return (
@@ -33,6 +35,11 @@ export default function PrivacidadePage() {
             </a>
             . Esse canal também recebe pedidos destinados ao encarregado pelo tratamento de dados.
           </p>
+          <p className="mt-2 opacity-85">
+            A identificação empresarial ou civil completa do controlador e o endereço para
+            correspondência devem ser confirmados pelo responsável antes de campanhas pagas ou
+            expansão internacional. Enquanto isso, o e-mail acima é o canal formal de atendimento.
+          </p>
         </section>
 
         <section>
@@ -57,8 +64,9 @@ export default function PrivacidadePage() {
             Cookies e armazenamento local estritamente necessários podem manter sessão, segurança,
             preferências, instalação do web app e prevenção de avaliações duplicadas. O Portal
             também usa um armazenamento local para registrar sua escolha sobre recursos não
-            essenciais. Google Analytics e Google AdSense só são carregados após a opção “Aceitar
-            não essenciais”; é possível recusar sem perder o acesso ao conteúdo.
+            essenciais. Google Analytics, Microsoft Clarity, PostHog, Vercel Analytics e Google
+            AdSense só são carregados após a opção “Aceitar não essenciais”; é possível recusar sem
+            perder o acesso ao conteúdo.
           </p>
           <p className="mt-2 opacity-85">
             O navegador também pode receber cookies de terceiros quando você aceita recursos de
@@ -76,6 +84,13 @@ export default function PrivacidadePage() {
             fornecedores atuam conforme suas próprias condições e podem processar dados fora do
             Brasil, com salvaguardas contratuais e técnicas aplicáveis.
           </p>
+          <ul className="mt-3 list-disc space-y-2 pl-5 opacity-85">
+            <li>Supabase e Vercel: autenticação, banco, armazenamento, hospedagem e entrega do site.</li>
+            <li>Formspree: recebimento do nome e e-mail enviados no formulário de materiais.</li>
+            <li>Stripe: pagamentos, assinaturas, conciliação e suporte da compra.</li>
+            <li>Google Analytics, Google AdSense, Microsoft Clarity, PostHog e Vercel Analytics:
+              medição, diagnóstico e publicidade somente após consentimento não essencial.</li>
+          </ul>
           <p className="mt-2 opacity-85">
             Links de afiliados e oportunidades levam a plataformas independentes. Ao sair do
             Portal NKL, o tratamento passa a seguir a política do terceiro. Não vendemos dados

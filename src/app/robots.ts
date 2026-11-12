@@ -1,15 +1,13 @@
 import type { MetadataRoute } from 'next';
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://nkl.com.br';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/perfil', '/dashboard', '/api/'],
+      disallow: ['/admin', '/programas/admin', '/perfil', '/dashboard', '/api/'],
     },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    sitemap: absoluteSiteUrl('/sitemap.xml'),
   };
 }

@@ -56,3 +56,7 @@ export function getInstallAction(capabilities: InstallCapabilities): 'native-pro
   if (capabilities.nativePromptAvailable) return 'native-prompt';
   return 'instructions';
 }
+
+export function shouldClearInstallPrompt(outcome: 'accepted' | 'dismissed'): boolean {
+  return outcome === 'accepted' || outcome === 'dismissed';
+}

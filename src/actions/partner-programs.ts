@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { partnerProgramReviews, partnerPrograms, partnerReferralLeads, partnerSuggestions, userProfiles } from '@/db/schema';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
+import { editorialProgramRating, editorialProgramTags } from '@/lib/partner-program-editorial';
 
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
 const MIN_REASON_WORDS = 20;
@@ -35,18 +36,6 @@ const REVIEW_TAGS = [
 ];
 const REVIEW_CURRENCIES = ['BRL', 'USD', 'EUR'] as const;
 const REVIEW_PERIODS = ['hora', 'dia', 'semana', 'trabalho'] as const;
-const BEGINNER_EDITORIAL_TAG = 'Melhor para Começar';
-const BEGINNER_EDITORIAL_RATING = 9;
-const BEGINNER_EDITORIAL_SLUGS = new Set([
-  'pawns-app',
-  'attapoll',
-  'fluencify',
-  'apphub',
-  'aligner',
-  'canal-dark-youtube-notebooklm',
-  'quintoandar-indica-ai',
-]);
-
 type ProgramRow = typeof partnerPrograms.$inferSelect;
 type ProgramCardRow = Pick<
   ProgramRow,
@@ -148,19 +137,6 @@ function editorialProgramName(slug: string, name: string): string {
   if (slug === 'crowdato') return 'Crowtado';
   if (slug === 'aligner') return 'Alligner';
   return name;
-}
-
-function editorialProgramTags(slug: string, tags: string[]): string[] {
-  const withUgc = slug === 'sideshift' && !tags.includes('UGC')
-    ? [...tags, 'UGC']
-    : tags;
-  if (!BEGINNER_EDITORIAL_SLUGS.has(slug) || withUgc.includes(BEGINNER_EDITORIAL_TAG)) return withUgc;
-  return [BEGINNER_EDITORIAL_TAG, ...withUgc];
-}
-
-function editorialProgramRating(slug: string, rating: number): number {
-  if (BEGINNER_EDITORIAL_SLUGS.has(slug)) return BEGINNER_EDITORIAL_RATING;
-  return Math.min(9, Math.max(6, rating));
 }
 
 function logoUrl(slug: string, websiteUrl: string): string {

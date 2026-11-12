@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { ProgramHub } from '@/components/program-hub';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Oportunidades pagas em dólar',
   description: 'Compare oportunidades do Portal NKL que exibem remuneração de referência em dólar.',
+  alternates: { canonical: absoluteSiteUrl('/programas/dolar') },
 };
 
 export const dynamic = 'force-dynamic';

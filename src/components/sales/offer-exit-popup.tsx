@@ -122,7 +122,7 @@ export function OfferExitPopup() {
             label="Quero os guias por R$ 19/mês"
           />
         </div>
-        <p className="mt-4 text-xs leading-relaxed text-foreground/50">A cobrança é recorrente e os termos aparecem no checkout do Mercado Pago.</p>
+        <p className="mt-4 text-xs leading-relaxed text-foreground/50">A cobrança é recorrente e os termos aparecem no checkout do Stripe.</p>
       </section>
     </div>
   );

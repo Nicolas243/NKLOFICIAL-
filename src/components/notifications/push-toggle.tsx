@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function decodeBase64Url(value: string): ArrayBuffer {
   const padding = '='.repeat((4 - (value.length % 4)) % 4);
@@ -11,6 +11,33 @@ function decodeBase64Url(value: string): ArrayBuffer {
 
 export function PushToggle() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'enabled' | 'unavailable' | 'error'>('idle');
+
+  useEffect(() => {
+    void navigator.serviceWorker?.ready.then(async (registration) => {
+      const subscription = await registration.pushManager?.getSubscription();
+      if (subscription) setStatus('enabled');
+    }).catch(() => undefined);
+  }, []);
+
+  async function disablePush(): Promise<void> {
+    setStatus('loading');
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await fetch('/api/notifications/push/unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: subscription.endpoint }),
+        });
+        await subscription.unsubscribe();
+      }
+      setStatus('idle');
+    } catch (error) {
+      console.error('[push] Falha ao desativar notificações:', error);
+      setStatus('error');
+    }
+  }
 
   async function enablePush(): Promise<void> {
     if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
@@ -59,11 +86,11 @@ export function PushToggle() {
       <p className="mt-1 text-sm opacity-70">Receba avisos quando houver uma atualização importante para você.</p>
       <button
         type="button"
-        onClick={() => void enablePush()}
+        onClick={() => void (status === 'enabled' ? disablePush() : enablePush())}
         disabled={status === 'loading' || status === 'enabled'}
         className="mt-3 min-h-11 rounded-md border border-neon px-4 py-2 text-sm font-bold text-neon hover:bg-neon hover:text-black disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === 'loading' ? 'Ativando...' : status === 'enabled' ? 'Notificações ativadas' : 'Ativar notificações'}
+        {status === 'loading' ? 'Atualizando...' : status === 'enabled' ? 'Desativar notificações' : 'Ativar notificações'}
       </button>
       {status === 'unavailable' && <p className="mt-2 text-xs opacity-70">Push ainda não está configurado neste ambiente ou não é compatível com este navegador. A central continua disponível.</p>}
       {status === 'error' && <p className="mt-2 text-xs text-orange">Não foi possível ativar agora. Verifique a permissão do navegador e tente novamente.</p>}

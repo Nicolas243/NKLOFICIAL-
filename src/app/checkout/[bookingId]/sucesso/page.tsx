@@ -37,7 +37,7 @@ export default async function BookingSuccessPage(props: { params: Params }) {
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Checkout</p>
       <h1 className="mt-3 font-playfair text-4xl font-bold">{confirmed ? 'Pagamento confirmado' : 'Pagamento em processamento'}</h1>
       <p className="mt-4 text-sm opacity-75">
-        {confirmed ? 'Sua reserva está confirmada.' : 'O Mercado Pago ainda está processando a transação. Atualize esta página em alguns instantes.'}
+        {confirmed ? 'Sua reserva está confirmada.' : 'O Stripe ainda está processando a transação. Atualize esta página em alguns instantes.'}
       </p>
       <dl className="mt-8 space-y-3 rounded-2xl border border-border bg-surface p-6 text-sm">
         <div className="flex justify-between"><dt>Professor</dt><dd>{booking.teacherName}</dd></div>

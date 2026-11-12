@@ -1,0 +1,21 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "clarity-api-token",
+      "description": "Microsoft Clarity Data Export API token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "microsoft-clarity": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@microsoft/clarity-mcp-server@2.0.1",
+        "--clarity_api_token=${input:clarity-api-token}"
+      ]
+    }
+  }
+}

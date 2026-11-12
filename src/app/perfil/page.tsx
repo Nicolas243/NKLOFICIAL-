@@ -1,9 +1,11 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { userProfiles } from '@/db/schema';
+import { guidePurchases, guideSubscriptions, userProfiles } from '@/db/schema';
+import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
+import { GUIDE_ASSETS } from '@/lib/guide-assets';
 import { upsertLuthierProfile } from '@/actions/profile';
 import {
   getFavoriteStrings,
@@ -31,6 +33,23 @@ export default async function PerfilPage() {
     .from(userProfiles)
     .where(eq(userProfiles.id, user.id))
     .limit(1);
+  const [guidePurchase, guideSubscription] = await Promise.all([
+    db.select({
+      downloadCount: guidePurchases.downloadCount,
+      maxDownloads: guidePurchases.maxDownloads,
+    }).from(guidePurchases).where(and(
+      eq(guidePurchases.userId, user.id),
+      eq(guidePurchases.status, 'approved'),
+    )).limit(1),
+    db.select({
+      downloadCount: guideSubscriptions.downloadCount,
+      maxDownloads: guideSubscriptions.maxDownloads,
+    }).from(guideSubscriptions).where(and(
+      eq(guideSubscriptions.userId, user.id),
+      eq(guideSubscriptions.status, 'active'),
+    )).limit(1),
+  ]);
+  const guideAccess = guidePurchase[0] ?? guideSubscription[0] ?? null;
 
   const [favoriteStrings, favoriteLuthiers, favoriteBusinesses, favoriteProfessors] =
     await Promise.all([
@@ -68,6 +87,19 @@ export default async function PerfilPage() {
             chances de ser contatado.
           </p>
         </div>
+      )}
+
+      {guideAccess && (
+        <section className="mb-8 rounded-xl border border-orange/30 bg-orange/5 p-6">
+          <h2 className="font-playfair text-xl font-bold">Meus materiais NKL</h2>
+          <p className="mt-2 text-sm leading-relaxed opacity-75">
+            Cada arquivo é personalizado no momento do download com seus dados de acesso. O original permanece protegido.
+          </p>
+          <GuideAssetDownloads
+            assets={GUIDE_ASSETS}
+            initialRemainingDownloads={Math.max(guideAccess.maxDownloads - guideAccess.downloadCount, 0)}
+          />
+        </section>
       )}
 
       <section className="mb-8 p-6 bg-surface border border-border rounded-xl flex flex-col gap-4">

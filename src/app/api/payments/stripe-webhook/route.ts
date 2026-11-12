@@ -7,6 +7,10 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request): Promise<NextResponse> {
+  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'stripe_not_configured' }, { status: 503 });
+  }
+
   const signature = request.headers.get('stripe-signature');
   if (!signature) {
     return NextResponse.json({ error: 'invalid_signature' }, { status: 400 });

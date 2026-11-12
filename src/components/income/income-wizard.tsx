@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
+import { absoluteSiteUrl } from '@/lib/site';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -153,7 +154,7 @@ function resultSummary(results: PartnerProgramCard[]): string {
     'Meu caminho sugerido pelo Guia de Renda Extra NKL:',
     ...results.map((program, index) => `${index + 1}. ${program.name} — ${program.shortDescription}`),
     '',
-    'Compare as condições antes de se cadastrar: https://nkl.com.br/programas',
+    `Compare as condições antes de se cadastrar: ${absoluteSiteUrl('/programas')}`,
   ].join('\n');
 }
 

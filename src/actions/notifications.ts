@@ -2,10 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { and, count, desc, eq } from 'drizzle-orm';
+import * as webpush from 'web-push';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { notifications } from '@/db/schema';
+import { notifications, pushSubscriptions } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
+import { getServerPushConfiguration } from '@/lib/notifications/push';
 
 export type NotificationItem = {
   id: string;
@@ -136,14 +138,52 @@ export async function createNotificationQuietly(params: {
 
     const relatedId = params.relatedId && isUuid(params.relatedId) ? params.relatedId : null;
 
-    await db.insert(notifications).values({
+    const [notification] = await db.insert(notifications).values({
       userId: params.userId,
       type: params.type,
       title: params.title,
       message: params.message,
       relatedId,
+    }).returning({
+      title: notifications.title,
+      message: notifications.message,
+      relatedId: notifications.relatedId,
+    });
+
+    await sendPushToUser(params.userId, {
+      title: notification?.title ?? params.title,
+      body: notification?.message ?? params.message,
+      href: params.relatedId ? `/luthiers/${params.relatedId}` : '/perfil/notificacoes',
     });
   } catch (error) {
     console.error('Falha ao registrar notificação:', error);
   }
+}
+
+export async function sendPushToUser(userId: string, payload: { title: string; body: string; href: string }): Promise<void> {
+  const configuration = getServerPushConfiguration();
+  if (!configuration.enabled || !isUuid(userId)) return;
+
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT ?? '',
+    configuration.publicKey ?? '',
+    process.env.VAPID_PRIVATE_KEY ?? '',
+  );
+  const subscriptions = await db
+    .select({ id: pushSubscriptions.id, subscription: pushSubscriptions.subscription })
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId));
+
+  await Promise.all(subscriptions.map(async ({ id, subscription }) => {
+    try {
+      await webpush.sendNotification(subscription as unknown as webpush.PushSubscription, JSON.stringify(payload));
+    } catch (error) {
+      const statusCode = (error as { statusCode?: number }).statusCode;
+      if (statusCode === 404 || statusCode === 410) {
+        await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, id));
+        return;
+      }
+      console.error('[push] Falha ao enviar notificação:', error);
+    }
+  }));
 }

@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('catálogo de oportunidades', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('nkl_privacy_consent', 'accepted');
+      window.localStorage.setItem('nkl_area_tutorial_suggestion_seen:income', 'true');
+      window.localStorage.setItem('nkl_area_tutorial_suggestion_seen:music', 'true');
+    });
+  });
+
   test('prioriza oportunidades para começar e mantém todas as tags visíveis', async ({ page }) => {
     await page.goto('/programas');
 
@@ -18,6 +26,14 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.getByRole('dialog', { name: /Detalhes de/ })).toBeVisible();
   });
 
+  test('mostra como a plataforma funciona e o passo a passo na página completa', async ({ page }) => {
+    await page.goto('/programas/mercado-pago');
+
+    await expect(page.getByRole('heading', { name: 'Como funciona e qual é o passo a passo?' })).toBeVisible();
+    await expect(page.getByText('Guia prático', { exact: true })).toBeVisible();
+    await expect(page.getByText('Abra ou acesse sua conta do Mercado Pago', { exact: false })).toBeVisible();
+  });
+
   test('mantém o disclosure de transparência editorial recolhido até o usuário ativar o resumo', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('nkl_tutorial_seen', 'true');
@@ -30,6 +46,14 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).not.toBeVisible();
     await transparency.getByText('Sobre links de parceria', { exact: true }).click();
     await expect(page.getByText('O Portal NKL pode receber comissão por alguns links de parceria.', { exact: false })).toBeVisible();
+  });
+
+  test('oferece compartilhamento da página canônica acima do WhatsApp', async ({ page }) => {
+    await page.goto('/programas/mercado-pago?utm_source=threads&ref=example');
+
+    await expect(page.getByRole('button', { name: 'Compartilhar Portal NKL' })).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/programas\/mercado-pago$/u);
+    await expect(page.locator('.whatsapp-float')).toBeVisible();
   });
 
   test('limita o convite do Buy Me a Coffee à oportunidade correspondente', async ({ page }) => {
@@ -57,9 +81,11 @@ test.describe('catálogo de oportunidades', () => {
   test('encerra o tutorial ao clicar no elemento destacado e mantém a ação', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.removeItem('nkl_tutorial_seen');
+      window.localStorage.removeItem('nkl_area_tutorial_suggestion_seen:income');
     });
     await page.goto('/programas');
 
+    await page.getByRole('button', { name: 'Ver guia' }).click();
     const tutorial = page.locator('[role="dialog"][aria-labelledby="spotlight-tutorial-title"]');
     await expect(tutorial).toBeVisible();
     await page.locator('#income-wizard-trigger').click();
@@ -144,32 +170,11 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.getByRole('button', { name: 'Começar por R$ 19/mês' })).toBeVisible();
   });
 
-  test('atribui o checkout Hotmart quando o link avulso está configurado', async ({ page }) => {
-    const events: Array<{ experiment?: string; variant?: string; eventType?: string }> = [];
-    await page.route('/api/sales/offer-events', async (route) => {
-      if (route.request().method() === 'POST') {
-        events.push(route.request().postDataJSON() as { experiment?: string; variant?: string; eventType?: string });
-        await route.fulfill({ status: 201, body: JSON.stringify({ received: true }) });
-        return;
-      }
-      await route.continue();
-    });
-
+  test('mantém o checkout no Stripe e não expõe Hotmart', async ({ page }) => {
     await page.goto('/guias/renda-extra?cta_variant=1');
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('button', { name: 'Quero liberar meu acesso' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Quero liberar meu acesso' }).click();
-    const simulatorHotmartLink = page.getByRole('link', { name: 'Pagar com Hotmart' });
-    if (await simulatorHotmartLink.count() === 0) {
-      test.skip(true, 'HOTMART_GUIDE_CHECKOUT_URL não está configurada neste ambiente.');
-    }
-    await expect(simulatorHotmartLink).toHaveAttribute('href', /sck=program-secondary-cta(%3A|:)1/u);
-    await simulatorHotmartLink.click({ noWaitAfter: true });
-    await expect.poll(() => events.some((event) => (
-      event.experiment === 'program-secondary-cta'
-      && event.variant === '1'
-      && event.eventType === 'checkout'
-    ))).toBeTruthy();
+    await expect(page.getByText('O pagamento é processado pelo Stripe e o acesso é liberado após a confirmação.', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Pagar com Hotmart' })).toHaveCount(0);
+    await expect(page.locator('body')).not.toContainText('Hotmart');
   });
 
   test('registra checkout antes da escolha do provedor', async ({ page }) => {
@@ -184,15 +189,16 @@ test.describe('catálogo de oportunidades', () => {
     });
 
     await page.goto('/guias/renda-extra?cta_variant=1');
-    await page.getByLabel('E-mail para a assinatura').fill('teste@example.com');
+    await page.locator('#guide-subscription-cpf').fill('529.982.247-25');
+    await page.getByText('Concordo que o CPF seja usado apenas para personalizar e proteger meus materiais.').last().click();
     await page.getByRole('button', { name: 'Começar por R$ 19/mês' }).click();
-    const mercadoPagoButton = page.getByRole('button', { name: 'Assinar com Mercado Pago' });
-    if (await mercadoPagoButton.count() > 0) {
-      await mercadoPagoButton.click();
+    const stripeButton = page.getByRole('button', { name: 'Assinar com Stripe' });
+    if (await stripeButton.count() > 0) {
+      await stripeButton.click();
     }
 
     await expect.poll(() => events.some((event) => (
-      event.experiment === 'program-secondary-cta'
+      event.experiment === 'guide-page-cta'
       && event.variant === '1'
       && event.eventType === 'checkout'
     ))).toBeTruthy();

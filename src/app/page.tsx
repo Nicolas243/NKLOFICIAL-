@@ -6,8 +6,24 @@ import { desc, eq } from 'drizzle-orm';
 import { RadialMenu } from '@/components/radial-menu';
 import { HomeMenuFallback } from '@/components/home-menu-fallback';
 import { PwaInstallButton } from '@/components/pwa';
+import type { Metadata } from 'next';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Cordas, luthieria e renda extra | Portal NKL',
+  description: 'Compare cordas, encontre profissionais de luthieria e descubra oportunidades de renda extra com contexto e critérios claros.',
+  alternates: {
+    canonical: absoluteSiteUrl('/'),
+  },
+  openGraph: {
+    type: 'website',
+    title: 'Cordas, luthieria e renda extra | Portal NKL',
+    description: 'Compare cordas, encontre profissionais de luthieria e descubra oportunidades de renda extra com contexto e critérios claros.',
+    url: absoluteSiteUrl('/'),
+  },
+};
 
 type TopStringRow = Pick<
   typeof stringsCatalog.$inferSelect,

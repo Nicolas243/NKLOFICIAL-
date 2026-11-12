@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { useSessionUser } from '@/components/use-session-user'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -32,6 +33,7 @@ const groups = [
 export function HomeMenuFallback() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const user = useSessionUser()
 
   useEffect(() => {
     const fn = (e: MouseEvent) => {
@@ -42,7 +44,7 @@ export function HomeMenuFallback() {
   }, [])
 
   return (
-    <div ref={ref} className="fixed top-3 left-3 z-[200]">
+    <div ref={ref} className="fixed top-3 left-3 z-[200] flex items-start gap-2">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -51,6 +53,12 @@ export function HomeMenuFallback() {
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
+      <Link
+        href={user ? '/perfil' : '/login?area=music'}
+        className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface/90 px-3 text-sm font-bold shadow-sm transition-colors hover:border-orange hover:bg-accent"
+      >
+        {user ? 'Perfil' : 'Entrar'}
+      </Link>
 
       {open && (
         <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-surface border border-border rounded-xl shadow-xl p-4 flex flex-col gap-3">

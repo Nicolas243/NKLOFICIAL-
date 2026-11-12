@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/next';
 import { isIncomePortalPath } from '@/lib/income-portal';
+import { createPageViewEvent } from '@/lib/analytics-pageview';
 
 export const CONSENT_STORAGE_KEY = 'nkl_privacy_consent';
 export const CONSENT_EVENT = 'nkl:privacy-consent';
@@ -24,6 +25,8 @@ export function getPostHogClient(): PostHogClient | null {
 }
 
 function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null; isIncomePortal: boolean }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (consent !== 'accepted') {
       if (posthogClient) {
@@ -42,10 +45,11 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
       .then(({ default: posthog }) => {
         if (cancelled) return;
 
+        const shouldCaptureInitialPageview = !posthogInitialized;
         if (!posthogInitialized) {
           posthog.init(POSTHOG_KEY, {
             api_host: POSTHOG_HOST,
-            capture_pageview: true,
+            capture_pageview: false,
             capture_pageleave: true,
             persistence: 'localStorage',
             respect_dnt: true,
@@ -55,6 +59,9 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
 
         posthogClient = posthog;
         posthog.register({ portal_area: isIncomePortal ? 'income' : 'music' });
+        if (shouldCaptureInitialPageview) {
+          posthog.capture('$pageview', { $current_url: window.location.href });
+        }
       })
       .catch((error: unknown) => {
         console.error('Não foi possível inicializar o PostHog.', error);
@@ -64,6 +71,20 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
       cancelled = true;
     };
   }, [consent, isIncomePortal]);
+
+  useEffect(() => {
+    if (consent !== 'accepted') return;
+
+    const pageView = createPageViewEvent(pathname);
+    if (!window.gtag) {
+      window.dataLayer = window.dataLayer ?? [];
+      window.gtag = (command, eventName, params) => {
+        window.dataLayer?.push([command, eventName, params]);
+      };
+    }
+    window.gtag?.('event', pageView.eventName, pageView.params);
+    getPostHogClient()?.capture('$pageview', { $current_url: window.location.href });
+  }, [consent, pathname]);
 
   if (consent !== 'accepted') return null;
 
@@ -125,7 +146,7 @@ export function PrivacyScripts() {
               window.dataLayer = window.dataLayer || [];
               function gtag(){window.dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-QD0HQJFWVW');
+              gtag('config', 'G-QD0HQJFWVW', { send_page_view: false });
             `}
           </Script>
         </>
