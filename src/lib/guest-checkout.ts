@@ -6,6 +6,7 @@ const ACCESS_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 const ENCRYPTION_KEY_LENGTH = 32;
 const ENCRYPTION_VERSION = 'v1';
+export const GUEST_ACCESS_COOKIE_NAME = 'nkl_guest_access';
 
 const guestCheckoutSchema = z.object({
   fullName: z.string().trim().min(2).max(160),

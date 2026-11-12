@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
+import type Stripe from 'stripe';
+import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { guidePurchases, guideSubscriptions } from '@/db/schema';
 import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
+import { GuestGuideStatus } from '@/components/sales/guest-guide-status';
 import { GUIDE_ASSETS } from '@/lib/guide-assets';
+import { getStripeClient } from '@/lib/stripe/server';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
   title: 'Pagamento confirmado | Guia NKL',
@@ -18,48 +21,76 @@ type SuccessPageProps = {
   searchParams: Promise<{
     external_reference?: string;
     payment_id?: string;
+    session_id?: string;
     provider?: string;
-    subscription_reference?: string;
     status?: string;
     plan?: string;
+    reference?: string;
+    guest_access_token?: string;
   }>;
 };
 
 export default async function GuidePurchaseSuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
-  const purchaseReference = typeof params.external_reference === 'string'
-    ? params.external_reference.replace(/^guide_purchase:/u, '')
+  if (params.reference && params.guest_access_token) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <GuestGuideStatus
+          reference={params.reference}
+          guestAccessToken={params.guest_access_token}
+          assets={GUIDE_ASSETS}
+        />
+      </div>
+    );
+  }
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  let stripeSession: Stripe.Checkout.Session | null = null;
+  if (params.session_id?.startsWith('cs_')) {
+    try {
+      stripeSession = await getStripeClient().checkout.sessions.retrieve(params.session_id);
+    } catch (error) {
+      console.error('[GUIDE_SUCCESS] Falha ao consultar sessão Stripe:', error instanceof Error ? error.message : 'erro desconhecido');
+    }
+  }
+  const stripeReference = typeof stripeSession?.metadata?.reference === 'string'
+    ? stripeSession.metadata.reference
     : '';
-  const purchaseId = z.string().uuid().safeParse(purchaseReference);
-  const [purchase] = purchaseId.success
+  const purchaseReference = stripeReference.startsWith('guide_purchase:')
+    ? stripeReference.replace(/^guide_purchase:/u, '')
+    : '';
+  const [purchase] = user?.id && purchaseReference
     ? await db.select({
       id: guidePurchases.id,
       status: guidePurchases.status,
       paymentId: guidePurchases.paymentId,
       downloadCount: guidePurchases.downloadCount,
       maxDownloads: guidePurchases.maxDownloads,
-    }).from(guidePurchases).where(eq(guidePurchases.id, purchaseId.data)).limit(1)
-    : params.provider === 'hotmart' && params.payment_id?.startsWith('hotmart:')
-      ? await db.select({
-        id: guidePurchases.id,
-        status: guidePurchases.status,
-        paymentId: guidePurchases.paymentId,
-        downloadCount: guidePurchases.downloadCount,
-        maxDownloads: guidePurchases.maxDownloads,
-      }).from(guidePurchases).where(eq(guidePurchases.paymentId, params.payment_id)).limit(1)
-      : [];
-  const subscriptionReference = params.subscription_reference ?? params.external_reference;
-  const [subscription] = params.plan === 'subscription' && subscriptionReference
+    }).from(guidePurchases).where(and(
+      eq(guidePurchases.id, purchaseReference),
+      eq(guidePurchases.userId, user.id),
+    )).limit(1)
+    : [];
+  const [subscription] = user?.id && params.plan === 'subscription'
     ? await db.select({
       status: guideSubscriptions.status,
       downloadCount: guideSubscriptions.downloadCount,
       maxDownloads: guideSubscriptions.maxDownloads,
     })
       .from(guideSubscriptions)
-      .where(eq(guideSubscriptions.externalReference, subscriptionReference))
+      .where(and(
+        eq(guideSubscriptions.userId, user.id),
+        eq(guideSubscriptions.status, 'active'),
+      ))
       .limit(1)
     : [];
-  const paymentMatches = Boolean(params.payment_id) && purchase?.paymentId === params.payment_id;
+  const paymentId = params.payment_id
+    ?? (typeof stripeSession?.payment_intent === 'string' ? stripeSession.payment_intent : stripeSession?.id);
+  const stripeSessionId = stripeSession?.id;
+  const paymentMatches = Boolean(paymentId) && (
+    purchase?.paymentId === paymentId
+    || (stripeSessionId === paymentId && purchase?.paymentId === stripeSessionId)
+  );
   const isApproved = purchase?.status === 'approved' && paymentMatches;
   const isSubscriptionActive = subscription?.status === 'active';
   const purchaseDownloadsRemaining = purchase ? Math.max(purchase.maxDownloads - purchase.downloadCount, 0) : 0;
@@ -72,12 +103,9 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Acesso liberado</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Pagamento Confirmado! Seu acesso foi liberado.</h1>
           <p className="mt-4 leading-relaxed text-foreground/75">Obrigado pela compra. O Guia Essencial Renda Extra 2027 e os quatro materiais complementares ficam disponíveis para download protegido.</p>
-          {params.payment_id && (params.external_reference || params.provider === 'hotmart') && (
+          {paymentId && user?.id && (
             <GuideAssetDownloads
               assets={GUIDE_ASSETS}
-              context={params.provider === 'hotmart'
-                ? { provider: 'hotmart', payment_id: params.payment_id }
-                : { external_reference: params.external_reference as string, payment_id: params.payment_id }}
               initialRemainingDownloads={purchaseDownloadsRemaining}
             />
           )}
@@ -87,10 +115,9 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Assinatura ativa</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Seu acesso mensal foi confirmado.</h1>
           <p className="mt-4 leading-relaxed text-foreground/75">A assinatura dos Guias para Liberdade Financeira está ativa. Os materiais ficam disponíveis por download protegido enquanto o acesso estiver ativo.</p>
-          {subscriptionReference && (
+          {user?.id && (
             <GuideAssetDownloads
               assets={GUIDE_ASSETS}
-              context={{ subscription_reference: subscriptionReference }}
               initialRemainingDownloads={subscriptionDownloadsRemaining}
             />
           )}
@@ -100,7 +127,7 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Pagamento em processamento</p>
           <h1 className="mt-3 font-playfair text-4xl font-bold">Estamos confirmando seu pagamento.</h1>
           <p className="mt-4 leading-relaxed text-foreground/75">
-            O acesso será liberado após a confirmação do {params.provider === 'hotmart' ? 'Hotmart' : 'Mercado Pago'}. Se o pagamento já foi aprovado, aguarde alguns instantes e atualize esta página.
+            O acesso será liberado após a confirmação do Stripe. Se o pagamento já foi aprovado, aguarde alguns instantes e atualize esta página.
           </p>
         </section>
       )}

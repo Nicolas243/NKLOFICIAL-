@@ -4,6 +4,7 @@ import {
   createGuestAccessToken,
   decryptGuestCpf,
   encryptGuestCpf,
+  GUEST_ACCESS_COOKIE_NAME,
   hashGuestAccessToken,
   isGuestAccessTokenValid,
   normalizeGuestCheckoutInput,
@@ -55,4 +56,8 @@ test('encrypts and decrypts CPF without storing it as plaintext', () => {
   const encrypted = encryptGuestCpf('52998224725');
   assert.notEqual(encrypted, '52998224725');
   assert.equal(decryptGuestCpf(encrypted), '52998224725');
+});
+
+test('uses a dedicated HttpOnly guest access cookie name', () => {
+  assert.equal(GUEST_ACCESS_COOKIE_NAME, 'nkl_guest_access');
 });

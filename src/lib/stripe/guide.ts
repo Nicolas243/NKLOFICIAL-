@@ -35,7 +35,7 @@ export function buildGuidePurchaseCheckoutParams({
       ...(offerVariant ? { offer_variant: offerVariant } : {}),
     },
     successUrl: guestAccessToken
-      ? `${successUrl}&guest_access_token=${encodeURIComponent(guestAccessToken)}`
+      ? `${successUrl}&reference=${encodeURIComponent(`guide_purchase:${purchaseId}`)}&guest_access_token=${encodeURIComponent(guestAccessToken)}`
       : successUrl,
     cancelUrl: `${normalizedSiteUrl}/guias/renda-extra`,
   };
@@ -56,7 +56,10 @@ export function buildGuideSubscriptionCheckoutParams({
     plan: 'subscription',
     subscription_id: subscriptionId,
   });
-  if (guestAccessToken) successParams.set('guest_access_token', guestAccessToken);
+  if (guestAccessToken) {
+    successParams.set('reference', `guide_subscription:${subscriptionId}`);
+    successParams.set('guest_access_token', guestAccessToken);
+  }
   return {
     mode: 'subscription',
     lineItems: [{
