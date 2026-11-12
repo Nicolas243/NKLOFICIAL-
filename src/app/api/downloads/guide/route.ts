@@ -1,54 +1,32 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { and, eq, lt, sql } from 'drizzle-orm';
+import { cookies } from 'next/headers';
+import { and, desc, eq, lt, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
-import { guidePurchases, guideSubscriptions } from '@/db/schema';
+import { guideDownloadAttempts, guidePurchases, guideSubscriptions, userProfiles } from '@/db/schema';
 import { enforceGuideDownloadRateLimit } from '@/lib/rate-limit';
-import { getGuideAsset, GUIDE_ASSET_IDS } from '@/lib/guide-assets';
-import { createGuideAssetSignedUrl } from '@/lib/guide-storage';
+import { getGuideAsset, GUIDE_ASSET_IDS, GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET } from '@/lib/guide-assets';
+import {
+  decryptGuestCpf,
+  GUEST_ACCESS_COOKIE_NAME,
+  hashGuestAccessToken,
+  hasMatchingGuestAccessToken,
+} from '@/lib/guest-checkout';
+import { getGuestAccessKey } from '@/lib/guest-guide-access';
+import { downloadGuideAsset } from '@/lib/guide-storage';
+import { personalizeGuideAsset } from '@/lib/guide-personalizer';
+import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const PURCHASE_REFERENCE_PREFIX = 'guide_purchase:';
-const SUBSCRIPTION_REFERENCE_PREFIX = 'guide_subscription:';
 const DOWNLOAD_LIMIT_MESSAGE = 'O limite de downloads de segurança deste acesso foi atingido.';
 const INVALID_ACCESS_MESSAGE = 'Não foi possível validar este acesso.';
 const requestSchema = z.object({
   assetId: z.enum(GUIDE_ASSET_IDS),
-  provider: z.literal('hotmart').optional(),
-  external_reference: z.string().trim().min(1).optional(),
-  payment_id: z.string().trim().min(1).optional(),
-  subscription_reference: z.string().trim().min(1).optional(),
-}).superRefine((value, context) => {
-  const hasPurchase = Boolean(value.external_reference || value.payment_id);
-  const hasSubscription = Boolean(value.subscription_reference);
-  if (value.provider === 'hotmart') {
-    if (!value.payment_id?.startsWith('hotmart:')) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'O identificador da compra Hotmart é obrigatório.',
-        path: ['payment_id'],
-      });
-    }
-    return;
-  }
-  if (hasPurchase === hasSubscription) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Informe uma referência de compra ou assinatura.',
-      path: ['external_reference'],
-    });
-  }
-  if (value.external_reference && !value.payment_id) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'O identificador do pagamento é obrigatório para compras únicas.',
-      path: ['payment_id'],
-    });
-  }
+  guestAccessToken: z.string().min(20).max(200).optional(),
 });
 
 function getRequestIdentifier(request: Request): string {
@@ -57,89 +35,35 @@ function getRequestIdentifier(request: Request): string {
   return request.headers.get('x-real-ip') ?? 'unknown';
 }
 
-function getPurchaseId(externalReference: string): string | null {
-  if (!externalReference.startsWith(PURCHASE_REFERENCE_PREFIX)) return null;
-  const parsed = z.string().uuid().safeParse(externalReference.slice(PURCHASE_REFERENCE_PREFIX.length));
-  return parsed.success ? parsed.data : null;
-}
-
-async function readGuideAsset(assetId: z.infer<typeof requestSchema>['assetId']): Promise<{
-  asset: ReturnType<typeof getGuideAsset>;
-  content: ArrayBuffer;
-} | null> {
+async function readLocalGuideAsset(assetId: z.infer<typeof requestSchema>['assetId']): Promise<Buffer | null> {
   const asset = getGuideAsset(assetId);
   const candidatePaths = [
     path.join(process.cwd(), 'Conteudo de novembro', asset.filename),
     path.join(process.cwd(), asset.filename),
   ];
-  try {
-    for (const candidatePath of candidatePaths) {
-      try {
-        const file = await readFile(candidatePath);
-        const content = new ArrayBuffer(file.byteLength);
-        new Uint8Array(content).set(file);
-        return { asset, content };
-      } catch {
-        continue;
-      }
+  for (const candidatePath of candidatePaths) {
+    try {
+      return await readFile(candidatePath);
+    } catch {
+      continue;
     }
-    throw new Error('Arquivo do ativo não encontrado.');
-  } catch (error) {
-    console.error('[GUIDE_DOWNLOAD] Ativo indisponível:', error instanceof Error ? error.message : 'erro desconhecido');
-    return null;
   }
+  console.error('[GUIDE_DOWNLOAD] Ativo local indisponível.');
+  return null;
 }
 
-type PreparedGuideAsset =
-  | { asset: ReturnType<typeof getGuideAsset>; signedUrl: string }
-  | { asset: ReturnType<typeof getGuideAsset>; content: ArrayBuffer };
-
-async function prepareGuideAsset(
-  assetId: z.infer<typeof requestSchema>['assetId'],
-): Promise<PreparedGuideAsset | null> {
+async function readGuideSource(assetId: z.infer<typeof requestSchema>['assetId']): Promise<Buffer | null> {
   const asset = getGuideAsset(assetId);
-  const signedUrl = await createGuideAssetSignedUrl(asset);
-  if (signedUrl) return { asset, signedUrl };
-
-  if (process.env.NODE_ENV === 'production') {
-    return null;
-  }
-
-  const assetResult = await readGuideAsset(assetId);
-  if (!assetResult) return null;
-  return { asset: assetResult.asset, content: assetResult.content };
-}
-
-function deliverPreparedGuideAsset(
-  prepared: PreparedGuideAsset,
-  remainingDownloads: number,
-): NextResponse {
-  if ('signedUrl' in prepared) {
-    return NextResponse.json({
-      downloadUrl: prepared.signedUrl,
-      remainingDownloads,
-    }, {
-      status: 200,
-      headers: { 'Cache-Control': 'private, no-store' },
-    });
-  }
-
-  return new NextResponse(new Blob([prepared.content], { type: prepared.asset.contentType }), {
-    status: 200,
-    headers: {
-      'Cache-Control': 'private, no-store',
-      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(prepared.asset.filename)}`,
-      'Content-Type': prepared.asset.contentType,
-      'X-Downloads-Remaining': String(remainingDownloads),
-    },
-  });
+  const stored = await downloadGuideAsset(asset);
+  if (stored) return stored;
+  if (process.env.NODE_ENV === 'production') return null;
+  return readLocalGuideAsset(assetId);
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
   let parsedBody: z.infer<typeof requestSchema>;
   try {
-    const body: unknown = await request.json();
-    const parsed = requestSchema.safeParse(body);
+    const parsed = requestSchema.safeParse(await request.json());
     if (!parsed.success) {
       return NextResponse.json({ error: 'invalid_download_request', message: INVALID_ACCESS_MESSAGE }, { status: 400 });
     }
@@ -148,130 +72,209 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'invalid_json', message: INVALID_ACCESS_MESSAGE }, { status: 400 });
   }
 
+  const cookieStore = await cookies();
+  const cookieToken = cookieStore.get(GUEST_ACCESS_COOKIE_NAME)?.value;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const guestToken = parsedBody.guestAccessToken ?? (!user?.id ? cookieToken : undefined);
+
   try {
     await enforceGuideDownloadRateLimit(getRequestIdentifier(request));
   } catch (error) {
     console.error('[GUIDE_DOWNLOAD] Rate limit indisponível ou excedido:', error instanceof Error ? error.message : 'erro desconhecido');
-    const message = error instanceof Error && error.message.includes('Muitas tentativas')
-      ? error.message
-      : 'A proteção de downloads está temporariamente indisponível.';
-    const status = error instanceof Error && error.message.includes('Muitas tentativas') ? 429 : 503;
-    return NextResponse.json({ error: 'download_rate_limited', message }, { status });
+    const limited = error instanceof Error && error.message.includes('Muitas tentativas');
+    return NextResponse.json({
+      error: limited ? 'download_rate_limited' : 'download_protection_unavailable',
+      message: limited ? error.message : 'A proteção de downloads está temporariamente indisponível.',
+    }, { status: limited ? 429 : 503 });
   }
 
-  if (parsedBody.subscription_reference) {
-    if (!parsedBody.subscription_reference.startsWith(SUBSCRIPTION_REFERENCE_PREFIX)) {
-      return NextResponse.json({ error: 'invalid_subscription_reference', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
-    }
-    const [subscription] = await db.select({
-      id: guideSubscriptions.id,
-      status: guideSubscriptions.status,
-      downloadCount: guideSubscriptions.downloadCount,
-      maxDownloads: guideSubscriptions.maxDownloads,
-    }).from(guideSubscriptions)
-      .where(eq(guideSubscriptions.externalReference, parsedBody.subscription_reference))
-      .limit(1);
-    if (!subscription || subscription.status !== 'active') {
-      return NextResponse.json({ error: 'subscription_not_active', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
-    }
-    if (subscription.downloadCount >= subscription.maxDownloads) {
-      return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
-    }
-    const prepared = await prepareGuideAsset(parsedBody.assetId);
-    if (!prepared) {
-      return NextResponse.json({
-        error: 'guide_asset_unavailable',
-        message: 'Este material ainda não está disponível. Tente novamente em alguns instantes.',
-      }, { status: 503 });
-    }
-    const [updated] = await db.update(guideSubscriptions).set({
-      downloadCount: sql`${guideSubscriptions.downloadCount} + 1`,
-      lastDownloadedAt: new Date(),
-    }).where(and(
-      eq(guideSubscriptions.id, subscription.id),
-      eq(guideSubscriptions.status, 'active'),
-      lt(guideSubscriptions.downloadCount, guideSubscriptions.maxDownloads),
-    )).returning({ downloadCount: guideSubscriptions.downloadCount, maxDownloads: guideSubscriptions.maxDownloads });
-    if (!updated) {
-      return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
-    }
-    return deliverPreparedGuideAsset(prepared, updated.maxDownloads - updated.downloadCount);
-  }
-
-  if (parsedBody.provider === 'hotmart') {
-    if (!parsedBody.payment_id?.startsWith('hotmart:')) {
-      return NextResponse.json({ error: 'invalid_hotmart_reference', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
-    }
+  if (guestToken) {
     const [purchase] = await db.select({
       id: guidePurchases.id,
       status: guidePurchases.status,
-      paymentId: guidePurchases.paymentId,
-      downloadCount: guidePurchases.downloadCount,
-      maxDownloads: guidePurchases.maxDownloads,
-    }).from(guidePurchases).where(eq(guidePurchases.paymentId, parsedBody.payment_id)).limit(1);
-    if (!purchase || purchase.status !== 'approved') {
-      return NextResponse.json({ error: 'purchase_not_approved', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+      encryptedCpf: guidePurchases.encryptedCpf,
+      cpf: guidePurchases.cpf,
+      fullName: guidePurchases.guestFullName,
+      email: guidePurchases.guestEmail,
+      guestAccessTokenHash: guidePurchases.guestAccessTokenHash,
+      guestAccessTokenExpiresAt: guidePurchases.guestAccessTokenExpiresAt,
+    }).from(guidePurchases).where(eq(guidePurchases.guestAccessTokenHash, hashGuestAccessToken(guestToken))).limit(1);
+    const [subscription] = purchase ? [] : await db.select({
+      id: guideSubscriptions.id,
+      status: guideSubscriptions.status,
+      encryptedCpf: guideSubscriptions.encryptedCpf,
+      cpf: guideSubscriptions.cpf,
+      fullName: guideSubscriptions.guestFullName,
+      email: guideSubscriptions.guestEmail,
+      guestAccessTokenHash: guideSubscriptions.guestAccessTokenHash,
+      guestAccessTokenExpiresAt: guideSubscriptions.guestAccessTokenExpiresAt,
+    }).from(guideSubscriptions).where(eq(guideSubscriptions.guestAccessTokenHash, hashGuestAccessToken(guestToken))).limit(1);
+    const guestAccess = purchase ? { kind: 'purchase' as const, ...purchase } : subscription
+      ? { kind: 'subscription' as const, ...subscription }
+      : null;
+    if (!guestAccess
+      || !hasMatchingGuestAccessToken(guestToken, guestAccess.guestAccessTokenHash, guestAccess.guestAccessTokenExpiresAt)
+      || (guestAccess.kind === 'purchase' ? guestAccess.status !== 'approved' : guestAccess.status !== 'active')
+      || !guestAccess.fullName
+      || !guestAccess.email
+      || (!guestAccess.encryptedCpf && !guestAccess.cpf)) {
+      return NextResponse.json({ error: 'guide_access_not_available', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
     }
-    if (purchase.downloadCount >= purchase.maxDownloads) {
-      return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
+
+    let cpf: string;
+    try {
+      cpf = guestAccess.encryptedCpf ? decryptGuestCpf(guestAccess.encryptedCpf) : guestAccess.cpf!;
+    } catch (error) {
+      console.error('[GUIDE_DOWNLOAD] Falha ao descriptografar identidade do acesso convidado:', error instanceof Error ? error.message : 'erro desconhecido');
+      return NextResponse.json({ error: 'guide_access_not_available', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
     }
-    const prepared = await prepareGuideAsset(parsedBody.assetId);
-    if (!prepared) {
+
+    const asset = getGuideAsset(parsedBody.assetId);
+    const source = await readGuideSource(parsedBody.assetId);
+    if (!source) {
       return NextResponse.json({
         error: 'guide_asset_unavailable',
         message: 'Este material ainda não está disponível. Tente novamente em alguns instantes.',
       }, { status: 503 });
     }
-    const [updated] = await db.update(guidePurchases).set({
-      downloadCount: sql`${guidePurchases.downloadCount} + 1`,
-      lastDownloadedAt: new Date(),
-    }).where(and(
-      eq(guidePurchases.id, purchase.id),
-      eq(guidePurchases.status, 'approved'),
-      eq(guidePurchases.paymentId, parsedBody.payment_id),
-      lt(guidePurchases.downloadCount, guidePurchases.maxDownloads),
-    )).returning({ downloadCount: guidePurchases.downloadCount, maxDownloads: guidePurchases.maxDownloads });
-    if (!updated) {
+
+    let personalized;
+    try {
+      personalized = await personalizeGuideAsset(asset, source, {
+        fullName: guestAccess.fullName,
+        cpf,
+        email: guestAccess.email,
+        shortId: guestAccess.id.slice(0, 8),
+      });
+    } catch (error) {
+      console.error('[GUIDE_DOWNLOAD] Falha ao personalizar ativo convidado:', error instanceof Error ? error.message : 'erro desconhecido');
+      return NextResponse.json({
+        error: 'guide_personalization_failed',
+        message: 'Não foi possível preparar este material agora. Tente novamente em alguns instantes.',
+      }, { status: 503 });
+    }
+
+    const accessKey = getGuestAccessKey(guestAccess.kind, guestAccess.id);
+    const [attempt] = await db.insert(guideDownloadAttempts).values({
+      accessKey,
+      assetId: parsedBody.assetId,
+      attemptCount: 1,
+      lastAttemptAt: new Date(),
+      updatedAt: new Date(),
+    }).onConflictDoUpdate({
+      target: [guideDownloadAttempts.accessKey, guideDownloadAttempts.assetId],
+      set: {
+        attemptCount: sql`${guideDownloadAttempts.attemptCount} + 1`,
+        lastAttemptAt: new Date(),
+        updatedAt: new Date(),
+      },
+      setWhere: lt(guideDownloadAttempts.attemptCount, GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET),
+    }).returning({ attemptCount: guideDownloadAttempts.attemptCount });
+    if (!attempt) {
       return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
     }
-    return deliverPreparedGuideAsset(prepared, updated.maxDownloads - updated.downloadCount);
+
+    return new NextResponse(new Blob([new Uint8Array(personalized.content)], { type: personalized.contentType }), {
+      status: 200,
+      headers: {
+        'Cache-Control': 'private, no-store',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(personalized.filename)}`,
+        'Content-Type': personalized.contentType,
+        'X-Downloads-Remaining': String(GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET - attempt.attemptCount),
+      },
+    });
   }
 
-  const purchaseId = parsedBody.external_reference ? getPurchaseId(parsedBody.external_reference) : null;
-  if (!purchaseId || !parsedBody.payment_id) {
-    return NextResponse.json({ error: 'invalid_purchase_reference', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+  if (!user?.id) {
+    return NextResponse.json({ error: 'authentication_required', message: 'Entre na sua conta para baixar seus materiais.' }, { status: 401 });
   }
+
+  const [profile] = await db.select({
+    fullName: userProfiles.fullName,
+    email: userProfiles.email,
+  }).from(userProfiles).where(eq(userProfiles.id, user.id)).limit(1);
   const [purchase] = await db.select({
     id: guidePurchases.id,
-    status: guidePurchases.status,
-    paymentId: guidePurchases.paymentId,
+    cpf: guidePurchases.cpf,
     downloadCount: guidePurchases.downloadCount,
     maxDownloads: guidePurchases.maxDownloads,
-  }).from(guidePurchases).where(eq(guidePurchases.id, purchaseId)).limit(1);
-  if (!purchase || purchase.status !== 'approved' || purchase.paymentId !== parsedBody.payment_id) {
-    return NextResponse.json({ error: 'purchase_not_approved', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+  }).from(guidePurchases)
+    .where(and(
+      eq(guidePurchases.userId, user.id),
+      eq(guidePurchases.status, 'approved'),
+      lt(guidePurchases.downloadCount, guidePurchases.maxDownloads),
+    ))
+    .orderBy(desc(guidePurchases.createdAt))
+    .limit(1);
+  const [subscription] = purchase ? [] : await db.select({
+    id: guideSubscriptions.id,
+    cpf: guideSubscriptions.cpf,
+    downloadCount: guideSubscriptions.downloadCount,
+    maxDownloads: guideSubscriptions.maxDownloads,
+  }).from(guideSubscriptions)
+    .where(and(
+      eq(guideSubscriptions.userId, user.id),
+      eq(guideSubscriptions.status, 'active'),
+      lt(guideSubscriptions.downloadCount, guideSubscriptions.maxDownloads),
+    ))
+    .orderBy(desc(guideSubscriptions.createdAt))
+    .limit(1);
+
+  const access = purchase ? { kind: 'purchase' as const, ...purchase } : subscription
+    ? { kind: 'subscription' as const, ...subscription }
+    : null;
+  if (!access || !access.cpf || !profile?.fullName || !profile.email) {
+    return NextResponse.json({ error: 'guide_access_not_available', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
   }
-  if (purchase.downloadCount >= purchase.maxDownloads) {
-    return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
-  }
-  const prepared = await prepareGuideAsset(parsedBody.assetId);
-  if (!prepared) {
+
+  const asset = getGuideAsset(parsedBody.assetId);
+  const source = await readGuideSource(parsedBody.assetId);
+  if (!source) {
     return NextResponse.json({
       error: 'guide_asset_unavailable',
       message: 'Este material ainda não está disponível. Tente novamente em alguns instantes.',
     }, { status: 503 });
   }
-  const [updated] = await db.update(guidePurchases).set({
-    downloadCount: sql`${guidePurchases.downloadCount} + 1`,
+
+  let personalized;
+  try {
+    personalized = await personalizeGuideAsset(asset, source, {
+      fullName: profile.fullName,
+      cpf: access.cpf,
+      email: profile.email,
+      shortId: user.id.slice(0, 8),
+    });
+  } catch (error) {
+    console.error('[GUIDE_DOWNLOAD] Falha ao personalizar ativo:', error instanceof Error ? error.message : 'erro desconhecido');
+    return NextResponse.json({
+      error: 'guide_personalization_failed',
+      message: 'Não foi possível preparar este material agora. Tente novamente em alguns instantes.',
+    }, { status: 503 });
+  }
+
+  const table = access.kind === 'purchase' ? guidePurchases : guideSubscriptions;
+  const [updated] = await db.update(table).set({
+    downloadCount: sql`${table.downloadCount} + 1`,
     lastDownloadedAt: new Date(),
   }).where(and(
-    eq(guidePurchases.id, purchase.id),
-    eq(guidePurchases.status, 'approved'),
-    eq(guidePurchases.paymentId, parsedBody.payment_id),
-    lt(guidePurchases.downloadCount, guidePurchases.maxDownloads),
-  )).returning({ downloadCount: guidePurchases.downloadCount, maxDownloads: guidePurchases.maxDownloads });
+    eq(table.id, access.id),
+    lt(table.downloadCount, table.maxDownloads),
+  )).returning({
+    downloadCount: table.downloadCount,
+    maxDownloads: table.maxDownloads,
+  });
   if (!updated) {
     return NextResponse.json({ error: 'download_limit_reached', message: DOWNLOAD_LIMIT_MESSAGE }, { status: 403 });
   }
-  return deliverPreparedGuideAsset(prepared, updated.maxDownloads - updated.downloadCount);
+
+  return new NextResponse(new Blob([new Uint8Array(personalized.content)], { type: personalized.contentType }), {
+    status: 200,
+    headers: {
+      'Cache-Control': 'private, no-store',
+      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(personalized.filename)}`,
+      'Content-Type': personalized.contentType,
+      'X-Downloads-Remaining': String(updated.maxDownloads - updated.downloadCount),
+    },
+  });
 }

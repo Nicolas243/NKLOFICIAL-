@@ -1,4 +1,3 @@
-import { timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
@@ -6,20 +5,13 @@ import { db } from '@/db';
 import { guidePurchases, guideSubscriptions } from '@/db/schema';
 import {
   GUEST_ACCESS_COOKIE_NAME,
-  hashGuestAccessToken,
-  isGuestAccessTokenValid,
+  hasMatchingGuestAccessToken,
 } from '@/lib/guest-checkout';
+import { GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET } from '@/lib/guide-assets';
 import { resolveGuestGuideStatus } from '@/lib/guest-guide-status';
 import { getStripeReference } from '@/lib/stripe/webhook-helpers';
 
 const ACCESS_COOKIE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
-
-function hasMatchingToken(token: string, tokenHash: string | null, expiresAt: Date | null): boolean {
-  if (!tokenHash || !expiresAt || !isGuestAccessTokenValid(expiresAt)) return false;
-  const actualHash = Buffer.from(hashGuestAccessToken(token), 'hex');
-  const expectedHash = Buffer.from(tokenHash, 'hex');
-  return actualHash.length === expectedHash.length && timingSafeEqual(actualHash, expectedHash);
-}
 
 function invalidAccessResponse(): NextResponse {
   return NextResponse.json({ error: 'access_not_found', message: 'Não foi possível confirmar este acesso.' }, { status: 404 });
@@ -47,13 +39,13 @@ export async function GET(request: Request): Promise<NextResponse> {
       downloadCount: guidePurchases.downloadCount,
       maxDownloads: guidePurchases.maxDownloads,
     }).from(guidePurchases).where(eq(guidePurchases.id, reference.id)).limit(1);
-    if (!purchase || !hasMatchingToken(token, purchase.guestAccessTokenHash, purchase.guestAccessTokenExpiresAt)) {
+    if (!purchase || !hasMatchingGuestAccessToken(token, purchase.guestAccessTokenHash, purchase.guestAccessTokenExpiresAt)) {
       return invalidAccessResponse();
     }
 
     const response = NextResponse.json({
       status: resolveGuestGuideStatus('purchase', purchase.status),
-      remainingDownloads: Math.max(purchase.maxDownloads - purchase.downloadCount, 0),
+      remainingDownloads: GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET,
     });
     response.cookies.set({
       name: GUEST_ACCESS_COOKIE_NAME,
@@ -74,13 +66,13 @@ export async function GET(request: Request): Promise<NextResponse> {
     downloadCount: guideSubscriptions.downloadCount,
     maxDownloads: guideSubscriptions.maxDownloads,
   }).from(guideSubscriptions).where(eq(guideSubscriptions.id, reference.id)).limit(1);
-  if (!subscription || !hasMatchingToken(token, subscription.guestAccessTokenHash, subscription.guestAccessTokenExpiresAt)) {
+  if (!subscription || !hasMatchingGuestAccessToken(token, subscription.guestAccessTokenHash, subscription.guestAccessTokenExpiresAt)) {
     return invalidAccessResponse();
   }
 
   const response = NextResponse.json({
     status: resolveGuestGuideStatus('subscription', subscription.status),
-    remainingDownloads: Math.max(subscription.maxDownloads - subscription.downloadCount, 0),
+    remainingDownloads: GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET,
   });
   response.cookies.set({
     name: GUEST_ACCESS_COOKIE_NAME,

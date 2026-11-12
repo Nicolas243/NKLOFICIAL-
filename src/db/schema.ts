@@ -344,6 +344,22 @@ export const guideSubscriptions = pgTable('guide_subscriptions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const guideDownloadAttempts = pgTable(
+  'guide_download_attempts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    accessKey: varchar('access_key', { length: 180 }).notNull(),
+    assetId: varchar('asset_id', { length: 80 }).notNull(),
+    attemptCount: integer('attempt_count').notNull().default(0),
+    lastAttemptAt: timestamp('last_attempt_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    unique('guide_download_attempts_access_asset_unique').on(table.accessKey, table.assetId),
+  ],
+);
+
 export const guideOfferEvents = pgTable('guide_offer_events', {
   id: uuid('id').primaryKey().defaultRandom(),
   experiment: varchar('experiment', { length: 40 }).notNull(),

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { GuideAsset } from '@/lib/guide-assets';
 import type { GuestGuideStatus } from '@/lib/guest-guide-status';
+import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
 
 type Props = {
   reference: string;
@@ -13,9 +14,10 @@ type Props = {
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_ATTEMPTS = 10;
 
-export function GuestGuideStatus({ reference, guestAccessToken }: Props) {
+export function GuestGuideStatus({ reference, guestAccessToken, assets }: Props) {
   const [status, setStatus] = useState<GuestGuideStatus>('pending');
   const [message, setMessage] = useState<string | null>(null);
+  const [remainingDownloads, setRemainingDownloads] = useState(2);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,13 +34,14 @@ export function GuestGuideStatus({ reference, guestAccessToken }: Props) {
         const response = await fetch(`/api/payments/guide-status?${query.toString()}`, {
           cache: 'no-store',
         });
-        const payload: { status?: GuestGuideStatus; message?: string } = await response.json().catch(() => ({}));
+        const payload: { status?: GuestGuideStatus; message?: string; remainingDownloads?: number } = await response.json().catch(() => ({}));
         if (cancelled) return;
         if (!response.ok || !payload.status) {
           setMessage(payload.message ?? 'Não foi possível confirmar este acesso.');
           return;
         }
         setStatus(payload.status);
+        if (typeof payload.remainingDownloads === 'number') setRemainingDownloads(payload.remainingDownloads);
         if (payload.status === 'pending' && attempts < MAX_POLL_ATTEMPTS) {
           timer = window.setTimeout(() => void poll(), POLL_INTERVAL_MS);
         } else if (payload.status === 'pending') {
@@ -71,7 +74,12 @@ export function GuestGuideStatus({ reference, guestAccessToken }: Props) {
       <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-8">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Pagamento confirmado</p>
         <h1 className="mt-3 font-playfair text-4xl font-bold">Seu acesso foi liberado.</h1>
-        <p className="mt-4 leading-relaxed text-foreground/75">Estamos preparando os materiais personalizados. Eles aparecerão aqui em instantes.</p>
+        <p className="mt-4 leading-relaxed text-foreground/75">Seus materiais personalizados estão disponíveis abaixo.</p>
+        <GuideAssetDownloads
+          assets={assets}
+          initialRemainingDownloads={remainingDownloads}
+          accessToken={guestAccessToken}
+        />
         {message && <p className="mt-4 text-sm text-foreground/70" role="status">{message}</p>}
       </section>
     );

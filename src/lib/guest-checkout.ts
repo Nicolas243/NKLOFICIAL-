@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
+import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { isValidCpf, normalizeCpf } from '@/lib/guide-personalization';
 
@@ -76,6 +76,18 @@ export function hashGuestAccessToken(token: string): string {
 
 export function isGuestAccessTokenValid(expiresAt: Date, now = new Date()): boolean {
   return expiresAt.getTime() > now.getTime();
+}
+
+export function hasMatchingGuestAccessToken(
+  token: string,
+  tokenHash: string | null,
+  expiresAt: Date | null,
+  now = new Date(),
+): boolean {
+  if (!tokenHash || !expiresAt || !isGuestAccessTokenValid(expiresAt, now)) return false;
+  const actualHash = Buffer.from(hashGuestAccessToken(token), 'hex');
+  const expectedHash = Buffer.from(tokenHash, 'hex');
+  return actualHash.length === expectedHash.length && timingSafeEqual(actualHash, expectedHash);
 }
 
 export function encryptGuestCpf(cpf: string): string {
