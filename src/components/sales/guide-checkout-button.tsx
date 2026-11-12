@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { trackOfferFunnelEvent } from '@/lib/analytics';
-import { buildLoginPath, type GuideResumeIntent } from '@/lib/auth/return-intent';
+import type { GuideResumeIntent } from '@/lib/auth/return-intent';
 
 type CheckoutResponse = {
   error?: string;
@@ -25,6 +25,8 @@ export function GuideCheckoutButton({
 }: GuideCheckoutButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [cpfConsentConfirmed, setCpfConsentConfirmed] = useState(false);
   const cpfInputRef = useRef<HTMLInputElement>(null);
@@ -43,14 +45,16 @@ export function GuideCheckoutButton({
       const response = await fetch('/api/payments/create-guide-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offerVariant, cpf, cpfConsentConfirmed }),
+        body: JSON.stringify({
+          offerVariant,
+          fullName,
+          email,
+          cpf,
+          cpfConsentConfirmed,
+        }),
       });
       const payload: CheckoutResponse = await response.json();
       if (!response.ok) {
-        if (response.status === 401 && payload.error === 'authentication_required') {
-          window.location.assign(buildLoginPath('/guias/renda-extra', 'purchase'));
-          return;
-        }
         setMessage(payload.message ?? 'Não foi possível iniciar o checkout.');
         return;
       }
@@ -79,6 +83,29 @@ export function GuideCheckoutButton({
       >
         {isLoading ? 'Preparando checkout...' : label}
       </button>
+      <label htmlFor="guide-purchase-name" className="mt-4 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
+        Nome completo
+      </label>
+      <input
+        id="guide-purchase-name"
+        value={fullName}
+        onChange={(event) => setFullName(event.target.value)}
+        placeholder="Seu nome completo"
+        autoComplete="name"
+        className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+      />
+      <label htmlFor="guide-purchase-email" className="mt-3 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
+        E-mail para receber o acesso
+      </label>
+      <input
+        id="guide-purchase-email"
+        type="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="voce@exemplo.com"
+        autoComplete="email"
+        className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+      />
       <label htmlFor="guide-purchase-cpf" className="mt-4 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
         CPF para personalizar os materiais
       </label>

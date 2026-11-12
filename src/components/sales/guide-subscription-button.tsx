@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { trackOfferFunnelEvent } from '@/lib/analytics';
-import { buildLoginPath, type GuideResumeIntent } from '@/lib/auth/return-intent';
+import type { GuideResumeIntent } from '@/lib/auth/return-intent';
 
 type Props = {
   offerVariant: string;
@@ -23,6 +23,8 @@ export function GuideSubscriptionButton({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [cpfConsentConfirmed, setCpfConsentConfirmed] = useState(false);
   const cpfInputRef = useRef<HTMLInputElement>(null);
@@ -41,14 +43,16 @@ export function GuideSubscriptionButton({
       const response = await fetch('/api/payments/create-guide-subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offerVariant, cpf, cpfConsentConfirmed }),
+        body: JSON.stringify({
+          offerVariant,
+          fullName,
+          email,
+          cpf,
+          cpfConsentConfirmed,
+        }),
       });
       const payload: SubscriptionResponse = await response.json();
       if (!response.ok || !payload.checkoutUrl) {
-        if (response.status === 401 && payload.error === 'authentication_required') {
-          window.location.assign(buildLoginPath('/guias/renda-extra', 'subscription'));
-          return;
-        }
         setMessage(payload.message ?? 'Não foi possível iniciar a assinatura.');
         return;
       }
@@ -62,6 +66,29 @@ export function GuideSubscriptionButton({
 
   return (
     <div>
+      <label htmlFor="guide-subscription-name" className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
+        Nome completo
+      </label>
+      <input
+        id="guide-subscription-name"
+        value={fullName}
+        onChange={(event) => setFullName(event.target.value)}
+        placeholder="Seu nome completo"
+        autoComplete="name"
+        className="mb-3 min-h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+      />
+      <label htmlFor="guide-subscription-email" className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
+        E-mail para receber o acesso
+      </label>
+      <input
+        id="guide-subscription-email"
+        type="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="voce@exemplo.com"
+        autoComplete="email"
+        className="mb-3 min-h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+      />
       <label htmlFor="guide-subscription-cpf" className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-foreground/60">
         CPF para personalizar os materiais
       </label>

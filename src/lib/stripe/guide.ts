@@ -9,14 +9,17 @@ import type { CreateCheckoutSessionParams } from './checkout';
 type GuideCheckoutBase = {
   siteUrl: string;
   offerVariant?: string;
+  guestAccessToken?: string;
 };
 
 export function buildGuidePurchaseCheckoutParams({
   purchaseId,
   siteUrl,
   offerVariant,
+  guestAccessToken,
 }: GuideCheckoutBase & { purchaseId: string }): CreateCheckoutSessionParams {
   const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
+  const successUrl = `${normalizedSiteUrl}/guias/renda-extra/sucesso?session_id={CHECKOUT_SESSION_ID}`;
   return {
     mode: 'payment',
     lineItems: [{
@@ -31,7 +34,9 @@ export function buildGuidePurchaseCheckoutParams({
       reference: `guide_purchase:${purchaseId}`,
       ...(offerVariant ? { offer_variant: offerVariant } : {}),
     },
-    successUrl: `${normalizedSiteUrl}/guias/renda-extra/sucesso`,
+    successUrl: guestAccessToken
+      ? `${successUrl}&guest_access_token=${encodeURIComponent(guestAccessToken)}`
+      : successUrl,
     cancelUrl: `${normalizedSiteUrl}/guias/renda-extra`,
   };
 }
@@ -41,11 +46,17 @@ export function buildGuideSubscriptionCheckoutParams({
   siteUrl,
   payerEmail,
   offerVariant,
+  guestAccessToken,
 }: GuideCheckoutBase & {
   subscriptionId: string;
   payerEmail: string;
 }): CreateCheckoutSessionParams {
   const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
+  const successParams = new URLSearchParams({
+    plan: 'subscription',
+    subscription_id: subscriptionId,
+  });
+  if (guestAccessToken) successParams.set('guest_access_token', guestAccessToken);
   return {
     mode: 'subscription',
     lineItems: [{
@@ -61,7 +72,7 @@ export function buildGuideSubscriptionCheckoutParams({
       reference: `guide_subscription:${subscriptionId}`,
       ...(offerVariant ? { offer_variant: offerVariant } : {}),
     },
-    successUrl: `${normalizedSiteUrl}/guias/renda-extra/sucesso?plan=subscription&subscription_id=${encodeURIComponent(subscriptionId)}`,
+    successUrl: `${normalizedSiteUrl}/guias/renda-extra/sucesso?${successParams.toString()}`,
     cancelUrl: `${normalizedSiteUrl}/guias/renda-extra`,
     customerEmail: payerEmail,
   };
