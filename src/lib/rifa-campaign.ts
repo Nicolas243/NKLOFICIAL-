@@ -47,13 +47,14 @@ export function getDismissalExpiry(now: number): number {
 
 export async function trackRifaCampaignEvent(input: RifaCampaignEvent): Promise<void> {
   try {
+    const eventType = input.action === 'impression' ? 'impression' : 'click';
     const response = await fetch('/api/sales/offer-events', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         experiment: 'rifa-livros',
         variant: input.surface,
-        eventType: input.action,
+        eventType,
       }),
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);

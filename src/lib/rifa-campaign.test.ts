@@ -47,3 +47,17 @@ test('does not throw when aggregate event tracking fails', async () => {
   }));
   globalThis.fetch = originalFetch;
 });
+
+test('normalizes campaign actions to the offer-events contract', async () => {
+  const originalFetch = globalThis.fetch;
+  let payload: Record<string, string> | undefined;
+  globalThis.fetch = async (_input, init) => {
+    payload = JSON.parse(String(init?.body)) as Record<string, string>;
+    return new Response(null, { status: 201 });
+  };
+  await trackRifaCampaignEvent({ surface: 'card', action: 'participate' });
+  assert.equal(payload?.experiment, 'rifa-livros');
+  assert.equal(payload?.variant, 'card');
+  assert.equal(payload?.eventType, 'click');
+  globalThis.fetch = originalFetch;
+});
