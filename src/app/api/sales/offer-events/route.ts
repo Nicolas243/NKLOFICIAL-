@@ -17,14 +17,17 @@ export const dynamic = 'force-dynamic';
 
 const EXIT_POPUP_EXPERIMENT = 'exit-popup';
 const NATIVE_CARD_EXPERIMENT = 'native-card';
+const RIFA_CAMPAIGN_EXPERIMENT = 'rifa-livros';
 const EXIT_POPUP_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const NATIVE_CARD_VARIANTS = ['0', '1', '2', '3', '4', '5'] as const;
+const RIFA_CAMPAIGN_VARIANTS = ['banner', 'card', 'exit_popup'] as const;
 const MINIMUM_EXPOSURES_PER_VARIANT = 40;
 const experimentVariants = {
   [EXIT_POPUP_EXPERIMENT]: EXIT_POPUP_VARIANTS,
   [NATIVE_CARD_EXPERIMENT]: NATIVE_CARD_VARIANTS,
   [PROGRAM_SECONDARY_CTA_EXPERIMENT]: PROGRAM_SECONDARY_CTA_VARIANTS,
   [GUIDE_PAGE_CTA_EXPERIMENT]: GUIDE_PAGE_CTA_VARIANTS,
+  [RIFA_CAMPAIGN_EXPERIMENT]: RIFA_CAMPAIGN_VARIANTS,
 } as const;
 
 type ExperimentName = keyof typeof experimentVariants;
@@ -35,8 +38,9 @@ const eventSchema = z.object({
     NATIVE_CARD_EXPERIMENT,
     PROGRAM_SECONDARY_CTA_EXPERIMENT,
     GUIDE_PAGE_CTA_EXPERIMENT,
+    RIFA_CAMPAIGN_EXPERIMENT,
   ]),
-  variant: z.string().regex(/^[0-9]+$/u).max(64),
+  variant: z.string().max(64),
   eventType: z.enum(['impression', 'click', 'checkout', 'conversion']),
 }).superRefine((value, context) => {
   if (!experimentVariants[value.experiment].includes(value.variant as never)) {

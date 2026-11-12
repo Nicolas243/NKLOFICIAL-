@@ -10,12 +10,14 @@ import { PwaInstallReminder, PwaRegister } from '@/components/pwa'
 import { PrivacyScripts } from '@/components/privacy-scripts'
 import { SiteGuidance } from '@/components/site-guidance'
 import { SpotlightTutorial } from '@/components/ui/spotlight-tutorial'
+import { RifaCampaignShell } from '@/components/rifa-campaign/rifa-campaign-shell'
+import { absoluteSiteUrl, SITE_URL } from '@/lib/site'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nkl.com.br'),
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: '/nkl.png',
     shortcut: '/nkl.png',
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
     ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION } }
     : {}),
   alternates: {
-    canonical: '/',
+    canonical: absoluteSiteUrl('/'),
   },
   openGraph: {
     type: 'website',
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
     siteName: 'Portal NKL',
     title: 'Portal NKL | Luthieria, Cordas e Oportunidades',
     description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
-    url: '/',
+    url: absoluteSiteUrl('/'),
   },
   twitter: {
     card: 'summary',
@@ -62,8 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@graph': [
-            { '@type': 'Organization', name: 'Portal NKL', url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nkl.com.br' },
-            { '@type': 'WebSite', name: 'Portal NKL', url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://nkl.com.br' },
+            { '@type': 'Organization', name: 'Portal NKL', url: SITE_URL },
+            { '@type': 'WebSite', name: 'Portal NKL', url: SITE_URL },
           ],
         }} />
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
@@ -75,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col lg:pt-[77px]">
             {children}
           </main>
+          <RifaCampaignShell />
           <Footer />
         </ThemeProvider>
       </body>

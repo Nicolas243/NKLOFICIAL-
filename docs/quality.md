@@ -37,6 +37,29 @@
 
 Para cada alteração, registre a reprodução, o arquivo afetado, a validação focada e o gate geral executado. Não silencie erros, não reduza cobertura para fazer o pipeline passar e não confunda warnings legados com validação completa.
 
+## Autenticação e inventário publicitário — validação focada
+
+- Testes unitários:
+  `node --import tsx --test src/lib/auth/__tests__/return-intent.test.ts src/lib/auth/__tests__/errors.test.ts src/lib/__tests__/ad-inventory.test.ts`.
+- E2E: `npm run test:e2e`, incluindo retorno do checkout ao login, contexto
+  musical/Renda Extra, a rota `/anuncie`, sitemap e faixas roláveis em 390px.
+- Gate completo: `npm run verify`.
+
+## Checkout convidado e entrega personalizada — validação focada
+
+- Testes unitários:
+  `node --import tsx --test src/lib/__tests__/guest-guide-access.test.ts src/lib/__tests__/guest-guide-status.test.ts src/lib/email/resend.test.ts src/lib/stripe/guide.test.ts`.
+- A rota de download deve aceitar somente token válido e pedido aprovado/assinatura ativa;
+  cada material permite duas tentativas e a terceira deve retornar `403`.
+- A recuperação por e-mail usa resposta genérica para e-mails existentes e inexistentes;
+  em local o modo `preview` não faz chamadas externas.
+- Nenhuma migration remota ou deploy foi executado nesta validação. Antes de produção,
+  revisar `drizzle/0038_guest_checkout_access.sql` e `drizzle/0039_guest_download_attempts.sql`.
+- A validação local pode emitir os avisos conhecidos de acesso dinâmico ao
+  filesystem em `/api/downloads/guide` e de diretórios sem banco configurado.
+  O lint global também mantém somente os 12 warnings legados em `AntigoNKL/`;
+  nenhum desses avisos representa segredo, migration remota ou deploy.
+
 ## SEO de renda extra — validação focada
 
 - `npx playwright test e2e/seo.spec.ts`: 3 testes passaram em 2026-11-09.
@@ -44,6 +67,13 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
   URLs absolutas no sitemap e bloqueio das áreas privadas em `robots.txt`.
 - O build continua emitindo apenas os avisos conhecidos de acesso dinâmico ao filesystem
   em `/api/downloads/guide` e de diretórios sem dados de lojas/professores.
+
+## Campanha externa da rifa — validação focada
+
+- Testes unitários: `npx tsx --test src/lib/rifa-campaign.test.ts` (5 testes).
+- Lint focado: `npx eslint src/app/layout.tsx src/app/api/sales/offer-events/route.ts src/components/rifa-campaign src/lib/rifa-campaign.ts`.
+- E2E: `npx playwright test e2e/rifa-campaign.spec.ts` cobre o card público, links externos seguros e exclusão da área de login.
+- A campanha usa o experimento `rifa-livros` no endpoint existente de eventos e não aparece em rotas privadas/transacionais.
 
 ## Oportunidades — validação focada
 
@@ -82,12 +112,35 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
   inválidos, o evento `checkout` e a seleção limitada a `0|1|2`.
 - O experimento `program-secondary-cta` não altera o card inicial nem declara vencedor com o
   volume atual; `conversion` só é escrito após confirmação de pagamento.
+- O experimento `guide-page-cta` é isolado do CTA do catálogo, aceita somente as variantes `0..4`
+  e mantém os preços e a semântica de pacote avulso/assinatura. A cobertura E2E em
+  `e2e/guide-offer.spec.ts` valida as variantes explícitas `0` e `4`, fallback para atribuição
+  inválida, os cinco materiais, os dois modos de acesso e a atribuição de checkout sem pagamento
+  real. A comparação deve aguardar pelo menos 40 impressões por variante antes de interpretar
+  impressão, clique, checkout e conversão.
 - Os eventos de GA/PostHog dependem de consentimento aceito; falhas de telemetria são registradas
   no console e não impedem abrir o modal ou iniciar o checkout.
 - A transparência de parceria na página `/programas` permanece recolhida por padrão e pode ser
   aberta por “Sobre links de parceria”.
 - Durante o tutorial, clicar no elemento destacado encerra o tutorial sem impedir a ação original
   do elemento; o fluxo é coberto pelo teste E2E do catálogo.
+
+## Catálogo — tutorial, compartilhamento e consentimento
+
+- O tutorial sugere a abertura sem aplicar blur automaticamente; cada área usa estado local
+  separado e o clique no alvo preserva a ação original.
+- O compartilhamento usa a URL canônica da página e remove parâmetros de afiliado e rastreamento.
+  O controle flutuante fica acima do botão do WhatsApp.
+- O compartilhamento geral do catálogo aponta para a página editorial `/programas/[slug]`; os
+  três projetos específicos do Alligner preservam seus URLs individuais de vaga.
+- A página completa e o modal exibem “Como funciona e qual é o passo a passo?” com as etapas do
+  guia prático abertas por padrão.
+- Os eventos de funil só são enviados depois de `nkl_privacy_consent=accepted`; os layouts de
+  renda extra não carregam um segundo Google Analytics.
+- A árvore atual contém 33 famílias de páginas públicas, contando uma vez cada rota dinâmica e
+  excluindo `admin`, `dashboard`, `perfil`, `checkout`, `api` e superfícies internas de autenticação.
+- Após a migração do tutorial não bloqueante, `npm run test:e2e -- e2e/program-catalog.spec.ts`
+  passou com 13 testes; 1 cenário Hotmart foi ignorado por credencial local ausente.
 
 ## Catálogo — onda de correções da atribuição (2026-11-09)
 
@@ -108,3 +161,27 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
 - `npm run verify`: passou (lint, tipagem e build); permanecem os 12 warnings legados em `AntigoNKL/` e os avisos conhecidos de acesso dinâmico ao filesystem e diretórios sem dados locais.
 - Deploy aprovado pelo usuário com `npx vercel --prod --yes`: `dpl_G8gynoBbqWQzx6PHD9PgNjzTwfNx`, estado `READY`, produção em `https://nkloficial.com.br`.
 - Verificação HTTP pós-deploy: `/programas`, `/programas/monetizacao-atencao-web`, `/programas/mercado-pago` e `/guias/renda-extra` retornaram HTTP 200. O convite do Buy Me a Coffee apareceu somente na oportunidade correspondente e o resumo de parceria permaneceu disponível nas páginas de oportunidade.
+
+## Guias personalizados — validação local
+
+- `npx tsx --test` com variáveis locais fictícias: 41 testes passaram.
+- `npm run lint`: passou com 12 warnings legados em `AntigoNKL/`.
+- `npm run typecheck`: passou após regenerar os tipos `.next` que ainda apontavam para o handler Hotmart removido.
+- `npm run build`: passou; permanecem apenas os avisos conhecidos de acesso ao filesystem local em `/api/downloads/guide`.
+- A página local do guia exibiu CPF e consentimento após hidratação; o endpoint de download respondeu `401` sem sessão.
+- A entrega agora é direta e personalizada: não retorna URL assinada, não usa Hotmart e não expõe CPF em URL, metadata Stripe ou analytics.
+
+## Catálogo — compartilhamento e passo a passo (2026-11-10)
+
+- `npx tsx --test src/lib/__tests__/share-url.test.ts`: 5 testes passaram, incluindo a
+  preservação de URLs específicos dos projetos do Alligner.
+- E2E focado: 2 testes passaram para o passo a passo da página completa e o compartilhamento
+  canônico da oportunidade; o caminho específico do Alligner é coberto pelo teste unitário do
+  destino.
+- `npm run verify`: passou com os 12 warnings legados em `AntigoNKL/` e os avisos conhecidos
+  de build.
+- Deploy Vercel `dpl_DaZRjWAjHP2B4hzuat2tX7vHv9P5`: estado `READY`, produção em
+  `https://nkloficial.com.br`.
+- Smoke test pós-deploy: `/programas`, `/programas/aligner`, `/programas/mercado-pago` e
+  `/api/health` retornaram HTTP 200. `/api/health/config` retornou 503 porque
+  `SUPABASE_SERVICE_ROLE_KEY` está ausente no ambiente de produção; nenhum segredo foi alterado.
