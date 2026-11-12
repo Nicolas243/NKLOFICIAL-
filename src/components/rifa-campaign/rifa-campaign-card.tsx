@@ -8,7 +8,7 @@ export function RifaCampaignCard() {
       <h2 id="rifa-campaign-card-title" className="mt-2 font-playfair text-2xl font-bold">{RIFA_CAMPAIGN_COPY.card.title}</h2>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/75">{RIFA_CAMPAIGN_COPY.card.description}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <RifaCampaignLink surface="card" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar por R$ 3</RifaCampaignLink>
+        <RifaCampaignLink surface="card" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar</RifaCampaignLink>
         <RifaCampaignLink surface="card" action="rules" className="rounded-lg border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">Ver prêmios e regras</RifaCampaignLink>
       </div>
     </section>

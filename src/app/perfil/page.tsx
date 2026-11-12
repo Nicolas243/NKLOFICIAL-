@@ -13,6 +13,7 @@ import {
   getFavoriteBusinesses,
   getFavoriteProfessors,
 } from '@/actions/favorites';
+import { loadOptionalProfileData } from '@/lib/profile-optional-data';
 
 export const metadata = {
   title: 'Perfil de Luthier | Portal NKL',
@@ -33,31 +34,40 @@ export default async function PerfilPage() {
     .from(userProfiles)
     .where(eq(userProfiles.id, user.id))
     .limit(1);
-  const [guidePurchase, guideSubscription] = await Promise.all([
-    db.select({
-      downloadCount: guidePurchases.downloadCount,
-      maxDownloads: guidePurchases.maxDownloads,
-    }).from(guidePurchases).where(and(
-      eq(guidePurchases.userId, user.id),
-      eq(guidePurchases.status, 'approved'),
-    )).limit(1),
-    db.select({
-      downloadCount: guideSubscriptions.downloadCount,
-      maxDownloads: guideSubscriptions.maxDownloads,
-    }).from(guideSubscriptions).where(and(
-      eq(guideSubscriptions.userId, user.id),
-      eq(guideSubscriptions.status, 'active'),
-    )).limit(1),
-  ]);
-  const guideAccess = guidePurchase[0] ?? guideSubscription[0] ?? null;
-
-  const [favoriteStrings, favoriteLuthiers, favoriteBusinesses, favoriteProfessors] =
-    await Promise.all([
-      getFavoriteStrings(user.id),
-      getFavoriteLuthiers(user.id),
-      getFavoriteBusinesses(user.id),
-      getFavoriteProfessors(user.id),
-    ]);
+  const {
+    guideAccess,
+    favoriteStrings,
+    favoriteLuthiers,
+    favoriteBusinesses,
+    favoriteProfessors,
+  } = await loadOptionalProfileData({
+    readGuideAccess: async () => {
+      const [guidePurchase, guideSubscription] = await Promise.all([
+        db.select({
+          downloadCount: guidePurchases.downloadCount,
+          maxDownloads: guidePurchases.maxDownloads,
+        }).from(guidePurchases).where(and(
+          eq(guidePurchases.userId, user.id),
+          eq(guidePurchases.status, 'approved'),
+        )).limit(1),
+        db.select({
+          downloadCount: guideSubscriptions.downloadCount,
+          maxDownloads: guideSubscriptions.maxDownloads,
+        }).from(guideSubscriptions).where(and(
+          eq(guideSubscriptions.userId, user.id),
+          eq(guideSubscriptions.status, 'active'),
+        )).limit(1),
+      ]);
+      return guidePurchase[0] ?? guideSubscription[0] ?? null;
+    },
+    readFavoriteStrings: () => getFavoriteStrings(user.id),
+    readFavoriteLuthiers: () => getFavoriteLuthiers(user.id),
+    readFavoriteBusinesses: () => getFavoriteBusinesses(user.id),
+    readFavoriteProfessors: () => getFavoriteProfessors(user.id),
+    onError: (section, error) => {
+      console.error(`[PROFILE] Falha ao carregar ${section}:`, error);
+    },
+  });
 
   // Tarefa 11 — UX que incentiva o preenchimento completo do perfil.
   const missingFields: string[] = [];

@@ -12,7 +12,9 @@ import {
 test('defines the canonical raffle URL and transparent copy', () => {
   assert.equal(RIFA_CAMPAIGN_URL, 'https://123rifas.com/acao/os-3-melhores-livros-de-financas-fisicos');
   assert.match(RIFA_CAMPAIGN_COPY.banner.title, /Portal NKL/u);
-  assert.match(RIFA_CAMPAIGN_COPY.disclosure, /123Rifas/u);
+  assert.match(JSON.stringify(RIFA_CAMPAIGN_COPY), /3 livros físicos/u);
+  assert.doesNotMatch(JSON.stringify(RIFA_CAMPAIGN_COPY), /Participar por R\$ 3/u);
+  assert.doesNotMatch(JSON.stringify(RIFA_CAMPAIGN_COPY), /123Rifas/u);
   assert.doesNotMatch(JSON.stringify(RIFA_CAMPAIGN_COPY), /doação/u);
 });
 

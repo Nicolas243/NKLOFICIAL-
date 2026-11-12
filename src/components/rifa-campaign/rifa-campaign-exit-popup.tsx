@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RIFA_CAMPAIGN_COPY, trackRifaCampaignEvent } from '@/lib/rifa-campaign';
+import { markRifaCampaignInteracted, RIFA_CAMPAIGN_COPY, trackRifaCampaignEvent } from '@/lib/rifa-campaign';
 import { RifaCampaignLink } from './rifa-campaign-link';
 
 const SHOWN_KEY = 'nkl_rifa_campaign_exit_shown';
@@ -23,6 +23,7 @@ export function RifaCampaignExitPopup() {
 
   if (!open) return null;
   const close = (): void => {
+    markRifaCampaignInteracted();
     void trackRifaCampaignEvent({ surface: 'exit_popup', action: 'dismiss' });
     setOpen(false);
   };
@@ -35,7 +36,7 @@ export function RifaCampaignExitPopup() {
         <p className="mt-3 leading-relaxed text-foreground/75">{RIFA_CAMPAIGN_COPY.exitPopup.description}</p>
         <p className="mt-3 text-xs text-foreground/55">{RIFA_CAMPAIGN_COPY.disclosure}</p>
         <div className="mt-5 flex flex-wrap gap-2">
-          <RifaCampaignLink surface="exit_popup" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar por R$ 3</RifaCampaignLink>
+          <RifaCampaignLink surface="exit_popup" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar</RifaCampaignLink>
           <RifaCampaignLink surface="exit_popup" action="rules" className="rounded-lg border border-border px-4 py-2 text-sm font-bold">Ver prêmios e regras</RifaCampaignLink>
         </div>
       </section>

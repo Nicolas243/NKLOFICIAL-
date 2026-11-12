@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import {
   getRifaCampaignUrl,
+  markRifaCampaignInteracted,
   trackRifaCampaignEvent,
   type RifaCampaignAction,
   type RifaCampaignSurface,
@@ -24,11 +25,7 @@ export function RifaCampaignLink({ surface, action, children, className }: RifaC
       className={className}
       onClick={() => {
         void trackRifaCampaignEvent({ surface, action });
-        try {
-          sessionStorage.setItem('nkl_rifa_campaign_interacted', 'true');
-        } catch (error) {
-          console.info('[RIFA_CAMPAIGN] Storage indisponível:', error instanceof Error ? error.message : 'erro desconhecido');
-        }
+        markRifaCampaignInteracted();
       }}
     >
       {children}

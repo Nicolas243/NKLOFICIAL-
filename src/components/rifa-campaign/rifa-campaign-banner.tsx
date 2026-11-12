@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
   getDismissalExpiry,
+  markRifaCampaignInteracted,
   RIFA_CAMPAIGN_COPY,
   trackRifaCampaignEvent,
 } from '@/lib/rifa-campaign';
@@ -33,6 +34,7 @@ export function RifaCampaignBanner() {
 
   function dismiss(): void {
     localStorage.setItem(DISMISSED_UNTIL_KEY, String(getDismissalExpiry(Date.now())));
+    markRifaCampaignInteracted();
     void trackRifaCampaignEvent({ surface: 'banner', action: 'dismiss' });
     setVisible(false);
   }
@@ -45,7 +47,7 @@ export function RifaCampaignBanner() {
       <p className="mt-2 text-sm leading-relaxed text-foreground/75">{RIFA_CAMPAIGN_COPY.banner.description}</p>
       <p className="mt-2 text-xs text-foreground/55">{RIFA_CAMPAIGN_COPY.disclosure}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <RifaCampaignLink surface="banner" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar por R$ 3</RifaCampaignLink>
+        <RifaCampaignLink surface="banner" action="participate" className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600">Participar</RifaCampaignLink>
         <RifaCampaignLink surface="banner" action="rules" className="rounded-lg border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">Ver prêmios e regras</RifaCampaignLink>
       </div>
     </aside>
