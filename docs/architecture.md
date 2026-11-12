@@ -24,6 +24,31 @@
 - `src/scripts/`: seeds e manutenção.
 - `public/`: assets públicos, incluindo logos de parceiros.
 - `public/guias/`: materiais editoriais entregues após a captura de lead.
+- `tools/deepseek-mcp.ts`: entrypoint MCP stdio local, sem listener HTTP.
+- `tools/deepseek-mcp-files.ts`: leitores de workspace com bloqueio de
+  traversal, symlinks e caminhos sensíveis.
+- `tools/nkl-router-runner.ts` e `tools/nkl-subagent-orchestrator.ts`: rede
+  somente leitura com aliases do 9router, fan-out limitado e revisão.
+
+## Rede local de subagentes
+
+O worker MCP pode operar no modo legado de um único modelo Cline ou no modo
+combinado quando há configuração `NINE_ROUTER_*`. No modo combinado, a
+configuração `CLINE_*` é obrigatória para o coordenador e o endpoint
+OpenAI-compatible do 9router recebe os aliases literais
+`NKL-ORQUESTRADOR`, `NKL-OPERARIOS` e `NKL-REVISOR`. O alias `Alll` não é
+expandido pelo Portal NKL: round-robin, fallback e fusion/juiz permanecem sob
+responsabilidade do gateway.
+
+O orquestrador envia prompts limitados, deduplica evidências por caminho,
+redige chaves e rejeita caminhos bloqueados. Até três operários podem executar
+em paralelo; uma falha recebe uma tentativa adicional e, se persistir, é
+marcada como `fallback` para o coordenador. O revisor sempre é chamado e uma
+falha dele produz estado `incomplete`, nunca uma conclusão bem-sucedida.
+
+As capacidades Cline de edição, comandos, web, skills, MCP, spawn e teams
+permanecem desativadas. Não há cache persistente, histórico completo da
+conversa, cópia integral de arquivos, deploy, migração ou listener de rede.
 
 ## Produtos e rotas públicas
 
