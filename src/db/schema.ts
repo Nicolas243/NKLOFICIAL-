@@ -1,5 +1,16 @@
-import { pgEnum, pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb, time, check } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb, time, check, index } from 'drizzle-orm/pg-core';
 import { relations, sql, type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
+export const businessTechLevelEnum = pgEnum('business_tech_level', ['low', 'medium', 'high']);
+export const businessRiskLevelEnum = pgEnum('business_risk_level', ['low', 'medium', 'high']);
+
+export type QuizAnswerMap = Record<string, number>;
+export type CalculatedQuizProfile = {
+  capital: number;
+  time: number;
+  risk: number;
+  tech: number;
+  social: number;
+};
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -166,6 +177,24 @@ export const partnerPrograms = pgTable('partner_programs', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const businessProfiles = pgTable('business_profiles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  minCapital: numeric('min_capital', { precision: 12, scale: 2 }).notNull().default('0'),
+  minTimeHours: integer('min_time_hours').notNull().default(0),
+  techLevel: businessTechLevelEnum('tech_level').notNull(),
+  riskLevel: businessRiskLevelEnum('risk_level').notNull(),
+});
+
+export const quizLeads = pgTable('quiz_leads', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull(),
+  answersJsonb: jsonb('answers_jsonb').$type<QuizAnswerMap>().notNull(),
+  calculatedProfile: jsonb('calculated_profile').$type<CalculatedQuizProfile>().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('quiz_leads_email_idx').on(table.email),
+]);
 export const partnerProgramReviews = pgTable(
   'partner_program_reviews',
   {
