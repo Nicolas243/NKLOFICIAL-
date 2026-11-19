@@ -45,7 +45,7 @@ export default async function AdCheckoutSuccessPage({ searchParams }: { searchPa
         ) : campaign.assetUrl ? (
           <div className="mt-5 space-y-3 text-sm leading-relaxed text-foreground/75">
             <p>O material de <strong className="text-foreground">{campaign.businessName}</strong> já foi recebido e está aguardando análise editorial.</p>
-            <p>Você analisa o anúncio no painel administrativo em <strong className="text-foreground">/admin</strong>, na seção “Anúncios aguardando revisão”.</p>
+            <p>A equipe editorial do Portal NKL revisa manualmente cada criativo e o link de destino antes da publicação nas faixas publicitárias.</p>
             <Link href="/programas/anuncie" className="inline-flex min-h-11 items-center rounded-md border border-border px-5 py-3 font-bold hover:border-neon">Voltar para anunciar</Link>
           </div>
         ) : (

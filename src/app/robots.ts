@@ -6,7 +6,19 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/programas/admin', '/perfil', '/dashboard', '/api/'],
+      disallow: [
+        '/admin',
+        '/programas/admin',
+        '/perfil',
+        '/dashboard',
+        '/api/',
+        '/ia/curso',
+        '/ia/prompts',
+        '/ia/ferramentas',
+        '/ia/progresso',
+        '/ia/resultado',
+        '/resultado',
+      ],
     },
     sitemap: absoluteSiteUrl('/sitemap.xml'),
   };

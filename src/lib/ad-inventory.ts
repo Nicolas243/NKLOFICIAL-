@@ -1,9 +1,10 @@
-import { and, eq, isNull, or, sql } from 'drizzle-orm';
-import { db } from '@/db';
+import { and, eq, gt, isNull, or } from 'drizzle-orm';
+import type { db as DbClient } from '@/db';
 import { adCampaigns, adInventorySlots } from '@/db/schema';
 import {
   AD_ASSET_MAX_BYTES,
   AD_ASSET_MIME_TYPES,
+  AD_BANNER_SLOT_COUNT,
 } from '@/lib/ad-inventory-config';
 
 export {
@@ -94,6 +95,7 @@ export function adAssetExtension(file: File): string {
 }
 
 export async function getActiveAdSlots(): Promise<ActiveAdSlot[]> {
+  const { db } = await import('@/db');
   const rows = await db
     .select({
       slotNumber: adInventorySlots.slotNumber,
@@ -118,19 +120,70 @@ export async function getActiveAdSlots(): Promise<ActiveAdSlot[]> {
   return rows;
 }
 
-export async function countReservedAdSlots(now = new Date()): Promise<number> {
-  const rows = await db
+export const AD_INVENTORY_LOCK_ID = 78451201;
+
+export type AdSlotsQueryExecutor = Pick<typeof DbClient, 'select'>;
+
+export type AdCampaignReservationCandidate = {
+  status: string;
+  slotCount: number;
+  reservedUntil?: Date | null;
+  reviewNotes?: string | null;
+};
+
+export function isAdCampaignReservingSlots(
+  campaign: AdCampaignReservationCandidate,
+  now = new Date(),
+): boolean {
+  if (campaign.reviewNotes !== null && campaign.reviewNotes !== undefined) {
+    return false;
+  }
+  if (
+    campaign.status === 'pending_review'
+    || campaign.status === 'approved'
+    || campaign.status === 'active'
+  ) {
+    return true;
+  }
+  if (campaign.status === 'pending_payment') {
+    return Boolean(campaign.reservedUntil && campaign.reservedUntil.getTime() > now.getTime());
+  }
+  return false;
+}
+
+export function canReserveAdSlots(
+  reservedSlots: number,
+  requestedSlotCount: number,
+  maxSlots = AD_BANNER_SLOT_COUNT,
+): boolean {
+  return Number.isInteger(requestedSlotCount)
+    && requestedSlotCount >= 1
+    && requestedSlotCount <= maxSlots
+    && reservedSlots >= 0
+    && reservedSlots + requestedSlotCount <= maxSlots;
+}
+
+export function buildReservedAdSlotsWhere(now = new Date()) {
+  return and(
+    or(
+      eq(adCampaigns.status, 'pending_review'),
+      eq(adCampaigns.status, 'approved'),
+      eq(adCampaigns.status, 'active'),
+      and(eq(adCampaigns.status, 'pending_payment'), gt(adCampaigns.reservedUntil, now)),
+    ),
+    isNull(adCampaigns.reviewNotes),
+  );
+}
+
+export async function countReservedAdSlots(
+  now = new Date(),
+  executor?: AdSlotsQueryExecutor,
+): Promise<number> {
+  const queryExecutor = executor ?? (await import('@/db')).db;
+  const rows = await queryExecutor
     .select({ slotCount: adCampaigns.slotCount })
     .from(adCampaigns)
-    .where(and(
-      or(
-        eq(adCampaigns.status, 'pending_review'),
-        eq(adCampaigns.status, 'approved'),
-        eq(adCampaigns.status, 'active'),
-        and(eq(adCampaigns.status, 'pending_payment'), sql`${adCampaigns.reservedUntil} > ${now}`),
-      ),
-      isNull(adCampaigns.reviewNotes),
-    ));
+    .where(buildReservedAdSlotsWhere(now));
 
   return rows.reduce((total, row) => total + row.slotCount, 0);
 }

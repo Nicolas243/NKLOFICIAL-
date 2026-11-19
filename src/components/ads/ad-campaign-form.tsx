@@ -284,7 +284,7 @@ export function AdCampaignForm({
           {pending
             ? (effectiveAuthenticated ? 'Preparando Stripe…' : 'Abrindo login…')
             : effectiveAuthenticated
-              ? `Assinar com Stripe · ${formatPrice(monthlyPriceCents)}/mês`
+              ? `Assinar com Stripe · ${formatPrice(total)}/mês`
               : 'Entrar e continuar para o Stripe'}
         </button>
       </div>

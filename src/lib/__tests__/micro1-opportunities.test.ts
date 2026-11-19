@@ -5,6 +5,7 @@ import {
   formatMicro1Pay,
   getMicro1Categories,
   getMicro1FilterOptions,
+  getMicro1Opportunities,
   matchesMicro1QuickFilter,
   translateMicro1Title,
   type Micro1Opportunity,
@@ -72,4 +73,44 @@ test('matches Portuguese and editorial difficulty filters', () => {
     assert.equal(matchesMicro1QuickFilter(sampleOpportunity, 'avancado'), true);
     assert.equal(matchesMicro1QuickFilter({ ...sampleOpportunity, roleType: 'generalist' }, 'facil'), true);
     assert.equal(matchesMicro1QuickFilter({ ...sampleOpportunity, roleType: null }, 'medio'), true);
+});
+
+test('fetches with AbortSignal timeout and returns deduplicated items when live total exceeds unique count', async () => {
+    const observedSignals: Array<AbortSignal | null | undefined> = [];
+    const mockFetch: typeof fetch = async (_input, init) => {
+      observedSignals.push(init?.signal);
+      return new Response(
+        JSON.stringify({
+          status: true,
+          total: 3,
+          data: [
+            {
+              job_id: 'job-1',
+              job_name: 'Senior Software Engineer (Brazil)',
+              apply_url: 'https://jobs.micro1.ai/post/job-1',
+              domain_slug: 'software-engineering',
+            },
+            {
+              job_id: 'job-1',
+              job_name: 'Senior Software Engineer (Brazil)',
+              apply_url: 'https://jobs.micro1.ai/post/job-1',
+              domain_slug: 'software-engineering',
+            },
+            {
+              job_id: 'job-2',
+              job_name: 'Video Recorder',
+              apply_url: 'https://jobs.micro1.ai/post/job-2',
+              domain_slug: 'robotics',
+            },
+          ],
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      );
+    };
+
+    const result = await getMicro1Opportunities(mockFetch);
+    assert.equal(result.length, 2);
+    assert.deepEqual(result.map((item) => item.jobId), ['job-1', 'job-2']);
+    assert.equal(observedSignals.length, 1);
+    assert.ok(observedSignals[0] instanceof AbortSignal);
 });

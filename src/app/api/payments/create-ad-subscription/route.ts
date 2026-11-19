@@ -1,10 +1,13 @@
-import { and, eq, gt, or } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
 import { adCampaigns, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import {
+  AD_INVENTORY_LOCK_ID,
+  canReserveAdSlots,
+  countReservedAdSlots,
   getAdMonthlyPriceCents,
   safeAdDestinationUrl,
 } from '@/lib/ad-inventory';
@@ -84,46 +87,49 @@ export async function POST(request: Request): Promise<NextResponse> {
       .limit(1);
     const contactEmail = profile?.email ?? user.email;
     const monthlyAmountCents = getAdMonthlyPriceCents();
-    const reservedUntil = new Date(Date.now() + 30 * 60 * 1000);
-    const reservedCampaigns = await db
-      .select({ slotCount: adCampaigns.slotCount })
-      .from(adCampaigns)
-      .where(or(
-        eq(adCampaigns.status, 'pending_review'),
-        eq(adCampaigns.status, 'approved'),
-        eq(adCampaigns.status, 'active'),
-        and(eq(adCampaigns.status, 'pending_payment'), gt(adCampaigns.reservedUntil, new Date())),
-      ));
-    const reservedSlots = reservedCampaigns.reduce((sum, item) => sum + item.slotCount, 0);
-    if (reservedSlots + parsed.data.slotCount > 10) {
+    const now = new Date();
+    const reservedUntil = new Date(now.getTime() + 30 * 60 * 1000);
+
+    const reservationResult = await db.transaction(async (tx) => {
+      await tx.execute(sql`select pg_advisory_xact_lock(${AD_INVENTORY_LOCK_ID})`);
+      const reservedSlots = await countReservedAdSlots(now, tx);
+      if (!canReserveAdSlots(reservedSlots, parsed.data.slotCount)) {
+        return { available: false as const, campaignId: null };
+      }
+
+      const [campaign] = await tx.insert(adCampaigns).values({
+        userId: user.id,
+        businessName: parsed.data.businessName,
+        contactEmail,
+        responsibleName: parsed.data.responsibleName,
+        whatsapp: parsed.data.whatsapp,
+        businessCategory: parsed.data.businessCategory,
+        offerDescription: parsed.data.offerDescription,
+        campaignObjective: parsed.data.campaignObjective,
+        targetAudience: parsed.data.targetAudience || null,
+        socialUrl: parsed.data.socialUrl || null,
+        destinationUrl,
+        assetAltText: parsed.data.assetAltText,
+        slotCount: parsed.data.slotCount,
+        monthlyAmountCents: monthlyAmountCents * parsed.data.slotCount,
+        status: 'pending_payment',
+        billingStatus: 'pending',
+        contractVersion: CONTRACT_VERSION,
+        advertiserAcceptedAt: now,
+        reservedUntil,
+      }).returning({ id: adCampaigns.id });
+
+      return { available: true as const, campaignId: campaign?.id ?? null };
+    });
+
+    if (!reservationResult.available) {
       return NextResponse.json(
         { error: 'inventory_unavailable', message: 'Não há cotas suficientes disponíveis neste momento.' },
         { status: 409 },
       );
     }
 
-    const [campaign] = await db.insert(adCampaigns).values({
-      userId: user.id,
-      businessName: parsed.data.businessName,
-      contactEmail,
-      responsibleName: parsed.data.responsibleName,
-      whatsapp: parsed.data.whatsapp,
-      businessCategory: parsed.data.businessCategory,
-      offerDescription: parsed.data.offerDescription,
-      campaignObjective: parsed.data.campaignObjective,
-      targetAudience: parsed.data.targetAudience || null,
-      socialUrl: parsed.data.socialUrl || null,
-      destinationUrl,
-      assetAltText: parsed.data.assetAltText,
-      slotCount: parsed.data.slotCount,
-      monthlyAmountCents: monthlyAmountCents * parsed.data.slotCount,
-      status: 'pending_payment',
-      billingStatus: 'pending',
-      contractVersion: CONTRACT_VERSION,
-      advertiserAcceptedAt: new Date(),
-      reservedUntil,
-    }).returning({ id: adCampaigns.id });
-    campaignId = campaign?.id ?? null;
+    campaignId = reservationResult.campaignId;
     if (!campaignId) {
       return NextResponse.json(
         { error: 'campaign_creation_failed', message: 'Não foi possível registrar a campanha.' },

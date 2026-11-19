@@ -118,6 +118,19 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
         </Link>
       </section>
 
+      <section className="mb-5 grid gap-4 rounded-2xl border border-neon/30 bg-income-surface/85 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="business-quiz-cta-title">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não sabe por onde começar?</p>
+          <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Responda ao Quiz de Negócios</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">
+            Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para descobrir qual modelo de negócio ou renda extra faz mais sentido para o seu momento.
+          </p>
+        </div>
+        <Link href="/quiz-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
+          Fazer Quiz de Negócios
+        </Link>
+      </section>
+
       <details id="como-funciona" className="mb-5 md:mb-8">
         <summary className="cursor-pointer rounded-xl border border-border bg-income-surface/70 px-4 py-3 text-sm font-bold transition-colors hover:border-neon">
           Como escolher uma oportunidade

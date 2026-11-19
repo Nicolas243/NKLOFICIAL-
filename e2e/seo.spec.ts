@@ -35,6 +35,10 @@ test.describe('SEO público de renda extra', () => {
     expect(sitemap).toContain(`${publicHost}/programas`);
     expect(sitemap).toContain(`${publicHost}/programas/celular`);
     expect(sitemap).toContain(`${publicHost}/programas/anuncie`);
+    expect(sitemap).toContain(`${publicHost}/quiz-negocios`);
+    expect(sitemap).toContain(`${publicHost}/mural-de-parceiros`);
+    expect(sitemap).toContain(`${publicHost}/musica/naipe_cordas`);
+    expect(sitemap).not.toContain(`${publicHost}/guias/ingles/ebook`);
     expect(sitemap).not.toContain(`${publicHost}/admin`);
 
     const robotsResponse = await request.get('/robots.txt');
@@ -43,6 +47,12 @@ test.describe('SEO público de renda extra', () => {
     expect(robots).toContain('Disallow: /admin');
     expect(robots).toContain('Disallow: /perfil');
     expect(robots).toContain('Disallow: /dashboard');
+    expect(robots).toContain('Disallow: /ia/curso');
+    expect(robots).toContain('Disallow: /ia/prompts');
+    expect(robots).toContain('Disallow: /ia/ferramentas');
+    expect(robots).toContain('Disallow: /ia/progresso');
+    expect(robots).toContain('Disallow: /ia/resultado');
+    expect(robots).toContain('Disallow: /resultado');
     expect(robots).toContain(`Sitemap: ${publicHost}/sitemap.xml`);
   });
 });

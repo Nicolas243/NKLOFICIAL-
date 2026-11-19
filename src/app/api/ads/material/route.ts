@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { adCampaigns } from '@/db/schema';
+import { adCampaigns, adInventorySlots } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import {
   AD_ASSET_MAX_BYTES,
@@ -54,13 +54,26 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const { data: publicUrlData } = supabase.storage.from('public-assets').getPublicUrl(storagePath);
-  await db.update(adCampaigns).set({
-    assetUrl: publicUrlData.publicUrl,
-    assetStoragePath: storagePath,
-    assetMimeType: asset.type,
-    reviewNotes: null,
-    updatedAt: new Date(),
-  }).where(eq(adCampaigns.id, campaignId));
+  const now = new Date();
+  await db.transaction(async (tx) => {
+    await tx
+      .update(adInventorySlots)
+      .set({ campaignId: null, updatedAt: now })
+      .where(eq(adInventorySlots.campaignId, campaignId));
+
+    await tx
+      .update(adCampaigns)
+      .set({
+        assetUrl: publicUrlData.publicUrl,
+        assetStoragePath: storagePath,
+        assetMimeType: asset.type,
+        status: 'pending_review',
+        adminApprovedAt: null,
+        reviewNotes: null,
+        updatedAt: now,
+      })
+      .where(eq(adCampaigns.id, campaignId));
+  });
 
   return NextResponse.json({ ok: true });
 }

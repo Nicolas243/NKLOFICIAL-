@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ExternalLink, Filter, Search, Share2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -203,6 +204,47 @@ export function Micro1OpportunitiesSection({
       <p className="mt-2 text-[11px] opacity-55">
         {hasSelection ? `${filteredOpportunities.length} resultado(s)` : `${opportunities.length} vagas atuais · filtro por tipo`}
       </p>
+
+      {isCompact && hasSelection && (
+        <div className="mt-3 space-y-2" data-testid="micro1-card-filtered-results">
+          {filteredOpportunities.slice(0, 5).map((opportunity) => {
+            const pay = formatMicro1Pay(opportunity);
+            return (
+              <div
+                key={opportunity.jobId}
+                className="flex items-center justify-between gap-2 rounded-md border border-border bg-background/60 p-2 text-xs"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{translateMicro1Title(opportunity.jobName)}</p>
+                  <p className="mt-0.5 text-[11px] font-bold text-neon">{pay.estimatedBrl ?? pay.original}</p>
+                </div>
+                <a
+                  href={opportunity.applyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="inline-flex min-h-8 shrink-0 items-center gap-1 rounded border border-neon px-2.5 py-1 text-[11px] font-bold text-neon hover:bg-neon hover:text-black"
+                >
+                  Ver
+                  <ExternalLink size={12} aria-hidden="true" />
+                </a>
+              </div>
+            );
+          })}
+          {filteredOpportunities.length === 0 && (
+            <p className="py-2 text-xs opacity-65">Nenhuma vaga encontrada com esse filtro.</p>
+          )}
+          <div className="pt-1">
+            <Link
+              href="/programas/micro1"
+              className="inline-flex text-xs font-bold text-neon underline underline-offset-2 hover:opacity-90"
+            >
+              {filteredOpportunities.length > 5
+                ? `Ver todos os ${filteredOpportunities.length} resultados da Micro1`
+                : 'Abrir lista completa da Micro1'}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {!isCompact && hasSelection && (
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
