@@ -1,8 +1,7 @@
 import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { loadFreeMaterial } from '@/lib/guide-assets';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 import {
   EmailDeliveryError,
@@ -17,17 +16,6 @@ const requestSchema = z.object({
   privacyConsent: z.literal(true),
 });
 
-const MATERIALS = {
-  music: {
-    filename: 'Grafico_de_Cordas_Online.pdf',
-    source: ['nkl-musical', 'grafico de cordas violino', 'Grafico_de_Cordas_Online.pdf'],
-  },
-  income: {
-    filename: 'Guia Essencial Renda Extra 2027 - Portal NKL.pdf',
-    source: ['nkl-blog', 'renda-extra', 'Guia Essencial Renda Extra 2027 - Portal NKL .pdf'],
-  },
-} as const;
-
 const COOLDOWN_SECONDS = 24 * 60 * 60;
 
 function cooldownCookieName(area: 'music' | 'income'): string {
@@ -36,11 +24,6 @@ function cooldownCookieName(area: 'music' | 'income'): string {
 
 function cooldownValue(email: string): string {
   return createHash('sha256').update(email.trim().toLowerCase()).digest('hex');
-}
-
-async function loadMaterial(area: 'music' | 'income'): Promise<Buffer> {
-  const material = MATERIALS[area];
-  return readFile(path.join(process.cwd(), ...material.source));
 }
 
 async function sendWithRetry(input: Parameters<typeof sendMaterialEmail>[0]): Promise<void> {
@@ -76,15 +59,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     await enforcePublicRateLimit('material-email', email);
-    const content = await loadMaterial(parsed.data.area);
+    const attachment = await loadFreeMaterial(parsed.data.area);
     await sendWithRetry({
       recipientEmail: email,
       recipientName: parsed.data.name,
       area: parsed.data.area,
-      attachment: {
-        filename: MATERIALS[parsed.data.area].filename,
-        content,
-      },
+      attachment,
     });
 
     const response = NextResponse.json({ status: 'sent' });

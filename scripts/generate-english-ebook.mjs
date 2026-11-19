@@ -1,11 +1,13 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { PDFName as CorePDFName, PDFString as CorePDFString } from 'pdf-lib/cjs/core/index.js';
 
-const sourcePath = 'public/guias/ingles-para-ganhar-dinheiro.md';
-const htmlPath = 'public/guias/ingles-para-ganhar-dinheiro.html';
-const pdfPath = 'public/guias/ingles-para-ganhar-dinheiro.pdf';
+const sourcePath = 'src/content/guias/ingles-para-ganhar-dinheiro.md';
+const outputDirectory = 'private-assets/guias';
+const htmlPath = `${outputDirectory}/ingles-para-ganhar-dinheiro.html`;
+const pdfPath = `${outputDirectory}/ingles-para-ganhar-dinheiro.pdf`;
 const markdown = await readFile(sourcePath, 'utf8');
+await mkdir(outputDirectory, { recursive: true });
 
 function parseLessons(source) {
   const lessons = [];
@@ -175,6 +177,14 @@ function addText(page, text, x, y, size, font, color, lineGap = 4) {
   return y;
 }
 
+function addLines(page, text, x, y, size, font, color, lineGap = 4) {
+  let currentY = y;
+  for (const line of text.split('\n')) {
+    currentY = addText(page, line, x, currentY, size, font, color, lineGap);
+  }
+  return currentY;
+}
+
 function addExternalLink(page, x, y, width, height, url) {
   const link = page.doc.context.register(page.doc.context.obj({
     Type: CorePDFName.of('Annot'),
@@ -277,10 +287,10 @@ templatesY = addText(templates, 'TEMPLATES PROFISSIONAIS', margin, templatesY, 1
 templatesY = addText(templates, 'Copie, preencha e revise.', margin, templatesY - 18, 25, bold, rgb(0.06, 0.18, 0.33), 7);
 templatesY -= 18;
 templatesY = addText(templates, 'E-mail', margin, templatesY, 12, bold, rgb(0.84, 0.42, 0.25));
-templatesY = addText(templates, 'Subject: Follow-up on [project]\\nHello [name],\\nThank you for your message. I can [action] by [date]. Please let me know if you have any questions.\\nBest regards,\\n[your name]', margin, templatesY - 12, 12, regular, rgb(0.1, 0.14, 0.2), 5);
+templatesY = addLines(templates, 'Subject: Follow-up on [project]\nHello [name],\nThank you for your message. I can [action] by [date]. Please let me know if you have any questions.\nBest regards,\n[your name]', margin, templatesY - 12, 12, regular, rgb(0.1, 0.14, 0.2), 5);
 templatesY -= 16;
 templatesY = addText(templates, 'Proposta curta', margin, templatesY, 12, bold, rgb(0.84, 0.42, 0.25));
-addText(templates, 'Goal: [what the client needs]\\nDeliverables: [what you will deliver]\\nTimeline: [dates]\\nPrice: [amount]', margin, templatesY - 12, 12, regular, rgb(0.1, 0.14, 0.2), 5);
+addLines(templates, 'Goal: [what the client needs]\nDeliverables: [what you will deliver]\nTimeline: [dates]\nPrice: [amount]', margin, templatesY - 12, 12, regular, rgb(0.1, 0.14, 0.2), 5);
 
 for (const lesson of lessons) {
   const page = document.addPage([pageWidth, pageHeight]);

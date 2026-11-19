@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { and, eq, or } from 'drizzle-orm';
+import { and, desc, eq, or } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { guidePurchases, guideSubscriptions, userProfiles } from '@/db/schema';
 import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
-import { GUIDE_ASSETS } from '@/lib/guide-assets';
+import { GUIDE_ASSETS, getGuideAssetsForOffer, type GuideAsset } from '@/lib/guide-assets';
 import { upsertLuthierProfile } from '@/actions/profile';
 import { signout } from '@/actions/auth';
 import { ProfileOnboardingForm } from '@/components/profile-onboarding-form';
@@ -32,6 +32,50 @@ type ProfileSearchParams = Promise<{
   next?: string;
   resume?: string;
 }>;
+
+async function readUserGuideAccessAndAssets(userId: string): Promise<{
+  access: { downloadCount: number; maxDownloads: number } | null;
+  assets: readonly GuideAsset[];
+}> {
+  try {
+    const [guidePurchaseRows, guideSubscriptionRows] = await Promise.all([
+      db.select({
+        offerVariant: guidePurchases.offerVariant,
+        downloadCount: guidePurchases.downloadCount,
+        maxDownloads: guidePurchases.maxDownloads,
+      }).from(guidePurchases).where(and(
+        eq(guidePurchases.userId, userId),
+        eq(guidePurchases.status, 'approved'),
+      )).orderBy(desc(guidePurchases.createdAt)),
+      db.select({
+        offerVariant: guideSubscriptions.offerVariant,
+        downloadCount: guideSubscriptions.downloadCount,
+        maxDownloads: guideSubscriptions.maxDownloads,
+      }).from(guideSubscriptions).where(and(
+        eq(guideSubscriptions.userId, userId),
+        eq(guideSubscriptions.status, 'active'),
+      )).orderBy(desc(guideSubscriptions.createdAt)),
+    ]);
+    const accessRows = [...guidePurchaseRows, ...guideSubscriptionRows];
+    if (accessRows.length === 0) {
+      return { access: null, assets: [] };
+    }
+    const unlockedIds = new Set<string>();
+    for (const row of accessRows) {
+      for (const asset of getGuideAssetsForOffer(row.offerVariant)) unlockedIds.add(asset.id);
+    }
+    return {
+      access: {
+        downloadCount: accessRows.reduce((total, row) => total + row.downloadCount, 0),
+        maxDownloads: accessRows.reduce((total, row) => total + row.maxDownloads, 0),
+      },
+      assets: GUIDE_ASSETS.filter((asset) => unlockedIds.has(asset.id)),
+    };
+  } catch (error) {
+    console.error('[PROFILE] Falha ao carregar guide access:', error);
+    return { access: null, assets: [] };
+  }
+}
 
 export default async function PerfilPage({
   searchParams,
@@ -82,34 +126,20 @@ export default async function PerfilPage({
   );
   const profileRoles = profile?.papel?.split(',').map((role) => role.trim()).filter(Boolean) ?? [];
   const isLuthier = profile?.role === 'luthier' || profileRoles.includes('Luthier');
-  const profileData = await loadOptionalProfileData({
-    readGuideAccess: async () => {
-      const [guidePurchase, guideSubscription] = await Promise.all([
-        db.select({
-          downloadCount: guidePurchases.downloadCount,
-          maxDownloads: guidePurchases.maxDownloads,
-        }).from(guidePurchases).where(and(
-          eq(guidePurchases.userId, user.id),
-          eq(guidePurchases.status, 'approved'),
-        )).limit(1),
-        db.select({
-          downloadCount: guideSubscriptions.downloadCount,
-          maxDownloads: guideSubscriptions.maxDownloads,
-        }).from(guideSubscriptions).where(and(
-          eq(guideSubscriptions.userId, user.id),
-          eq(guideSubscriptions.status, 'active'),
-        )).limit(1),
-      ]);
-      return guidePurchase[0] ?? guideSubscription[0] ?? null;
-    },
-    readFavoriteStrings: hasMusicContext ? () => getFavoriteStrings(user.id) : async () => [],
-    readFavoriteLuthiers: hasMusicContext ? () => getFavoriteLuthiers(user.id) : async () => [],
-    readFavoriteBusinesses: hasMusicContext ? () => getFavoriteBusinesses(user.id) : async () => [],
-    readFavoriteProfessors: hasMusicContext ? () => getFavoriteProfessors(user.id) : async () => [],
-    onError: (section, error) => {
-      console.error(`[PROFILE] Falha ao carregar ${section}:`, error);
-    },
-  });
+  const guideAccessPromise = readUserGuideAccessAndAssets(user.id);
+  const [profileData, { assets: unlockedAssets }] = await Promise.all([
+    loadOptionalProfileData({
+      readGuideAccess: async () => (await guideAccessPromise).access,
+      readFavoriteStrings: hasMusicContext ? () => getFavoriteStrings(user.id) : async () => [],
+      readFavoriteLuthiers: hasMusicContext ? () => getFavoriteLuthiers(user.id) : async () => [],
+      readFavoriteBusinesses: hasMusicContext ? () => getFavoriteBusinesses(user.id) : async () => [],
+      readFavoriteProfessors: hasMusicContext ? () => getFavoriteProfessors(user.id) : async () => [],
+      onError: (section, error) => {
+        console.error(`[PROFILE] Falha ao carregar ${section}:`, error);
+      },
+    }),
+    guideAccessPromise,
+  ]);
   const {
     guideAccess,
     favoriteStrings,
@@ -221,14 +251,14 @@ export default async function PerfilPage({
         </div>
       )}
 
-      {guideAccess && (
+      {guideAccess && unlockedAssets.length > 0 && (
         <section className="mb-8 rounded-xl border border-orange/30 bg-orange/5 p-6">
           <h2 className="font-playfair text-xl font-bold">Meus materiais NKL</h2>
           <p className="mt-2 text-sm leading-relaxed opacity-75">
             Cada arquivo é personalizado no momento do download com seus dados de acesso. O original permanece protegido.
           </p>
           <GuideAssetDownloads
-            assets={GUIDE_ASSETS}
+            assets={unlockedAssets}
             initialRemainingDownloads={Math.max(guideAccess.maxDownloads - guideAccess.downloadCount, 0)}
           />
         </section>

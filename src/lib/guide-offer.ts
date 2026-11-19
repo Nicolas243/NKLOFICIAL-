@@ -10,11 +10,11 @@ export const GUIDE_SUBSCRIPTION_TITLE = 'Guias para Liberdade Financeira NKL';
 export const GUIDE_OFFER_PROVIDER = 'Stripe';
 export const ENGLISH_EBOOK_OFFER_VARIANT = 'english-ebook-sales-page';
 export const LANGUAGE_EBOOKS = {
-  italiano: { offerVariant: 'italian-ebook-sales-page', title: 'Italiano para ganhar possibilidades | E-book Portal NKL', language: 'Italiano', slug: 'italiano', priceCents: 4700 },
-  frances: { offerVariant: 'french-ebook-sales-page', title: 'Francês para ganhar possibilidades | E-book Portal NKL', language: 'Francês', slug: 'frances', priceCents: 4700 },
-  alemao: { offerVariant: 'german-ebook-sales-page', title: 'Alemão para ganhar possibilidades | E-book Portal NKL', language: 'Alemão', slug: 'alemao', priceCents: 4700 },
-  espanhol: { offerVariant: 'spanish-ebook-sales-page', title: 'Espanhol para ganhar possibilidades | E-book Portal NKL', language: 'Espanhol', slug: 'espanhol', priceCents: 4700 },
-  chines: { offerVariant: 'mandarin-ebook-sales-page', title: 'Mandarim para ganhar possibilidades | E-book Portal NKL', language: 'Mandarim', slug: 'chines', priceCents: 4700 },
+  italiano: { offerVariant: 'italian-ebook-sales-page', title: 'Italiano para ganhar possibilidades | E-book Portal NKL', language: 'Italiano', slug: 'italiano', priceCents: 4700, comingSoon: true },
+  frances: { offerVariant: 'french-ebook-sales-page', title: 'Francês para ganhar possibilidades | E-book Portal NKL', language: 'Francês', slug: 'frances', priceCents: 4700, comingSoon: true },
+  alemao: { offerVariant: 'german-ebook-sales-page', title: 'Alemão para ganhar possibilidades | E-book Portal NKL', language: 'Alemão', slug: 'alemao', priceCents: 4700, comingSoon: true },
+  espanhol: { offerVariant: 'spanish-ebook-sales-page', title: 'Espanhol para ganhar possibilidades | E-book Portal NKL', language: 'Espanhol', slug: 'espanhol', priceCents: 4700, comingSoon: true },
+  chines: { offerVariant: 'mandarin-ebook-sales-page', title: 'Mandarim para ganhar possibilidades | E-book Portal NKL', language: 'Mandarim', slug: 'chines', priceCents: 4700, comingSoon: true },
 } as const;
 
 export type LanguageEbookSlug = keyof typeof LANGUAGE_EBOOKS;
@@ -28,6 +28,16 @@ export function isLanguageEbookOffer(offerVariant: string | null | undefined): b
   return Boolean(getLanguageEbookByOffer(offerVariant));
 }
 
+export function isComingSoonLanguageOffer(offerVariant: string | null | undefined): boolean {
+  return getLanguageEbookByOffer(offerVariant)?.comingSoon === true;
+}
+
+export function getGuideCancelPath(offerVariant: string | null | undefined): string {
+  if (offerVariant === ENGLISH_EBOOK_OFFER_VARIANT) return '/guias/ingles';
+  const languageEbook = getLanguageEbookByOffer(offerVariant);
+  if (languageEbook) return `/guias/${languageEbook.slug}`;
+  return '/guias/renda-extra';
+}
 export function isEnglishEbookOffer(offerVariant: string | null | undefined): boolean {
   return offerVariant === ENGLISH_EBOOK_OFFER_VARIANT;
 }

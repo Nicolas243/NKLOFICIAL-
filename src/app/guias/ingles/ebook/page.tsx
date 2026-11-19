@@ -1,13 +1,19 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { EnglishEbookPrintControls } from '@/components/english-ebook-print-controls';
-import { readEnglishEbookLessons, splitEnglishExample, tokenizeBilingualExample } from '@/lib/english-ebook';
+import {
+  ENGLISH_EBOOK_SAMPLE_LESSON_COUNT,
+  readEnglishEbookPublicSample,
+  splitEnglishExample,
+  tokenizeBilingualExample,
+} from '@/lib/english-ebook';
 import { absoluteSiteUrl } from '@/lib/site';
 import './ebook.css';
 
 export const metadata: Metadata = {
-  title: 'E-book Inglês para ganhar dinheiro | Portal NKL',
-  description: 'E-book do Portal NKL para estudar inglês com letras grandes, exercícios e um plano prático de 90 dias.',
+  title: 'Amostra Gratuita: E-book Inglês para ganhar dinheiro | Portal NKL',
+  description: 'Experimente gratuitamente as 5 primeiras lições interativas do e-book Inglês para ganhar dinheiro e consulte o sumário completo das 100 lições.',
   alternates: { canonical: absoluteSiteUrl('/guias/ingles/ebook') },
 };
 
@@ -16,6 +22,13 @@ function PageNumber({ number }: { number: number }) {
 }
 
 const exampleColors = ['#172235', '#2563a8', '#c76538', '#16805b', '#7b4bb7', '#9a5c14'];
+
+const valueHighlights = [
+  '100 lições práticas com progressão do básico ao uso profissional',
+  '500 exemplos coloridos com tradução alinhada palavra por palavra',
+  'Diálogos profissionais, templates de e-mail/proposta e links de pronúncia',
+  'Acesso imediato em PDF A5 personalizado por CPF após pagamento (R$ 47)',
+];
 
 function ColoredExample({ tokens }: { tokens: ReturnType<typeof tokenizeBilingualExample>['english'] }) {
   return (
@@ -30,24 +43,28 @@ function ColoredExample({ tokens }: { tokens: ReturnType<typeof tokenizeBilingua
 }
 
 export default async function EnglishEbookPage() {
-  const lessons = await readEnglishEbookLessons();
-  const plannedPages = Math.max(12, Math.ceil(lessons.length * 0.7) + 8);
+  const {
+    sampleLessons,
+    lockedLessons,
+    totalLessons,
+    totalExamples,
+  } = await readEnglishEbookPublicSample();
 
   return (
     <main className="ebook-shell">
       <EnglishEbookPrintControls />
       <p className="ebook-preview-note">
-        Prévia paginada para leitura no celular e impressão em PDF · {plannedPages} páginas planejadas
+        Amostra gratuita interativa · {ENGLISH_EBOOK_SAMPLE_LESSON_COUNT} de {totalLessons} lições liberadas · {totalExamples} exemplos coloridos na edição completa
       </p>
 
       <section className="ebook-page ebook-cover">
         <div className="ebook-cover-grid" aria-hidden="true" />
         <Image src="/NKL/NKL.png" alt="Portal NKL" width={112} height={112} className="ebook-logo" priority />
-        <p className="ebook-kicker">Portal NKL · guia prático</p>
+        <p className="ebook-kicker">Portal NKL · amostra gratuita ({ENGLISH_EBOOK_SAMPLE_LESSON_COUNT} lições)</p>
         <h1>Inglês<br /><em>para ganhar dinheiro</em></h1>
         <p className="ebook-cover-subtitle">Como transformar o inglês em mais possibilidades de estudo, trabalho e renda.</p>
         <div className="ebook-cover-rule" />
-        <p className="ebook-cover-foot">Um plano simples para começar, praticar e continuar.</p>
+        <p className="ebook-cover-foot">100 lições · 500 exemplos coloridos · diálogos e pronúncia</p>
         <PageNumber number={1} />
       </section>
 
@@ -72,7 +89,7 @@ export default async function EnglishEbookPage() {
           <li><strong>Fale em voz alta.</strong> A boca também precisa treinar.</li>
           <li><strong>Marque seu progresso.</strong> Pequenas repetições viram confiança.</li>
         </ol>
-        <p className="ebook-muted">As lições a seguir formam um caderno contínuo: cada uma tem cinco exemplos, uma explicação e uma tarefa. No PDF, o texto flui para aproveitar melhor cada página.</p>
+        <p className="ebook-muted">Nesta amostra gratuita você estuda as 5 primeiras lições completas com exemplos coloridos e pronúncia, além de consultar o sumário das 100 lições.</p>
         <PageNumber number={3} />
       </section>
 
@@ -124,19 +141,28 @@ export default async function EnglishEbookPage() {
 
       <section className="ebook-page ebook-reading">
         <header className="ebook-reading-intro">
-          <p className="ebook-kicker">Caderno de prática</p>
+          <p className="ebook-kicker">Amostra gratuita · Lições 01 a 05</p>
           <h2>Leia. Fale. Adapte. Repita.</h2>
-          <p>Não passe os olhos pelos exemplos como quem lê uma lista. Escolha dois, troque as palavras por informações suas e diga as novas versões em voz alta.</p>
+          <p>Experimente as {ENGLISH_EBOOK_SAMPLE_LESSON_COUNT} primeiras lições completas abaixo. Escolha dois exemplos por lição, troque as palavras por informações suas e diga as novas versões em voz alta.</p>
         </header>
-        {lessons.map((lesson) => (
+        {sampleLessons.map((lesson) => (
           <section className="ebook-lesson" key={lesson.number}>
             <header className="ebook-lesson-header">
               <span className="ebook-lesson-number">{String(lesson.number).padStart(2, '0')}</span>
-              <p className="ebook-kicker">Lição {lesson.number}</p>
+              <p className="ebook-kicker">Lição {lesson.number} · Amostra liberada</p>
             </header>
             <h2>{lesson.title}</h2>
             {lesson.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-            {lesson.bullets[0] && <a className="ebook-audio-link" href={`https://youglish.com/pronounce/${encodeURIComponent(splitEnglishExample(lesson.bullets[0]).english)}/english`} target="_blank" rel="noreferrer">▶ Ouvir a pronúncia nativa no YouGlish</a>}
+            {lesson.bullets[0] && (
+              <a
+                className="ebook-audio-link"
+                href={`https://youglish.com/pronounce/${encodeURIComponent(splitEnglishExample(lesson.bullets[0]).english)}/english`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ouvir a pronúncia nativa no YouGlish
+              </a>
+            )}
             {lesson.bullets.length > 0 && (
               <div className="ebook-examples">
                 <strong>5 exemplos para falar agora</strong>
@@ -147,7 +173,12 @@ export default async function EnglishEbookPage() {
                       <li key={bullet}>
                         {example.portuguese && (() => {
                           const colored = tokenizeBilingualExample(example.english, example.portuguese);
-                          return <><strong className="ebook-example-english"><ColoredExample tokens={colored.english} /></strong><span className="ebook-example-portuguese"><ColoredExample tokens={colored.portuguese} /></span></>;
+                          return (
+                            <>
+                              <strong className="ebook-example-english"><ColoredExample tokens={colored.english} /></strong>
+                              <span className="ebook-example-portuguese"><ColoredExample tokens={colored.portuguese} /></span>
+                            </>
+                          );
                         })()}
                       </li>
                     );
@@ -161,7 +192,60 @@ export default async function EnglishEbookPage() {
             </div>
           </section>
         ))}
-        <PageNumber number={4} />
+        <PageNumber number={8} />
+      </section>
+
+      <section className="ebook-page ebook-reading">
+        <header className="ebook-reading-intro">
+          <p className="ebook-kicker">Sumário completo · Lições 06 a {totalLessons}</p>
+          <h2>Desbloqueie as {lockedLessons.length} lições seguintes na edição completa.</h2>
+          <p>
+            As lições 6 a {totalLessons} fazem parte da edição completa do e-book <strong>Inglês para ganhar dinheiro</strong>.
+            Confira o currículo completo abaixo e libere seu arquivo digital personalizado.
+          </p>
+        </header>
+
+        <div className="ebook-callout" style={{ marginBottom: '1.5rem' }}>
+          <strong>O que você recebe ao liberar a edição completa (R$ 47)</strong>
+          <ul className="ebook-steps" style={{ marginTop: '0.5rem' }}>
+            {valueHighlights.map((item) => (
+              <li key={item} style={{ fontSize: '12.5pt' }}>{item}</li>
+            ))}
+          </ul>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.85rem' }}>
+            <Link href="/guias/ingles#checkout" className="ebook-control-button" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+              Comprar edição completa por R$ 47
+            </Link>
+            <Link href="/guias/ingles" className="ebook-control-link" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              Ver página completa da oferta
+            </Link>
+          </div>
+        </div>
+
+        <ol className="ebook-steps" aria-label="Currículo bloqueado das lições 6 a 100">
+          {lockedLessons.map((lesson) => (
+            <li key={lesson.number} style={{ fontSize: '12pt', marginTop: '0.45rem' }}>
+              <strong>Lição {String(lesson.number).padStart(2, '0')}:</strong> {lesson.title}{' '}
+              <span className="ebook-muted" style={{ fontSize: '10pt' }}>[Bloqueada na amostra · edição completa]</span>
+            </li>
+          ))}
+        </ol>
+
+        <div className="ebook-practice" style={{ marginTop: '2rem' }}>
+          <strong>Pronto para destravar todas as {totalLessons} lições?</strong>
+          <span>
+            Garanta o e-book completo com {totalLessons} lições, {totalExamples} exemplos coloridos, diálogos, pronúncia e download imediato em PDF A5 personalizado por CPF após confirmação do pagamento.
+          </span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.75rem' }}>
+            <Link href="/guias/ingles#checkout" className="ebook-control-button" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+              Desbloquear as 100 lições agora (R$ 47)
+            </Link>
+            <Link href="/guias/ingles" className="ebook-control-link" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              Voltar para /guias/ingles
+            </Link>
+          </div>
+        </div>
+        <PageNumber number={9} />
       </section>
     </main>
   );

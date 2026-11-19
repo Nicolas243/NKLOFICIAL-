@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
-const outputDir = path.join(process.cwd(), 'public', 'guias');
+const outputDir = path.join(process.cwd(), 'private-assets', 'guias');
 const colors = ['#172235', '#2563a8', '#c76538', '#16805b', '#7b4bb7'];
 const languages = {
   italiano: {
@@ -36,7 +36,7 @@ const escapeHtml = (value) => value.replace(/&/gu, '&amp;').replace(/</gu, '&lt;
 const colorWords = (value) => value.split(/(\s+)/u).map((part, index) => /\S/u.test(part)
   ? `<span style="color:${colors[Math.floor(index / 2) % colors.length]}">${escapeHtml(part)}</span>`
   : part).join('');
-const examplesFor = (language, lessonNumber) => language.pairs.map(([target, portuguese], index) => {
+const examplesFor = (language, lessonNumber) => language.pairs.map(([target, portuguese]) => {
   const suffix = lessonNumber > language.topics.length ? ` (${lessonNumber})` : '';
   return { target: `${target.replace(/[.!?]$/u, '')}${suffix}${target.endsWith('?') ? '' : '.'}`, portuguese };
 });

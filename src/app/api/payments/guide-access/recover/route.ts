@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { and, eq, or } from 'drizzle-orm';
+import { and, desc, eq, or } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { guidePurchases, guideSubscriptions } from '@/db/schema';
@@ -40,7 +40,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }).from(guidePurchases).where(and(
     eq(guidePurchases.status, 'approved'),
     or(eq(guidePurchases.guestEmail, email), eq(guidePurchases.email, email)),
-  )).orderBy(guidePurchases.createdAt).limit(1);
+  )).orderBy(desc(guidePurchases.createdAt)).limit(1);
   const [subscription] = purchase ? [] : await db.select({
     id: guideSubscriptions.id,
     guestEmail: guideSubscriptions.guestEmail,
@@ -48,7 +48,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }).from(guideSubscriptions).where(and(
     eq(guideSubscriptions.status, 'active'),
     or(eq(guideSubscriptions.guestEmail, email), eq(guideSubscriptions.email, email)),
-  )).orderBy(guideSubscriptions.createdAt).limit(1);
+  )).orderBy(desc(guideSubscriptions.createdAt)).limit(1);
 
   const access = purchase ? { kind: 'purchase' as const, ...purchase } : subscription
     ? { kind: 'subscription' as const, ...subscription }

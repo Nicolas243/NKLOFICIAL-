@@ -35,12 +35,12 @@ export default function EnglishGuideSalesPage() {
           </div>
           <p className="mt-6 text-sm leading-relaxed text-foreground/65">O material ensina possibilidades, não garante renda ou contratação. Após a confirmação do pagamento, você recebe o e-book digital personalizado com seus dados de compra como marca d’água de proteção.</p>
         </section>
-        <aside className="rounded-2xl border border-orange/30 bg-income-surface p-6 shadow-[var(--card-shadow)] md:sticky md:top-24 md:p-8">
+        <aside id="checkout" className="rounded-2xl border border-orange/30 bg-income-surface p-6 shadow-[var(--card-shadow)] md:sticky md:top-24 md:p-8">
           <p className="text-sm font-bold text-orange">Oferta de lançamento</p>
           <p className="mt-3 font-playfair text-5xl font-bold">R$ 47</p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/70">Pagamento único · material digital · acesso para ler no celular</p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground/70">Pagamento único · 100 lições e 500 exemplos coloridos · PDF A5 personalizado por CPF</p>
           <GuideCheckoutButton label="Comprar e receber o e-book" offerVariant="english-ebook-sales-page" />
-          <Link href="/guias/ingles/ebook" className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-5 py-3 text-sm font-bold hover:border-orange hover:text-orange">Abrir prévia paginada</Link>
+          <Link href="/guias/ingles/ebook" className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-5 py-3 text-sm font-bold hover:border-orange hover:text-orange">Ler amostra gratuita (5 lições)</Link>
           <p className="mt-3 text-center text-xs leading-relaxed text-foreground/55">Pagamento único de R$ 47 pelo Stripe. O acesso é liberado após a confirmação.</p>
         </aside>
       </div>

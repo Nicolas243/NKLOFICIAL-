@@ -188,8 +188,11 @@ export default function EnglishLearningPage() {
         <p className="mt-3 max-w-3xl leading-relaxed text-foreground/70">Faça 20 minutos, cinco dias por semana: 5 minutos de revisão, 10 de contato com inglês e 5 de produção. Perdeu um dia? Retome no próximo. Consistência não é nunca falhar; é voltar.</p>
         <div className="mt-7 grid gap-3 md:grid-cols-2">{weeks.map(([title, text]) => <article key={title} className="rounded-xl border border-border bg-surface/75 p-4"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p></article>)}</div>
         <div className="mt-6 flex flex-col gap-3 rounded-xl border border-orange/25 bg-orange/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm leading-relaxed text-foreground/75"><strong>Quer seguir sem montar o plano sozinho?</strong> O e-book transforma esta progressão em lições prontas para executar.</p>
-          <Link href="/guias/ingles/ebook" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md border border-orange px-4 py-2 text-sm font-bold text-orange hover:bg-orange hover:text-white">Ver as lições do e-book</Link>
+          <p className="text-sm leading-relaxed text-foreground/75"><strong>Quer seguir sem montar o plano sozinho?</strong> O e-book completo organiza 100 lições prontas para executar, e você pode começar pelas 5 primeiras gratuitamente.</p>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/guias/ingles/ebook" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md border border-orange px-4 py-2 text-sm font-bold text-orange hover:bg-orange hover:text-white">Ler amostra gratuita (5 lições)</Link>
+            <Link href="/guias/ingles" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md bg-orange px-4 py-2 text-sm font-bold text-white hover:bg-orange-dark">Ver e-book completo (R$ 47)</Link>
+          </div>
         </div>
       </section>
 
@@ -218,11 +221,33 @@ export default function EnglishLearningPage() {
           <ol className="mt-5 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-foreground/75"><li>Escolha uma frase deste guia.</li><li>Adapte para sua vida.</li><li>Grave e escreva a versão.</li><li>Revise amanhã.</li><li>Depois de sete dias, use em uma conversa ou mensagem.</li></ol>
         </div>
         <aside className="rounded-2xl border border-orange/30 bg-orange/5 p-5 md:p-8">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Quer um roteiro no papel?</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Quer um roteiro completo?</p>
           <h2 className="mt-3 font-playfair text-3xl font-bold">Leve este método para o e-book.</h2>
-          <p className="mt-3 text-sm leading-relaxed text-foreground/75">O <strong>Inglês para ganhar dinheiro</strong> organiza lições, exemplos e tarefas para você praticar sem se perder.</p>
-          <Link href="/guias/ingles/ebook" className="mt-5 inline-flex min-h-11 items-center rounded-md bg-orange px-5 py-3 text-sm font-bold text-white hover:bg-orange-dark">Abrir o e-book gratuito ↗</Link>
+          <p className="mt-3 text-sm leading-relaxed text-foreground/75">O <strong>Inglês para ganhar dinheiro</strong> reúne 100 lições, 500 exemplos coloridos, diálogos e pronúncia. Experimente as 5 primeiras lições gratuitamente ou adquira a edição completa em PDF A5 personalizado.</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link href="/guias/ingles/ebook" className="inline-flex min-h-11 items-center rounded-md border border-orange px-4 py-3 text-sm font-bold text-orange hover:bg-orange hover:text-white">Ler amostra gratuita (5 lições)</Link>
+            <Link href="/guias/ingles" className="inline-flex min-h-11 items-center rounded-md bg-orange px-5 py-3 text-sm font-bold text-white hover:bg-orange-dark">Adquirir e-book completo (R$ 47)</Link>
+          </div>
         </aside>
+      </section>
+
+      <section className="mt-8 rounded-2xl border border-border bg-surface p-5 md:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Estude outros idiomas no Portal NKL</p>
+        <h2 className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Guias gratuitos de estudo em mais 5 idiomas</h2>
+        <p className="mt-2 text-sm leading-relaxed text-foreground/70">Explore frases funcionais, pronúncia, plano de 90 dias e exercícios práticos nas outras páginas da série:</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {[
+            ['/blog/aprender/espanhol', 'Aprender Espanhol'],
+            ['/blog/aprender/frances', 'Aprender Francês'],
+            ['/blog/aprender/italiano', 'Aprender Italiano'],
+            ['/blog/aprender/alemao', 'Aprender Alemão'],
+            ['/blog/aprender/chines', 'Aprender Mandarim'],
+          ].map(([href, label]) => (
+            <Link key={href} href={href} className="rounded-full border border-border bg-background px-4 py-2 text-sm font-bold transition hover:border-orange hover:text-orange">
+              {label}
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="mt-8 rounded-2xl border border-orange/30 bg-income-surface p-5 md:p-8">

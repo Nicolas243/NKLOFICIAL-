@@ -180,3 +180,35 @@ export async function readEnglishEbookLessons(): Promise<EnglishEbookLesson[]> {
   flushParagraph();
   return lessons;
 }
+
+export const ENGLISH_EBOOK_SAMPLE_LESSON_COUNT = 5;
+
+export type EnglishEbookLockedLessonSummary = {
+  number: number;
+  title: string;
+};
+
+export type EnglishEbookPublicSample = {
+  sampleLessons: EnglishEbookLesson[];
+  lockedLessons: EnglishEbookLockedLessonSummary[];
+  totalLessons: number;
+  totalExamples: number;
+};
+
+export async function readEnglishEbookPublicSample(): Promise<EnglishEbookPublicSample> {
+  const lessons = await readEnglishEbookLessons();
+  const sampleLessons = lessons.slice(0, ENGLISH_EBOOK_SAMPLE_LESSON_COUNT);
+  const lockedLessons = lessons
+    .slice(ENGLISH_EBOOK_SAMPLE_LESSON_COUNT)
+    .map((lesson) => ({
+      number: lesson.number,
+      title: lesson.title,
+    }));
+
+  return {
+    sampleLessons,
+    lockedLessons,
+    totalLessons: lessons.length,
+    totalExamples: lessons.reduce((total, lesson) => total + Math.min(lesson.bullets.length, 5), 0),
+  };
+}
