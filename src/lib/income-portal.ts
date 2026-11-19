@@ -37,3 +37,42 @@ export function isIncomePortalPath(pathname: string): boolean {
 export function isIncomeCatalogPath(pathname: string): boolean {
   return isIncomePortalPath(pathname);
 }
+
+export type PortalSurface = 'home' | 'music' | 'ecosystem';
+
+export const MUSIC_PORTAL_HOME = '/musica/naipe_cordas';
+
+/** Rotas que pertencem ao universo musical (cabecalho, parallax e rodape de cordas). */
+const MUSIC_PORTAL_ROUTES = [
+  '/musica',
+  '/catalogo',
+  '/luthiers',
+  '/professores',
+  '/comparar',
+  '/guia-de-cordas',
+  '/clinica',
+  '/fisica-do-som',
+  '/recomendados',
+  '/lojas',
+  '/noticias',
+  '/meu-setup',
+  '/contatos',
+  '/dashboard/luthier',
+  '/dashboard/professor',
+] as const;
+
+export function isMusicPortalPath(pathname: string): boolean {
+  return MUSIC_PORTAL_ROUTES.some((route) => isRouteOrChild(pathname, route));
+}
+
+/**
+ * Superficie visual de uma rota:
+ * - `home`: Portal Base (`/`), sem cabecalho tradicional;
+ * - `music`: cordas e luthieria (cabecalho, parallax e rodape musicais);
+ * - `ecosystem`: todo o resto (IA, idiomas, quiz, guias, renda extra, institucional).
+ */
+export function getPortalSurface(pathname: string): PortalSurface {
+  if (pathname === '/' || pathname === '') return 'home';
+  if (isMusicPortalPath(pathname)) return 'music';
+  return 'ecosystem';
+}

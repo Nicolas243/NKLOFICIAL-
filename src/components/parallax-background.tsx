@@ -2,16 +2,17 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { isIncomePortalPath } from '@/lib/income-portal';
+import { getPortalSurface } from '@/lib/income-portal';
 
 const PARALLAX_SPEEDS = [-0.08, -0.18, -0.28] as const;
 
 export function ParallaxBackground() {
   const pathname = usePathname();
   const layers = useRef<Array<HTMLDivElement | null>>([]);
-  const isPartnerPortal = isIncomePortalPath(pathname);
+  const surface = getPortalSurface(pathname);
 
   useEffect(() => {
+    if (surface === 'home') return;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame: number | undefined;
 
@@ -41,9 +42,13 @@ export function ParallaxBackground() {
       window.removeEventListener('scroll', handleScroll);
       if (frame !== undefined) window.cancelAnimationFrame(frame);
     };
-  }, [isPartnerPortal]);
+  }, [surface]);
 
-  if (isPartnerPortal) {
+  if (surface === 'home') {
+    return null;
+  }
+
+  if (surface === 'ecosystem') {
     return (
       <div className="income-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
         <div

@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { useSessionUser } from '@/components/use-session-user'
+import { MUSIC_PORTAL_HOME } from '@/lib/income-portal'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -27,49 +28,64 @@ const groups = [
 ]
 
 /**
- * Tarefa 4 — fallback do menu hambúrguer no canto superior esquerdo da Home
- * (o Header principal é ocultado na Home em favor do menu radial).
+ * Menu rapido de atalhos do Naipe de Cordas (/musica/naipe_cordas).
+ * Nao renderiza na Portal Base Home (/), onde vigora AC-002.
  */
 export function HomeMenuFallback() {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const { user, loading: sessionLoading } = useSessionUser()
 
   useEffect(() => {
     const fn = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
+    const onScroll = () => setScrolled(window.scrollY > 80)
     document.addEventListener('mousedown', fn)
-    return () => document.removeEventListener('mousedown', fn)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      document.removeEventListener('mousedown', fn)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
+  if (pathname === '/') return null
+
   return (
-    <div ref={ref} className="fixed top-3 left-3 z-[200] flex items-start gap-2">
+    <div
+      ref={ref}
+      className={
+        scrolled
+          ? 'fixed top-3 left-3 z-[200] flex items-start gap-2'
+          : 'relative z-30 -mb-14 flex items-start gap-2 self-start pt-2'
+      }
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Menu de navegação"
+        aria-expanded={open}
         className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-surface/90 shadow-sm transition-colors hover:border-orange hover:bg-accent"
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
-      {!sessionLoading && (
-        <Link
-          href={user ? '/perfil' : '/login?area=music'}
-          className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface/90 px-3 text-sm font-bold shadow-sm transition-colors hover:border-orange hover:bg-accent"
-        >
-          {user ? 'Perfil' : 'Entrar'}
-        </Link>
-      )}
 
       {open && (
         <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-surface border border-border rounded-xl shadow-xl p-4 flex flex-col gap-3">
           <Link
-            href="/"
+            href={MUSIC_PORTAL_HOME}
             onClick={() => setOpen(false)}
             className="font-playfair font-bold hover:text-neon transition-colors"
           >
-            Home
+            Naipe de Cordas
+          </Link>
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="text-xs font-semibold uppercase tracking-wider text-neon hover:underline"
+          >
+            Portal NKL (Início)
           </Link>
           {groups.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
