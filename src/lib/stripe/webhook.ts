@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import {
+  aiAccessGrants,
   classBookings,
   adCampaigns,
   adInventorySlots,
@@ -14,18 +15,27 @@ import {
   userProfiles,
 } from '@/db/schema';
 import { env } from '@/env';
+import { AI_PRODUCT_KEY } from '@/lib/ai-product';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 import { getOfferExperimentFromVariant, parseValidatedOfferVariant } from '@/lib/offer-experiment';
 import {
   getStripeReference,
+  normalizeAiSubscriptionStatus,
   normalizeStripeSubscriptionStatus,
   parseStripePeriodEnd,
+  type AiGrantStatus,
   type StripeReference,
 } from './webhook-helpers';
 import { getStripeClient } from './server';
 
-export { getStripeReference, normalizeStripeSubscriptionStatus, parseStripePeriodEnd } from './webhook-helpers';
+export {
+  getStripeReference,
+  normalizeAiSubscriptionStatus,
+  normalizeStripeSubscriptionStatus,
+  parseClientReferenceId,
+  parseStripePeriodEnd,
+} from './webhook-helpers';
 
 function getOfferExperiment(offerVariant: string | null): { experiment: string; variant: string } | null {
   return getOfferExperimentFromVariant(parseValidatedOfferVariant(offerVariant));
@@ -168,6 +178,72 @@ async function processAdRiskEvent(
     reviewNotes,
     updatedAt: new Date(),
   }).where(eq(adCampaigns.id, reference.id));
+  await db.update(adInventorySlots).set({
+    campaignId: null,
+    updatedAt: new Date(),
+  }).where(eq(adInventorySlots.campaignId, reference.id));
+}
+
+async function processAiOneTimePurchase(
+  session: Stripe.Checkout.Session,
+  reference: StripeReference,
+): Promise<void> {
+  const customerId = typeof session.customer === 'string'
+    ? session.customer
+    : session.customer?.id ?? null;
+  await db.insert(aiAccessGrants).values({
+    userId: reference.id,
+    productKey: AI_PRODUCT_KEY,
+    plan: 'one_time',
+    status: 'active',
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: session.id,
+    accessUntil: null,
+  }).onConflictDoUpdate({
+    target: [aiAccessGrants.userId, aiAccessGrants.productKey],
+    set: {
+      plan: 'one_time',
+      status: 'active',
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: session.id,
+      accessUntil: null,
+      updatedAt: new Date(),
+    },
+  });
+}
+
+async function processAiSubscription(
+  subscription: Stripe.Subscription,
+  reference: StripeReference,
+  statusOverride?: AiGrantStatus,
+): Promise<void> {
+  const customerId = typeof subscription.customer === 'string'
+    ? subscription.customer
+    : subscription.customer?.id ?? null;
+  const accessUntil = parseStripePeriodEnd(
+    subscription.items.data[0]?.current_period_end,
+  );
+  const status = statusOverride ?? normalizeAiSubscriptionStatus(subscription);
+
+  await db.insert(aiAccessGrants).values({
+    userId: reference.id,
+    productKey: AI_PRODUCT_KEY,
+    plan: 'subscription',
+    status,
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscription.id,
+    accessUntil,
+  }).onConflictDoUpdate({
+    target: [aiAccessGrants.userId, aiAccessGrants.productKey],
+    set: {
+      plan: 'subscription',
+      status,
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: subscription.id,
+      accessUntil,
+      updatedAt: new Date(),
+    },
+  });
 }
 
 async function processChargeRiskEvent(
@@ -265,12 +341,14 @@ async function processBooking(session: Stripe.Checkout.Session, reference: Strip
 }
 
 async function processCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
-  const reference = getStripeReference(session.metadata);
+  const reference = getStripeReference(session.metadata, session.client_reference_id);
   if (!reference) throw new Error('Stripe Checkout session is missing valid domain metadata.');
   if (reference.type === 'guide_purchase' && session.payment_status === 'paid') {
     await processGuidePurchase(session, reference);
   } else if (reference.type === 'booking' && session.payment_status === 'paid') {
     await processBooking(session, reference);
+  } else if (reference.type === 'ai_one_time' && session.payment_status === 'paid') {
+    await processAiOneTimePurchase(session, reference);
   } else if (reference.type === 'guide_subscription' && typeof session.subscription === 'string') {
     const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
     await processGuideSubscription(subscription, reference);
@@ -280,6 +358,9 @@ async function processCheckoutCompleted(session: Stripe.Checkout.Session): Promi
   } else if (reference.type === 'ad_campaign' && typeof session.subscription === 'string') {
     const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
     await processAdCampaignSubscription(subscription, reference);
+  } else if (reference.type === 'ai_subscription' && typeof session.subscription === 'string') {
+    const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
+    await processAiSubscription(subscription, reference, 'active');
   }
 }
 
@@ -305,6 +386,10 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
         if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);
+        if (reference.type === 'ai_subscription') {
+          const statusOverride = event.type === 'customer.subscription.deleted' ? 'canceled' : undefined;
+          await processAiSubscription(subscription, reference, statusOverride);
+        }
         return;
       }
       case 'invoice.paid':
@@ -323,6 +408,15 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
         if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);
+        if (reference.type === 'ai_subscription') {
+          const statusOverride = event.type === 'invoice.payment_failed'
+            ? 'past_due'
+            : normalizeAiSubscriptionStatus({
+              status: 'active',
+              cancel_at_period_end: subscription.cancel_at_period_end,
+            });
+          await processAiSubscription(subscription, reference, statusOverride);
+        }
         return;
       }
       case 'charge.refunded': {

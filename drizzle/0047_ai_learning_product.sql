@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS "ai_course_lessons" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ai_access_grants" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-  "user_id" uuid NOT NULL REFERENCES "user_profiles"("id"),
+  "user_id" uuid NOT NULL REFERENCES "user_profiles"("id") ON DELETE CASCADE,
   "product_key" varchar(80) NOT NULL,
   "plan" "ai_access_plan" NOT NULL,
   "status" "ai_access_status" NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS "ai_access_grants" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ai_learning_progress" (
-  "user_id" uuid NOT NULL REFERENCES "user_profiles"("id"),
+  "user_id" uuid NOT NULL REFERENCES "user_profiles"("id") ON DELETE CASCADE,
   "lesson_slug" varchar(120) NOT NULL,
   "completed_at" timestamp DEFAULT now() NOT NULL,
   CONSTRAINT "ai_learning_progress_pk" PRIMARY KEY("user_id", "lesson_slug")

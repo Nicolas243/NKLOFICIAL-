@@ -9,7 +9,7 @@ import { aiAccessGrants, aiLearningProgress } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import { AI_PRODUCT_KEY } from '@/lib/ai-product';
 import { canAccessAiProduct } from '@/lib/ai-access';
-import { getAiCourseLessons, type AiProgress } from '@/lib/ai-course';
+import { calculateAiProgress, getAiCourseLessons, type AiProgress } from '@/lib/ai-course';
 
 const lessonSchema = z.object({
   lessonSlug: z.string().trim().min(1).max(120),
@@ -69,17 +69,12 @@ export async function getAiLearningAccess(): Promise<AiLearningAccess> {
       ))
     : [];
   const completedLessonIds = completedRows.map((row) => row.lessonSlug);
-  const completedSet = new Set(completedLessonIds);
 
   return {
     userId,
     hasAccess,
     completedLessonIds,
-    progress: {
-      completed: completedSet.size,
-      total: lessonIds.length,
-      percentage: lessonIds.length === 0 ? 0 : Math.round((completedSet.size / lessonIds.length) * 100),
-    },
+    progress: calculateAiProgress(completedLessonIds, lessonIds),
   };
 }
 
@@ -108,7 +103,7 @@ export async function completeAiLesson(input: unknown): Promise<{ success: true 
   });
 
   revalidatePath('/ia/curso');
-  revalidatePath(`/ia/curso/${lesson.id}`);
+  revalidatePath(`/ia/curso/${lesson.moduleSlug}`);
   revalidatePath('/ia/progresso');
 
   return { success: true };

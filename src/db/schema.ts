@@ -15,6 +15,11 @@ export type CalculatedQuizProfile = {
   social: number;
 };
 
+export type PersistedQuizProfile = CalculatedQuizProfile & {
+  archetype?: string;
+  top3Businesses?: Array<{ slug: string; title: string } | string>;
+};
+
 export const aiCourseLessons = pgTable('ai_course_lessons', {
   id: uuid('id').defaultRandom().primaryKey(),
   moduleSlug: varchar('module_slug', { length: 80 }).notNull(),
@@ -28,7 +33,7 @@ export const aiCourseLessons = pgTable('ai_course_lessons', {
 
 export const aiAccessGrants = pgTable('ai_access_grants', {
   id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => userProfiles.id).notNull(),
+  userId: uuid('user_id').references(() => userProfiles.id, { onDelete: 'cascade' }).notNull(),
   productKey: varchar('product_key', { length: 80 }).notNull(),
   plan: aiAccessPlanEnum('plan').notNull(),
   status: aiAccessStatusEnum('status').notNull(),
@@ -43,7 +48,7 @@ export const aiAccessGrants = pgTable('ai_access_grants', {
 ]);
 
 export const aiLearningProgress = pgTable('ai_learning_progress', {
-  userId: uuid('user_id').references(() => userProfiles.id).notNull(),
+  userId: uuid('user_id').references(() => userProfiles.id, { onDelete: 'cascade' }).notNull(),
   lessonSlug: varchar('lesson_slug', { length: 120 }).notNull(),
   completedAt: timestamp('completed_at').defaultNow().notNull(),
 }, (table) => [
@@ -229,7 +234,7 @@ export const quizLeads = pgTable('quiz_leads', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull(),
   answersJsonb: jsonb('answers_jsonb').$type<QuizAnswerMap>().notNull(),
-  calculatedProfile: jsonb('calculated_profile').$type<CalculatedQuizProfile>().notNull(),
+  calculatedProfile: jsonb('calculated_profile').$type<PersistedQuizProfile>().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   index('quiz_leads_email_idx').on(table.email),
@@ -458,7 +463,9 @@ export const guidePurchases = pgTable('guide_purchases', {
   lastDownloadedAt: timestamp('last_downloaded_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => [
+  index('guide_purchases_guest_access_token_hash_idx').on(table.guestAccessTokenHash),
+]);
 
 export const guideSubscriptions = pgTable('guide_subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -485,7 +492,9 @@ export const guideSubscriptions = pgTable('guide_subscriptions', {
   currentPeriodEnd: timestamp('current_period_end'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+}, (table) => [
+  index('guide_subscriptions_guest_access_token_hash_idx').on(table.guestAccessTokenHash),
+]);
 
 export const guideDownloadAttempts = pgTable(
   'guide_download_attempts',

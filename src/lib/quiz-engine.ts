@@ -8,6 +8,8 @@ type BusinessProfile = {
   minTimeHours: number;
   techLevel: 'low' | 'medium' | 'high';
   riskLevel: 'low' | 'medium' | 'high';
+  socialLevel?: 'low' | 'medium' | 'high';
+  requiredSocial?: number;
 };
 
 const AXES: QuizAxis[] = ['capital', 'time', 'tech', 'risk', 'social'];
@@ -39,13 +41,45 @@ function levelDistance(value: number, level: BusinessProfile['techLevel'] | Busi
   return Math.abs(value - target);
 }
 
+export function resolveRequiredSocial(profile: BusinessProfile): number {
+  if (typeof profile.requiredSocial === 'number' && Number.isFinite(profile.requiredSocial)) {
+    return Math.min(5, Math.max(1, profile.requiredSocial));
+  }
+  if (profile.socialLevel === 'low') return 1;
+  if (profile.socialLevel === 'medium') return 3;
+  if (profile.socialLevel === 'high') return 5;
+
+  const normalized = profile.name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+  if (/(ugc|conteudo|comunidade|camera|video|vendas|comunicacao|publico|influenc|mentoria|aula|consultoria)/.test(normalized)) {
+    return 5;
+  }
+  if (/(servico|cliente|atendimento|freelanc|agencia|parceria)/.test(normalized)) {
+    return 4;
+  }
+  if (/(usabilidade|entrevista|moderad)/.test(normalized)) {
+    return 3;
+  }
+  if (/(afiliado|trafego|anuncio)/.test(normalized)) {
+    return 2;
+  }
+  if (/(avaliacao de ia|dados|bastidor|back-office|silencios|automacao|codigo|programacao|tecnic)/.test(normalized)) {
+    return 1;
+  }
+
+  return 3;
+}
+
 function profileScore(profile: BusinessProfile, calculated: CalculatedQuizProfile): number {
   const capitalCapacity = calculated.capital * 500;
   const timeCapacity = calculated.time * 4;
   const capitalGap = Math.max(0, Number(profile.minCapital) - capitalCapacity) / 500;
   const timeGap = Math.max(0, profile.minTimeHours - timeCapacity) / 20;
   const levelGap = levelDistance(calculated.tech, profile.techLevel) + levelDistance(calculated.risk, profile.riskLevel);
-  const socialFit = Math.abs(calculated.social - 3) / 5;
+  const socialFit = Math.abs(calculated.social - resolveRequiredSocial(profile));
 
   return capitalGap * 4 + timeGap * 4 + levelGap + socialFit;
 }
