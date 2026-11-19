@@ -1,16 +1,33 @@
 {
-	"mcpServers": {
-		"google-analytics": {
-			"type": "stdio",
-			"command": "uvx",
-			"args": [
-				"--from",
-				"analytics-mcp==1.1.0",
-				"google-analytics-mcp"
-			],
-			"tools": [
-				"*"
-			]
-		}
-	}
+  "mcpServers": {
+    "google-analytics": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "analytics-mcp==1.1.0",
+        "google-analytics-mcp"
+      ]
+    },
+    "portal-nkl-deepseek": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./node_modules/tsx/dist/cli.mjs",
+        "./tools/deepseek-mcp.ts"
+      ]
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "cloudflare-api": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp"
+    }
+  }
 }

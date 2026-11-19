@@ -10,6 +10,11 @@ updated: 2026-11-19
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-007 (2026-11-19) Manifesto cross-IDE + sync nao destrutivo
+- Decisao: centralizar servidores MCP em `tools/ide-mcp-manifest.json` e sincronizar `.vscode/mcp.json`, `.mcp.json`, `.cursor/mcp.json` e `~/.gemini/config/mcp_config.json` via `scripts/sync-ide-configs.mjs`.
+- Motivo: compartilhar MCPs, CLIs (`ide:doctor`) e extensoes (`.vscode/extensions.json`) entre VS Code, Antigravity, Cursor e Claude Code sem apagar configuracoes previas do usuario.
+- Descartado: sobrescrever configs globais (`%APPDATA%\Code\User\mcp.json`) ou replicar `${input:clarity-api-token}` fora do VS Code.
+
 ## ADR-006 (2026-11-19) Memoria persistente `.ai-memory/` + skill de grafo
 - Decisao: memoria cross-IDE versionada em `.ai-memory/` consultada por BFS ponderado (`ai-memory-graph`).
 - Motivo: agentes recuperam so os nos conectados relevantes, sem varrer `docs/` inteiro; protocolo unico em AGENTS.md.

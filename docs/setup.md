@@ -268,3 +268,27 @@ Valide alterações com:
 ```powershell
 npm run test:deepseek-mcp
 ```
+
+## Sincronização cross-IDE (MCP, CLIs e extensões)
+
+O manifesto canônico sem segredos [tools/ide-mcp-manifest.json](../tools/ide-mcp-manifest.json)
+define os servidores MCP compartilhados do Portal NKL e seus alvos por IDE
+(`vscode`, `mcp-json`, `cursor`, `antigravity`). A sincronização preserva
+integralmente servidores já existentes em cada IDE (incluindo entradas globais
+do usuário e tokens interativos exclusivos do VS Code, como `${input:clarity-api-token}`).
+
+Comandos operacionais:
+
+```powershell
+npm run ide:sync        # mescla .vscode/mcp.json, .mcp.json, .cursor/mcp.json e ~/.gemini/config/mcp_config.json
+npm run ide:doctor      # diagnostica CLIs globais/locais, arquivos MCP e extensões instaladas
+npm run ide:extensions  # instala extensões recomendadas ausentes de .vscode/extensions.json
+npm run test:ide-sync   # executa testes unitários do sincronizador
+```
+
+A continuidade de contexto e regras entre VS Code (GitHub Copilot),
+Antigravity, Cursor e Claude Code é mantida em paralelo por `.ai-memory/`,
+`.agents/skills/ai-memory-graph/`, `AGENTS.md`, `CLAUDE.md` e
+`.github/copilot-instructions.md`. Plugins nativos do marketplace do
+Antigravity (como Vercel e Supabase) continuam gerenciados dentro do próprio
+Antigravity.

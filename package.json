@@ -19,7 +19,11 @@
     "video-factory": "tsx tools/nkl-video-factory.ts",
     "test:video-factory": "tsx --test tools/nkl-video-factory.test.ts",
     "guides:upload": "tsx scripts/upload-guide-assets.ts",
-    "guides:generate": "node scripts/generate-language-ebooks.mjs"
+    "guides:generate": "node scripts/generate-language-ebooks.mjs",
+    "ide:sync": "node scripts/sync-ide-configs.mjs sync",
+    "ide:doctor": "node scripts/sync-ide-configs.mjs doctor",
+    "ide:extensions": "node scripts/sync-ide-configs.mjs install-extensions",
+    "test:ide-sync": "node --test scripts/sync-ide-configs.test.mjs"
   },
   "dependencies": {
     "@cline/sdk": "^0.2.0",

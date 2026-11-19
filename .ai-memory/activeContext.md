@@ -12,8 +12,8 @@ Checklist detalhado em [[progress]]; decisoes em [[decisionsLog]]; roteiro execu
 
 ## Milestone atual
 
-Sprint overnight pre-deploy 100% concluida e verificada localmente em `master`:
-5 branches integradas sem conflitos + `npm run verify` verde + 199/199 testes unitarios + 46/46 testes E2E Playwright passando (1 skip conhecido Hotmart).
+Sprint overnight + sincronizacao cross-IDE concluidas localmente em `master`:
+5 branches integradas sem conflitos + manifesto/sync MCP/CLI/extensoes (`npm run ide:sync` / `ide:doctor`) preservando `.vscode/mcp.json` (`microsoft-clarity`, `cloudflare-api`) e configs globais + `npm run verify` verde + 199/199 testes unitarios + 46/46 E2E.
 
 ## Workstreams integradas em `master` (commits locais, sem push)
 

@@ -54,6 +54,7 @@
       ],
       "headings": [
         "Decisions Log - ADRs Concisos",
+        "ADR-007 (2026-11-19) Manifesto cross-IDE + sync nao destrutivo",
         "ADR-006 (2026-11-19) Memoria persistente .ai-memory/ + skill de grafo",
         "ADR-005 (2026-11-19) 5 e-books nao ingleses marcados coming-soon",
         "ADR-004 (2026-11-19) E-books pagos fora de public/guias/",
@@ -61,7 +62,7 @@
         "ADR-002 (2026-11-19) MCP local 9router desacoplado do Cline",
         "ADR-001 Stripe como autoridade de pagamento"
       ],
-      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: memoria cross-IDE versionada em `.ai-mem...",
+      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: centralizar servidores MCP em `tools/ide...",
       "outgoing": [
         "activeContext",
         "projectBrief",
@@ -381,7 +382,8 @@
         "Stripe CLI",
         "Fábrica local de vídeos",
         "NotebookLM",
-        "Worker MCP e rede NKL"
+        "Worker MCP e rede NKL",
+        "Sincronização cross-IDE (MCP, CLIs e extensões)"
       ],
       "excerpt": "O servidor local padrão usa `http://localhost:3000`. Verifique `/api/health` quando a alteração envolver banco ou configuração. `npm run hooks:enable` configura o Git local para usar `.githooks/pre-commit`, que execut...",
       "outgoing": [
@@ -2965,6 +2967,9 @@
     "adr-006": [
       "decisionsLog"
     ],
+    "adr-007": [
+      "decisionsLog"
+    ],
     "adrs": [
       "decisionsLog"
     ],
@@ -3171,6 +3176,7 @@
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/onboarding",
+      "docs/setup",
       "docs/spec-driven-workflow",
       "docs/specs/portal-nkl-base-home/adr",
       "docs/specs/portal-nkl-base-home/tasks",
@@ -3252,6 +3258,7 @@
       "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "progress",
       "systemPatterns",
       "techContext"
@@ -3260,6 +3267,7 @@
       "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "progress",
       "systemPatterns",
       "techContext"
@@ -3611,6 +3619,7 @@
     ],
     "alvos": [
       "docs/estado_atual",
+      "docs/setup",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
@@ -3921,6 +3930,10 @@
       "docs/ROADMAP-DEPLOY",
       "docs/architecture"
     ],
+    "antigravity": [
+      "decisionsLog",
+      "docs/setup"
+    ],
     "antiobjetivos": [
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
@@ -3997,6 +4010,7 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "apagar": [
+      "decisionsLog",
       "docs/ai-product-spec",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
@@ -4293,6 +4307,9 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design",
       "techContext"
+    ],
+    "appdata": [
+      "decisionsLog"
     ],
     "appear": [
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
@@ -6874,6 +6891,7 @@
       "docs/architecture",
       "docs/estado_atual",
       "docs/quality",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
@@ -7208,6 +7226,7 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "centralizar": [
+      "decisionsLog",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability",
@@ -7592,6 +7611,10 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "systemPatterns"
     ],
+    "clarity-api-token": [
+      "decisionsLog",
+      "docs/setup"
+    ],
     "claro": [
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
@@ -7639,7 +7662,9 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "claude": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "docs/toolkit-setup"
     ],
     "clean": [
@@ -7666,6 +7691,7 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "cli": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments",
@@ -7837,6 +7863,10 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
     ],
+    "clis": [
+      "decisionsLog",
+      "docs/setup"
+    ],
     "cloaking": [
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
@@ -7867,6 +7897,9 @@
       "docs/setup",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
+    ],
+    "cloudflare-api": [
+      "activeContext"
     ],
     "cls": [
       "docs/ROADMAP-DEPLOY"
@@ -7929,7 +7962,9 @@
       "techContext"
     ],
     "code": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "docs/spec-driven-workflow",
       "docs/superpowers/plans/2026-11-10-login-profile-recovery",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
@@ -8300,6 +8335,7 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "compartilhados": [
+      "docs/setup",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
     ],
     "compartilham": [
@@ -8316,6 +8352,7 @@
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
     ],
     "compartilhar": [
+      "decisionsLog",
       "docs/architecture",
       "docs/estado_atual",
       "docs/quality",
@@ -8676,10 +8713,10 @@
       "docs/setup"
     ],
     "concluida": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY"
     ],
     "concluidas": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
@@ -8845,6 +8882,7 @@
       "docs/ai-product-master-prompt"
     ],
     "config": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
       "docs/quality",
@@ -8855,6 +8893,10 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments",
       "progress",
       "techContext"
+    ],
+    "configs": [
+      "activeContext",
+      "decisionsLog"
     ],
     "configura": [
       "docs/setup"
@@ -8885,6 +8927,7 @@
       "techContext"
     ],
     "configuracoes": [
+      "decisionsLog",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "configurada": [
@@ -9106,7 +9149,6 @@
       "techContext"
     ],
     "conhecido": [
-      "activeContext",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "conhecidos": [
@@ -9719,7 +9761,8 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "continuidade": [
-      "docs/engenharia-no-cotidiano-master-prompt"
+      "docs/engenharia-no-cotidiano-master-prompt",
+      "docs/setup"
     ],
     "continuo": [
       "docs/ROADMAP-DEPLOY",
@@ -10007,11 +10050,13 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
     "copilot": [
+      "docs/setup",
       "docs/spec-driven-workflow",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
     ],
     "copilot-instructions": [
-      "docs/ROADMAP-DEPLOY"
+      "docs/ROADMAP-DEPLOY",
+      "docs/setup"
     ],
     "copy": [
       "docs/ai-product-master-prompt",
@@ -10625,6 +10670,7 @@
     "cross-ide": [
       "activeContext",
       "decisionsLog",
+      "docs/setup",
       "progress",
       "systemPatterns"
     ],
@@ -10786,6 +10832,10 @@
     ],
     "curso-ia": [
       "docs/portal-area-registry"
+    ],
+    "cursor": [
+      "decisionsLog",
+      "docs/setup"
     ],
     "cursos": [
       "docs/portal-area-registry",
@@ -11225,6 +11275,7 @@
       "docs/onboarding"
     ],
     "define": [
+      "docs/setup",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
@@ -11406,6 +11457,7 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
       "docs/estado_atual",
       "docs/quality",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -11899,6 +11951,12 @@
     "destructive": [
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
+    "destrutiva": [
+      "progress"
+    ],
+    "destrutivo": [
+      "decisionsLog"
+    ],
     "destrutivos": [
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
     ],
@@ -12075,6 +12133,9 @@
     ],
     "diagnostic": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
+    ],
+    "diagnostica": [
+      "docs/setup"
     ],
     "diagnosticado": [
       "docs/ROADMAP-DEPLOY"
@@ -12650,8 +12711,11 @@
       "techContext"
     ],
     "doctor": [
+      "activeContext",
+      "decisionsLog",
       "docs/quality",
-      "docs/setup"
+      "docs/setup",
+      "progress"
     ],
     "document": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -13726,6 +13790,7 @@
     "entradas": [
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "docs/specs/portal-nkl-base-home/spec"
     ],
     "entram": [
@@ -14826,6 +14891,9 @@
     "exclusivo": [
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
+    "exclusivos": [
+      "docs/setup"
+    ],
     "exe": [
       "docs/ROADMAP-DEPLOY"
     ],
@@ -15127,6 +15195,7 @@
       "docs/architecture",
       "docs/onboarding",
       "docs/quality",
+      "docs/setup",
       "docs/spec-driven-workflow",
       "docs/specs/portal-nkl-base-home/prd",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
@@ -15566,8 +15635,18 @@
     "extensionista": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
+    "extensions": [
+      "decisionsLog",
+      "docs/setup",
+      "progress"
+    ],
     "extensivo": [
       "docs/specs/portal-nkl-base-home/design"
+    ],
+    "extensoes": [
+      "activeContext",
+      "decisionsLog",
+      "docs/setup"
     ],
     "externa": [
       "docs/ai-product-master-prompt",
@@ -17318,6 +17397,10 @@
     "gelada": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
+    "gemini": [
+      "decisionsLog",
+      "docs/setup"
+    ],
     "general": [
       "docs/superpowers/specs/2026-11-09-program-offer-disclosure-design"
     ],
@@ -17435,6 +17518,9 @@
     "gerenciador": [
       "docs/setup"
     ],
+    "gerenciados": [
+      "docs/setup"
+    ],
     "gerenciar": [
       "docs/ROADMAP-DEPLOY"
     ],
@@ -17543,6 +17629,7 @@
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
       "docs/mcp-catalog",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
     ],
     "gitignore": [
@@ -17558,8 +17645,11 @@
       "docs/onboarding"
     ],
     "globais": [
+      "activeContext",
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design",
       "docs/toolkit-setup"
@@ -18569,7 +18659,6 @@
       "docs/estado_atual"
     ],
     "hotmart": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
       "docs/quality",
@@ -18775,6 +18864,20 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design",
       "systemPatterns"
+    ],
+    "ide": [
+      "activeContext",
+      "decisionsLog",
+      "docs/setup",
+      "progress"
+    ],
+    "ide-mcp-manifest": [
+      "decisionsLog",
+      "docs/setup",
+      "progress"
+    ],
+    "ide-sync": [
+      "docs/setup"
     ],
     "ideia": [
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -19319,6 +19422,7 @@
       "docs/architecture",
       "docs/portal-area-registry",
       "docs/quality",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
@@ -19783,6 +19887,8 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "input": [
+      "decisionsLog",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
@@ -19857,6 +19963,9 @@
     ],
     "instalada": [
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
+    ],
+    "instaladas": [
+      "docs/setup"
     ],
     "instalado": [
       "docs/toolkit-setup"
@@ -20022,7 +20131,8 @@
       "docs/architecture"
     ],
     "integralmente": [
-      "docs/ROADMAP-DEPLOY"
+      "docs/ROADMAP-DEPLOY",
+      "docs/setup"
     ],
     "integrando": [
       "docs/ROADMAP-DEPLOY"
@@ -20145,7 +20255,8 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "interativos": [
-      "docs/ROADMAP-DEPLOY"
+      "docs/ROADMAP-DEPLOY",
+      "docs/setup"
     ],
     "intercala": [
       "docs/architecture"
@@ -20666,6 +20777,8 @@
       "techContext"
     ],
     "json": [
+      "activeContext",
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/estado_atual",
@@ -20676,6 +20789,7 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design",
+      "progress",
       "systemPatterns"
     ],
     "json-ld": [
@@ -22081,6 +22195,11 @@
       "docs/site-flow-and-upload-checklist",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
+    "manifesto": [
+      "activeContext",
+      "decisionsLog",
+      "docs/setup"
+    ],
     "manifestos": [
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
@@ -22149,6 +22268,9 @@
     ],
     "mantera": [
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
+    ],
+    "mantida": [
+      "docs/setup"
     ],
     "mantido": [
       "docs/setup",
@@ -22314,6 +22436,7 @@
     ],
     "marketplace": [
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "projectBrief"
     ],
     "marketplaces": [
@@ -22449,6 +22572,7 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "mcp": [
+      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -22467,7 +22591,15 @@
       "docs/mcp-catalog",
       "techContext"
     ],
+    "mcp-json": [
+      "docs/setup"
+    ],
+    "mcp_config": [
+      "decisionsLog",
+      "docs/setup"
+    ],
     "mcps": [
+      "decisionsLog",
       "docs/mcp-catalog",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design",
@@ -22757,6 +22889,9 @@
     "mesa": [
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
+    "mescla": [
+      "docs/setup"
+    ],
     "mesma": [
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -22923,6 +23058,7 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
     "microsoft-clarity": [
+      "activeContext",
       "docs/mcp-catalog"
     ],
     "middleware": [
@@ -23129,8 +23265,10 @@
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
     ],
     "mjs": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
+      "progress",
       "techContext"
     ],
     "mm": [
@@ -23819,6 +23957,7 @@
       "techContext"
     ],
     "nativos": [
+      "docs/setup",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "natural": [
@@ -25433,6 +25572,7 @@
       "docs/toolkit-setup"
     ],
     "operacionais": [
+      "docs/setup",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/toolkit-setup"
     ],
@@ -26394,7 +26534,6 @@
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
     "passando": [
-      "activeContext",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
     ],
@@ -27307,7 +27446,6 @@
       "docs/specs/portal-nkl-base-home/design"
     ],
     "playwright": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/estado_atual",
@@ -27331,6 +27469,9 @@
     "plugin": [
       "docs/estado_atual",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
+    ],
+    "plugins": [
+      "docs/setup"
     ],
     "plus": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -27834,7 +27975,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "pre-deploy": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "progress"
     ],
@@ -28083,6 +28223,7 @@
     "preserva": [
       "docs/ai-product-spec",
       "docs/quality",
+      "docs/setup",
       "docs/specs/portal-nkl-base-home/design",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -28116,6 +28257,7 @@
       "docs/quality"
     ],
     "preservando": [
+      "activeContext",
       "decisionsLog",
       "docs/quality",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
@@ -28226,6 +28368,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "previas": [
+      "decisionsLog",
       "docs/ai-product-master-prompt"
     ],
     "preview": [
@@ -29119,6 +29262,7 @@
       "docs/estado_atual",
       "docs/portal-area-registry",
       "docs/quality",
+      "docs/setup",
       "docs/specs/portal-nkl-base-home/prd",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -30174,6 +30318,9 @@
     "recomendada": [
       "docs/site-flow-and-upload-checklist"
     ],
+    "recomendadas": [
+      "docs/setup"
+    ],
     "recomendado": [
       "docs/ROADMAP-DEPLOY",
       "docs/architecture"
@@ -30708,6 +30855,7 @@
       "docs/ai-product-spec",
       "docs/architecture",
       "docs/design",
+      "docs/setup",
       "docs/specs/portal-nkl-base-home/spec",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
@@ -31291,6 +31439,7 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "replicar": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY"
     ],
     "repo": [
@@ -33014,6 +33163,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "scripts": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/estado_atual",
@@ -33022,6 +33172,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
+      "progress",
       "techContext"
     ],
     "scroll": [
@@ -33769,7 +33920,9 @@
       "techContext"
     ],
     "servidores": [
-      "docs/mcp-catalog"
+      "decisionsLog",
+      "docs/mcp-catalog",
+      "docs/setup"
     ],
     "servira": [
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
@@ -34098,17 +34251,23 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "sincronizacao": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
-      "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
+      "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design",
+      "progress"
     ],
     "sincronizacoes": [
       "docs/setup"
     ],
     "sincronizado": [
       "docs/ROADMAP-DEPLOY"
+    ],
+    "sincronizador": [
+      "docs/setup"
     ],
     "sincronizam": [
       "docs/estado_atual"
@@ -34117,6 +34276,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "sincronizar": [
+      "decisionsLog",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
@@ -34223,13 +34383,11 @@
     "skills": [
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
+      "docs/setup",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design",
       "techContext"
-    ],
-    "skip": [
-      "activeContext"
     ],
     "skiplibcheck": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
@@ -34356,6 +34514,9 @@
     "sobrepostos": [
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
+    ],
+    "sobrescrever": [
+      "decisionsLog"
     ],
     "sobrescritas": [
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
@@ -35657,7 +35818,15 @@
       "docs/architecture"
     ],
     "sync": [
-      "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
+      "activeContext",
+      "decisionsLog",
+      "docs/setup",
+      "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
+      "progress"
+    ],
+    "sync-ide-configs": [
+      "decisionsLog",
+      "progress"
     ],
     "sync-subscriptions": [
       "docs/estado_atual",
@@ -36824,6 +36993,7 @@
       "docs/setup",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
+      "progress",
       "techContext"
     ],
     "top": [
@@ -37650,6 +37820,7 @@
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/quality",
+      "docs/setup",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design",
@@ -38042,6 +38213,7 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "user": [
+      "decisionsLog",
       "docs/estado_atual",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
@@ -38138,12 +38310,14 @@
     ],
     "usuario": [
       "activeContext",
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/estado_atual",
       "docs/mcp-catalog",
       "docs/quality",
+      "docs/setup",
       "docs/site-flow-and-upload-checklist",
       "docs/spec-driven-workflow",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -38730,7 +38904,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "verificada": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -39291,11 +39464,15 @@
       "docs/estado_atual"
     ],
     "vs": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
+      "docs/setup",
       "docs/spec-driven-workflow",
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "vscode": [
+      "activeContext",
+      "decisionsLog",
       "docs/mcp-catalog",
       "docs/setup"
     ],

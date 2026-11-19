@@ -1,13 +1,33 @@
 {
   "inputs": [
     {
-      "type": "promptString",
       "id": "clarity-api-token",
+      "type": "promptString",
       "description": "Microsoft Clarity Data Export API token",
       "password": true
     }
   ],
   "servers": {
+    "cloudflare-api": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "portal-nkl-deepseek": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+        "${workspaceFolder}/tools/deepseek-mcp.ts"
+      ]
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
     "microsoft-clarity": {
       "type": "stdio",
       "command": "npx",
@@ -15,6 +35,15 @@
         "-y",
         "@microsoft/clarity-mcp-server@2.0.1",
         "--clarity_api_token=${input:clarity-api-token}"
+      ]
+    },
+    "google-analytics": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "analytics-mcp==1.1.0",
+        "google-analytics-mcp"
       ]
     }
   }

@@ -31,6 +31,7 @@ gates de qualidade em [quality.md](../docs/quality.md); roteiro executivo em [RO
 - [x] Memoria `.ai-memory/` + skill `ai-memory-graph` + protocolo cross-IDE (`feat/memory-second-brain`).
 - [x] Integrar branches em `master`, alinhar E2E do mural (`e2e/ad-previews.spec.ts`) e validar `npm run verify` + 199 testes unitarios + 46 testes E2E Playwright.
 - [x] Roteiro executivo pre-deploy documentado em [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md).
+- [x] Sincronizacao cross-IDE nao destrutiva (`tools/ide-mcp-manifest.json`, `scripts/sync-ide-configs.mjs`, `ide:sync` / `ide:doctor` / `ide:extensions`).
 
 ## Proximas fases pre-deploy ([ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md))
 

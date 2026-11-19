@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "id": "clarity-api-token",
+      "type": "promptString",
+      "description": "Microsoft Clarity Data Export API token",
+      "password": true,
+      "targets": ["vscode"]
+    }
+  ],
+  "servers": {
+    "portal-nkl-deepseek": {
+      "transport": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/node_modules/tsx/dist/cli.mjs",
+        "${workspaceFolder}/tools/deepseek-mcp.ts"
+      ],
+      "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
+    },
+    "supabase": {
+      "transport": "http",
+      "url": "https://mcp.supabase.com/mcp",
+      "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
+    },
+    "vercel": {
+      "transport": "http",
+      "url": "https://mcp.vercel.com",
+      "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
+    },
+    "cloudflare-api": {
+      "transport": "http",
+      "url": "https://mcp.cloudflare.com/mcp",
+      "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
+    },
+    "microsoft-clarity": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@microsoft/clarity-mcp-server@2.0.1",
+        "--clarity_api_token=${input:clarity-api-token}"
+      ],
+      "targets": ["vscode"]
+    },
+    "google-analytics": {
+      "transport": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "analytics-mcp==1.1.0",
+        "google-analytics-mcp"
+      ],
+      "targets": ["vscode", "mcp-json", "cursor"]
+    }
+  }
+}

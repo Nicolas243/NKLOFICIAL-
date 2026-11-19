@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "github.copilot",
+    "github.copilot-chat",
+    "github.vscode-github-actions",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "rphlmr.vscode-drizzle-orm",
+    "ms-playwright.playwright",
+    "yoavbls.pretty-ts-errors",
+    "usernamehw.errorlens",
+    "stripe.vscode-stripe",
+    "supabase.vscode-supabase-extension",
+    "hotrungnhan.9router-for-github-copilot"
+  ],
+  "unwantedRecommendations": []
+}
