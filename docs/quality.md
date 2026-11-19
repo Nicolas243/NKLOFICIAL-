@@ -10,6 +10,21 @@
 | E2E | `npm run test:e2e` | fluxos críticos passam ou falhas são atualizadas junto com o produto |
 | Verificação combinada | `npm run verify` | lint, tipagem e build em sequência |
 
+## Fábrica local de vídeos
+
+- `npm run test:video-factory`: 4 testes unitários passaram em 18-11-2026,
+  cobrindo manifest, persistência, revisão humana, idempotência e estados fechados.
+- `npx eslint tools/nkl-video-factory.ts tools/nkl-video-factory.test.ts`: passou.
+- `npm run typecheck`: passou.
+- Smoke test local: a criação produziu o run
+  `91e952e2-8077-40b3-806c-d59be847ac4e`, a aprovação mudou o estado para
+  `approved` e o publish em `dry_run` criou um planejamento sem upload externo.
+- `npm run video-factory -- doctor`: detectou corretamente as dependências ausentes
+  `nlm` e FFmpeg; Chrome e o workspace local estavam disponíveis.
+- O MVP não publica automaticamente, não conecta credenciais sociais e não
+  executa geração real pelo NotebookLM. Essas integrações permanecem bloqueadas
+  até configurar uma conta separada, aprovar o canal e validar o adaptador oficial.
+
 ## Baseline registrado em 2026-11-04
 
 - Release alvo: `0.2.0`.
@@ -42,7 +57,7 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
 - Testes unitários:
   `node --import tsx --test src/lib/auth/__tests__/return-intent.test.ts src/lib/auth/__tests__/errors.test.ts src/lib/__tests__/ad-inventory.test.ts`.
 - E2E: `npm run test:e2e`, incluindo retorno do checkout ao login, contexto
-  musical/Renda Extra, a rota `/anuncie`, sitemap e faixas roláveis em 390px.
+  musical/Renda Extra, a rota `/programas/anuncie`, sitemap e faixas roláveis em 390px.
 - Gate completo: `npm run verify`.
 
 ## Checkout convidado e entrega personalizada — validação focada
@@ -102,6 +117,19 @@ Para cada alteração, registre a reprodução, o arquivo afetado, a validação
   contraste funcional para texto e controles.
 - A instalação PWA é confirmada por `appinstalled`, modo standalone ou marcador local já existente;
   o botão e o lembrete deixam de aparecer após a confirmação, sem marcar instalação apenas por abrir o prompt.
+
+## Catálogo — novos parceiros e Micro1
+
+- `node --import tsx --test src/lib/__tests__/micro1-opportunities.test.ts` valida tradução editorial,
+  agrupamento por especialidade, conversão aproximada de remuneração e descrição de tecnologia.
+- A página `/programas` busca a lista pública completa da Micro1 em páginas de 100 itens e mostra
+  um erro explícito com link oficial quando a fonte externa está indisponível.
+- O card Micro1 participa do grid e dos filtros comuns; `/programas/micro1` mostra pesquisa,
+  filtros e resultados completos. O botão Salvar mantém uma cópia local para visitantes e
+  sincroniza com a conta quando autenticada.
+- A migration `drizzle/0044_new_income_programs.sql` adiciona Dscout, Repocket, Nyte-X, Micro1,
+  Mindrift e Bilibili e revisa o card da Prolific. Ela deve ser aplicada pelo fluxo aprovado antes
+  de esperar os novos cards no banco remoto; nenhuma migração remota é executada automaticamente.
 
 ## Catálogo — ordenação e CTAs
 

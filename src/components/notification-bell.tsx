@@ -9,7 +9,13 @@ import { getMyUnreadCount } from '@/actions/notifications';
  * Server Component assíncrono (next/headers é proibido no browser). A contagem
  * é buscada via Server Action no mount, espelhando o padrão de sessão do header.
  */
-export function NotificationBell() {
+export function NotificationBell({
+  href = '/perfil/notificacoes',
+  area = 'music',
+}: {
+  href?: string;
+  area?: 'music' | 'income';
+}) {
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
@@ -30,9 +36,9 @@ export function NotificationBell() {
 
   return (
     <Link
-      href="/perfil/notificacoes"
+      href={href}
       className="relative inline-flex items-center gap-1 text-sm font-medium hover:text-neon transition-colors"
-      aria-label="Notificações"
+      aria-label={`Notificações ${area === 'income' ? 'de Renda Extra' : 'musicais'}`}
     >
       🔔
       {unread > 0 && (

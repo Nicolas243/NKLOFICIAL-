@@ -9,6 +9,8 @@ import {
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
+  hasInstallIntent,
+  markInstallIntent,
   shouldClearInstallPrompt,
   type InstallPlatform,
 } from '@/lib/pwa/install-state';
@@ -23,6 +25,7 @@ const INITIAL_STATE_DELAY_MS = 0;
 const INSTALL_REMINDER_DELAY_MS = 22000;
 const INSTALL_REMINDER_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 const CLOSE_OVERLAYS_EVENT = 'nkl:close-overlays';
+const INSTALL_INTENT_EVENT = 'nkl:pwa-install-intent';
 
 type InstallState = {
   prompt: BeforeInstallPromptEvent | null;
@@ -60,7 +63,7 @@ function useInstallState(kind: AppKind): InstallState {
       window.localStorage.setItem(installedStorageKey, 'true');
     };
     const handleBeforeInstallPrompt = (event: Event): void => {
-      if (window.localStorage.getItem(installedStorageKey) === 'true') return;
+      if (window.localStorage.getItem(installedStorageKey) === 'true' || hasInstallIntent(window.localStorage, kind)) return;
       event.preventDefault();
       setPrompt(event as BeforeInstallPromptEvent);
     };
@@ -141,6 +144,9 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
   }
 
   async function install(): Promise<void> {
+    markInstallIntent(window.localStorage, appKind);
+    window.dispatchEvent(new CustomEvent(INSTALL_INTENT_EVENT, { detail: { kind: appKind } }));
+
     if (!prompt) {
       trackInstallEvent('pwa_install_instructions_open');
       setInstructionsOpen(true);
@@ -217,11 +223,20 @@ export function PwaInstallReminder() {
   }, [instructionsOpen]);
 
   useEffect(() => {
+    const handleInstallIntent = (event: Event): void => {
+      const kind = (event as CustomEvent<{ kind?: AppKind }>).detail?.kind;
+      if (kind === appKind) setVisible(false);
+    };
+    window.addEventListener(INSTALL_INTENT_EVENT, handleInstallIntent);
+
     const timer = window.setTimeout(() => {
       const dismissedAt = Number(window.localStorage.getItem(`nkl-pwa-reminder-${appKind}`) ?? 0);
-      if (!isStandalone() && Date.now() - dismissedAt > INSTALL_REMINDER_COOLDOWN_MS) setVisible(true);
+      if (!isStandalone() && !hasInstallIntent(window.localStorage, appKind) && Date.now() - dismissedAt > INSTALL_REMINDER_COOLDOWN_MS) setVisible(true);
     }, INSTALL_REMINDER_DELAY_MS);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener(INSTALL_INTENT_EVENT, handleInstallIntent);
+    };
   }, [appKind]);
 
   const installAction = getInstallAction({
@@ -241,6 +256,9 @@ export function PwaInstallReminder() {
   }
 
   async function install(): Promise<void> {
+    markInstallIntent(window.localStorage, appKind);
+    window.dispatchEvent(new CustomEvent(INSTALL_INTENT_EVENT, { detail: { kind: appKind } }));
+
     if (!prompt) {
       trackInstallEvent('pwa_install_instructions_open');
       setInstructionsOpen(true);

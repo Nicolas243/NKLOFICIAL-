@@ -6,22 +6,33 @@ import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from '
 import { useFormStatus } from 'react-dom';
 import { BellPlus, CalendarPlus, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
-import { submitPartnerReview, submitPartnerSuggestion } from '@/actions/partner-programs';
-import { ClipboardCopy } from '@/components/ui/clipboard-copy';
+import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
 import { ProgramStrategies } from '@/components/income/program-strategies';
+import { SaveProgramButton } from '@/components/income/save-program-button';
 import { SmartTagList } from '@/components/income/smart-tag-list';
 import { SocialEmbed } from '@/components/video/social-embed';
+import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
 import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
 import { getProgramShareUrl } from '@/lib/share-url';
 import { SITE_URL } from '@/lib/site';
+import { INCOME_SUGGESTION_FORM_URL } from '@/lib/income-portal';
+import { EDITORIAL_CARDS, EditorialCardView } from '@/components/global-editorial-cards';
+import { AdBannerContent } from '@/components/ads/ad-banner-content';
+import type { ActiveAdSlot } from '@/lib/ad-inventory';
+import type { Micro1Opportunity } from '@/lib/micro1-opportunities';
 
 type Props = {
   programs: PartnerProgramCard[];
+  micro1Opportunities: Micro1Opportunity[];
+  micro1Error: string | null;
+  adSlots: ActiveAdSlot[];
+  adPriceCents: number;
+  adPromotionActive: boolean;
   initialObjective?: string;
   initialCurrency?: string;
   initialEnglish?: string;
@@ -67,15 +78,6 @@ function actionErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Não foi possível concluir a operação. Tente novamente.';
 }
 
-async function submitSuggestionAction(_state: FormState, formData: FormData): Promise<FormState> {
-  try {
-    await submitPartnerSuggestion(formData);
-    return { error: null, success: true };
-  } catch (error) {
-    return { error: actionErrorMessage(error), success: false };
-  }
-}
-
 async function submitReviewAction(_state: FormState, formData: FormData): Promise<FormState> {
   try {
     await submitPartnerReview(formData);
@@ -93,11 +95,6 @@ function SubmitButton({ idleLabel, pendingLabel }: { idleLabel: string; pendingL
       {pending ? pendingLabel : idleLabel}
     </button>
   );
-}
-
-function extractReferralCode(description: string): string | null {
-  const match = description.match(/(?:código|codigo)\s+(?:de\s+indicação|de\s+indicacao)?\s*[:\-]?\s*[`'"]?([A-Z0-9]{6,})/iu);
-  return match?.[1] ?? null;
 }
 
 function earningValue(value: string): number {
@@ -139,20 +136,21 @@ const BUY_ME_A_COFFEE_SLUG = 'monetizacao-atencao-web';
 const BUY_ME_A_COFFEE_INVITE_URL = 'https://www.buymeacoffee.com/invite/ni2co3san9c';
 const ALIGNERR_PROJECTS = [
   {
-    title: 'Senior Software Engineer',
-    href: 'https://app.alignerr.com/signin?referral-code=5b904321-66d0-4369-bf89-5b230408747a&program=b7f918c0-4ef7-11f1-9dec-3d76718b1a77&referralJobId=f1cb2304-8108-48bc-8ae7-f6143ef59ffe',
-  },
-  {
-    title: 'Senior Software Engineer — AI Evaluation & Benchmarks',
-    href: 'https://app.alignerr.com/signin?referral-code=5b904321-66d0-4369-bf89-5b230408747a&program=b7f918c0-4ef7-11f1-9dec-3d76718b1a77&referralJobId=952ca34f-ddf2-4cbf-8ac2-bdc3750f628c',
-  },
-  {
     title: 'Senior Software Engineer — Agentic Coding',
     href: 'https://app.alignerr.com/signin?referral-code=5b904321-66d0-4369-bf89-5b230408747a&program=b7f918c0-4ef7-11f1-9dec-3d76718b1a77&referralJobId=f4b9a0e2-e6c2-4388-b01d-b7655b313d9b',
   },
 ];
-export function PartnerProgramsBrowser({ programs, initialObjective, initialCurrency, initialEnglish }: Props) {
-  const [suggestionState, suggestionAction] = useActionState(submitSuggestionAction, INITIAL_FORM_STATE);
+export function PartnerProgramsBrowser({
+  programs,
+  micro1Opportunities,
+  micro1Error,
+  adSlots,
+  adPriceCents,
+  adPromotionActive,
+  initialObjective,
+  initialCurrency,
+  initialEnglish,
+}: Props) {
   const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('todas');
@@ -478,6 +476,17 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
 
           return (
             <Fragment key={program.id}>
+            {index === 2 && <EditorialCardView card={EDITORIAL_CARDS[0]} />}
+            {index === 5 && (
+              <div className="col-span-full">
+                <AdBannerContent
+                  placement="in-feed"
+                  slots={adSlots}
+                  monthlyPriceCents={adPriceCents}
+                  isPromotionActive={adPromotionActive}
+                />
+              </div>
+            )}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
@@ -517,6 +526,13 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-neon underline decoration-neon/40 underline-offset-2 hover:text-neon-dark">
                   {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
                 </button>
+              )}
+              {program.slug === 'micro1' && (
+                <Micro1OpportunitiesSection
+                  opportunities={micro1Opportunities}
+                  error={micro1Error}
+                  variant="card"
+                />
               )}
               <div className="mt-auto flex min-w-0 flex-col gap-2">
                 <div className="flex min-h-16 items-center justify-between gap-3">
@@ -561,10 +577,13 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                       Quero começar
                     </button>
                   ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90 sm:text-base">
                       Acessar plataforma
                     </OutboundLink>
                   )}
+                  <span onClick={(event) => event.stopPropagation()}>
+                    <SaveProgramButton slug={program.slug} name={program.name} compact nextPath={`/programas/${program.slug}`} />
+                  </span>
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
@@ -586,6 +605,7 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 </div>
               </div>
             </article>
+            {index === 6 && <EditorialCardView card={EDITORIAL_CARDS[1]} />}
             </Fragment>
           );
         })}
@@ -596,18 +616,16 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
       {filteredPrograms.length === 0 && <p className="rounded-xl border border-border bg-income-surface p-8 text-center opacity-70">Nenhum programa corresponde aos filtros.</p>}
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
-        <form id="news-suggest" action={suggestionAction} className="space-y-4 rounded-xl border border-border bg-income-surface/90 p-6">
+        <section id="sugestao" className="scroll-mt-24 space-y-4 rounded-xl border border-border bg-income-surface/90 p-6">
           <div>
             <p className="text-xs uppercase tracking-wide text-neon font-bold">Ajude a ampliar o catálogo</p>
             <h2 className="font-playfair text-2xl font-bold mt-1">Sugira uma oportunidade</h2>
+            <p className="mt-3 text-sm leading-relaxed opacity-70">Envie o site ou serviço pelo formulário oficial. A equipe analisa cada indicação antes de incluí-la no catálogo.</p>
           </div>
-          <input name="name" required placeholder="Nome do site ou serviço" className="w-full rounded-md border border-border bg-background px-3 py-2" />
-          <input name="websiteUrl" type="url" placeholder="Link do site (opcional)" className="w-full rounded-md border border-border bg-background px-3 py-2" />
-          <textarea name="reason" required minLength={40} rows={4} placeholder="Por que esta oportunidade deveria entrar? (mínimo de 10 palavras)" className="w-full rounded-md border border-border bg-background px-3 py-2" />
-          {suggestionState.error && <p role="alert" className="text-sm text-red-400">{suggestionState.error}</p>}
-          {suggestionState.success && <p role="status" className="text-sm text-neon">Sugestão enviada para análise.</p>}
-          <SubmitButton idleLabel="Enviar sugestão" pendingLabel="Enviando..." />
-        </form>
+          <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
+            Abrir formulário de sugestão
+          </a>
+        </section>
         <div className="rounded-xl border border-border bg-income-surface/90 p-6">
           <p className="text-xs uppercase tracking-wide text-neon font-bold">Como funciona</p>
           <h2 className="font-playfair text-2xl font-bold mt-1">Notas transparentes</h2>
@@ -682,12 +700,13 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
               </section>
             )}
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href={`/programas/${selectedProgram.slug}`} onClick={() => setSelectedProgram(null)} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
+              <Link href={`/programas/${selectedProgram.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
                 Abrir página completa
               </Link>
               <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
                 {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
               </button>
+              <SaveProgramButton slug={selectedProgram.slug} name={selectedProgram.name} nextPath={`/programas/${selectedProgram.slug}`} />
               <SocialEmbed
                 youtubeId={selectedProgram.youtubeVideoId}
                 tiktokId={selectedProgram.tiktokVideoId}
@@ -695,7 +714,6 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 triggerLabel="Ver vídeo"
               />
             </div>
-            <p className="mt-5 whitespace-pre-line text-sm leading-relaxed opacity-80">{selectedProgram.longDescription}</p>
             {selectedProgram.slug === 'claru-ia' && (
               <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm font-bold">Você tem uma empresa e quer divulgá-la?</p>
@@ -725,6 +743,15 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                   ))}
                 </div>
               </section>
+            )}
+            {selectedProgram.slug === 'micro1' && (
+              <div className="mt-5">
+                <Micro1OpportunitiesSection
+                  opportunities={micro1Opportunities}
+                  error={micro1Error}
+                  variant="full"
+                />
+              </div>
             )}
             <div className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-neon/25 bg-neon/5 p-3">
               <p className="text-sm leading-relaxed">
@@ -758,17 +785,8 @@ export function PartnerProgramsBrowser({ programs, initialObjective, initialCurr
                 </ul>
               </section>
             )}
-            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} defaultOpen />
+            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} description={selectedProgram.longDescription} paymentMethods={selectedProgram.paymentMethods} defaultOpen />
             <ProgramStrategies slug={selectedProgram.slug} category={selectedProgram.category} tags={selectedProgram.tags} />
-            {extractReferralCode(selectedProgram.longDescription) && (
-              <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide opacity-60">Código de indicação</p>
-                  <code className="text-base font-bold tracking-wider">{extractReferralCode(selectedProgram.longDescription)}</code>
-                </div>
-                <ClipboardCopy textToCopy={extractReferralCode(selectedProgram.longDescription) ?? ''} />
-              </div>
-            )}
             <div className="mt-4 flex flex-wrap gap-2">
               {selectedProgram.languages.map((language) => <span key={`language-${language}`} className="rounded-full border border-neon/50 px-2.5 py-1 text-xs font-medium text-neon">{language}</span>)}
               {(selectedProgram.communityTags.length >= 1 ? selectedProgram.communityTags : selectedProgram.tags).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs">{tag}</span>)}

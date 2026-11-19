@@ -26,6 +26,12 @@ test.describe('oferta do Guia de novembro', () => {
     ]) {
       await expect(page.getByText(material, { exact: true }).first()).toBeVisible();
     }
+
+    await page.getByRole('button', { name: 'Ver os materiais incluídos no pacote de novembro' }).click();
+    await expect(page.getByRole('dialog', { name: 'O que você vai receber' })).toBeVisible();
+    await expect(page.getByText('Critérios para avaliar ofertas, identificar sinais de alerta e evitar decisões apressadas em períodos de promoção.', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Aproveitar agora' }).click();
+    await expect(page.locator('#guide-offer')).toBeInViewport();
   });
 
   test('renderiza a variante 4 e mantém a página utilizável para variante inválida', async ({ page }) => {
@@ -141,6 +147,6 @@ test.describe('oferta do Guia de novembro', () => {
 
     const loginLink = page.getByRole('link', { name: 'Entrar', exact: true });
     await expect(loginLink).toBeVisible();
-    await expect(loginLink).toHaveAttribute('href', '/login?area=income');
+    await expect(loginLink).toHaveAttribute('href', '/login?next=%2Fprogramas&area=income');
   });
 });

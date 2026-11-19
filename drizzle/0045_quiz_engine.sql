@@ -29,3 +29,13 @@ CREATE TABLE IF NOT EXISTS "quiz_leads" (
 );
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "quiz_leads_email_idx" ON "quiz_leads" USING btree ("email");
+--> statement-breakpoint
+INSERT INTO "business_profiles" ("name", "min_capital", "min_time_hours", "tech_level", "risk_level")
+VALUES
+  ('Avaliação de IA e dados', '0', 4, 'medium', 'low'),
+  ('Testes de usabilidade', '0', 3, 'low', 'low'),
+  ('Produção de conteúdo UGC', '100', 8, 'medium', 'medium'),
+  ('Afiliados e aquisição de tráfego', '300', 10, 'high', 'high'),
+  ('Serviços digitais especializados', '0', 12, 'high', 'medium'),
+  ('Comunidade e produtos digitais', '100', 15, 'medium', 'high')
+ON CONFLICT ("name") DO NOTHING;

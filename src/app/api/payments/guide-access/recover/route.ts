@@ -3,7 +3,7 @@ import { and, eq, or } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { guidePurchases, guideSubscriptions } from '@/db/schema';
-import { createGuestAccessToken, hashGuestAccessToken } from '@/lib/guest-checkout';
+import { createGuestAccessToken } from '@/lib/guest-checkout';
 import {
   EmailDeliveryError,
   MissingEmailDeliveryConfigurationError,

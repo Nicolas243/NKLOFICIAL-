@@ -65,3 +65,21 @@ test('adds identity markers to every XLSX worksheet and preserves formulas', asy
     assert.match(worksheet.headerFooter.oddFooter ?? '', /NKL-ab12cd34/);
   }
 });
+
+test('adds an escaped identity watermark to personalized HTML', async () => {
+  const personalized = await personalizeGuideAsset(
+    { filename: 'ebook.html', contentType: 'text/html' },
+    Buffer.from('<html><head></head><body><main>Conteúdo</main></body></html>'),
+    {
+      ...identity,
+      fullName: '<Pessoa>',
+    },
+  );
+  const output = personalized.content.toString('utf8');
+
+  assert.equal(personalized.contentType, 'text/html; charset=utf-8');
+  assert.equal(personalized.filename, 'ebook-personalizado.html');
+  assert.match(output, /nkl-personalization-watermark/u);
+  assert.match(output, /&lt;Pessoa&gt;/u);
+  assert.doesNotMatch(output, /<Pessoa>/u);
+});

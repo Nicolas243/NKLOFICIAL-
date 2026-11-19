@@ -16,6 +16,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Validate focused behavior first, then run `npm run verify` for production-facing changes.
 - Use `npm run test:e2e` when changing critical pages or interactions; known baseline failures are recorded in `docs/quality.md`.
 - Test locally before deployment. Do not publish, migrate production data or change infrastructure without explicit approval.
+- Ao criar uma nova area, produto, curso, idioma ou parceria, atualize o registro central da home descrito em [docs/portal-area-registry.md](./docs/portal-area-registry.md). Nao adicione o card diretamente ao componente da home sem registrar a entrada.
 
 ## Context map
 

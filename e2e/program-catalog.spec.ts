@@ -18,12 +18,52 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.locator('#programs-grid')).not.toContainText('Conteúdo Premium');
   });
 
+  test('abre o filtro rolável da Micro1 com filtros rápidos antes das especialidades', async ({ page }) => {
+    await page.goto('/programas');
+
+    const micro1Card = page.locator('#programs-grid article').filter({ hasText: 'Micro1' }).first();
+    if (await micro1Card.count() === 0) {
+      test.skip(true, 'Micro1 requires drizzle/0044_new_income_programs.sql in the test database.');
+    }
+    await micro1Card.getByRole('button', { name: 'Tipos' }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Filtrar vagas' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /Português/u })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /Fácil/u })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /Médio/u })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /Outras especialidades/u })).toBeVisible();
+  });
+
+  test('mostra o catálogo completo da Micro1 na página da oportunidade', async ({ page }) => {
+    await page.goto('/programas/micro1');
+
+    if (await page.getByTestId('micro1-full-opportunities').count() === 0) {
+      test.skip(true, 'Micro1 requires drizzle/0044_new_income_programs.sql in the test database.');
+    }
+    await expect(page.getByTestId('micro1-full-opportunities')).toBeVisible();
+    await expect(page.getByPlaceholder('Pesquisar vaga...')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Tipo:/u })).toBeVisible();
+  });
+
   test('abre a oportunidade pelo botão principal Ler mais', async ({ page }) => {
     await page.goto('/programas');
 
     const firstCard = page.locator('#programs-grid article').first();
     await firstCard.locator('button').filter({ hasText: 'Ler mais' }).last().click();
     await expect(page.getByRole('dialog', { name: /Detalhes de/ })).toBeVisible();
+  });
+
+  test('salva uma oportunidade no dispositivo sem exigir login', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem('nkl-income-wizard-saved');
+    });
+    await page.goto('/programas');
+
+    const firstCard = page.locator('#programs-grid article').first();
+    await firstCard.getByRole('button', { name: /^Salvar /u }).click();
+    await expect(firstCard.getByRole('button', { name: /^Remover /u })).toBeVisible();
+    await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('nkl-income-wizard-saved'))).toMatch(/.+/u);
   });
 
   test('mostra como a plataforma funciona e o passo a passo na página completa', async ({ page }) => {

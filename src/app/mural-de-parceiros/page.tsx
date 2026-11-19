@@ -36,7 +36,7 @@ export default function PartnerMuralPage() {
           <h2 className="font-playfair text-2xl font-bold">Quer entender os formatos?</h2>
           <p className="mt-1 text-sm leading-relaxed text-foreground/70">Veja os valores de pré-lançamento e as limitações desta fase.</p>
         </div>
-        <Link href="/anuncie" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-5 py-3 text-center text-sm font-bold text-black hover:opacity-90">
+        <Link href="/programas/anuncie" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-5 py-3 text-center text-sm font-bold text-black hover:opacity-90">
           Conhecer planos para anunciar
         </Link>
       </div>

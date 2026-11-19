@@ -34,7 +34,7 @@ test.describe('SEO público de renda extra', () => {
     const sitemap = await sitemapResponse.text();
     expect(sitemap).toContain(`${publicHost}/programas`);
     expect(sitemap).toContain(`${publicHost}/programas/celular`);
-    expect(sitemap).toContain(`${publicHost}/anuncie`);
+    expect(sitemap).toContain(`${publicHost}/programas/anuncie`);
     expect(sitemap).not.toContain(`${publicHost}/admin`);
 
     const robotsResponse = await request.get('/robots.txt');

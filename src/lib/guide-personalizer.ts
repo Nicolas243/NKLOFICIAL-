@@ -4,6 +4,7 @@ import { buildPersonalizationLabel } from './guide-personalization';
 
 const PDF_CONTENT_TYPE = 'application/pdf';
 const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const HTML_CONTENT_TYPE = 'text/html; charset=utf-8';
 
 export type PersonalizedGuideIdentity = {
   fullName: string;
@@ -65,6 +66,55 @@ async function personalizePdf(
   };
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/gu, '&amp;')
+    .replace(/</gu, '&lt;')
+    .replace(/>/gu, '&gt;')
+    .replace(/"/gu, '&quot;')
+    .replace(/'/gu, '&#039;');
+}
+
+function personalizeHtml(
+  source: Buffer<ArrayBufferLike>,
+  filename: string,
+  label: string,
+): PersonalizedGuideFile {
+  const watermark = escapeHtml(`Material licenciado para ${label}`);
+  const sourceHtml = source.toString('utf8');
+  const watermarkStyle = `
+    <style id="nkl-personalization-watermark">
+      .nkl-personalization-watermark {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        color: rgba(37, 77, 133, 0.16);
+        font: 700 12px/1.4 Arial, sans-serif;
+        letter-spacing: 0.04em;
+        text-align: center;
+        transform: rotate(-32deg);
+        white-space: pre-wrap;
+      }
+    </style>
+  `;
+  const watermarkMarkup = `<div class="nkl-personalization-watermark" aria-hidden="true">${watermark}</div>`;
+  const output = sourceHtml.includes('</head>')
+    ? sourceHtml.replace('</head>', `${watermarkStyle}</head>`)
+    : `${watermarkStyle}${sourceHtml}`;
+  const withMarkup = output.includes('</body>')
+    ? output.replace('</body>', `${watermarkMarkup}</body>`)
+    : `${output}${watermarkMarkup}`;
+
+  return {
+    filename: personalizedFilename(filename),
+    contentType: HTML_CONTENT_TYPE,
+    content: Buffer.from(withMarkup, 'utf8'),
+  };
+}
+
 async function personalizeXlsx(
   source: Buffer<ArrayBufferLike>,
   filename: string,
@@ -106,6 +156,9 @@ export async function personalizeGuideAsset(
   }
   if (asset.contentType === XLSX_CONTENT_TYPE) {
     return personalizeXlsx(source, asset.filename, label);
+  }
+  if (asset.contentType === HTML_CONTENT_TYPE || asset.contentType === 'text/html') {
+    return personalizeHtml(source, asset.filename, label);
   }
   throw new Error('Tipo de material não suportado para personalização.');
 }

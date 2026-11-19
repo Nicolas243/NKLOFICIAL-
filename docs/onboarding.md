@@ -18,3 +18,15 @@
 ## Entrega local
 
 Use `npm run verify` para lint, tipagem e build. Para mudanças de fluxo crítico, execute também `npm run test:e2e` e registre falhas reais em [docs/quality.md](./quality.md).
+
+## Contas Google e áreas do portal
+
+O retorno do Google leva contas sem `nkl_onboarding_completed` ao onboarding em
+`/perfil`. A pessoa escolhe Blog/Renda Extra, Área musical ou Ambos; os campos
+de papel (com múltipla escolha), instrumento e experiência só são solicitados
+quando a área musical é selecionada. Essa escolha fica no metadata da conta
+Supabase e não transforma automaticamente uma pessoa em luthier.
+
+O botão “Sugerir site” abre o formulário externo
+`https://forms.gle/2nREXEVdB6JyjtbC8`; a sugestão não é mais enviada pelo
+formulário interno do Portal NKL.

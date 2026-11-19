@@ -3,6 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
+import {
+  getSavedPartnerProgramSlugs,
+  toggleSavedPartnerProgram,
+} from '@/actions/saved-partner-programs';
+import { SAVED_PROGRAMS_KEY } from '@/lib/income-saved';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Props = {
@@ -18,7 +23,6 @@ type Question = {
   options: Array<{ value: string; label: string }>;
 };
 
-const SAVED_PROGRAMS_KEY = 'nkl-income-wizard-saved';
 const WHATSAPP_BASE_URL = 'https://wa.me/?text=';
 const QUESTIONS: Question[] = [
   {
@@ -167,16 +171,48 @@ export function IncomeWizard({ programs }: Props) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
-    if (!stored) return;
-    try {
-      const parsed: unknown = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
-        window.setTimeout(() => setSavedSlugs(parsed), 0);
+    let active = true;
+    async function loadSavedPrograms(): Promise<void> {
+      const stored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
+      let localSlugs: string[] = [];
+      if (stored) {
+        try {
+          const parsed: unknown = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
+            localSlugs = parsed;
+          }
+        } catch (error) {
+          console.error('[INCOME_WIZARD] Não foi possível ler oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
+        }
       }
-    } catch (error) {
-      console.error('[INCOME_WIZARD] Não foi possível ler oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
+
+      try {
+        const remoteSlugs = await getSavedPartnerProgramSlugs();
+        const latestStored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
+        let latestLocalSlugs = localSlugs;
+        if (latestStored) {
+          try {
+            const parsed: unknown = JSON.parse(latestStored);
+            if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
+              latestLocalSlugs = parsed;
+            }
+          } catch (error) {
+            console.error('[INCOME_WIZARD] Não foi possível atualizar oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
+          }
+        }
+        const mergedSlugs = Array.from(new Set([...remoteSlugs, ...latestLocalSlugs]));
+        if (active) setSavedSlugs(mergedSlugs);
+        const remoteSet = new Set(remoteSlugs);
+        await Promise.all(latestLocalSlugs.filter((slug) => !remoteSet.has(slug)).map((slug) => toggleSavedPartnerProgram(slug)));
+        window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(mergedSlugs));
+      } catch {
+        if (active && localSlugs.length > 0) setSavedSlugs(localSlugs);
+      }
     }
+    void loadSavedPrograms();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const question = QUESTIONS[questionIndex];
@@ -212,6 +248,10 @@ export function IncomeWizard({ programs }: Props) {
     const nextSlugs = savedSlugs.includes(slug) ? savedSlugs.filter((item) => item !== slug) : [...savedSlugs, slug];
     setSavedSlugs(nextSlugs);
     window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(nextSlugs));
+    void toggleSavedPartnerProgram(slug).catch((error) => {
+      if (error instanceof Error && error.message.includes('Faça login')) return;
+      console.error('[INCOME_WIZARD] Não foi possível sincronizar oportunidade:', error);
+    });
   }
 
   async function copySummary(): Promise<void> {

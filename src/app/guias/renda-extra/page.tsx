@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GuidePackagePreview } from '@/components/sales/guide-package-preview';
 import { GuidePageOffer } from '@/components/sales/guide-page-offer';
 import { OfferExitPopup } from '@/components/sales/offer-exit-popup';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
@@ -21,6 +22,7 @@ type IncomeGuidePageProps = {
 export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageProps) {
   const params = searchParams ? await searchParams : {};
   const ctaVariant = parseGuidePageCtaVariant(params.cta_variant);
+  const forceFallback = typeof params.cta_variant === 'string' && ctaVariant === null;
   const resumeIntent = parseGuideResumeIntent(params.resume ?? null);
   const adVariant = typeof params.ad_variant === 'string' && /^[0-9]+$/u.test(params.ad_variant)
     ? `native-card:${params.ad_variant}`
@@ -30,27 +32,21 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
 
   return (
     <div className="min-h-screen bg-income-background">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-8 md:grid-cols-2 md:items-start md:pt-14">
-        <section className="md:pt-8">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-16 pt-6 md:grid-cols-2 md:items-start md:gap-10 md:pt-14">
+        <GuidePageOffer
+          id="guide-offer"
+          initialVariant={ctaVariant}
+          purchaseOfferVariant={purchaseOfferVariant}
+          subscriptionOfferVariant={subscriptionOfferVariant}
+          resumeIntent={resumeIntent}
+          forceFallback={forceFallback}
+        />
+        <section className="order-last md:order-none md:pt-8">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">Guia NKL · produto digital</p>
-          <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Guia Essencial Renda Extra 2027</h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Um pacote de novembro para estudar oportunidades de renda extra com mais clareza, sem promessa de renda ou resultado financeiro.</p>
+          <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Pare de abrir oportunidade no escuro.</h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Você recebe cinco arquivos práticos para comparar opções, entender os critérios e escolher um próximo passo realista.</p>
           <div className="mt-8 rounded-2xl border border-orange/30 bg-income-surface p-5 shadow-sm">
-            <div className="mx-auto flex aspect-[3/4] max-w-xs flex-col justify-between rounded-xl border border-orange/40 bg-[linear-gradient(145deg,#172554,#07152d)] p-6 text-white shadow-2xl">
-              <div className="flex items-start justify-between gap-3">
-                <span className="rounded-full bg-orange px-3 py-1 text-xs font-black uppercase text-white">PDF</span>
-                <span className="text-xs font-bold uppercase tracking-[0.18em] text-orange-200">Portal NKL</span>
-              </div>
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/60">Edição prática</p>
-                <p className="mt-3 font-playfair text-4xl font-bold leading-tight">Pacote de novembro</p>
-              </div>
-              <div className="space-y-2 text-xs text-white/65">
-                <p>5 materiais em um pacote</p>
-                <p>Orientações práticas</p>
-                <p>Links e escolhas mais claras</p>
-              </div>
-            </div>
+            <GuidePackagePreview />
           </div>
           <p className="mt-8 text-sm leading-relaxed text-foreground/75">
             A compra única entrega este pacote uma vez. A assinatura mensal mantém acesso ao pacote atual e inclui novos PDFs e guias a partir de 15 de dezembro.
@@ -70,12 +66,6 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
             ))}
           </ul>
         </section>
-        <GuidePageOffer
-          initialVariant={ctaVariant}
-          purchaseOfferVariant={purchaseOfferVariant}
-          subscriptionOfferVariant={subscriptionOfferVariant}
-          resumeIntent={resumeIntent}
-        />
       </div>
       <OfferExitPopup />
     </div>

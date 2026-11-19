@@ -12,6 +12,18 @@ test('builds a one-time Guide Checkout session from the server price', () => {
     offerVariant: 'guide-page-cta:2',
   });
 
+  test('builds the English ebook checkout at R$47 with the English product title', () => {
+    const params = buildGuidePurchaseCheckoutParams({
+      purchaseId: 'purchase-english',
+      siteUrl: 'https://nkloficial.com.br',
+      offerVariant: 'english-ebook-sales-page',
+    });
+
+    assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
+    assert.equal(params.lineItems[0]?.price_data?.product_data?.name, 'Inglês para ganhar dinheiro | E-book Portal NKL');
+    assert.equal(params.metadata.reference, 'guide_purchase:purchase-english');
+  });
+
   assert.equal(params.mode, 'payment');
   assert.equal(params.lineItems[0]?.price_data?.unit_amount, 3900);
   assert.deepEqual(params.metadata, {
@@ -27,6 +39,24 @@ test('builds a recurring Guide Checkout session with the payer email', () => {
     siteUrl: 'https://nkloficial.com.br',
     payerEmail: 'cliente@example.com',
     offerVariant: undefined,
+  });
+
+  test('builds each language ebook checkout at R$47', () => {
+    for (const [offerVariant, title] of [
+      ['italian-ebook-sales-page', 'Italiano para ganhar possibilidades | E-book Portal NKL'],
+      ['french-ebook-sales-page', 'Francês para ganhar possibilidades | E-book Portal NKL'],
+      ['german-ebook-sales-page', 'Alemão para ganhar possibilidades | E-book Portal NKL'],
+      ['spanish-ebook-sales-page', 'Espanhol para ganhar possibilidades | E-book Portal NKL'],
+      ['mandarin-ebook-sales-page', 'Mandarim para ganhar possibilidades | E-book Portal NKL'],
+    ] as const) {
+      const params = buildGuidePurchaseCheckoutParams({
+        purchaseId: `purchase-${offerVariant}`,
+        siteUrl: 'https://nkloficial.com.br',
+        offerVariant,
+      });
+      assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
+      assert.equal(params.lineItems[0]?.price_data?.product_data?.name, title);
+    }
   });
 
   assert.equal(params.mode, 'subscription');

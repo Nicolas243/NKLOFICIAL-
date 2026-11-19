@@ -10,6 +10,9 @@ import { getLoginErrorMessage } from '@/lib/auth/errors';
 import { safeNextPath } from '@/lib/auth/oauth';
 import { buildReturnPath, parseGuideResumeIntent, parseLoginArea, type GuideResumeIntent } from '@/lib/auth/return-intent';
 import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
+import { sendWelcomeEmailOnce } from '@/lib/email/welcome';
+import { sendWelcomeEmail } from '@/lib/email/resend';
+import { SITE_URL } from '@/lib/site';
 
 /**
  * IDENTIDADE (LGPD / integridade do grafo): o `user_profiles` DEVE ser
@@ -54,7 +57,7 @@ async function upsertUserProfile(params: {
       birthDate: birthDate ?? null,
     })
     .onConflictDoUpdate({
-      target: userProfiles.id,
+      target: userProfiles.email,
       set: {
         email,
         fullName: fullName ?? null,
@@ -101,6 +104,11 @@ export async function login(formData: FormData) {
       if (area === 'income') loginPath.searchParams.set('area', area);
       redirect(`${loginPath.pathname}?${loginPath.searchParams.toString()}`);
     }
+    try {
+      await sendWelcomeEmailOnce(supabase, data.user, 'music');
+    } catch (welcomeError) {
+      console.error('[AUTH] Falha ao enviar boas-vindas:', welcomeError instanceof Error ? welcomeError.message : 'erro desconhecido');
+    }
   }
 
   revalidatePath('/', 'layout');
@@ -128,6 +136,20 @@ export async function signup(formData: FormData) {
     } catch (profileError) {
       console.error('[signup] Falha ao gravar perfil:', profileError);
     }
+
+    try {
+      if (data.session) {
+        await sendWelcomeEmailOnce(supabase, data.user, 'music');
+      } else {
+        await sendWelcomeEmail({
+          recipientEmail: data.user.email ?? email,
+          area: 'music',
+          siteUrl: SITE_URL,
+        });
+      }
+    } catch (welcomeError) {
+      console.error('[AUTH] Falha ao enviar boas-vindas:', welcomeError instanceof Error ? welcomeError.message : 'erro desconhecido');
+    }
   }
 
   revalidatePath('/', 'layout');
@@ -145,6 +167,10 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
   const fullName = (formData.get('fullName') as string) || `${firstName} ${lastName}`.trim();
   const birthDate = formData.get('birthDate') as string;
   const area = formData.get('area') === 'income' ? 'income' : 'music';
+  const nextValue = formData.get('next');
+  const resumeValue = formData.get('resume');
+  const nextPath = safeNextPath(typeof nextValue === 'string' ? nextValue : null);
+  const resumeIntent = parseGuideResumeIntent(typeof resumeValue === 'string' ? resumeValue : null);
   const papel = area === 'music' ? ((formData.get('papel') as string) || 'user') : 'user';
   const instrumento = area === 'music' ? ((formData.get('instrumento') as string) || '') : '';
   const anosExperiencia = area === 'music' ? (Number(formData.get('anosExperiencia')) || 0) : 0;
@@ -158,7 +184,14 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
     email,
     password,
     options: {
-      data: { full_name: fullName, papel, instrumento, anos_experiencia: anosExperiencia },
+      data: {
+        full_name: fullName,
+        papel,
+        instrumento,
+        anos_experiencia: anosExperiencia,
+        nkl_context: area === 'income' ? 'income' : 'music',
+        nkl_onboarding_completed: true,
+      },
     },
   });
 
@@ -191,6 +224,21 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
     // Não bloqueia o fluxo — a conta já foi criada com sucesso.
   }
 
+  try {
+    if (data.session) {
+      await sendWelcomeEmailOnce(supabase, authUser, area);
+    } else {
+      await sendWelcomeEmail({
+        recipientEmail: authUser.email ?? email,
+        recipientName: fullName,
+        area,
+        siteUrl: SITE_URL,
+      });
+    }
+  } catch (welcomeError) {
+    console.error('[AUTH] Falha ao enviar boas-vindas:', welcomeError instanceof Error ? welcomeError.message : 'erro desconhecido');
+  }
+
   // Quando a confirmação de e-mail está ativa, o Supabase não retorna sessão.
   // Não tentamos autenticar novamente antes da confirmação.
   if (!data.session) {
@@ -201,7 +249,7 @@ export async function registerWithProfile(formData: FormData): Promise<{ error?:
   }
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect(buildReturnPath(nextPath, resumeIntent));
 }
 
 export async function signout() {

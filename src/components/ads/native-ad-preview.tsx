@@ -32,7 +32,7 @@ export function NativeAdPreview({ projection }: NativeAdPreviewProps) {
             ? <>Anuncie aqui e alcance uma projeção de <strong className="text-foreground">{formatViews(projection.projectedNovember)} visualizações</strong> em novembro.</>
             : 'A projeção de visualizações será exibida quando o painel de analytics estiver configurado.'}
         </p>
-        <Link href="/anuncie" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-4 py-2 text-center text-sm font-bold text-black hover:opacity-90">
+        <Link href="/programas/anuncie" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-4 py-2 text-center text-sm font-bold text-black hover:opacity-90">
           Quero anunciar
         </Link>
       </div>

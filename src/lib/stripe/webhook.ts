@@ -3,6 +3,8 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   classBookings,
+  adCampaigns,
+  adInventorySlots,
   guideOfferEvents,
   guidePurchases,
   guideSubscriptions,
@@ -21,6 +23,7 @@ import {
   parseStripePeriodEnd,
   type StripeReference,
 } from './webhook-helpers';
+import { getStripeClient } from './server';
 
 export { getStripeReference, normalizeStripeSubscriptionStatus, parseStripePeriodEnd } from './webhook-helpers';
 
@@ -108,6 +111,74 @@ async function processGuideSubscription(
       subscriptionId: row.id,
     });
   }
+
+}
+
+async function processAdCampaignSubscription(
+  subscription: Stripe.Subscription,
+  reference: StripeReference,
+): Promise<void> {
+  const [campaign] = await db.select({
+    id: adCampaigns.id,
+    status: adCampaigns.status,
+  }).from(adCampaigns).where(eq(adCampaigns.id, reference.id)).limit(1);
+  if (!campaign) return;
+
+  const billingStatus = normalizeStripeSubscriptionStatus(subscription.status);
+  const nextStatus = billingStatus === 'canceled' || billingStatus === 'unpaid'
+    ? 'cancelled'
+    : campaign.status === 'pending_payment'
+      ? 'pending_review'
+      : campaign.status;
+
+  await db.update(adCampaigns).set({
+    stripeSubscriptionId: subscription.id,
+    billingStatus,
+    status: nextStatus,
+    updatedAt: new Date(),
+  }).where(eq(adCampaigns.id, campaign.id));
+  if (nextStatus === 'cancelled') {
+    await db.update(adInventorySlots).set({
+      campaignId: null,
+      updatedAt: new Date(),
+    }).where(eq(adInventorySlots.campaignId, campaign.id));
+  }
+}
+
+async function processFailedAdCheckout(session: Stripe.Checkout.Session): Promise<void> {
+  const reference = getStripeReference(session.metadata);
+  if (!reference || reference.type !== 'ad_campaign') return;
+  await db.update(adCampaigns).set({
+    status: 'cancelled',
+    billingStatus: 'failed',
+    updatedAt: new Date(),
+  }).where(and(eq(adCampaigns.id, reference.id), eq(adCampaigns.status, 'pending_payment')));
+}
+
+async function processAdRiskEvent(
+  metadata: Stripe.Metadata | null | undefined,
+  billingStatus: string,
+  reviewNotes: string,
+): Promise<void> {
+  const reference = getStripeReference(metadata);
+  if (!reference || reference.type !== 'ad_campaign') return;
+  await db.update(adCampaigns).set({
+    status: 'pending_review',
+    billingStatus,
+    reviewNotes,
+    updatedAt: new Date(),
+  }).where(eq(adCampaigns.id, reference.id));
+}
+
+async function processChargeRiskEvent(
+  charge: string | Stripe.Charge,
+  billingStatus: string,
+  reviewNotes: string,
+): Promise<void> {
+  const resolvedCharge = typeof charge === 'string'
+    ? await getStripeClient().charges.retrieve(charge)
+    : charge;
+  await processAdRiskEvent(resolvedCharge.metadata, billingStatus, reviewNotes);
 }
 
 async function processPremiumSubscription(
@@ -206,12 +277,10 @@ async function processCheckoutCompleted(session: Stripe.Checkout.Session): Promi
   } else if (reference.type === 'premium_subscription' && typeof session.subscription === 'string') {
     const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
     await processPremiumSubscription(subscription, reference);
+  } else if (reference.type === 'ad_campaign' && typeof session.subscription === 'string') {
+    const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
+    await processAdCampaignSubscription(subscription, reference);
   }
-}
-
-function getStripeClient(): Stripe {
-  if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY is not configured.');
-  return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
 export async function processStripeEvent(event: Stripe.Event): Promise<void> {
@@ -223,7 +292,9 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         await processCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
         return;
       case 'checkout.session.async_payment_failed':
+      case 'checkout.session.expired':
         await processFailedCheckout(event.data.object as Stripe.Checkout.Session);
+        await processFailedAdCheckout(event.data.object as Stripe.Checkout.Session);
         return;
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
@@ -233,8 +304,10 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         if (!reference) throw new Error('Stripe subscription is missing valid domain metadata.');
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
+        if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);
         return;
       }
+      case 'invoice.paid':
       case 'invoice.payment_succeeded':
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice & {
@@ -249,6 +322,22 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         if (!reference) throw new Error('Stripe invoice subscription is missing valid domain metadata.');
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
+        if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);
+        return;
+      }
+      case 'charge.refunded': {
+        const charge = event.data.object as Stripe.Charge;
+        await processAdRiskEvent(charge.metadata, 'refunded', 'Pagamento estornado; revisão necessária antes de reativar.');
+        return;
+      }
+      case 'charge.dispute.created': {
+        const dispute = event.data.object as Stripe.Dispute;
+        await processChargeRiskEvent(dispute.charge, 'disputed', 'Disputa de pagamento aberta; revisão necessária.');
+        return;
+      }
+      case 'radar.early_fraud_warning.created': {
+        const warning = event.data.object as Stripe.Radar.EarlyFraudWarning;
+        await processChargeRiskEvent(warning.charge, 'early_fraud_warning', 'Alerta antecipado de fraude; revisão necessária.');
         return;
       }
       default:

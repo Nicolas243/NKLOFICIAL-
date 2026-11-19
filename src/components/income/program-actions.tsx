@@ -3,6 +3,7 @@
 import { BellPlus, CalendarPlus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SharePageButton } from '@/components/ui/share-page-button';
+import { SaveProgramButton } from '@/components/income/save-program-button';
 
 type Props = {
   name: string;
@@ -89,6 +90,7 @@ export function ProgramActions({ name, slug, url }: Props) {
           title={`${name} · Portal NKL`}
           text={`Oi! Encontrei esta oportunidade de renda extra e lembrei de você: ${name}.`}
         />
+        <SaveProgramButton slug={slug} name={name} />
         <button type="button" onClick={() => setReminderOpen(true)} className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-bold hover:border-neon hover:text-neon" aria-label={`Criar lembrete para ${name}`}>
           <BellPlus size={16} aria-hidden="true" /> <span>Lembrar depois</span>
         </button>

@@ -93,10 +93,12 @@ export async function POST(request: NextRequest) {
     );
     const status = extractStatus(payload);
 
-    // Normaliza para os valores aceitos pela coluna.
-    const normalizedStatus = ['active', 'past_due', 'canceled'].includes(status)
-      ? status
-      : 'active';
+    // Nunca trate um status desconhecido como ativo: isso poderia conceder
+    // benefícios para payloads incompatíveis ou adulterados.
+    if (!['active', 'past_due', 'canceled'].includes(status)) {
+      return NextResponse.json({ error: 'unsupported status' }, { status: 422 });
+    }
+    const normalizedStatus = status as 'active' | 'past_due' | 'canceled';
 
     // 4) Persiste a assinatura (upsert pelo id da assinatura do gateway).
     const periodEndRaw =

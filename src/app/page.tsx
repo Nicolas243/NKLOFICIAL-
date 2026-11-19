@@ -8,6 +8,7 @@ import { HomeMenuFallback } from '@/components/home-menu-fallback';
 import { PwaInstallButton } from '@/components/pwa';
 import type { Metadata } from 'next';
 import { absoluteSiteUrl } from '@/lib/site';
+import { AdBanner } from '@/components/ads/ad-banner';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,6 +133,8 @@ return (
           />
                 </div>
       </section>
+
+      <AdBanner placement="home" />
 
       {/* ICEBERG 1: As Melhores Cordas */}
       <section>

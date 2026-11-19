@@ -5,9 +5,12 @@ import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ProgramCompare } from '@/components/program-compare';
 import { IncomeWizard } from '@/components/income/income-wizard';
+import { EditorialSupportOffers } from '@/components/income/editorial-support-offers';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 import { absoluteSiteUrl } from '@/lib/site';
 import { PROGRAM_HUBS } from '@/lib/program-hubs';
+import { getActiveAdSlots, getAdPricing, type ActiveAdSlot } from '@/lib/ad-inventory';
+import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
 
 export const metadata: Metadata = {
   title: 'Programas de Parceria e Renda Extra',
@@ -28,7 +31,21 @@ export const dynamic = 'force-dynamic';
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function PartnerProgramsPage({ searchParams }: { searchParams?: SearchParams }) {
-  const programs = await getPartnerPrograms();
+  const [programs, adSlots, micro1Result] = await Promise.all([
+    getPartnerPrograms(),
+    getActiveAdSlots().catch((error: unknown) => {
+      console.error('[PROGRAMS_PAGE] Falha ao carregar inventário publicitário:', error);
+      return [] as ActiveAdSlot[];
+    }),
+    getMicro1Opportunities().then((opportunities) => ({ opportunities, error: null as string | null })).catch((error: unknown) => {
+      console.error('[PROGRAMS_PAGE] Falha ao carregar oportunidades da Micro1:', error);
+      return {
+        opportunities: [],
+        error: error instanceof Error ? error.message : 'Não foi possível consultar a fonte pública.',
+      };
+    }),
+  ]);
+  const adPricing = getAdPricing();
   const params = searchParams ? await searchParams : {};
   const getParam = (key: string): string | undefined => {
     const value = params[key];
@@ -90,6 +107,17 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
         </div>
       </header>
 
+      <section className="mb-5 grid gap-4 rounded-2xl border border-orange/30 bg-orange/5 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="guide-cta-title">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Quer decidir com menos ruído?</p>
+          <h2 id="guide-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Receba o mapa prático de renda extra</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">Cinco arquivos para comparar oportunidades, organizar critérios e escolher seu próximo passo sem promessa fácil.</p>
+        </div>
+        <Link href="/guias/renda-extra?cta_variant=2" className="inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-orange-dark">
+          Ver o pacote
+        </Link>
+      </section>
+
       <details id="como-funciona" className="mb-5 md:mb-8">
         <summary className="cursor-pointer rounded-xl border border-border bg-income-surface/70 px-4 py-3 text-sm font-bold transition-colors hover:border-neon">
           Como escolher uma oportunidade
@@ -129,6 +157,11 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
       <div id="catalogo">
         <PartnerProgramsBrowser
           programs={programs}
+          micro1Opportunities={micro1Result.opportunities}
+          micro1Error={micro1Result.error}
+          adSlots={adSlots}
+          adPriceCents={adPricing.monthlyPriceCents}
+          adPromotionActive={adPricing.isPromotionActive}
           initialObjective={getParam('objetivo')}
           initialCurrency={getParam('moeda')}
           initialEnglish={getParam('ingles')}
@@ -137,6 +170,7 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
       <div className="mt-8 md:mt-12">
         <ProgramCompare programs={programs} />
       </div>
+      <EditorialSupportOffers />
 
       <details className="mt-10 rounded-2xl border border-border bg-income-surface/90 p-4 md:mt-16 md:p-6">
         <summary className="cursor-pointer text-sm font-bold transition-colors hover:text-neon">

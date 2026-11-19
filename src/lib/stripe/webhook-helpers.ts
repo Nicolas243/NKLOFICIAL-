@@ -1,11 +1,11 @@
 import type Stripe from 'stripe';
 
 export type StripeReference = {
-  type: 'guide_purchase' | 'guide_subscription' | 'booking' | 'premium_subscription';
+  type: 'guide_purchase' | 'guide_subscription' | 'booking' | 'premium_subscription' | 'ad_campaign';
   id: string;
 };
 
-const REFERENCE_PATTERN = /^(guide_purchase|guide_subscription|booking|premium_subscription):([^:]+)$/;
+const REFERENCE_PATTERN = /^(guide_purchase|guide_subscription|booking|premium_subscription|ad_campaign):([^:]+)$/;
 
 export function getStripeReference(metadata: Stripe.Metadata | null | undefined): StripeReference | null {
   const reference = metadata?.reference;

@@ -85,12 +85,8 @@ export default function RegistroForm() {
             <span className="text-xs opacity-40 uppercase tracking-wider">ou continue com</span>
             <span className="flex-1 h-px bg-white/10" />
           </div>
-          <div className="flex gap-3">
+          <div className="flex">
             <GoogleSignInButton />
-            <a href="/api/auth/facebook" className="flex-1 py-3 bg-white/10 border border-white/10 rounded-xl flex items-center justify-center gap-2 hover:bg-white/20">
-              <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              <span className="text-sm font-medium text-text">Facebook</span>
-            </a>
           </div>
           <button type="button" onClick={() => setStep(1)} className="py-3.5 bg-neon text-black rounded-xl font-bold text-base hover:scale-[1.02] hover:shadow-lg hover:shadow-neon/30">
             Proximo → Perfil

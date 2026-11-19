@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 const REQUIRED_SERVER_VARIABLES = [
   'DATABASE_URL',
-  'STRIPE_SECRET_KEY',
+  'STRIPE_API_KEY',
   'STRIPE_WEBHOOK_SECRET',
   'UPSTASH_REDIS_REST_URL',
   'UPSTASH_REDIS_REST_TOKEN',
@@ -26,8 +26,16 @@ function isConfigured(name: string): boolean {
 
 export async function GET(): Promise<NextResponse> {
   const server = Object.fromEntries(REQUIRED_SERVER_VARIABLES.map((name) => [name, isConfigured(name)]));
+  const legacyStripeKeyConfigured = isConfigured('STRIPE_SECRET_KEY');
+  server.STRIPE_API_KEY = server.STRIPE_API_KEY || legacyStripeKeyConfigured;
+  server.STRIPE_SECRET_KEY = legacyStripeKeyConfigured;
   const publicVariables = Object.fromEntries(REQUIRED_PUBLIC_VARIABLES.map((name) => [name, isConfigured(name)]));
-  const ready = [...Object.values(server), ...Object.values(publicVariables)].every(Boolean);
+  const ready = [
+    ...Object.entries(server)
+      .filter(([name]) => name !== 'STRIPE_SECRET_KEY')
+      .map(([, configured]) => configured),
+    ...Object.values(publicVariables),
+  ].every(Boolean);
 
   return NextResponse.json({
     status: ready ? 'ok' : 'degraded',

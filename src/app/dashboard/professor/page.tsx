@@ -34,7 +34,7 @@ export default async function ProfessorDashboardPage() {
     annualPlanPriceCents: userProfiles.annualPlanPriceCents,
     acceptsNewStudents: userProfiles.acceptsNewStudents,
   }).from(users).innerJoin(userProfiles, eq(userProfiles.id, users.id)).where(eq(users.id, user.id)).limit(1);
-  if (!profile || (profile.role !== 'professor' && profile.papel !== 'Professor')) {
+  if (!profile || profile.role !== 'professor') {
     redirect('/');
   }
   const bookings = await db

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import type { ProgramHubDefinition } from '@/lib/program-hubs';
+import { EditorialSupportOffers } from '@/components/income/editorial-support-offers';
 
 type Props = {
   title: string;
@@ -73,6 +74,7 @@ export function ProgramHub({ title, description, programs, intro, criteria = [],
           </div>
         </section>
       )}
+      <EditorialSupportOffers />
     </div>
   );
 }

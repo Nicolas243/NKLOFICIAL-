@@ -74,7 +74,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SiteGuidance />
           <SpotlightTutorial />
           <PwaInstallReminder />
-          <main className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col lg:pt-[77px]">
+          <a
+            href="#main-content"
+            className="sr-only fixed left-4 top-4 z-[100000] rounded-md bg-foreground px-4 py-3 text-background focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-neon"
+          >
+            Pular para o conteúdo principal
+          </a>
+          <main id="main-content" tabIndex={-1} className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col outline-none lg:pt-[77px]">
             {children}
           </main>
           <RifaCampaignShell />

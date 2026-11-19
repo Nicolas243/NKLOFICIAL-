@@ -3,7 +3,7 @@
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
 
-const INCOME_ANALYTICS_ID = 'G-2RQX95N7TW';
+const INCOME_ANALYTICS_ID = 'G-QD0HQJFWVW';
 const CONSENT_STORAGE_KEY = 'nkl_privacy_consent';
 const CONSENT_EVENT = 'nkl:privacy-consent';
 
@@ -37,7 +37,7 @@ export function IncomeAnalytics() {
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${INCOME_ANALYTICS_ID}');
+          gtag('config', '${INCOME_ANALYTICS_ID}', { send_page_view: false });
         `}
       </Script>
     </>

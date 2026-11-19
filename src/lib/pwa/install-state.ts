@@ -6,6 +6,26 @@ export type InstallCapabilities = {
   platform: InstallPlatform;
 };
 
+export type InstallAppKind = 'music' | 'income';
+
+export function getInstallIntentStorageKey(kind: InstallAppKind): string {
+  return `nkl-pwa-install-intent-${kind}`;
+}
+
+export function hasInstallIntent(
+  storage: Pick<Storage, 'getItem'>,
+  kind: InstallAppKind,
+): boolean {
+  return storage.getItem(getInstallIntentStorageKey(kind)) === 'true';
+}
+
+export function markInstallIntent(
+  storage: Pick<Storage, 'setItem'>,
+  kind: InstallAppKind,
+): void {
+  storage.setItem(getInstallIntentStorageKey(kind), 'true');
+}
+
 function isSafari(userAgent: string): boolean {
   return /safari/iu.test(userAgent) && !/chrome|crios|android/iu.test(userAgent);
 }

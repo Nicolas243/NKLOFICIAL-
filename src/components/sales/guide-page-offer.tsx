@@ -6,6 +6,7 @@ import { GuideSubscriptionButton } from '@/components/sales/guide-subscription-b
 import { trackOfferFunnelEvent } from '@/lib/analytics';
 import {
   GUIDE_PAGE_CTA_VARIANTS,
+  GUIDE_TITLE,
   type GuidePageCtaVariant,
 } from '@/lib/guide-offer';
 import type { GuideResumeIntent } from '@/lib/auth/return-intent';
@@ -14,10 +15,12 @@ const STORAGE_KEY = 'nkl_guide_page_cta_variant_v1';
 const IMPRESSION_KEY_PREFIX = `${STORAGE_KEY}:impression:`;
 
 type GuidePageOfferProps = {
+  id?: string;
   initialVariant: GuidePageCtaVariant | null;
   purchaseOfferVariant?: string;
   subscriptionOfferVariant?: string;
   resumeIntent?: GuideResumeIntent | null;
+  forceFallback?: boolean;
 };
 
 function randomVariant(): GuidePageCtaVariant {
@@ -45,15 +48,25 @@ function persistVariant(variant: GuidePageCtaVariant): void {
 }
 
 export function GuidePageOffer({
+  id,
   initialVariant,
   purchaseOfferVariant = 'sales-page',
   subscriptionOfferVariant = 'sales-page:subscription',
   resumeIntent = null,
+  forceFallback = false,
 }: GuidePageOfferProps) {
   const [variantId, setVariantId] = useState<GuidePageCtaVariant | null>(initialVariant);
   const variant = useMemo(
-    () => GUIDE_PAGE_CTA_VARIANTS.find((item) => item.id === variantId) ?? null,
-    [variantId],
+    () => GUIDE_PAGE_CTA_VARIANTS.find((item) => item.id === variantId) ?? (
+      forceFallback
+        ? {
+            title: GUIDE_TITLE,
+            summary: 'Um pacote organizado para estudar oportunidades de renda extra com mais clareza, sem promessa de resultado.',
+            ctaLabel: 'Quero liberar meu acesso',
+          }
+        : null
+    ),
+    [forceFallback, variantId],
   );
 
   useEffect(() => {
@@ -61,6 +74,7 @@ export function GuidePageOffer({
       persistVariant(initialVariant);
       return;
     }
+    if (forceFallback) return;
 
     const storedVariant = readStoredVariant();
     if (storedVariant !== null) {
@@ -101,7 +115,7 @@ export function GuidePageOffer({
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [initialVariant]);
+  }, [forceFallback, initialVariant]);
 
   useEffect(() => {
     if (variantId === null) return;
@@ -125,12 +139,12 @@ export function GuidePageOffer({
     );
   }
 
-  const offerVariant = `guide-page-cta:${variant.id}`;
+  const offerVariant = variantId === null ? purchaseOfferVariant : `guide-page-cta:${variantId}`;
   const purchaseVariant = variantId === null ? purchaseOfferVariant : offerVariant;
   const subscriptionVariant = variantId === null ? subscriptionOfferVariant : offerVariant;
 
   return (
-    <aside className="md:sticky md:top-20">
+    <aside id={id} className="scroll-mt-24 md:sticky md:top-20">
       <DiscountSimulator
         offerVariant={purchaseVariant}
         ctaLabel={variant.ctaLabel}

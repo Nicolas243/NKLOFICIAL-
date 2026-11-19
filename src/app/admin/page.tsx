@@ -3,8 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { businessDirectory, entityReports, teacherReviews, userProfiles } from '@/db/schema';
-import { count, eq } from 'drizzle-orm';
+import { adCampaigns, businessDirectory, entityReports, teacherReviews, userProfiles } from '@/db/schema';
+import { asc, count, eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
 import {
   publishNews,
@@ -16,6 +16,7 @@ import {
 import { getPlatformMetrics } from '@/actions/admin-analytics';
 import { AdminPromoteForm } from '@/components/admin-promote-form';
 import { setEntitySuspensionStateAction, updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
+import { approveAdCampaign, rejectAdCampaign } from '@/actions/ad-campaigns';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -34,7 +35,7 @@ export default async function AdminDashboardPage() {
   ]);
 
   const isAdmin = profile?.role === 'admin';
-  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories] = await Promise.all([
+  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories, pendingAdCampaigns] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
     isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
@@ -42,6 +43,25 @@ export default async function AdminDashboardPage() {
     isAdmin ? db.select().from(teacherReviews).where(eq(teacherReviews.visibility, 'admin_only')) : Promise.resolve([]),
     isAdmin ? db.select({ id: userProfiles.id, name: userProfiles.fullName, count: userProfiles.resolvedReportsCount, suspendedAt: userProfiles.suspendedAt }).from(userProfiles).where(eq(userProfiles.isSuspended, true)) : Promise.resolve([]),
     isAdmin ? db.select({ id: businessDirectory.id, name: businessDirectory.businessName, count: businessDirectory.resolvedReportsCount, suspendedAt: businessDirectory.suspendedAt }).from(businessDirectory).where(eq(businessDirectory.isSuspended, true)) : Promise.resolve([]),
+    isAdmin ? db.select({
+      id: adCampaigns.id,
+      businessName: adCampaigns.businessName,
+      contactEmail: adCampaigns.contactEmail,
+      responsibleName: adCampaigns.responsibleName,
+      whatsapp: adCampaigns.whatsapp,
+      businessCategory: adCampaigns.businessCategory,
+      offerDescription: adCampaigns.offerDescription,
+      campaignObjective: adCampaigns.campaignObjective,
+      targetAudience: adCampaigns.targetAudience,
+      socialUrl: adCampaigns.socialUrl,
+      destinationUrl: adCampaigns.destinationUrl,
+      assetUrl: adCampaigns.assetUrl,
+      assetAltText: adCampaigns.assetAltText,
+      slotCount: adCampaigns.slotCount,
+      monthlyAmountCents: adCampaigns.monthlyAmountCents,
+      billingStatus: adCampaigns.billingStatus,
+      createdAt: adCampaigns.createdAt,
+    }).from(adCampaigns).where(eq(adCampaigns.status, 'pending_review')).orderBy(asc(adCampaigns.createdAt)) : Promise.resolve([]),
   ]);
 
   const metricCards: { label: string; value: string }[] = metrics
@@ -112,6 +132,53 @@ export default async function AdminDashboardPage() {
               <article key={`${item.type}-${item.id}`} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-surface p-5">
                 <div><p className="font-bold">{item.name ?? 'Sem nome'}</p><p className="text-xs opacity-70">{item.type} · {item.count} denúncias procedentes · {item.suspendedAt?.toLocaleDateString('pt-BR')}</p></div>
                 <form action={setEntitySuspensionStateAction}><input type="hidden" name="entityType" value={item.type} /><input type="hidden" name="entityId" value={item.id} /><input type="hidden" name="suspend" value="false" /><button type="submit" className="rounded-md border border-neon px-3 py-2 text-sm font-bold text-neon">Reabilitar Conta/Perfil</button></form>
+              </article>
+            ))}
+          </section>
+
+          <section className="space-y-4">
+            <div>
+              <h2 className="font-playfair text-xl font-bold">Materiais de anúncios aguardando sua análise ({pendingAdCampaigns.length})</h2>
+              <p className="mt-1 text-sm opacity-70">Este é o lugar para você analisar cada material após a assinatura Stripe. Revise criativo, destino e contexto antes de aprovar ou cancelar.</p>
+            </div>
+            {pendingAdCampaigns.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-border p-5 text-sm opacity-70">Nenhuma campanha aguardando revisão.</p>
+            ) : pendingAdCampaigns.map((campaign) => (
+              <article key={campaign.id} className="grid gap-5 rounded-xl border border-orange/30 bg-surface p-5 lg:grid-cols-[7rem_1fr_auto] lg:items-center">
+                <div className="aspect-square overflow-hidden rounded-lg border border-border bg-background">
+                  {campaign.assetUrl ? (
+                    campaign.assetUrl.endsWith('.webm') ? (
+                      <video src={campaign.assetUrl} className="h-full w-full object-cover" muted loop autoPlay playsInline />
+                    ) : (
+                      <Image src={campaign.assetUrl} alt={campaign.assetAltText} width={112} height={112} className="h-full w-full object-cover" />
+                    )
+                  ) : <span className="flex h-full items-center justify-center p-2 text-center text-xs opacity-60">Aguardando envio</span>}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-bold">{campaign.businessName}</h3>
+                    <span className="rounded-full border border-neon/40 px-2 py-0.5 text-[0.65rem] font-bold uppercase text-neon">{campaign.billingStatus}</span>
+                  </div>
+                  <p className="mt-1 text-sm opacity-70">{campaign.contactEmail} · {campaign.slotCount} {campaign.slotCount === 1 ? 'cota' : 'cotas'} · {(campaign.monthlyAmountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês</p>
+                  <p className="mt-2 text-sm"><strong>Contato:</strong> {campaign.responsibleName ?? 'Não informado'} · {campaign.whatsapp ?? 'WhatsApp não informado'}</p>
+                  <p className="mt-1 text-sm"><strong>Categoria:</strong> {campaign.businessCategory ?? 'Não informada'} · <strong>Objetivo:</strong> {campaign.campaignObjective ?? 'Não informado'}</p>
+                  <p className="mt-2 text-sm leading-relaxed"><strong>Oferta:</strong> {campaign.offerDescription ?? 'Não informada'}</p>
+                  {campaign.targetAudience && <p className="mt-1 text-xs opacity-70"><strong>Público:</strong> {campaign.targetAudience}</p>}
+                  {campaign.socialUrl && <a href={campaign.socialUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block truncate text-xs text-neon hover:underline">Perfil institucional: {campaign.socialUrl}</a>}
+                  <a href={campaign.destinationUrl} target="_blank" rel="noopener noreferrer" className="mt-2 block truncate text-sm text-neon hover:underline">{campaign.destinationUrl}</a>
+                  <p className="mt-2 text-xs opacity-55">Recebido em {campaign.createdAt.toLocaleDateString('pt-BR')}</p>
+                </div>
+                <div className="flex flex-wrap gap-2 lg:flex-col">
+                  <form action={approveAdCampaign}>
+                    <input type="hidden" name="campaignId" value={campaign.id} />
+                    <button type="submit" className="w-full rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Aprovar e publicar</button>
+                  </form>
+                  <form action={rejectAdCampaign} className="space-y-2">
+                    <input type="hidden" name="campaignId" value={campaign.id} />
+                    <input name="reviewNotes" placeholder="Motivo da reprovação" className="min-h-9 w-full rounded-md border border-border bg-background px-2 text-xs" />
+                    <button type="submit" className="w-full rounded-md border border-red-500/50 px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-500/10">Reprovar e cancelar</button>
+                  </form>
+                </div>
               </article>
             ))}
           </section>

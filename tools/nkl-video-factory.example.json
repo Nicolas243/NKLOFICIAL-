@@ -1,0 +1,23 @@
+{
+  "title": "IA na prática: fluxo seguro para criar conteúdo",
+  "objective": "Ensinar uma rotina observável de pesquisa, revisão e criação",
+  "audience": "Criadores iniciantes",
+  "sources": [
+    {
+      "url": "https://nkloficial.com.br/ia",
+      "title": "IA na Prática NKL",
+      "verified": true
+    }
+  ],
+  "durationSeconds": 180,
+  "formats": ["horizontal", "vertical"],
+  "language": "pt-BR",
+  "prohibitedClaims": [
+    "renda garantida",
+    "resultado financeiro garantido",
+    "aprovação garantida"
+  ],
+  "callToAction": "Conheça o curso IA na Prática NKL",
+  "rightsConfirmed": true,
+  "channels": ["youtube", "facebook"]
+}

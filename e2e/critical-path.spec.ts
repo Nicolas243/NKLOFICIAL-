@@ -31,7 +31,7 @@ test.describe('Espinha dorsal crítica do Portal NKL', () => {
 
     const loginLink = page.getByRole('link', { name: 'Entrar', exact: true });
     await expect(loginLink).toBeVisible();
-    await expect(loginLink).toHaveAttribute('href', '/login?area=music');
+    await expect(loginLink).toHaveAttribute('href', '/login?next=%2Fcatalogo');
   });
 
   test('cadastro musical mantém os campos de onboarding', async ({ page }) => {

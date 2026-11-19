@@ -8,6 +8,7 @@ export type CreateCheckoutSessionParams = {
   successUrl: string;
   cancelUrl: string;
   customerEmail?: string;
+  integrationIdentifier?: string;
 };
 
 export async function createCheckoutSession(
@@ -26,6 +27,12 @@ export async function createCheckoutSession(
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
     customer_email: params.customerEmail,
+    integration_identifier: params.integrationIdentifier ?? `portal_nkl_${randomLetters(8)}`,
     ...(params.mode === 'subscription' ? { subscription_data: { metadata: params.metadata } } : {}),
   });
+}
+
+function randomLetters(length: number): string {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+  return Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
 }

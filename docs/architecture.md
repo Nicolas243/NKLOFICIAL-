@@ -52,13 +52,22 @@ conversa, cópia integral de arquivos, deploy, migração ou listener de rede.
 
 ## Produtos e rotas públicas
 
+- **IA na Prática NKL**: área educacional em `/ia`, com diagnóstico, curso,
+  biblioteca de prompts, ferramentas, progresso e página canônica de oferta.
+  O acesso pago usa Stripe e concessões server-side; o conteúdo editorial e a
+  oferta estão especificados em `docs/ai-product-spec.md`.
+
 - **NKL Música**: home, catálogo de cordas, diretórios, aulas, notícias e recursos para músicos.
 - **Renda Extra — catálogo canônico**: `/programas`, incluindo `/programas/[slug]`, `/programas/iniciantes` e `/programas/dolar`.
 - **Renda Extra — compatibilidade histórica**: `/blog/renda-extra` continua disponível para links antigos, mas aponta semanticamente para `/programas`.
 - **Renda Extra — produto digital**: `/guias/renda-extra` é a landing page do Guia Definitivo de Renda Extra e não deve ser confundida com o catálogo.
-- **Inventário publicitário em validação**: `/anuncie` é uma prévia estática do
-  Mural NKL e de três faixas horizontais. Nesta fase não há cobrança, upload,
-  publicação automática, medição de leads ou alteração de banco.
+- **Inventário publicitário**: `/programas/anuncie` apresenta o Mural NKL e três faixas
+  horizontais. O anunciante assina pelo Stripe, envia o criativo após a confirmação e
+  aguarda revisão humana; não há publicação automática nem medição de leads.
+- **Pagina base**: `/` apresenta o ecossistema Portal NKL por cards uniformes e usa
+  `src/lib/portal-areas.ts` como registro central quando a implementacao desta
+  especificacao for iniciada. Novas areas devem seguir
+  `docs/portal-area-registry.md` e `docs/specs/portal-nkl-base-home/`.
 
 As regras de reconhecimento de contexto ficam centralizadas em `src/lib/income-portal.ts`. Novas telas da área de Renda Extra devem reutilizar essa fonte em vez de repetir comparações de pathname.
 
@@ -67,6 +76,11 @@ login apenas fornece contexto temporário para a entrada: Música mantém o
 onboarding musical existente, enquanto Renda Extra não exige instrumento ou
 experiência musical. Essa escolha não cria um perfil separado nem altera
 autorização.
+
+No onboarding musical, `papel` aceita múltiplas opções e é persistido como uma
+lista textual separada por vírgulas no perfil legado. Essa seleção é apenas
+preferência declarada: diretório, dashboard, preços, agendamento e métricas de
+professor exigem a `role` aprovada `professor` no servidor.
 
 ## Regras de integração
 
@@ -81,6 +95,7 @@ autorização.
 - Google Analytics, Microsoft Clarity, PostHog e AdSense são recursos não essenciais e só são carregados após consentimento explícito; GA4 e PostHog registram pageviews explicitamente em cada mudança de rota do App Router.
 - Migrações devem ser aditivas, revisáveis e testadas localmente; não aplicar automaticamente em produção.
 - Os materiais pagos ficam no bucket privado `guide-assets-private`; o endpoint `/api/downloads/guide` libera URLs assinadas por 60 segundos e aplica cota atômica de oito tentativas.
+- Os e-books de idiomas usam variantes Stripe explícitas (`italian-ebook-sales-page`, `french-ebook-sales-page`, `german-ebook-sales-page`, `spanish-ebook-sales-page` e `mandarin-ebook-sales-page`), custam R$ 47 e liberam somente o PDF correspondente após a confirmação do webhook.
 - Compras convidadas usam token opaco com hash e expiração, CPF criptografado por
   `GUEST_CHECKOUT_ENCRYPTION_KEY` e a mesma personalização do fluxo autenticado.
   A tabela `guide_download_attempts` limita cada material a duas tentativas independentes;
@@ -91,6 +106,12 @@ autorização.
 - `drizzle/0034_partner_affiliate_links.sql` é uma migração de dados versionada: antes de executá-la em um ambiente remoto, confirme no Supabase o histórico aplicado e os seis slugs-alvo em `partner_programs`; aplique o SQL revisado uma única vez pelo fluxo aprovado de migrações (sem `push` cego) e verifique depois os seis `affiliate_url` e `updated_at`. Em ambiente local, use um banco descartável ou autorizado e registre a consulta de verificação; não aplicar em produção sem aprovação.
 - O catálogo público usa páginas individuais em `/programas/[slug]`, hubs em `/programas/iniciantes`
   e `/programas/dolar`, JSON-LD de página/lista e links de afiliado com `rel="sponsored"`.
+- O card Micro1 em `/programas` e a página `/programas/micro1` consultam a API pública do referral
+  em páginas de até 100 registros, validam e deduplicam todas as vagas retornadas, mantêm cache de
+  15 minutos e separam as oportunidades por `domain_slug`; pesquisa e filtros ficam dentro do card,
+  com a lista completa na página individual. O seletor abre em um modal rolável com filtros rápidos
+  de idioma e dificuldade editorial antes das especialidades; a conversão para reais é apenas
+  editorial e nunca uma garantia de pagamento.
 - URLs públicas de SEO são centralizadas em `src/lib/site.ts`: `SITE_URL` usa
   `NEXT_PUBLIC_SITE_URL` sem barras finais e cai para `https://nkloficial.com.br`;
   `absoluteSiteUrl()` é usado em canonical, Open Graph, JSON-LD, sitemap e robots.
@@ -109,6 +130,16 @@ autorização.
   `src/components/income/program-actions.tsx`; lembretes usam Google Calendar ou `.ics` sem persistir
   dados no Portal NKL. Modais de oportunidade preservam o scroll anterior, fecham com `Escape` e
   permitem fechar pelo backdrop.
+- O botão Salvar do guia de Renda Extra mantém uma cópia local para uso sem sessão e, quando a
+  pessoa está autenticada, sincroniza os slugs em `saved_partner_programs`. O painel de `/perfil`
+  lê essa coleção para exibir oportunidades salvas, contagem de acompanhamento e próximos passos;
+  a migração `0041_saved_partner_programs.sql` deve ser aplicada antes de habilitar essa persistência
+  em produção.
+- O grid de oportunidades intercala os cards editoriais do sorteio e do Programa de Liberdade
+  Financeira entre as oportunidades catalogadas, sem criar uma seção promocional ao final. O card
+  inteiro leva ao destino próprio, os controles visuais não executam ações secundárias e somente o
+  compartilhamento tem comportamento independente; o link de sugestão usa diretamente o formulário
+  externo definido em `INCOME_SUGGESTION_FORM_URL`.
 - O experimento `program-secondary-cta` existe somente nas visualizações secundárias do catálogo.
   A variante validada por `cta_variant=0|1|2` é persistida no navegador, acompanha os dois caminhos
   de checkout e registra `impression`, `click` e `checkout`; `conversion` é reservado para pagamentos
@@ -122,6 +153,10 @@ autorização.
   assinatura mantém o pacote atual e inclui novos PDFs/guias a partir de 15 de dezembro.
   A comparação registra impressão, clique, checkout e conversão depois de cada variante alcançar
   pelo menos 40 impressões; esse mínimo é uma regra de exposição, não uma conclusão estatística.
+- A propriedade GA4 canônica do portal é `G-QD0HQJFWVW`, com pageviews manuais e sem configuração
+  duplicada. Após uma compra aprovada do guia, a página de sucesso emite o evento recomendado
+  `purchase` com valor em BRL e a variante, uma vez por transação no navegador; o webhook continua
+  sendo a autoridade para liberar o acesso e registrar a conversão persistente.
 - A oferta secundária é uma superfície compacta e retangular exibida somente no modal e na página
   individual da oportunidade; os cards iniciais de `/programas` não a renderizam.
 - O disclosure de parceria é um `<details>` fechado por padrão, com o resumo “Sobre links de parceria”,
@@ -139,3 +174,4 @@ autorização.
   bloqueantes por área. `nkl_tutorial_seen` permanece reservado ao tutorial histórico da home.
 - Guias pagos: o checkout exige sessão autenticada, CPF válido e consentimento específico. A compra guarda o vínculo com `user_profiles`, mas o CPF nunca entra em metadados Stripe, URLs, analytics ou logs.
 - Entrega personalizada: os originais ficam no bucket privado; o servidor lê o ativo, insere marca visual em todas as páginas/abas e transmite a cópia diretamente. Nenhuma URL assinada ou cópia personalizada é persistida.
+- O e-book de inglês em `/guias/ingles/ebook` é um HTML paginado em A5, com tipografia grande para celular e impressão. O personalizador também aceita HTML e injeta a marca d'água de identidade somente no servidor, escapando nome, CPF e e-mail antes de renderizar; a conexão desse ativo ao checkout específico deve ocorrer antes da venda.

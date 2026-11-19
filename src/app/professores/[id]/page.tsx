@@ -48,6 +48,7 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
   } = await supabase.auth.getUser();
   const isFavorite = user?.id ? await isProfessorFavorite(user.id, id) : false;
   const [profile] = await db.select({
+    role: userProfiles.role,
     singleClassPriceCents: userProfiles.singleClassPriceCents,
     monthlyPlanPriceCents: userProfiles.monthlyPlanPriceCents,
     semiannualPlanPriceCents: userProfiles.semiannualPlanPriceCents,
@@ -55,6 +56,9 @@ export default async function ProfessorDetailsPage(props: { params: Params }) {
     acceptsNewStudents: userProfiles.acceptsNewStudents,
     isSuspended: userProfiles.isSuspended,
   }).from(userProfiles).where(eq(userProfiles.id, id)).limit(1);
+  if (!profile || profile.role !== 'professor' || profile.isSuspended) {
+    notFound();
+  }
   const prices: Record<ClassPlanModality, number> = {
     single: profile?.singleClassPriceCents ?? DEFAULT_CLASS_PRICE_CENTS,
     monthly: profile?.monthlyPlanPriceCents ?? DEFAULT_CLASS_PRICE_CENTS * MONTHLY_PLAN_CLASSES,

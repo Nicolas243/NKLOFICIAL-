@@ -23,5 +23,18 @@ export function profileSyncFailurePath(
   return `${loginUrl.pathname}?${search.toString()}`;
 }
 
+export function profileOnboardingPath(
+  nextPath: string,
+  resumeIntent: GuideResumeIntent | null = null,
+  area: LoginArea = 'music',
+): string {
+  const profileUrl = new URL('/perfil', 'http://localhost');
+  profileUrl.searchParams.set('onboarding', '1');
+  profileUrl.searchParams.set('next', safeNextPath(nextPath));
+  if (resumeIntent) profileUrl.searchParams.set('resume', resumeIntent);
+  if (area === 'income') profileUrl.searchParams.set('area', area);
+  return `${profileUrl.pathname}?${profileUrl.searchParams.toString()}`;
+}
+
 export { buildReturnPath };
 export { safeNextPath };

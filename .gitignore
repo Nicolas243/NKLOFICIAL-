@@ -45,7 +45,22 @@ yarn-error.log*
 .env*
 
 !.env.example
+
+# OAuth client credentials
+client_secret_*.json
+
 /Conteudo de novembro/
+
+# Artefatos locais baixados ou gerados durante pesquisas e exportações.
+/Alignerr _ Powered by Labelbox.html
+/Alignerr _ Powered by Labelbox_files/
+/Guia Ingles 2027 _ Portal NKL.pdf
+/NKL_LOGO_FUNDO_BRANCO.png
+/nkl-blog/
+/nkl-musical/
+/repocket-*.exe
+/tutorial-video-generic-provider.mp4
+
 # vercel
 .vercel
 supabase/.temp/
@@ -58,7 +73,16 @@ supabase/.temp/
 /task4-*.diff
 /*_Portal NKL.pdf
 /guia-definitivo-renda-extra-2027.pdf
+/workspace/video-factory/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Paid assets and local scratch (never publish)
+/private-assets/
+/*.zip
+/*.mp4
+/nul
+/E-book Inglês para ganhar dinheiro _ Portal NKL _ Portal NKL.pdf
+Attached Element Context*.txt

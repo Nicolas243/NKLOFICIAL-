@@ -1,0 +1,445 @@
+.ebook-shell {
+  --ebook-ink: #172235;
+  --ebook-muted: #5c697d;
+  --ebook-blue: #1d5b9e;
+  --ebook-orange: #c76538;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(199, 101, 56, 0.13), transparent 25rem),
+    #dfe7ef;
+  color: var(--ebook-ink);
+  padding: 1.5rem 1rem 4rem;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.ebook-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 auto 1rem;
+  font-family: var(--font-inter), sans-serif;
+}
+
+.ebook-control-button,
+.ebook-control-link {
+  min-height: 2.75rem;
+  border-radius: 0.45rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.ebook-control-button {
+  border: 0;
+  background: var(--ebook-blue);
+  color: white;
+  cursor: pointer;
+}
+
+.ebook-control-link {
+  border: 1px solid #aebdca;
+  color: var(--ebook-ink);
+  text-decoration: none;
+}
+
+.ebook-preview-note {
+  margin: 0 auto 1rem;
+  max-width: 148mm;
+  color: var(--ebook-muted);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.ebook-page {
+  position: relative;
+  box-sizing: border-box;
+  width: min(100%, 148mm);
+  min-height: 210mm;
+  margin: 0 auto 1rem;
+  overflow: hidden;
+  padding: 22mm 17mm 18mm;
+  background: #fffdf8;
+  box-shadow: 0 1rem 2.5rem rgba(23, 34, 53, 0.14);
+  break-after: page;
+  page-break-after: always;
+}
+
+.ebook-page p,
+.ebook-page li {
+  font-size: 16pt;
+  line-height: 1.58;
+}
+
+.ebook-page h2 {
+  margin: 0 0 1.25rem;
+  max-width: 95%;
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+.ebook-kicker {
+  margin: 0 0 0.75rem !important;
+  color: var(--ebook-orange);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.75rem !important;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1.2 !important;
+  text-transform: uppercase;
+}
+
+.ebook-logo {
+  position: relative;
+  z-index: 1;
+  border-radius: 1.25rem;
+  background: white;
+  padding: 0.45rem;
+}
+
+.ebook-cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 210mm;
+  background: var(--ebook-ink);
+  color: #fffdf8;
+}
+
+.ebook-cover-grid {
+  position: absolute;
+  inset: 0 0 42%;
+  opacity: 0.75;
+  background:
+    linear-gradient(135deg, transparent 0 48%, rgba(255,255,255,0.12) 48.2% 49%, transparent 49.2%),
+    linear-gradient(25deg, transparent 0 63%, rgba(199,101,56,0.8) 63.2% 64%, transparent 64.2%),
+    radial-gradient(circle at 85% 20%, #2f78b9 0 5%, transparent 5.2%);
+}
+
+.ebook-cover h1 {
+  position: relative;
+  z-index: 1;
+  margin: 1.5rem 0 1.25rem;
+  max-width: 9ch;
+  font-size: clamp(3.2rem, 13vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.ebook-cover h1 em {
+  color: #f0a477;
+  font-style: normal;
+}
+
+.ebook-cover-subtitle,
+.ebook-cover-foot {
+  position: relative;
+  z-index: 1;
+  max-width: 28rem;
+  color: #dbe5ed;
+}
+
+.ebook-cover-rule {
+  position: relative;
+  z-index: 1;
+  width: 5rem;
+  height: 0.3rem;
+  margin: 1rem 0;
+  background: var(--ebook-orange);
+}
+
+.ebook-cover-foot {
+  margin: 0;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.85rem !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ebook-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ebook-callout,
+.ebook-practice {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.5rem;
+  border-left: 0.35rem solid var(--ebook-orange);
+  background: #f6ede6;
+  padding: 1rem 1.1rem;
+}
+
+.ebook-reading {
+  min-height: auto;
+  padding-top: 18mm;
+  padding-bottom: 20mm;
+}
+
+.ebook-reading-intro {
+  border-bottom: 1px solid #d6dce3;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+}
+
+.ebook-reading-intro h2 {
+  max-width: 13ch;
+}
+
+.ebook-reading-intro p:last-child {
+  margin-bottom: 0;
+}
+
+.ebook-callout strong,
+.ebook-practice strong {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ebook-callout span,
+.ebook-practice span {
+  font-size: 14pt;
+  line-height: 1.5;
+}
+
+.ebook-steps,
+.ebook-bullets {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.ebook-bullets li {
+  padding-left: 0.3rem;
+}
+
+.ebook-example-english,
+.ebook-example-portuguese {
+  display: block;
+}
+
+.ebook-example-english {
+  color: var(--ebook-ink);
+}
+
+.ebook-example-portuguese {
+  margin-top: 0.1rem;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.9em;
+}
+
+.ebook-steps li + li,
+.ebook-bullets li + li {
+  margin-top: 0.75rem;
+}
+
+.ebook-muted {
+  color: var(--ebook-muted);
+}
+
+.ebook-audio-link {
+  display: inline-block;
+  margin: 0 0 0.9rem;
+  color: var(--ebook-blue);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.ebook-toolkit {
+  justify-content: flex-start;
+}
+
+.habit-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+}
+
+.habit-grid span {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  color: var(--ebook-muted);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.7rem;
+}
+
+.habit-grid i {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #b8c5d1;
+  border-radius: 0.4rem;
+}
+
+.ebook-prompt,
+.ebook-dialogue,
+.ebook-template {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.9rem 0;
+  border: 1px solid #d7e0e8;
+  background: #f7fafc;
+  padding: 0.9rem 1rem;
+}
+
+.ebook-prompt,
+.ebook-template span {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.ebook-dialogue p,
+.ebook-template {
+  margin: 0;
+}
+
+.ebook-template strong {
+  color: var(--ebook-orange);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ebook-lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ebook-lesson-header .ebook-kicker {
+  margin: 0 !important;
+}
+
+.ebook-lesson-number {
+  display: inline-grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ebook-blue);
+  color: white;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.ebook-lesson > p {
+  margin: 0 0 1rem;
+}
+
+.ebook-lesson {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #d6dce3;
+  padding-bottom: 1.75rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.ebook-lesson:last-of-type {
+  border-bottom: 0;
+}
+
+.ebook-lesson h2 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.7rem, 5vw, 2.45rem);
+}
+
+.ebook-examples {
+  margin-top: 1rem;
+  border: 1px solid #d7e0e8;
+  background: #f7fafc;
+  padding: 1rem 1.1rem;
+  break-inside: avoid;
+}
+
+.ebook-examples strong {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ebook-bullets {
+  margin-top: 1rem;
+}
+
+.ebook-page-number {
+  position: absolute;
+  right: 17mm;
+  bottom: 9mm;
+  color: var(--ebook-muted);
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 560px) {
+  .ebook-shell {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .ebook-page {
+    padding: 18mm 12mm 16mm;
+  }
+
+  .ebook-reading {
+    padding-top: 14mm;
+  }
+
+  .ebook-page p,
+  .ebook-page li {
+    font-size: 17px;
+  }
+
+  .ebook-page-number {
+    right: 12mm;
+  }
+}
+
+@media print {
+  .ebook-shell {
+    padding: 0;
+    background: white;
+  }
+
+  .ebook-controls,
+  .ebook-preview-note {
+    display: none;
+  }
+
+  .ebook-page {
+    width: 148mm;
+    min-height: 210mm;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  .ebook-reading {
+    min-height: 210mm;
+  }
+
+  .ebook-lesson {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+@page {
+  size: A5 portrait;
+  margin: 0;
+}

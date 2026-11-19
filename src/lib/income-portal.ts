@@ -8,7 +8,11 @@ export const INCOME_PORTAL_ROUTES = {
   noInvestmentPrograms: '/programas/sem-investimento',
   remoteWorkPrograms: '/programas/trabalho-remoto',
   paidResearchPrograms: '/programas/pesquisas-remuneradas',
+  advertise: '/programas/anuncie',
+  legacyAdvertise: '/anuncie',
 } as const;
+
+export const INCOME_SUGGESTION_FORM_URL = 'https://forms.gle/2nREXEVdB6JyjtbC8';
 
 function isRouteOrChild(pathname: string, route: string): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
@@ -25,6 +29,8 @@ export function isIncomePortalPath(pathname: string): boolean {
     INCOME_PORTAL_ROUTES.noInvestmentPrograms,
     INCOME_PORTAL_ROUTES.remoteWorkPrograms,
     INCOME_PORTAL_ROUTES.paidResearchPrograms,
+    INCOME_PORTAL_ROUTES.advertise,
+    INCOME_PORTAL_ROUTES.legacyAdvertise,
   ].some((route) => isRouteOrChild(pathname, route));
 }
 

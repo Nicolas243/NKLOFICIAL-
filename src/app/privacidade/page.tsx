@@ -86,7 +86,8 @@ export default function PrivacidadePage() {
           </p>
           <ul className="mt-3 list-disc space-y-2 pl-5 opacity-85">
             <li>Supabase e Vercel: autenticação, banco, armazenamento, hospedagem e entrega do site.</li>
-            <li>Formspree: recebimento do nome e e-mail enviados no formulário de materiais.</li>
+            <li>Resend: envio transacional dos materiais solicitados, com o PDF anexado e o nome/e-mail informado.</li>
+            <li>Formspree: recebimento de dados enviados em formulários editoriais específicos.</li>
             <li>Stripe: pagamentos, assinaturas, conciliação e suporte da compra.</li>
             <li>Google Analytics, Google AdSense, Microsoft Clarity, PostHog e Vercel Analytics:
               medição, diagnóstico e publicidade somente após consentimento não essencial.</li>

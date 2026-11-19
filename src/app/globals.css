@@ -59,6 +59,50 @@
   }
 }
 
+@keyframes adBannerPan {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes adBannerSlotPan {
+  0% {
+    transform: translate3d(-1%, 0, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(1%, 0, 0) scale(1.02);
+  }
+}
+
+.ad-banner-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ad-banner-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: adBannerPan 18s linear infinite;
+  will-change: transform;
+}
+
+.ad-banner-slot-track {
+  animation: adBannerSlotPan 14s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-banner-marquee,
+  .ad-banner-marquee-track,
+  .ad-banner-slot-track {
+    animation: none;
+  }
+}
+
 .radial-menu-intro {
   transform-origin: center;
   animation: radialMenuIntro 1.45s cubic-bezier(0.2, 0.75, 0.25, 1) both;
@@ -153,6 +197,26 @@ body {
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.65;
     background-attachment: fixed;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .bg-surface {
@@ -480,6 +544,15 @@ textarea {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ad-banner-marquee-track {
+        animation: adBannerPan 18s linear infinite !important;
+        animation-duration: 18s !important;
+        animation-iteration-count: infinite !important;
+        animation-play-state: running !important;
     }
 }
 

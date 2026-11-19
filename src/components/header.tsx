@@ -10,8 +10,9 @@ import { useSyncExternalStore } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
-import { INCOME_PORTAL_ROUTES, isIncomePortalPath } from '@/lib/income-portal'
+import { INCOME_PORTAL_ROUTES, INCOME_SUGGESTION_FORM_URL, isIncomePortalPath } from '@/lib/income-portal'
 import { NotificationBell } from '@/components/notification-bell'
+import { buildLoginPath } from '@/lib/auth/return-intent'
 
 const groups = [
   { label: 'Cordas', items: [
@@ -33,54 +34,6 @@ const groups = [
     { href: '/recomendados', label: 'Loja' },
   ]},
 ]
-
-const LANG_OPTIONS = [
-  { top: '/flags/br.svg', bottom: '/flags/pt.svg', label: 'PT' },
-  { top: '/flags/mx.svg', bottom: '/flags/es.svg', label: 'ES' },
-  { top: '/flags/us.svg', bottom: '/flags/gb.svg', label: 'EN' },
-]
-
-function FlagPair({ top, bottom }: { top: string; bottom: string }) {
-  return (
-    <div className="flex w-11 h-[30px] rounded-[2px] overflow-hidden border border-border/50 shrink-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={top} className="w-1/2 object-cover object-left" alt="" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={bottom} className="w-1/2 object-cover object-right" alt="" />
-    </div>
-  )
-}
-
-function LangDropdown() {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const fn = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
-    document.addEventListener('mousedown', fn)
-    return () => document.removeEventListener('mousedown', fn)
-  }, [])
-  return (
-    <div ref={ref} className="relative">
-      <button type="button" onClick={() => setOpen((v) => !v)} className="cursor-pointer">
-        <FlagPair top="/flags/pt.svg" bottom="/flags/br.svg" />
-      </button>
-      {open && (
-        <div className="absolute top-full right-0 mt-2 z-[99999]">
-          <ul className="bg-surface border border-border rounded-lg shadow-xl py-2 px-2 flex flex-col gap-1">
-            {LANG_OPTIONS.map((opt) => (
-              <li key={opt.label}>
-                <a href="#" className="block cursor-pointer hover:opacity-80"
-                  onClick={(e) => { e.preventDefault(); setOpen(false) }}>
-                  <FlagPair top={opt.top} bottom={opt.bottom} />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  )
-}
 
 function Dropdown({ label, items }: { label: string; items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false)
@@ -151,7 +104,7 @@ export function Header() {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const isPartnerPortal = isIncomePortalPath(pathname)
-  const user = useSessionUser()
+  const { user, loading: sessionLoading } = useSessionUser()
   const isLoggedIn = Boolean(user)
   const loginArea = isPartnerPortal ? 'income' : 'music'
   const [menuOpen, setMenuOpen] = useState(false)
@@ -165,9 +118,11 @@ export function Header() {
 
   if (isHome) return null
 
-  const authBtn = (
-    <Link href={isLoggedIn ? '/perfil' : `/login?area=${loginArea}`}
-      className="inline-flex min-h-11 items-center justify-center px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-all hover:opacity-90 active:scale-95 shrink-0">
+  const authBtn = sessionLoading ? null : (
+    <Link
+      href={isLoggedIn ? '/perfil' : buildLoginPath(pathname, null, loginArea)}
+      className="inline-flex min-h-11 items-center justify-center px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-opacity hover:opacity-90 active:scale-95 shrink-0"
+    >
       {isLoggedIn ? 'Perfil' : 'Entrar'}
     </Link>
   )
@@ -176,7 +131,7 @@ export function Header() {
     const portalLinks = (
       <>
         <Link href={INCOME_PORTAL_ROUTES.catalog} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
-        <a href={`${INCOME_PORTAL_ROUTES.catalog}#sugestao`} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
+        <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
         <Link href="/contatos" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
       </>
     )
@@ -193,8 +148,8 @@ export function Header() {
           </Link>
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="inline-flex">{authBtn}</span>
-            {isLoggedIn && <NotificationBell />}
+            {authBtn}
+            {isLoggedIn && <NotificationBell href="/programas/notificacoes" area="income" />}
             <PwaInstallButton kind="income" />
             <ThemeToggle />
             <button
@@ -252,10 +207,9 @@ export function Header() {
         </div>
 
         <div className="relative z-[99999] flex items-start gap-2 sm:gap-3 shrink-0">
-          <span className="inline-flex shrink-0">{authBtn}</span>
+          {authBtn}
           {isLoggedIn && <NotificationBell />}
           <PwaInstallButton kind="music" />
-          <LangDropdown />
           <ThemeToggle />
           <button
             className="lg:hidden relative z-[110] flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-accent"

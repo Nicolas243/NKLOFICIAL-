@@ -33,7 +33,7 @@ const groups = [
 export function HomeMenuFallback() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const user = useSessionUser()
+  const { user, loading: sessionLoading } = useSessionUser()
 
   useEffect(() => {
     const fn = (e: MouseEvent) => {
@@ -53,12 +53,14 @@ export function HomeMenuFallback() {
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
-      <Link
-        href={user ? '/perfil' : '/login?area=music'}
-        className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface/90 px-3 text-sm font-bold shadow-sm transition-colors hover:border-orange hover:bg-accent"
-      >
-        {user ? 'Perfil' : 'Entrar'}
-      </Link>
+      {!sessionLoading && (
+        <Link
+          href={user ? '/perfil' : '/login?area=music'}
+          className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface/90 px-3 text-sm font-bold shadow-sm transition-colors hover:border-orange hover:bg-accent"
+        >
+          {user ? 'Perfil' : 'Entrar'}
+        </Link>
+      )}
 
       {open && (
         <div className="absolute top-full left-0 mt-2 min-w-[220px] bg-surface border border-border rounded-xl shadow-xl p-4 flex flex-col gap-3">

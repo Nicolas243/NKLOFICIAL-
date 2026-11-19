@@ -3,6 +3,12 @@ export const GUIDE_SIGNED_URL_TTL_SECONDS = 60;
 export const GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET = 2;
 
 export const GUIDE_ASSET_IDS = [
+  'ingles-para-ganhar-dinheiro',
+  'italiano-para-ganhar-possibilidades',
+  'frances-para-ganhar-possibilidades',
+  'alemao-para-ganhar-possibilidades',
+  'espanhol-para-ganhar-possibilidades',
+  'mandarim-para-ganhar-possibilidades',
   'guia-essencial-renda-extra-2027',
   'escudo-black-friday',
   'dinheiro-para-ontem',
@@ -21,6 +27,26 @@ export type GuideAsset = {
 };
 
 export const GUIDE_ASSETS: readonly GuideAsset[] = [
+  {
+    id: 'ingles-para-ganhar-dinheiro',
+    filename: 'ingles-para-ganhar-dinheiro.pdf',
+    storagePath: 'guides/ingles-para-ganhar-dinheiro/ingles-para-ganhar-dinheiro.pdf',
+    label: 'E-book Inglês para ganhar dinheiro',
+    contentType: 'application/pdf',
+  },
+  ...([
+    ['italiano-para-ganhar-possibilidades', 'italiano-para-ganhar-possibilidades.pdf', 'italiano', 'E-book Italiano para ganhar possibilidades'],
+    ['frances-para-ganhar-possibilidades', 'frances-para-ganhar-possibilidades.pdf', 'frances', 'E-book Francês para ganhar possibilidades'],
+    ['alemao-para-ganhar-possibilidades', 'alemao-para-ganhar-possibilidades.pdf', 'alemao', 'E-book Alemão para ganhar possibilidades'],
+    ['espanhol-para-ganhar-possibilidades', 'espanhol-para-ganhar-possibilidades.pdf', 'espanhol', 'E-book Espanhol para ganhar possibilidades'],
+    ['mandarim-para-ganhar-possibilidades', 'mandarim-para-ganhar-possibilidades.pdf', 'chines', 'E-book Mandarim para ganhar possibilidades'],
+  ] as const).map(([id, filename, slug, label]) => ({
+    id,
+    filename,
+    storagePath: `guides/${slug}-para-ganhar-possibilidades/${filename}`,
+    label,
+    contentType: 'application/pdf',
+  })),
   {
     id: 'guia-essencial-renda-extra-2027',
     filename: 'Guia Essencial Renda Extra 2027 _ Portal NKL.pdf',
@@ -57,6 +83,18 @@ export const GUIDE_ASSETS: readonly GuideAsset[] = [
     contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   },
 ];
+
+export function getGuideAssetsForOffer(offerVariant: string | null | undefined): readonly GuideAsset[] {
+  if (offerVariant === 'english-ebook-sales-page') {
+    return GUIDE_ASSETS.filter((asset) => asset.id === 'ingles-para-ganhar-dinheiro');
+  }
+  const languageAsset = offerVariant?.replace(/-ebook-sales-page$/u, '');
+  if (languageAsset && ['italian', 'french', 'german', 'spanish', 'mandarin'].includes(languageAsset)) {
+    const assetPrefix = languageAsset === 'italian' ? 'italiano' : languageAsset === 'french' ? 'frances' : languageAsset === 'german' ? 'alemao' : languageAsset === 'spanish' ? 'espanhol' : 'mandarim';
+    return GUIDE_ASSETS.filter((asset) => asset.id === `${assetPrefix}-para-ganhar-possibilidades`);
+  }
+  return GUIDE_ASSETS.filter((asset) => !asset.id.endsWith('-para-ganhar-possibilidades') && asset.id !== 'ingles-para-ganhar-dinheiro');
+}
 
 export const GUIDE_MAX_DOWNLOADS = GUIDE_ASSETS.length * GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET;
 

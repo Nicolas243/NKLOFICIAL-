@@ -76,17 +76,23 @@ export function Footer() {
     const data = new FormData(form);
     setCaptureStatus(null);
     try {
-      const response = await fetch('https://formspree.io/f/maqzkwwb', {
+      const response = await fetch('/api/materials', {
         method: 'POST',
-        body: data,
-        headers: { Accept: 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name'),
+          email: data.get('email'),
+          area: isPartnerPortal ? 'income' : 'music',
+          privacyConsent: data.get('privacyConsent') === 'yes',
+        }),
+        headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) {
-        setCaptureStatus('Não foi possível enviar agora. Tente novamente em instantes.');
+        const result = await response.json().catch(() => null) as { error?: string } | null;
+        setCaptureStatus(result?.error ?? 'Não foi possível enviar agora. Tente novamente em instantes.');
         return;
       }
       form.reset();
-      setCaptureStatus('Obrigado! Enviaremos o material em breve.');
+      setCaptureStatus('Obrigado! O PDF foi enviado para o seu e-mail.');
     } catch {
       setCaptureStatus('Não foi possível enviar agora. Tente novamente em instantes.');
     }
@@ -115,8 +121,27 @@ export function Footer() {
             <h3 className="text-neon font-bold">Receba o PDF completo em Alta Resolucao do Grafico de Cordas</h3>
             <p>Deixe o seu contato para enviarmos o material de estudo diretamente para voce.</p>
             <form className="capture-form" onSubmit={handleSubmit}>
-              <input type="text" name="name" className="capture-input" placeholder="Seu nome" required />
-              <input type="email" name="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
+              <input type="text" name="name" autoComplete="name" className="capture-input" placeholder="Seu nome" required />
+              <input type="email" name="email" autoComplete="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
+              <label className="flex items-start gap-2 text-left text-xs opacity-75">
+                <input type="checkbox" name="privacyConsent" value="yes" required className="mt-0.5 accent-neon" />
+                <span>
+                  Autorizo o envio do material e o tratamento desses dados para essa finalidade.
+                  Consulte a <Link href="/privacidade" className="font-bold text-neon hover:underline">Política de Privacidade</Link>.
+                </span>
+              </label>
+              <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
+              {captureStatus && <p className="text-sm opacity-80" role="status">{captureStatus}</p>}
+            </form>
+          </div>
+        )}
+        {isPartnerPortal && (
+          <div className="footer-header">
+            <h3 className="text-neon font-bold">Receba o Guia Essencial de Renda Extra 2027</h3>
+            <p>Deixe o seu contato para enviarmos o material diretamente para você.</p>
+            <form className="capture-form" onSubmit={handleSubmit}>
+              <input type="text" name="name" autoComplete="name" className="capture-input" placeholder="Seu nome" required />
+              <input type="email" name="email" autoComplete="email" className="capture-input" placeholder="Escreva o seu e-mail principal" required />
               <label className="flex items-start gap-2 text-left text-xs opacity-75">
                 <input type="checkbox" name="privacyConsent" value="yes" required className="mt-0.5 accent-neon" />
                 <span>
@@ -166,7 +191,7 @@ export function Footer() {
       {pixOpen && (
         <div className="fixed inset-0 z-[320] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
           <div className="bg-surface border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
-            <button className="absolute top-3 right-3 text-2xl opacity-50 hover:opacity-100" onClick={() => setPixOpen(false)}>&times;</button>
+            <button type="button" className="absolute top-3 right-3 text-2xl opacity-50 hover:opacity-100" aria-label="Fechar janela de apoio por Pix" onClick={() => setPixOpen(false)}>&times;</button>
             <h4 className="font-playfair text-xl font-bold mb-2 text-foreground">Apoiar o NKL por Pix</h4>
             <p className="text-sm opacity-70 mb-4">Escaneie o código abaixo para apoiar a manutenção do Portal.</p>
             <Image src="/NKL/1000343886.webp" alt="QR Code para apoiar o NKL por Pix" width={220} height={220} className="block mx-auto rounded-lg border border-border" />

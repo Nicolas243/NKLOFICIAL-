@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { guideDownloadAttempts, guidePurchases, guideSubscriptions, userProfiles } from '@/db/schema';
 import { enforceGuideDownloadRateLimit } from '@/lib/rate-limit';
-import { getGuideAsset, GUIDE_ASSET_IDS, GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET } from '@/lib/guide-assets';
+import { getGuideAsset, getGuideAssetsForOffer, GUIDE_ASSET_IDS, GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET } from '@/lib/guide-assets';
 import {
   decryptGuestCpf,
   GUEST_ACCESS_COOKIE_NAME,
@@ -40,6 +40,7 @@ async function readLocalGuideAsset(assetId: z.infer<typeof requestSchema>['asset
   const candidatePaths = [
     path.join(process.cwd(), 'Conteudo de novembro', asset.filename),
     path.join(process.cwd(), asset.filename),
+    path.join(process.cwd(), 'public', 'guias', asset.filename),
   ];
   for (const candidatePath of candidatePaths) {
     try {
@@ -99,6 +100,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       email: guidePurchases.guestEmail,
       guestAccessTokenHash: guidePurchases.guestAccessTokenHash,
       guestAccessTokenExpiresAt: guidePurchases.guestAccessTokenExpiresAt,
+      offerVariant: guidePurchases.offerVariant,
     }).from(guidePurchases).where(eq(guidePurchases.guestAccessTokenHash, hashGuestAccessToken(guestToken))).limit(1);
     const [subscription] = purchase ? [] : await db.select({
       id: guideSubscriptions.id,
@@ -109,6 +111,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       email: guideSubscriptions.guestEmail,
       guestAccessTokenHash: guideSubscriptions.guestAccessTokenHash,
       guestAccessTokenExpiresAt: guideSubscriptions.guestAccessTokenExpiresAt,
+      offerVariant: guideSubscriptions.offerVariant,
     }).from(guideSubscriptions).where(eq(guideSubscriptions.guestAccessTokenHash, hashGuestAccessToken(guestToken))).limit(1);
     const guestAccess = purchase ? { kind: 'purchase' as const, ...purchase } : subscription
       ? { kind: 'subscription' as const, ...subscription }
@@ -131,6 +134,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     const asset = getGuideAsset(parsedBody.assetId);
+    if (!getGuideAssetsForOffer(guestAccess.offerVariant).some((candidate) => candidate.id === asset.id)) {
+      return NextResponse.json({ error: 'guide_asset_not_in_purchase', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+    }
     const source = await readGuideSource(parsedBody.assetId);
     if (!source) {
       return NextResponse.json({
@@ -196,6 +202,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }).from(userProfiles).where(eq(userProfiles.id, user.id)).limit(1);
   const [purchase] = await db.select({
     id: guidePurchases.id,
+    offerVariant: guidePurchases.offerVariant,
     cpf: guidePurchases.cpf,
     downloadCount: guidePurchases.downloadCount,
     maxDownloads: guidePurchases.maxDownloads,
@@ -209,6 +216,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     .limit(1);
   const [subscription] = purchase ? [] : await db.select({
     id: guideSubscriptions.id,
+    offerVariant: guideSubscriptions.offerVariant,
     cpf: guideSubscriptions.cpf,
     downloadCount: guideSubscriptions.downloadCount,
     maxDownloads: guideSubscriptions.maxDownloads,
@@ -229,6 +237,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const asset = getGuideAsset(parsedBody.assetId);
+  if (!getGuideAssetsForOffer(access.offerVariant).some((candidate) => candidate.id === asset.id)) {
+    return NextResponse.json({ error: 'guide_asset_not_in_purchase', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+  }
   const source = await readGuideSource(parsedBody.assetId);
   if (!source) {
     return NextResponse.json({

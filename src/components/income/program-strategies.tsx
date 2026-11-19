@@ -1,6 +1,7 @@
 'use client';
 
 import { getProgramStrategies, type PartnerStrategy } from '@/lib/partner-strategies';
+import { ClipboardCopy } from '@/components/ui/clipboard-copy';
 
 type Props = {
   slug: string;
@@ -28,6 +29,13 @@ function StrategyList({ strategies, compact }: { strategies: PartnerStrategy[]; 
 export function ProgramStrategies({ slug, category, tags, compact = false, defaultOpen = false }: Props) {
   const strategies = getProgramStrategies({ slug, category, tags });
   if (!strategies) return null;
+  const textToCopy = [
+    'Estratégias',
+    ...strategies.flatMap((strategy, index) => [
+      `${index + 1}. ${strategy.title}`,
+      ...strategy.steps.map((step, stepIndex) => `   ${stepIndex + 1}. ${step}`),
+    ]),
+  ].join('\n');
 
   return (
     <div
@@ -47,6 +55,9 @@ export function ProgramStrategies({ slug, category, tags, compact = false, defau
           Formas de operar este modelo
         </summary>
         <StrategyList strategies={strategies} compact={compact} />
+        <div className="mt-4">
+          <ClipboardCopy textToCopy={textToCopy} label="Copiar todas as estratégias" />
+        </div>
       </details>
     </div>
   );

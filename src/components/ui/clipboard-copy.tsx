@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 type ClipboardCopyProps = {
   textToCopy: string;
+  label?: string;
 };
 
-export function ClipboardCopy({ textToCopy }: ClipboardCopyProps) {
+export function ClipboardCopy({ textToCopy, label = 'Copiar Passo a passo' }: ClipboardCopyProps) {
   const [copied, setCopied] = useState(false);
 
   async function copyText(): Promise<void> {
@@ -15,7 +16,7 @@ export function ClipboardCopy({ textToCopy }: ClipboardCopyProps) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('[CLIPBOARD_COPY] Falha ao copiar código:', error instanceof Error ? error.message : 'erro desconhecido');
+      console.error('[CLIPBOARD_COPY] Falha ao copiar passo a passo:', error instanceof Error ? error.message : 'erro desconhecido');
     }
   }
 
@@ -25,7 +26,7 @@ export function ClipboardCopy({ textToCopy }: ClipboardCopyProps) {
       onClick={copyText}
       className="rounded-md border border-neon px-3 py-2 text-sm font-bold text-neon transition-colors hover:bg-neon hover:text-black"
     >
-      {copied ? 'Copiado!' : 'Copiar código'}
+      {copied ? 'Copiado!' : label}
     </button>
   );
 }

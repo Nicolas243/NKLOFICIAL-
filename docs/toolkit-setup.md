@@ -28,9 +28,12 @@
 | Graphify | não aplicável agora | não necessário para o escopo do produto e exigiria ferramenta extra | nenhum arquivo gerado |
 | shadcn | não aplicável | o projeto já possui sistema próprio em Tailwind | stack preservada |
 | Context7/MCPs externos | não necessário | documentação oficial e versão local foram suficientes | sem segredos enviados |
-| Hooks, Git gates e commits | não aplicados | proibidos pelo escopo seguro desta rodada | working tree preservado |
+| Hooks, Git gates e commits | aplicado seletivamente | `.githooks/pre-commit` valida lint e tipagem; nenhum commit automático | hook habilitado localmente |
 | Deploy e migrações | bloqueados por escopo | exigem aprovação específica | nenhuma operação executada |
 
 ## Resultado
 
-O projeto agora tem um mapa de contexto e comandos reproduzíveis sem adicionar dependências, trocar arquitetura ou modificar produção. Instalações globais, serviços pagos, integrações externas e refactors amplos ficam deliberadamente fora desta rodada.
+O projeto agora tem um mapa de contexto, agentes especializados, MCP local por stdio e
+comandos reproduzíveis sem adicionar dependências, trocar arquitetura ou modificar
+produção. Instalações globais, serviços pagos, integrações externas e refactors amplos
+ficam deliberadamente fora desta rodada.

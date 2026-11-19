@@ -4,6 +4,14 @@ export const GUIDE_PAGE_CTA_EXPERIMENT = 'guide-page-cta';
 export const GUIDE_PAGE_CTA_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const EXIT_POPUP_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const NATIVE_CARD_VARIANTS = ['0', '1', '2', '3', '4', '5'] as const;
+const LANGUAGE_EBOOK_OFFER_VARIANTS = [
+  'english-ebook-sales-page',
+  'italian-ebook-sales-page',
+  'french-ebook-sales-page',
+  'german-ebook-sales-page',
+  'spanish-ebook-sales-page',
+  'mandarin-ebook-sales-page',
+] as const;
 
 export type OfferExperimentName =
   | 'exit-popup'
@@ -39,6 +47,7 @@ export function parseValidatedOfferVariant(value: string | null | undefined): st
   if (value === null || value === undefined || value.trim() === '') return null;
   const normalized = value.trim();
   if (normalized === 'sales-page' || normalized === 'sales-page:subscription') return normalized;
+  if (LANGUAGE_EBOOK_OFFER_VARIANTS.includes(normalized as (typeof LANGUAGE_EBOOK_OFFER_VARIANTS)[number])) return normalized;
 
   const attribution = getOfferExperimentFromVariant(normalized);
   if (!attribution) return null;

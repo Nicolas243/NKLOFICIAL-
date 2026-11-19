@@ -105,9 +105,8 @@ export type ProfessorCard = {
 };
 
 /**
- * Tarefa 13 — diretório de professores. O cadastro de professor usa
- * `papel = 'Professor'` em `user_profiles` (a `role` fica 'user'), por isso
- * o filtro é pelo papel, e não pela role.
+ * Tarefa 13 — diretório de professores. A publicação exige aprovação
+ * administrativa, representada pela role `professor`.
  */
 export async function getProfessorsDirectory(): Promise<ProfessorCard[]> {
   const rows = await db
@@ -123,7 +122,7 @@ export async function getProfessorsDirectory(): Promise<ProfessorCard[]> {
       planType: userProfiles.planType,
     })
     .from(userProfiles)
-    .where(and(eq(userProfiles.papel, 'Professor'), eq(userProfiles.isSuspended, false)))
+    .where(and(eq(userProfiles.role, 'professor'), eq(userProfiles.isSuspended, false)))
     .orderBy(asc(userProfiles.createdAt));
 
   return rows.map((row) => ({

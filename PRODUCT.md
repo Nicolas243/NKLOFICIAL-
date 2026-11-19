@@ -4,6 +4,12 @@
 
 O Portal NKL é uma plataforma brasileira para músicos, luthiers, professores e pessoas buscando oportunidades digitais. O produto combina catálogo técnico de cordas, diretórios profissionais, conteúdo editorial, recursos de conta e um catálogo público de oportunidades de renda extra.
 
+O produto educacional **IA na Prática NKL** ensina o uso responsável e prático de
+inteligência artificial para estudo, trabalho, criação de conteúdo, negócios,
+programação e organização pessoal. Ele possui diagnóstico editorial, curso,
+biblioteca de prompts e uma oferta avulsa/recorrente descrita em
+`docs/ai-product-spec.md`.
+
 ## Públicos principais
 
 - músicos que precisam comparar produtos e encontrar profissionais;

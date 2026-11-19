@@ -1,7 +1,10 @@
 import { pgEnum, pgTable, text, timestamp, numeric, integer, uuid, varchar, unique, primaryKey, boolean, jsonb, time, check, index } from 'drizzle-orm/pg-core';
 import { relations, sql, type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
+
 export const businessTechLevelEnum = pgEnum('business_tech_level', ['low', 'medium', 'high']);
 export const businessRiskLevelEnum = pgEnum('business_risk_level', ['low', 'medium', 'high']);
+export const aiAccessStatusEnum = pgEnum('ai_access_status', ['pending', 'active', 'canceling', 'canceled', 'past_due']);
+export const aiAccessPlanEnum = pgEnum('ai_access_plan', ['one_time', 'subscription']);
 
 export type QuizAnswerMap = Record<string, number>;
 export type CalculatedQuizProfile = {
@@ -11,6 +14,42 @@ export type CalculatedQuizProfile = {
   tech: number;
   social: number;
 };
+
+export const aiCourseLessons = pgTable('ai_course_lessons', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  moduleSlug: varchar('module_slug', { length: 80 }).notNull(),
+  lessonSlug: varchar('lesson_slug', { length: 120 }).notNull().unique(),
+  title: varchar('title', { length: 180 }).notNull(),
+  objective: text('objective').notNull(),
+  contentJson: jsonb('content_json').$type<Record<string, unknown>>().notNull(),
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const aiAccessGrants = pgTable('ai_access_grants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => userProfiles.id).notNull(),
+  productKey: varchar('product_key', { length: 80 }).notNull(),
+  plan: aiAccessPlanEnum('plan').notNull(),
+  status: aiAccessStatusEnum('status').notNull(),
+  stripeCustomerId: varchar('stripe_customer_id', { length: 255 }),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
+  accessUntil: timestamp('access_until'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  unique('ai_access_grants_user_product_unique').on(table.userId, table.productKey),
+  index('ai_access_grants_product_status_idx').on(table.productKey, table.status),
+]);
+
+export const aiLearningProgress = pgTable('ai_learning_progress', {
+  userId: uuid('user_id').references(() => userProfiles.id).notNull(),
+  lessonSlug: varchar('lesson_slug', { length: 120 }).notNull(),
+  completedAt: timestamp('completed_at').defaultNow().notNull(),
+}, (table) => [
+  primaryKey({ name: 'ai_learning_progress_pk', columns: [table.userId, table.lessonSlug] }),
+  index('ai_learning_progress_lesson_idx').on(table.lessonSlug),
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -195,6 +234,81 @@ export const quizLeads = pgTable('quiz_leads', {
 }, (table) => [
   index('quiz_leads_email_idx').on(table.email),
 ]);
+
+export const adCampaignStatusEnum = pgEnum('ad_campaign_status', [
+  'draft',
+  'pending_payment',
+  'pending_review',
+  'approved',
+  'active',
+  'rejected',
+  'cancelled',
+]);
+
+export const adCampaigns = pgTable('ad_campaigns', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .references(() => userProfiles.id, { onDelete: 'cascade' })
+    .notNull(),
+  businessName: varchar('business_name', { length: 180 }).notNull(),
+  contactEmail: varchar('contact_email', { length: 320 }).notNull(),
+  responsibleName: varchar('responsible_name', { length: 180 }),
+  whatsapp: varchar('whatsapp', { length: 30 }),
+  businessCategory: varchar('business_category', { length: 80 }),
+  offerDescription: varchar('offer_description', { length: 500 }),
+  campaignObjective: varchar('campaign_objective', { length: 80 }),
+  targetAudience: varchar('target_audience', { length: 300 }),
+  socialUrl: text('social_url'),
+  destinationUrl: text('destination_url').notNull(),
+  assetUrl: text('asset_url'),
+  assetStoragePath: text('asset_storage_path'),
+  assetMimeType: varchar('asset_mime_type', { length: 80 }),
+  assetAltText: varchar('asset_alt_text', { length: 180 }).notNull(),
+  slotCount: integer('slot_count').notNull().default(1),
+  monthlyAmountCents: integer('monthly_amount_cents').notNull(),
+  status: adCampaignStatusEnum('status').notNull().default('draft'),
+  billingStatus: varchar('billing_status', { length: 40 }).notNull().default('pending'),
+  stripeCheckoutSessionId: varchar('stripe_checkout_session_id', { length: 255 }).unique(),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }).unique(),
+  contractVersion: varchar('contract_version', { length: 40 }).notNull(),
+  advertiserAcceptedAt: timestamp('advertiser_accepted_at'),
+  adminApprovedAt: timestamp('admin_approved_at'),
+  reviewNotes: text('review_notes'),
+  reservedUntil: timestamp('reserved_until'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  index('ad_campaigns_status_idx').on(table.status),
+  index('ad_campaigns_user_id_idx').on(table.userId),
+]);
+
+export const adInventorySlots = pgTable('ad_inventory_slots', {
+  slotNumber: integer('slot_number').primaryKey(),
+  campaignId: uuid('campaign_id').references(() => adCampaigns.id, { onDelete: 'set null' }),
+  clickCount: integer('click_count').notNull().default(0),
+  impressionCount: integer('impression_count').notNull().default(0),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const savedPartnerPrograms = pgTable(
+  'saved_partner_programs',
+  {
+    userId: uuid('user_id')
+      .references(() => userProfiles.id, { onDelete: 'cascade' })
+      .notNull(),
+    programId: uuid('program_id')
+      .references(() => partnerPrograms.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      name: 'saved_partner_programs_user_id_program_id_pk',
+      columns: [table.userId, table.programId],
+    }),
+  ],
+);
+
 export const partnerProgramReviews = pgTable(
   'partner_program_reviews',
   {
@@ -451,6 +565,7 @@ export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   leadsReferedByMe: many(luthierLeads, { relationName: 'leadReferrer' }),
   portfolioItems: many(luthierPortfolio, { relationName: 'portfolioOfLuthier' }),
   passwordChangeAttempts: many(passwordChangeAttempts),
+  savedPartnerPrograms: many(savedPartnerPrograms),
 }));
 
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({

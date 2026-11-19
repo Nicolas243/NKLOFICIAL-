@@ -1,5 +1,6 @@
 import { getStringsCatalog } from '@/actions/strings';
 import { CatalogClient } from './catalog-client';
+import { AdBanner } from '@/components/ads/ad-banner';
 
 export const metadata = {
   title: 'Catálogo de Cordas | Portal NKL',
@@ -15,6 +16,9 @@ export default async function CatalogoPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 pt-8">
       <h1 className="font-playfair text-3xl font-bold mb-6">Catálogo Avançado de Cordas</h1>
+      <div className="mb-8">
+        <AdBanner placement="in-feed" />
+      </div>
       <CatalogClient
         initialData={catalog.data}
         initialPage={catalog.currentPage}

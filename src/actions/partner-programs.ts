@@ -104,8 +104,14 @@ const HIGH_QUALITY_LOGOS: Record<string, string> = {
 const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages: string[] }> = {
   fluencify: { averageEarning: 'R$ 80 ±', languages: ['Português'] },
   prolific: { averageEarning: 'US$ 40 ±', languages: ['Português', 'Inglês'] },
+  dscout: { averageEarning: 'US$ 50 ± por estudo', languages: ['Português', 'Inglês'] },
   'mercado-pago': { averageEarning: 'R$ 50 ±', languages: ['Português'] },
   honeygain: { averageEarning: 'US$ 20 ±', languages: ['Português', 'Inglês'] },
+  repocket: { averageEarning: 'US$ 20 ± por mês', languages: ['Português', 'Inglês'] },
+  'nyte-x': { averageEarning: 'US$ 100 ± por projeto', languages: ['Português', 'Inglês'] },
+  micro1: { averageEarning: 'US$ 30 ± por hora', languages: ['Português', 'Inglês'] },
+  mindrift: { averageEarning: 'US$ 20 ± por hora', languages: ['Inglês'] },
+  bilibili: { averageEarning: 'Variável', languages: ['Chinês', 'Inglês'] },
   apphub: { averageEarning: 'US$ 50 ±', languages: ['Português', 'Inglês'] },
   'quintoandar-indica-ai': { averageEarning: 'R$ 100 + comissão', languages: ['Português'] },
   billo: { averageEarning: 'US$ 50 ±', languages: ['Inglês'] },
@@ -430,24 +436,50 @@ export async function submitPartnerReview(formData: FormData): Promise<void> {
   revalidatePath(INCOME_PORTAL_ROUTES.legacyCatalog);
 }
 
-export async function submitPartnerSuggestion(formData: FormData): Promise<void> {
-  await enforcePublicRateLimit('partner-suggestion', await requestIdentifier());
+export type PartnerSuggestionResult =
+  | { ok: true }
+  | { ok: false; message: string };
+
+export async function submitPartnerSuggestion(formData: FormData): Promise<PartnerSuggestionResult> {
+  try {
+    await enforcePublicRateLimit('partner-suggestion', await requestIdentifier());
+  } catch (error) {
+    console.error(
+      '[PARTNER_SUGGESTION] Rate limit indisponível:',
+      error instanceof Error ? error.message : 'erro desconhecido',
+    );
+    return {
+      ok: false,
+      message: error instanceof Error && error.message.includes('Muitas tentativas')
+        ? error.message
+        : 'Não foi possível validar o envio agora. Tente novamente em instantes.',
+    };
+  }
 
   const name = typeof formData.get('name') === 'string' ? (formData.get('name') as string).trim() : '';
   const websiteUrl = typeof formData.get('websiteUrl') === 'string' ? (formData.get('websiteUrl') as string).trim() : '';
   const reason = typeof formData.get('reason') === 'string' ? (formData.get('reason') as string).trim() : '';
 
   if (!name || wordCount(reason) < 10) {
-    throw new Error('Informe o nome e explique a sugestão com pelo menos 10 palavras.');
+    return { ok: false, message: 'Informe o nome e explique a sugestão com pelo menos 10 palavras.' };
   }
 
-  await db.insert(partnerSuggestions).values({
-    name,
-    websiteUrl: websiteUrl || null,
-    reason,
-  });
+  try {
+    await db.insert(partnerSuggestions).values({
+      name,
+      websiteUrl: websiteUrl || null,
+      reason,
+    });
+  } catch (error) {
+    console.error(
+      '[PARTNER_SUGGESTION] Falha ao salvar sugestão:',
+      error instanceof Error ? error.message : 'erro desconhecido',
+    );
+    return { ok: false, message: 'Não foi possível salvar a sugestão agora. Tente novamente.' };
+  }
 
   revalidatePath('/programas/admin');
+  return { ok: true };
 }
 
 export async function submitPartnerReferralLead(formData: FormData): Promise<void> {

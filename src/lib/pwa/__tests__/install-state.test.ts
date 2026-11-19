@@ -4,6 +4,9 @@ import {
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
+  getInstallIntentStorageKey,
+  hasInstallIntent,
+  markInstallIntent,
   shouldClearInstallPrompt,
 } from '../install-state';
 
@@ -62,4 +65,19 @@ test('provides Chromium instructions when no native prompt is exposed', () => {
 test('clears a native prompt after either user choice', () => {
   assert.equal(shouldClearInstallPrompt('accepted'), true);
   assert.equal(shouldClearInstallPrompt('dismissed'), true);
+});
+
+test('shares the header install intent with the reminder', () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+  };
+
+  assert.equal(hasInstallIntent(storage, 'income'), false);
+  markInstallIntent(storage, 'income');
+  assert.equal(values.get(getInstallIntentStorageKey('income')), 'true');
+  assert.equal(hasInstallIntent(storage, 'income'), true);
 });

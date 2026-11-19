@@ -1,13 +1,14 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { env } from '@/env';
+import { getStripeClient } from '@/lib/stripe/server';
 import { processStripeEvent } from '@/lib/stripe/webhook';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request): Promise<NextResponse> {
-  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) {
+  if ((!env.STRIPE_API_KEY && !env.STRIPE_SECRET_KEY) || !env.STRIPE_WEBHOOK_SECRET) {
     return NextResponse.json({ error: 'stripe_not_configured' }, { status: 503 });
   }
 
@@ -19,7 +20,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   let event: Stripe.Event;
   try {
     const payload = await request.text();
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY);
+    const stripe = getStripeClient();
     event = stripe.webhooks.constructEvent(payload, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (error) {
     console.error('[STRIPE_WEBHOOK] Assinatura inválida:', error instanceof Error ? error.message : 'erro desconhecido');

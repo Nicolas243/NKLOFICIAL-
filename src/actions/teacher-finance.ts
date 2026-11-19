@@ -40,6 +40,6 @@ export async function updateTeacherPricingAction(
     semiannualPlanPriceCents: Math.round(values.semiannualPlanPrice * 100),
     annualPlanPriceCents: Math.round(values.annualPlanPrice * 100),
     acceptsNewStudents: values.acceptsNewStudents,
-  }).where(and(eq(userProfiles.id, user.id), eq(userProfiles.papel, 'Professor')));
+  }).where(and(eq(userProfiles.id, user.id), eq(userProfiles.role, 'professor')));
   return { success: true, message: 'Planos atualizados.' };
 }

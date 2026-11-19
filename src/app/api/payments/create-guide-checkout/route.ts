@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { guidePurchases, userProfiles } from '@/db/schema';
 import { env } from '@/env';
-import { GUIDE_PRICE_CENTS } from '@/lib/guide-offer';
+import { ENGLISH_EBOOK_OFFER_VARIANT, ENGLISH_EBOOK_PRICE_CENTS, GUIDE_PRICE_CENTS, isLanguageEbookOffer } from '@/lib/guide-offer';
 import {
   createGuestAccessToken,
   encryptGuestCpf,
@@ -78,7 +78,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       cpfConsentAt: new Date(),
       guestAccessTokenHash: access.tokenHash,
       guestAccessTokenExpiresAt: access.expiresAt,
-      amountCents: GUIDE_PRICE_CENTS,
+      amountCents: offerVariant === ENGLISH_EBOOK_OFFER_VARIANT || isLanguageEbookOffer(offerVariant)
+        ? ENGLISH_EBOOK_PRICE_CENTS
+        : GUIDE_PRICE_CENTS,
       offerVariant: offerVariant ?? undefined,
     }).returning({ id: guidePurchases.id });
 

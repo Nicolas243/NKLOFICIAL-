@@ -1,0 +1,48 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { LANGUAGE_EBOOKS, type LanguageEbookSlug } from '@/lib/guide-offer';
+
+const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, string][]; color: string }> = {
+  italiano: { intro: 'Aprenda italiano com um ciclo completo de 100 lições, tradução palavra a palavra e prática contextualizada.', examples: [['Io voglio studiare online.', 'Eu quero estudar on-line.'], ['Posso fare una domanda?', 'Posso fazer uma pergunta?']], color: '#16a34a' },
+  frances: { intro: 'Construa sua base de francês com frases naturais, revisão espaçada e exemplos sempre acompanhados de tradução.', examples: [['Je veux apprendre chaque jour.', 'Eu quero aprender todos os dias.'], ['Pouvez-vous répéter, s’il vous plaît?', 'Você pode repetir, por favor?']], color: '#2563eb' },
+  alemao: { intro: 'Organize o alemão em pequenas vitórias: pronúncia, ordem da frase, vocabulário e conversas profissionais.', examples: [['Ich möchte heute üben.', 'Eu quero praticar hoje.'], ['Können Sie das erklären?', 'Você pode explicar isso?']], color: '#ca8a04' },
+  espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']], color: '#dc2626' },
+  chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']], color: '#b91c1c' },
+};
+
+export function LanguageEbookPreview({ slug }: { slug: string }) {
+  if (!(slug in LANGUAGE_EBOOKS)) notFound();
+  const language = slug as LanguageEbookSlug;
+  const details = DETAILS[language];
+  const offer = LANGUAGE_EBOOKS[language];
+  return (
+    <main className="mx-auto max-w-4xl px-4 py-10">
+      <Link href={`/guias/${language}`} className="text-sm font-bold text-orange hover:underline">← Voltar para a página de venda</Link>
+      <article className="mt-6 rounded-2xl border border-border bg-income-surface p-6 md:p-10">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Prévia do e-book · {offer.language}</p>
+        <h1 className="mt-4 font-playfair text-4xl font-bold md:text-6xl">{offer.title}</h1>
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/75">{details.intro}</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {details.examples.map(([source, translation], index) => (
+            <div key={source} className="rounded-xl border border-border bg-background p-5">
+              <p className="text-xs font-bold uppercase text-foreground/50">Lição {index + 1} · exemplo colorido</p>
+              <p className="mt-4 text-xl font-bold" style={{ color: details.color }}>{source}</p>
+              <p className="mt-2 text-lg font-semibold text-foreground">{translation}</p>
+              <a className="mt-4 inline-flex text-sm font-bold text-orange hover:underline" href={`https://youglish.com/pronounce/${encodeURIComponent(source)}/${language}`} target="_blank" rel="noreferrer">Ouvir pronúncia ↗</a>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-border p-4"><strong>100</strong><span className="ml-2 text-sm">lições</span></div>
+          <div className="rounded-lg border border-border p-4"><strong>500</strong><span className="ml-2 text-sm">exemplos traduzidos</span></div>
+          <div className="rounded-lg border border-border p-4"><strong>90</strong><span className="ml-2 text-sm">dias de prática</span></div>
+        </div>
+        <div className="mt-8 rounded-xl border border-orange/30 bg-orange/5 p-5">
+          <h2 className="font-playfair text-2xl font-bold">O material completo inclui</h2>
+          <p className="mt-2 leading-relaxed text-foreground/75">Rastreador de hábitos, prompts para pedir correção ao Copilot ou Gemini, diálogos de mundo real, templates profissionais e links de áudio em cada bloco.</p>
+        </div>
+        <Link href={`/guias/${language}`} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-md bg-orange px-6 py-3 font-bold text-white hover:bg-orange-dark">Quero o e-book completo por R$ 47</Link>
+      </article>
+    </main>
+  );
+}

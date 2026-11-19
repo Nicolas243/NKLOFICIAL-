@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { eq, or } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
@@ -15,35 +16,35 @@ export async function upsertLuthierProfile(formData: FormData) {
     throw new Error('Sessão inválida. Faça login novamente.');
   }
 
-  const fullName = formData.get('fullName') as string;
-  const businessName = formData.get('businessName') as string;
-  const city = formData.get('city') as string;
-  const state = formData.get('state') as string;
-  const bio = formData.get('bio') as string;
+  const fullName = String(formData.get('fullName') ?? '').trim();
+  const businessName = String(formData.get('businessName') ?? '').trim();
+  const city = String(formData.get('city') ?? '').trim();
+  const state = String(formData.get('state') ?? '').trim().toUpperCase();
+  const bio = String(formData.get('bio') ?? '').trim();
+  const [existingProfile] = await db
+    .select({ id: userProfiles.id })
+    .from(userProfiles)
+    .where(or(eq(userProfiles.id, user.id), eq(userProfiles.email, user.email)))
+    .limit(1);
 
-  await db
-    .insert(userProfiles)
-    .values({
+  const values = {
+    email: user.email,
+    fullName,
+    businessName: businessName || null,
+    city: city || null,
+    state: state || null,
+    bio: bio || null,
+  };
+
+  if (existingProfile) {
+    await db.update(userProfiles).set(values).where(eq(userProfiles.id, existingProfile.id));
+  } else {
+    await db.insert(userProfiles).values({
       id: user.id,
-      email: user.email,
-      role: 'luthier',
-      fullName,
-      businessName,
-      city,
-      state,
-      bio: bio.trim() || null,
-    })
-    .onConflictDoUpdate({
-      target: userProfiles.email,
-      set: {
-        fullName,
-        businessName,
-        city,
-        state,
-        role: 'luthier',
-        bio: bio.trim() || null,
-      },
+      ...values,
+      role: formData.get('profileRole') === 'luthier' ? 'luthier' : 'user',
     });
+  }
 
   revalidatePath('/perfil');
 }

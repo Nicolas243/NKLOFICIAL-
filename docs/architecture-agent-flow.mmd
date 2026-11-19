@@ -1,0 +1,12 @@
+flowchart TD
+  Browser[Browser] --> App[Next.js App Router]
+  App --> Actions[Server Actions]
+  App --> Routes[Route Handlers]
+  Actions --> Auth[Supabase Auth]
+  Actions --> DB[Drizzle + PostgreSQL]
+  Routes --> Stripe[Stripe Webhooks]
+  Routes --> Storage[Private Supabase Storage]
+  App --> Consent[Consent-gated Analytics]
+  Dev[VS Code + Copilot] --> Instructions[.github/copilot-instructions.md]
+  Dev --> MCP[Local MCP stdio worker]
+  Dev --> Hooks[.githooks/pre-commit]

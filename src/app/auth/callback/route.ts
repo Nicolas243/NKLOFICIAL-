@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { buildReturnPath, profileSyncFailurePath, safeNextPath } from '@/lib/auth/oauth';
+import {
+  buildReturnPath,
+  profileOnboardingPath,
+  profileSyncFailurePath,
+  safeNextPath,
+} from '@/lib/auth/oauth';
 import { parseGuideResumeIntent, parseLoginArea } from '@/lib/auth/return-intent';
 import { syncAuthenticatedProfile } from '@/lib/auth/profile-sync';
+import { hasCompletedOnboarding } from '@/lib/auth/onboarding';
+import { sendWelcomeEmailOnce } from '@/lib/email/welcome';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const code = request.nextUrl.searchParams.get('code');
@@ -43,6 +50,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const profileSync = await syncAuthenticatedProfile(userData.user);
   if (!profileSync.ok) {
     return NextResponse.redirect(new URL(profileSyncFailurePath(nextPath, resumeIntent, area), request.url));
+  }
+
+  try {
+    await sendWelcomeEmailOnce(supabase, userData.user, area);
+  } catch (welcomeError) {
+    console.error('[AUTH] Falha ao enviar boas-vindas Google:', welcomeError instanceof Error ? welcomeError.message : 'erro desconhecido');
+  }
+
+  if (!hasCompletedOnboarding(userData.user.user_metadata)) {
+    return NextResponse.redirect(
+      new URL(profileOnboardingPath(nextPath, resumeIntent, area), request.url),
+    );
   }
 
   return NextResponse.redirect(new URL(buildReturnPath(nextPath, resumeIntent), request.url));
