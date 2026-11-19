@@ -2,23 +2,23 @@
 
 Cada item somente inicia apos aprovacao da especificacao.
 
-- [ ] **T-001 / AC-001 e AC-002:** criar o registro central
+- [x] **T-001 / AC-001 e AC-002:** criar o registro central
       `src/lib/portal-areas.ts` com as areas obrigatorias.
-- [ ] **T-002 / AC-003 e AC-004:** criar o grid tipado
+- [x] **T-002 / AC-003 e AC-004:** criar o grid tipado
       `src/components/portal-home-grid.tsx`.
-- [ ] **T-003 / AC-004:** tornar todos os cards navegaveis por teclado e toque.
-- [ ] **T-004 / AC-005:** criar ou adaptar o fundo parallax da home com
+- [x] **T-003 / AC-004:** tornar todos os cards navegaveis por teclado e toque.
+- [x] **T-004 / AC-005:** criar ou adaptar o fundo parallax da home com
       `prefers-reduced-motion`.
-- [ ] **T-005 / AC-001:** substituir a pizza, o hero atual e os blocos musicais
-      da `/` pela nova composicao base.
-- [ ] **T-006 / AC-006:** adicionar
+- [x] **T-005 / AC-001:** substituir a pizza, o hero atual e os blocos musicais
+      da `/` pela nova composicao base (movendo a home musical para `/musica/naipe_cordas`).
+- [x] **T-006 / AC-006:** adicionar
       `docs/portal-area-registry.md` e atualizar `AGENTS.md`.
-- [ ] **T-007 / AC-007:** criar estados vazios e de “em breve”.
-- [ ] **T-008 / AC-008:** revisar todos os textos contra promessas de resultado.
-- [ ] **T-009:** adicionar teste unitario do registro.
-- [ ] **T-010:** adicionar teste E2E de navegação desktop/mobile.
-- [ ] **T-011:** validar SEO, sitemap, imagem, loading e no-JS.
-- [ ] **T-012:** executar lint, typecheck, build e suite E2E direcionada.
+- [x] **T-007 / AC-007:** criar estados vazios e de "em breve".
+- [x] **T-008 / AC-008:** revisar todos os textos contra promessas de resultado.
+- [x] **T-009:** adicionar teste unitario do registro (`src/lib/__tests__/portal-areas.test.ts`).
+- [x] **T-010:** adicionar teste E2E de navegacao desktop/mobile (`e2e/portal-home.spec.ts`).
+- [x] **T-011:** validar SEO, sitemap, imagem, loading e no-JS.
+- [x] **T-012:** executar lint, typecheck, build e suite E2E direcionada.
 - [ ] **T-013:** revisar visualmente antes de qualquer upload/deploy.
 
 ## Dependencias

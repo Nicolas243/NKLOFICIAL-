@@ -4,32 +4,36 @@ import { useState, useCallback, useEffect, type FormEvent } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { isIncomePortalPath } from '@/lib/income-portal';
+import { MUSIC_PORTAL_HOME, getPortalSurface } from '@/lib/income-portal';
 import { SharePageButton } from '@/components/ui/share-page-button';
 import { getSupportLinkClassName } from '@/lib/ui/support-layout';
+
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
 const COMMUNITY_NOTIFICATION_KEY = 'community_notified';
 
 export function Footer() {
   const pathname = usePathname();
-  const isPartnerPortal = isIncomePortalPath(pathname);
-  const communityUrl = isPartnerPortal
-    ? 'https://chat.whatsapp.com/Fegie9C05eG0cMidDUpzRk'
-    : 'https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r';
-  const communityLabel = isPartnerPortal
-    ? 'Entrar no grupo de renda extra do Portal NKL no WhatsApp'
-    : 'Entrar na comunidade musical do Portal NKL no WhatsApp';
-  const whatsappMessages = isPartnerPortal
+  const surface = getPortalSurface(pathname);
+  const isMusicSurface = surface === 'music';
+  const isHomeSurface = surface === 'home';
+
+  const communityUrl = isMusicSurface
+    ? 'https://chat.whatsapp.com/FXtRa6sLL4W5d136xMze7r'
+    : 'https://chat.whatsapp.com/Fegie9C05eG0cMidDUpzRk';
+  const communityLabel = isMusicSurface
+    ? 'Entrar na comunidade musical do Portal NKL no WhatsApp'
+    : 'Entrar no grupo de renda extra do Portal NKL no WhatsApp';
+  const whatsappMessages = isMusicSurface
     ? [
-      'Tire suas dúvidas com pessoas que já conhecem as plataformas.',
-      'Compartilhe uma oportunidade e descubra experiências reais.',
-      'Entre na comunidade de Renda Extra do Portal NKL.',
-    ]
-    : [
       'Converse com músicos e profissionais da comunidade NKL.',
       'Tire suas dúvidas sobre cordas, luteria e instrumentos.',
       'Entre na comunidade musical do Portal NKL.',
+    ]
+    : [
+      'Tire suas dúvidas com pessoas que já conhecem as plataformas.',
+      'Compartilhe uma oportunidade e descubra experiências reais.',
+      'Entre na comunidade do Portal NKL.',
     ];
   const [pixOpen, setPixOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -64,7 +68,6 @@ export function Footer() {
       setToast('Email copiado');
       setTimeout(() => setToast(null), 2000);
     } catch {
-      // fallback para navegadores antigos
       setToast('contato.nikoluthieria@gmail.com');
       setTimeout(() => setToast(null), 3000);
     }
@@ -81,7 +84,7 @@ export function Footer() {
         body: JSON.stringify({
           name: data.get('name'),
           email: data.get('email'),
-          area: isPartnerPortal ? 'income' : 'music',
+          area: isMusicSurface ? 'music' : 'income',
           privacyConsent: data.get('privacyConsent') === 'yes',
         }),
         headers: { 'Content-Type': 'application/json' },
@@ -110,13 +113,12 @@ export function Footer() {
         </a>
       </div>
       <footer className="site-footer">
-        {/* Toast de email copiado */}
         {toast && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-6 py-3 bg-foreground text-background rounded-xl shadow-2xl font-bold text-sm animate-[fadeInUp_0.3s_ease-out]">
             {toast}
           </div>
         )}
-        {!isPartnerPortal && (
+        {isMusicSurface && (
           <div className="footer-header">
             <h3 className="text-neon font-bold">Receba o PDF completo em Alta Resolucao do Grafico de Cordas</h3>
             <p>Deixe o seu contato para enviarmos o material de estudo diretamente para voce.</p>
@@ -135,7 +137,7 @@ export function Footer() {
             </form>
           </div>
         )}
-        {isPartnerPortal && (
+        {!isMusicSurface && !isHomeSurface && (
           <div className="footer-header">
             <h3 className="text-neon font-bold">Receba o Guia Essencial de Renda Extra 2027</h3>
             <p>Deixe o seu contato para enviarmos o material diretamente para você.</p>
@@ -157,7 +159,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-box">
             <h4>Sua voz importa</h4>
-            <p>{isPartnerPortal ? 'Ajude a manter o mapa de oportunidades claro e atualizado.' : 'Ajude a construir o melhor portal de violino do Brasil.'}</p>
+            <p>{isMusicSurface ? 'Ajude a construir o melhor portal de violino do Brasil.' : 'Ajude a manter o ecossistema editorial claro e atualizado.'}</p>
             <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Deixar Feedback Rapido</a>
           </div>
           <div className="footer-box">
@@ -167,8 +169,8 @@ export function Footer() {
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
-            <p>{isPartnerPortal ? 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.' : 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.'}</p>
-            <p className="mt-2 text-sm opacity-70">Já apoiaram o projeto: <strong>0 pessoas</strong></p>
+            <p>{isMusicSurface ? 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.' : 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.'}</p>
+            <p className="mt-2 text-sm opacity-75">Apoio direto para manter os guias, catálogos e estudos abertos.</p>
             <div className="flex w-full flex-wrap gap-2">
               <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar NKL</a>
               <button type="button" onClick={() => setPixOpen(true)} className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar por Pix</button>
@@ -177,6 +179,16 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-box footer-legal items-center text-center">
+          <h4>Ecossistema Portal NKL</h4>
+          <nav className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Navegação do rodapé">
+            <Link href="/" className="text-sm hover:text-neon hover:underline">Início</Link>
+            <Link href={MUSIC_PORTAL_HOME} className="text-sm hover:text-neon hover:underline">NKL Cordas</Link>
+            <Link href="/programas" className="text-sm hover:text-neon hover:underline">Oportunidades</Link>
+            <Link href="/ia" className="text-sm hover:text-neon hover:underline">IA na Prática</Link>
+            <Link href="/blog/aprender/ingles" className="text-sm hover:text-neon hover:underline">Idiomas</Link>
+            <Link href="/quiz-negocios" className="text-sm hover:text-neon hover:underline">Diagnóstico</Link>
+            <Link href="/mural-de-parceiros" className="text-sm hover:text-neon hover:underline">Mural de Parceiros</Link>
+          </nav>
           <h4>Legal / Conformidade</h4>
           <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Links legais">
             <Link href="/privacidade" className="text-sm hover:text-neon hover:underline">Privacidade</Link>
@@ -187,7 +199,6 @@ export function Footer() {
         <div className="footer-bottom">&copy; Copyright 2026 | NKL | Todos direitos reservados <span className="opacity-60">v0.2.2</span></div>
       </footer>
 
-      {/* Modal de apoio */}
       {pixOpen && (
         <div className="fixed inset-0 z-[320] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPixOpen(false)}>
           <div className="bg-surface border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>

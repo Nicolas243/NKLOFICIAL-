@@ -4,13 +4,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useSessionUser } from '@/components/use-session-user'
-import { useSyncExternalStore } from 'react'
 import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
-import { INCOME_PORTAL_ROUTES, INCOME_SUGGESTION_FORM_URL, isIncomePortalPath } from '@/lib/income-portal'
+import {
+  INCOME_PORTAL_ROUTES,
+  INCOME_SUGGESTION_FORM_URL,
+  MUSIC_PORTAL_HOME,
+  getPortalSurface,
+  isIncomePortalPath,
+} from '@/lib/income-portal'
 import { NotificationBell } from '@/components/notification-bell'
 import { buildLoginPath } from '@/lib/auth/return-intent'
 
@@ -65,6 +70,7 @@ function Dropdown({ label, items }: { label: string; items: { href: string; labe
     </div>
   )
 }
+
 function DropdownCompact({ label, items }: { label: string; items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -102,11 +108,11 @@ export function Header() {
   const { resolvedTheme } = useTheme()
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
   const pathname = usePathname()
-  const isHome = pathname === '/'
-  const isPartnerPortal = isIncomePortalPath(pathname)
+  const surface = getPortalSurface(pathname)
+  const isIncomeRoute = isIncomePortalPath(pathname)
   const { user, loading: sessionLoading } = useSessionUser()
   const isLoggedIn = Boolean(user)
-  const loginArea = isPartnerPortal ? 'income' : 'music'
+  const loginArea = surface === 'music' ? 'music' : 'income'
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -116,7 +122,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  if (isHome) return null
+  if (surface === 'home') return null
 
   const authBtn = sessionLoading ? null : (
     <Link
@@ -127,26 +133,38 @@ export function Header() {
     </Link>
   )
 
-  if (isPartnerPortal) {
+  if (surface === 'ecosystem') {
+    const ecosystemLinkCls =
+      'inline-flex min-h-11 items-center text-xs font-medium uppercase tracking-wider hover:text-neon transition-colors whitespace-nowrap'
     const portalLinks = (
       <>
-        <Link href={INCOME_PORTAL_ROUTES.catalog} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Explorar</Link>
-        <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Sugerir site</a>
-        <Link href="/contatos" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors">Portal NKL</Link>
+        <Link href="/" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Portal NKL</Link>
+        <Link href={INCOME_PORTAL_ROUTES.catalog} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Explorar</Link>
+        <Link href="/ia" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>IA na Prática</Link>
+        <Link href="/blog/aprender/ingles" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Idiomas</Link>
+        <Link href="/quiz-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Diagnóstico</Link>
+        <Link href={MUSIC_PORTAL_HOME} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>NKL Cordas</Link>
+        <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className={ecosystemLinkCls}>Sugerir site</a>
       </>
     )
 
+    const brandHref = isIncomeRoute ? INCOME_PORTAL_ROUTES.catalog : '/'
+    const brandTitle = isIncomeRoute ? 'Renda Extra' : 'Portal NKL'
+    const brandSubtitle = isIncomeRoute
+      ? 'O mapa editorial do Portal NKL'
+      : 'Ecossistema editorial multidisciplinar'
+
     return (
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
-        <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-4 bg-white px-4 dark:bg-black">
-          <Link href={INCOME_PORTAL_ROUTES.catalog} className="group flex min-w-0 items-center gap-3">
+        <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-3 bg-white px-4 dark:bg-black">
+          <Link href={brandHref} className="group flex min-w-0 items-center gap-3">
             <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
-              <span className="block truncate font-playfair text-xl font-bold tracking-tight">Renda Extra</span>
-              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">O mapa editorial do Portal NKL</span>
+              <span className="block truncate font-playfair text-xl font-bold tracking-tight">{brandTitle}</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">{brandSubtitle}</span>
             </span>
           </Link>
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex">{portalLinks}</nav>
+          <nav className="hidden items-center gap-4 xl:gap-5 lg:flex" aria-label="Navegação do ecossistema">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
             {authBtn}
             {isLoggedIn && <NotificationBell href="/programas/notificacoes" area="income" />}
@@ -174,9 +192,10 @@ export function Header() {
 
   const navLinks = (
     <>
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link href={MUSIC_PORTAL_HOME} className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Home</Link>
       {groups.map((g) => <Dropdown key={g.label} label={g.label} items={g.items} />)}
       <Link href="/contatos" className="inline-flex min-h-11 items-center text-sm font-medium uppercase tracking-wider hover:text-neon transition-colors active:scale-95 whitespace-nowrap" onClick={() => setMenuOpen(false)}>Contatos</Link>
+      <Link href="/" className="inline-flex min-h-11 items-center rounded-md border border-border/80 px-2.5 text-xs font-semibold uppercase tracking-wider opacity-85 hover:border-neon hover:text-neon transition-colors whitespace-nowrap" onClick={() => setMenuOpen(false)}>Portal NKL</Link>
     </>
   )
 
@@ -184,9 +203,10 @@ export function Header() {
 
   const navLinksCompact = (
     <>
-      <Link href="/" className={navLinkCls} onClick={() => setMenuOpen(false)}>Home</Link>
+      <Link href={MUSIC_PORTAL_HOME} className={navLinkCls} onClick={() => setMenuOpen(false)}>Home</Link>
       {groups.map((g) => <DropdownCompact key={g.label} label={g.label} items={g.items} />)}
       <Link href="/contatos" className={navLinkCls} onClick={() => setMenuOpen(false)}>Contatos</Link>
+      <Link href="/" className={navLinkCls} onClick={() => setMenuOpen(false)}>Portal</Link>
     </>
   )
 
@@ -199,7 +219,10 @@ export function Header() {
       <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between min-w-0 bg-white dark:bg-black">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <Image src="/NKL/NKL.png" alt="NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
-          <Link href="/" className="font-playfair font-bold text-lg tracking-tight truncate">Portal</Link>
+          <Link href={MUSIC_PORTAL_HOME} className="font-playfair font-bold text-lg tracking-tight truncate">NKL Cordas</Link>
+          <Link href="/" className="hidden sm:inline-flex items-center rounded border border-border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider opacity-75 hover:border-neon hover:text-neon transition-colors">
+            Portal NKL
+          </Link>
         </div>
 
         <div className="hidden lg:flex items-center gap-6">
