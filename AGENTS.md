@@ -26,3 +26,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Onboarding: [docs/onboarding.md](./docs/onboarding.md)
 - Setup and recovery: [docs/setup.md](./docs/setup.md)
 - Quality gates and known failures: [docs/quality.md](./docs/quality.md)
+- Active memory context: [.ai-memory/activeContext.md](./.ai-memory/activeContext.md)
+- Progress checklist: [.ai-memory/progress.md](./.ai-memory/progress.md)
+- Graph-search skill: [.agents/skills/ai-memory-graph/SKILL.md](./.agents/skills/ai-memory-graph/SKILL.md)
+
+## Protocolo de Memória Persistente (`.ai-memory/`)
+
+- **Bootstrap de Sessão:** ler obrigatoriamente `.ai-memory/activeContext.md` e `.ai-memory/progress.md`; usar a skill `ai-memory-graph` (`node .agents/skills/ai-memory-graph/scripts/memory-graph.mjs query "<termos>"`) para consultar `projectBrief.md`, `techContext.md`, `systemPatterns.md`, `decisionsLog.md` e `docs/` sob demanda.
+- **Gate de Conclusão (Jidoka):** nenhuma tarefa é concluída sem atualizar `.ai-memory/activeContext.md` (<80 linhas), `.ai-memory/progress.md`, registrar 3 linhas em `.ai-memory/decisionsLog.md` quando houver decisão/descarte arquitetural, e rodar `node .agents/skills/ai-memory-graph/scripts/memory-graph.mjs build`.
+- **Segurança:** proibido gravar segredos, credenciais, tokens ou PII em `.ai-memory/`.
+- **Versionamento:** incluir atualizações de `.ai-memory/` no mesmo commit atômico da entrega técnica.
