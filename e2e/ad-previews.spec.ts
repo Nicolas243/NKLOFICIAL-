@@ -15,19 +15,28 @@ test.describe('pré-visualizações de publicidade', () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 
-  test('mural mant?m tiles e CTA utiliz?veis no celular', async ({ page }) => {
+  test('mural mantém estado vazio honesto ou parceiros ativos e CTAs utilizáveis no celular', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/mural-de-parceiros');
 
     await expect(page.getByRole('heading', { name: 'Mural de parceiros' })).toBeVisible();
-    await expect(page.getByText(/Prévia — nenhum anúncio está ativo/u)).toBeVisible();
-    const tiles = page.getByTestId('ad-preview-tile');
-    await expect(tiles).toHaveCount(20);
-    for (let index = 0; index < await tiles.count(); index += 1) {
-      const box = await tiles.nth(index).boundingBox();
-      expect(box?.width).toBeGreaterThanOrEqual(44);
-      expect(box?.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByTestId('ad-preview-tile')).toHaveCount(0);
+
+    const activePartnerLinks = page.locator('a[href^="/api/ads/click?slot="]');
+    const activeCount = await activePartnerLinks.count();
+    if (activeCount > 0) {
+      for (let index = 0; index < activeCount; index += 1) {
+        const box = await activePartnerLinks.nth(index).boundingBox();
+        expect(box?.width).toBeGreaterThanOrEqual(44);
+        expect(box?.height).toBeGreaterThanOrEqual(44);
+      }
+    } else {
+      await expect(page.getByRole('heading', { name: 'Nenhum anúncio está ativo no momento' })).toBeVisible();
+      const reserveLink = page.getByRole('link', { name: 'Reservar espaço publicitário' });
+      await expect(reserveLink).toBeVisible();
+      await expect(reserveLink).toHaveAttribute('href', '/programas/anuncie');
     }
+
     await expect(page.getByRole('link', { name: 'Conhecer planos para anunciar' })).toHaveAttribute('href', '/programas/anuncie');
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });

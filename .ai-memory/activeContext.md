@@ -8,12 +8,12 @@ updated: 2026-11-19
 # Active Context
 
 Limite rigido: menos de 80 linhas. Atualizar ao concluir qualquer tarefa.
-Checklist detalhado em [[progress]]; decisoes em [[decisionsLog]].
+Checklist detalhado em [[progress]]; decisoes em [[decisionsLog]]; roteiro executivo em [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md).
 
 ## Milestone atual
 
-Integracao overnight pre-deploy do Portal NKL concluida e verificada em `master`:
-5 branches integradas sem conflitos + `npm run verify` verde + 199 testes unitarios + 24 testes E2E Playwright passando.
+Sprint overnight pre-deploy 100% concluida e verificada localmente em `master`:
+5 branches integradas sem conflitos + `npm run verify` verde + 199/199 testes unitarios + 46/46 testes E2E Playwright passando (1 skip conhecido Hotmart).
 
 ## Workstreams integradas em `master` (commits locais, sem push)
 
@@ -33,11 +33,11 @@ Integracao overnight pre-deploy do Portal NKL concluida e verificada em `master`
 
 ## Proximo passo imediato (aguardando aprovacao do usuario)
 
-1. Revisar `git log` e `git diff` consolidados em `master`.
-2. Planejar aplicacao controlada das migracoes Drizzle locais (`0044` a `0047`) e upload dos ativos pagos ao bucket privado (`npm run guides:upload`).
-3. Obter aprovacao explicita antes de qualquer `git push` ou deploy em producao.
+1. Revisao visual local de `/`, `/musica/naipe_cordas`, `/guias/ingles/ebook`, `/ia/oferta`, `/quiz-negocios`, `/programas` e `/mural-de-parceiros`.
+2. Executar as Fases A -> B -> C -> D de [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md) na janela de mudanca aprovada (banco e bucket privado -> variaveis de ambiente -> build/deploy -> smoke test e monitoria).
+3. Obter aprovacao explicita de NKL_OFICIAL antes de qualquer `git push` ou deploy em producao.
 
 ## Riscos conhecidos
 
-- Migracoes locais (`0044_new_income_programs.sql`, `0045_english_ebook_guide_offer.sql`, `0046_quiz_engine.sql`, `0047_ai_learning_product.sql`) ainda nao foram aplicadas no banco remoto.
-- Paginas de idiomas nao ingleses permanecem `coming-soon` ate revisao editorial final.
+- Migracoes locais (`0044` a `0047`) ainda nao foram aplicadas no banco Supabase remoto (ver Fase A de [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md)).
+- Paginas de idiomas nao ingleses permanecem `coming-soon` (HTTP 409 no checkout) ate revisao editorial final.
