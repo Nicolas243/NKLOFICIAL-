@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('prévia do inventário publicitário', () => {
-  test('mantém apenas o letreiro clicável na home', async ({ page }) => {
-    await page.goto('/');
+  test('mantém apenas o letreiro clicável na home musical', async ({ page }) => {
+    await page.goto('/musica/naipe_cordas');
 
     const banner = page.getByRole('region', { name: 'Anúncio do Portal NKL' });
     await expect(banner).toContainText('ANUNCIE AQUI');

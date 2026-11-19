@@ -12,34 +12,32 @@ Checklist detalhado em [[progress]]; decisoes em [[decisionsLog]].
 
 ## Milestone atual
 
-Integracao overnight paralela pre-deploy do Portal NKL sobre baseline limpo
-(`master` @ 5729383: MCP 9router desacoplado + snapshot de features + ativos pagos protegidos).
+Integracao overnight pre-deploy do Portal NKL concluida e verificada em `master`:
+5 branches integradas sem conflitos + `npm run verify` verde + 199 testes unitarios + 24 testes E2E Playwright passando.
 
-## Workstreams em andamento (branches locais, sem push)
+## Workstreams integradas em `master` (commits locais, sem push)
 
-| Branch | Dono | Escopo |
+| Branch | Dono | Status |
 |---|---|---|
-| `feat/home-base-music-move` | home-and-shell | Home base `/`, musica em `/musica/naipe_cordas`, shell unificado, `portal-areas` + testes |
-| `feat/guides-funnel-downloads` | guides-funnel | Funil de e-books, download 403, recuperacao, chines, 5 idiomas "Em breve", `/api/materials` |
-| `feat/ia-quiz-compliance` | ia-and-quiz | IA na Pratica, Quiz de Negocios, LGPD (`compliance.ts`), numeracao Drizzle, liberacao de slot no webhook |
-| `feat/ads-catalog-seo` | ads-catalog-seo | Moderacao de anuncios, preco total, TOCTOU de slots, mural real, saved programs, Micro1, sitemap/robots |
-| `feat/memory-second-brain` | memory-architect | `.ai-memory/`, skill `ai-memory-graph`, protocolo cross-IDE |
+| `feat/memory-second-brain` | memory-architect | Integrado em `master` (`.ai-memory/`, skill `ai-memory-graph`, protocolo cross-IDE) |
+| `feat/home-base-music-move` | home-and-shell | Integrado em `master` (Home base `/`, musica em `/musica/naipe_cordas`, shell unificado, `portal-areas`) |
+| `feat/guides-funnel-downloads` | guides-funnel | Integrado em `master` (Amostra de 5 aulas de ingles, download 403 corrigido, 5 idiomas "Em breve", `/api/materials`) |
+| `feat/ia-quiz-compliance` | ia-and-quiz | Integrado em `master` (Checkout/webhook IA na Pratica, Quiz de Negocios, LGPD `compliance.ts`, migracoes 0046/0047) |
+| `feat/ads-catalog-seo` | ads-catalog-seo | Integrado em `master` (Moderacao de anuncios, lock transacional de slots, mural real, saved programs, Micro1, sitemap/robots) |
 
 ## Regras da rodada
 
-- Cada worker edita somente seus caminhos; integracao feita pelo coordinator.
-- Proibido push, deploy ou migracao remota. Segredos nunca impressos ou versionados.
+- Nenhuma branch enviada a remoto; proibido push, deploy ou migracao remota sem aprovacao explicita.
+- Segredos nunca impressos ou versionados; `.env.local` intocado.
 - Zero emojis em codigo, notas e commits.
 
-## Proximo passo imediato apos integracao
+## Proximo passo imediato (aguardando aprovacao do usuario)
 
-1. Coordinator faz merge das branches em `master` resolvendo conflitos de shell/sitemap.
-2. Rodar `npm run verify` e `npm run test:e2e`; comparar com baseline de `docs/quality.md`.
-3. Revisar migracoes Drizzle locais (numeracao 0045 duplicada) antes de qualquer remoto.
-4. Atualizar este arquivo, [[progress]] e rodar `memory-graph.mjs build`.
+1. Revisar `git log` e `git diff` consolidados em `master`.
+2. Planejar aplicacao controlada das migracoes Drizzle locais (`0044` a `0047`) e upload dos ativos pagos ao bucket privado (`npm run guides:upload`).
+3. Obter aprovacao explicita antes de qualquer `git push` ou deploy em producao.
 
 ## Riscos conhecidos
 
-- Conflitos em `src/app/sitemap.ts`, `income-portal.ts` e header/footer entre branches.
-- Migracoes com prefixo duplicado (`0038_*`, `0045_*`) exigem revisao de paridade de schema.
-- Paginas de idiomas nao ingleses devem permanecer `coming-soon` ate validacao.
+- Migracoes locais (`0044_new_income_programs.sql`, `0045_english_ebook_guide_offer.sql`, `0046_quiz_engine.sql`, `0047_ai_learning_product.sql`) ainda nao foram aplicadas no banco remoto.
+- Paginas de idiomas nao ingleses permanecem `coming-soon` ate revisao editorial final.

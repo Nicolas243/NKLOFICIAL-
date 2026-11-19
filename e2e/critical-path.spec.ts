@@ -1,16 +1,28 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Espinha dorsal crítica do Portal NKL', () => {
-  test('Home Page renderiza o H1 principal', async ({ page }) => {
+  test('Home Page e Hub Musical renderizam o H1 principal', async ({ page }) => {
     await page.goto('/');
 
-    const heading = page.getByRole('heading', { level: 1 });
-    await expect(heading).toBeVisible();
-    await expect(heading).toContainText('O Cuidado Oculto');
+    const portalHeading = page.getByRole('heading', { level: 1 });
+    await expect(portalHeading).toBeVisible();
+    await expect(portalHeading).toContainText(
+      'Música, inteligência artificial, idiomas e negócios digitais',
+    );
 
-    const loginLink = page.getByRole('link', { name: 'Entrar', exact: true });
-    await expect(loginLink).toBeVisible();
-    await expect(loginLink).toHaveAttribute('href', '/login?area=music');
+    const portalLoginLink = page.getByRole('link', { name: 'Entrar', exact: true });
+    await expect(portalLoginLink).toBeVisible();
+    await expect(portalLoginLink).toHaveAttribute('href', '/login');
+
+    await page.goto('/musica/naipe_cordas');
+
+    const musicHeading = page.getByRole('heading', { level: 1 });
+    await expect(musicHeading).toBeVisible();
+    await expect(musicHeading).toContainText('O Cuidado Oculto');
+
+    const musicLoginLink = page.getByRole('link', { name: 'Entrar', exact: true });
+    await expect(musicLoginLink).toBeVisible();
+    await expect(musicLoginLink).toHaveAttribute('href', '/login?next=%2Fmusica%2Fnaipe_cordas');
   });
 
   test('Catálogo renderiza os filtros e o grid', async ({ page }) => {
