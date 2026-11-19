@@ -1,6 +1,6 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
@@ -8,12 +8,22 @@ import { db } from '@/db';
 import {
   userProfiles,
   businessDirectory,
+  aiAccessGrants,
+  aiLearningProgress,
+  savedPartnerPrograms,
+  guidePurchases,
+  guideSubscriptions,
+  adCampaigns,
   favoriteStrings,
   favoriteLuthiers,
+  favoriteBusinesses,
+  favoriteProfessors,
   stringReviews,
   luthierReviews,
   luthierLeads,
   luthierPortfolio,
+  newsComments,
+  newsLikes,
   subscriptions,
   notifications,
   passwordChangeAttempts,
@@ -33,12 +43,39 @@ export async function exportUserData(): Promise<string> {
     throw new Error('Sessão inválida. Faça login novamente.');
   }
 
-  const [profileRows, favStrings, favLuthiers, sReviews, lReviews, notifs] = await Promise.all([
+  const [
+    profileRows,
+    aiGrants,
+    aiProgress,
+    savedPrograms,
+    gPurchases,
+    gSubscriptions,
+    campaigns,
+    favStrings,
+    favLuthiers,
+    favBusinesses,
+    favProfessors,
+    sReviews,
+    lReviews,
+    nComments,
+    nLikes,
+    notifs,
+  ] = await Promise.all([
     db.select().from(userProfiles).where(eq(userProfiles.id, user.id)),
+    db.select().from(aiAccessGrants).where(eq(aiAccessGrants.userId, user.id)),
+    db.select().from(aiLearningProgress).where(eq(aiLearningProgress.userId, user.id)),
+    db.select().from(savedPartnerPrograms).where(eq(savedPartnerPrograms.userId, user.id)),
+    db.select().from(guidePurchases).where(eq(guidePurchases.userId, user.id)),
+    db.select().from(guideSubscriptions).where(eq(guideSubscriptions.userId, user.id)),
+    db.select().from(adCampaigns).where(eq(adCampaigns.userId, user.id)),
     db.select().from(favoriteStrings).where(eq(favoriteStrings.userId, user.id)),
     db.select().from(favoriteLuthiers).where(eq(favoriteLuthiers.userId, user.id)),
+    db.select().from(favoriteBusinesses).where(eq(favoriteBusinesses.userId, user.id)),
+    db.select().from(favoriteProfessors).where(eq(favoriteProfessors.userId, user.id)),
     db.select().from(stringReviews).where(eq(stringReviews.userId, user.id)),
     db.select().from(luthierReviews).where(eq(luthierReviews.userId, user.id)),
+    db.select().from(newsComments).where(eq(newsComments.userId, user.id)),
+    db.select().from(newsLikes).where(eq(newsLikes.userId, user.id)),
     db.select().from(notifications).where(eq(notifications.userId, user.id)),
   ]);
 
@@ -46,10 +83,28 @@ export async function exportUserData(): Promise<string> {
     {
       exportedAt: new Date().toISOString(),
       profile: profileRows[0] ?? null,
+      aiAccessGrants: aiGrants,
+      aiLearningProgress: aiProgress,
+      savedPartnerPrograms: savedPrograms,
+      guidePurchases: gPurchases.map((row) => ({
+        ...row,
+        encryptedCpf: null,
+        guestAccessTokenHash: null,
+      })),
+      guideSubscriptions: gSubscriptions.map((row) => ({
+        ...row,
+        encryptedCpf: null,
+        guestAccessTokenHash: null,
+      })),
+      adCampaigns: campaigns,
       favoriteStrings: favStrings,
       favoriteLuthiers: favLuthiers,
+      favoriteBusinesses: favBusinesses,
+      favoriteProfessors: favProfessors,
       stringReviews: sReviews,
       luthierReviews: lReviews,
+      newsComments: nComments,
+      newsLikes: nLikes,
       notifications: notifs,
     },
     null,
@@ -94,9 +149,35 @@ export async function deleteUserAccount(): Promise<void> {
 
   try {
     await db.transaction(async (tx) => {
-      // Favoritos: como autor e tambem como alvo (perfis favoritados).
+      // Acesso e progresso em produtos digitais, programas salvos e campanhas.
+      await tx.delete(aiLearningProgress).where(eq(aiLearningProgress.userId, userId));
+      await tx.delete(aiAccessGrants).where(eq(aiAccessGrants.userId, userId));
+      await tx.delete(savedPartnerPrograms).where(eq(savedPartnerPrograms.userId, userId));
+      await tx.delete(guidePurchases).where(eq(guidePurchases.userId, userId));
+      await tx.delete(guideSubscriptions).where(eq(guideSubscriptions.userId, userId));
+      await tx.delete(adCampaigns).where(eq(adCampaigns.userId, userId));
+
+      // Favoritos: como autor e tambem como alvo (perfis e estabelecimentos favoritados).
+      await tx.delete(favoriteStrings).where(eq(favoriteStrings.userId, userId));
       await tx.delete(favoriteLuthiers).where(eq(favoriteLuthiers.userId, userId));
       await tx.delete(favoriteLuthiers).where(eq(favoriteLuthiers.luthierId, userId));
+      await tx.delete(favoriteProfessors).where(eq(favoriteProfessors.userId, userId));
+      await tx.delete(favoriteProfessors).where(eq(favoriteProfessors.professorId, userId));
+      await tx.delete(favoriteBusinesses).where(eq(favoriteBusinesses.userId, userId));
+
+      const ownedBusinesses = await tx
+        .select({ id: businessDirectory.id })
+        .from(businessDirectory)
+        .where(eq(businessDirectory.userId, userId));
+      if (ownedBusinesses.length > 0) {
+        await tx
+          .delete(favoriteBusinesses)
+          .where(inArray(favoriteBusinesses.businessId, ownedBusinesses.map((item) => item.id)));
+      }
+
+      // Engajamento editorial (comentarios e curtidas em noticias).
+      await tx.delete(newsComments).where(eq(newsComments.userId, userId));
+      await tx.delete(newsLikes).where(eq(newsLikes.userId, userId));
 
       // Avaliacoes: como autor e como alvo (reputacao do luthier).
       await tx.delete(stringReviews).where(eq(stringReviews.userId, userId));

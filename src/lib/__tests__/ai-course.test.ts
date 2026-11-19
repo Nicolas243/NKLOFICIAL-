@@ -1,15 +1,28 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { calculateAiProgress, getAiCourseLessons, getAiCourseModules } from '@/lib/ai-course';
+import {
+  AI_COURSE_PRODUCT_KEY,
+  AI_PRODUCT_KEY,
+  calculateAiProgress,
+  getAiCourseLessons,
+  getAiCourseModules,
+} from '@/lib/ai-course';
 import { canAccessAiProduct } from '@/lib/ai-access';
 import { getAiPromptCategories, getAiPromptById } from '@/lib/ai-prompts';
 
-test('exposes ordered course modules with unique lessons and complete teaching fields', () => {
+test('consolidates AI_COURSE_PRODUCT_KEY with AI_PRODUCT_KEY', () => {
+  assert.equal(AI_COURSE_PRODUCT_KEY, AI_PRODUCT_KEY);
+  assert.equal(AI_COURSE_PRODUCT_KEY, 'ai-na-pratica');
+});
+
+test('exposes ordered course modules with unique lessons, moduleSlug and complete teaching fields', () => {
   const modules = getAiCourseModules();
   const lessons = getAiCourseLessons();
+  const moduleSlugs = new Set(modules.map((courseModule) => courseModule.slug));
   assert.equal(modules.length, 7);
   assert.equal(new Set(lessons.map((lesson) => lesson.id)).size, lessons.length);
   for (const lesson of lessons) {
+    assert.ok(moduleSlugs.has(lesson.moduleSlug), `Expected valid moduleSlug on lesson ${lesson.id}`);
     assert.ok(lesson.objective);
     assert.ok(lesson.exampleBad);
     assert.ok(lesson.exampleBetter);

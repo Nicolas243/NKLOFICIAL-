@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AiOfferCheckout } from '@/components/ai/ai-offer-checkout';
 import { AI_ONE_TIME_PRICE_CENTS, AI_SUBSCRIPTION_PRICE_CENTS } from '@/lib/ai-product';
 import { getAiCourseModules } from '@/lib/ai-course';
 import { absoluteSiteUrl } from '@/lib/site';
@@ -197,8 +198,11 @@ export default function AiOfferPage() {
             <ul className="mt-6 space-y-3 text-sm">
               {includedItems.slice(0, 4).map((item) => <li key={item} className="flex gap-3"><span className="text-neon">✓</span>{item}</li>)}
             </ul>
-            <button type="button" disabled className="mt-8 min-h-12 w-full rounded-lg bg-neon px-5 py-3 font-bold text-black opacity-60">Checkout em configuração</button>
-            <p className="mt-3 text-center text-xs opacity-50">O botão será ativado após a configuração segura do Stripe.</p>
+            <AiOfferCheckout
+              plan="one_time"
+              label="Comprar acesso avulso"
+              helperText="Pagamento único com acesso imediato ao curso publicado."
+            />
           </article>
           <article className="relative rounded-3xl border-2 border-neon bg-income-surface p-6 shadow-[0_0_40px_rgba(190,255,0,0.08)] md:p-8">
             <span className="absolute right-6 top-6 rounded-full bg-neon px-3 py-1 text-xs font-bold text-black">Para continuar evoluindo</span>
@@ -208,8 +212,11 @@ export default function AiOfferPage() {
             <ul className="mt-6 space-y-3 text-sm">
               {includedItems.map((item) => <li key={item} className="flex gap-3"><span className="text-neon">✓</span>{item}</li>)}
             </ul>
-            <button type="button" disabled className="mt-8 min-h-12 w-full rounded-lg bg-neon px-5 py-3 font-bold text-black opacity-60">Checkout em configuração</button>
-            <p className="mt-3 text-center text-xs opacity-50">Sem cobrança até o checkout estar configurado e validado.</p>
+            <AiOfferCheckout
+              plan="subscription"
+              label="Assinar plano mensal"
+              helperText="Cobrança recorrente mensal via Stripe com cancelamento a qualquer momento."
+            />
           </article>
         </div>
       </section>

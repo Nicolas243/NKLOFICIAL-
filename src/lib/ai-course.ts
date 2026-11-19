@@ -1,7 +1,11 @@
-export const AI_COURSE_PRODUCT_KEY = 'ai-na-pratica' as const;
+import { AI_PRODUCT_KEY } from '@/lib/ai-product';
+
+export { AI_PRODUCT_KEY };
+export const AI_COURSE_PRODUCT_KEY = AI_PRODUCT_KEY;
 
 export type AiCourseLesson = {
   id: string;
+  moduleSlug: string;
   title: string;
   objective: string;
   explanation: string;
@@ -32,6 +36,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'pensar-com-ia-contexto',
+        moduleSlug: 'pensar-com-ia',
         title: 'Contexto é parte da resposta',
         objective: 'Aprender a fornecer objetivo, público e restrições antes de pedir uma resposta.',
         explanation: 'Um modelo responde melhor quando sabe o que você quer fazer, para quem e em qual formato.',
@@ -42,6 +47,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'pensar-com-ia-limites',
+        moduleSlug: 'pensar-com-ia',
         title: 'Quando não confiar na primeira resposta',
         objective: 'Reconhecer sinais de incerteza e decidir quando validar com uma fonte ou pessoa especialista.',
         explanation: 'Fluência não é prova de verdade. Quanto maior o impacto da decisão, maior deve ser o nível de verificação.',
@@ -59,6 +65,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'prompting-estrutura',
+        moduleSlug: 'prompting',
         title: 'A estrutura de um bom prompt',
         objective: 'Transformar uma intenção em instrução executável.',
         explanation: 'Um prompt útil combina papel, tarefa, contexto, restrições, formato e critério de qualidade.',
@@ -69,6 +76,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'prompting-iteracao',
+        moduleSlug: 'prompting',
         title: 'Iterar sem recomeçar do zero',
         objective: 'Melhorar uma resposta usando feedback específico em vez de pedidos vagos.',
         explanation: 'Uma boa conversa com IA funciona como um ciclo: resultado, diagnóstico, ajuste e nova revisão.',
@@ -86,6 +94,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'pesquisa-verificacao-fontes',
+        moduleSlug: 'pesquisa-verificacao',
         title: 'Pergunte por fontes e incerteza',
         objective: 'Separar fato confirmado, hipótese e ponto que precisa de verificação.',
         explanation: 'IA pode ajudar a organizar uma pesquisa, mas informações atuais e decisões importantes exigem fontes primárias.',
@@ -96,6 +105,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'pesquisa-verificacao-checklist',
+        moduleSlug: 'pesquisa-verificacao',
         title: 'Checklist para informação atual',
         objective: 'Montar uma rotina curta para verificar datas, autoria, contexto e conflito entre fontes.',
         explanation: 'Uma resposta pode misturar dados antigos, fontes secundárias e inferências. A verificação precisa ser explícita.',
@@ -113,6 +123,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'texto-imagem-voz-brief',
+        moduleSlug: 'texto-imagem-voz',
         title: 'Brief antes da geração',
         objective: 'Descrever intenção, público, formato e limites de uma criação.',
         explanation: 'Ferramentas generativas produzem resultados mais consistentes quando recebem referências e critérios concretos.',
@@ -123,6 +134,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'texto-imagem-voz-revisao',
+        moduleSlug: 'texto-imagem-voz',
         title: 'Revisão humana antes de publicar',
         objective: 'Avaliar clareza, acessibilidade, direitos e coerência antes de usar um conteúdo gerado.',
         explanation: 'Gerar é só uma etapa. A publicação exige revisar texto, imagens, vozes, referências e expectativas do público.',
@@ -140,6 +152,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'produtividade-plano',
+        moduleSlug: 'produtividade',
         title: 'Plano com próxima ação',
         objective: 'Usar IA para sair de uma intenção abstrata para uma sequência executável.',
         explanation: 'A resposta precisa terminar em ações observáveis, não em uma lista inspiracional.',
@@ -150,6 +163,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'produtividade-reuniao',
+        moduleSlug: 'produtividade',
         title: 'De reunião a próximos passos',
         objective: 'Transformar anotações em decisões, responsáveis, prazos e pendências sem inventar acordos.',
         explanation: 'A IA pode organizar informação, mas não deve preencher lacunas como se fossem decisões tomadas.',
@@ -167,6 +181,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'conteudo-negocios-oferta',
+        moduleSlug: 'conteudo-negocios',
         title: 'Oferta antes da copy',
         objective: 'Clarificar problema, público e proposta antes de escrever uma página de vendas.',
         explanation: 'Uma copy bonita não corrige uma oferta confusa. Use IA para explorar objeções e alternativas, não para inventar prova social.',
@@ -177,6 +192,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'conteudo-negocios-experimento',
+        moduleSlug: 'conteudo-negocios',
         title: 'Experimento antes da escala',
         objective: 'Usar IA para criar uma hipótese pequena e um critério de aprendizado sem prometer conversão.',
         explanation: 'IA ajuda a gerar variações, mas só um experimento com público real mostra o que merece investimento.',
@@ -194,6 +210,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     lessons: [
       {
         id: 'codigo-seguranca-limites',
+        moduleSlug: 'codigo-seguranca',
         title: 'Agente precisa de limites',
         objective: 'Definir escopo, permissões e validação para uma tarefa técnica.',
         explanation: 'Um agente deve receber o mínimo de contexto necessário e nunca ter acesso maior que o indispensável.',
@@ -204,6 +221,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
       },
       {
         id: 'codigo-seguranca-revisao',
+        moduleSlug: 'codigo-seguranca',
         title: 'Revisão de código gerado',
         objective: 'Avaliar código de IA por comportamento, segurança, testes e manutenção antes de aceitar a mudança.',
         explanation: 'Código que compila pode ainda vazar dados, ignorar autorização ou quebrar um caso importante.',
