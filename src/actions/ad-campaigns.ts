@@ -1,9 +1,10 @@
 'use server';
 
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/db';
 import { adCampaigns, adInventorySlots, userProfiles } from '@/db/schema';
+import { AD_INVENTORY_LOCK_ID } from '@/lib/ad-inventory';
 import { getStripeClient } from '@/lib/stripe/server';
 import { createClient } from '@/lib/supabase/server';
 
@@ -32,6 +33,7 @@ function refreshAdSurfaces(): void {
   revalidatePath('/admin');
   revalidatePath('/anuncie');
   revalidatePath('/programas/anuncie');
+  revalidatePath('/mural-de-parceiros');
   revalidatePath('/');
   revalidatePath('/programas');
   revalidatePath('/catalogo');
@@ -42,6 +44,7 @@ export async function approveAdCampaign(formData: FormData): Promise<void> {
   const campaignId = getCampaignId(formData);
 
   await db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(${AD_INVENTORY_LOCK_ID})`);
     const [campaign] = await tx
       .select({
         id: adCampaigns.id,

@@ -1,13 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
-import {
-  getSavedPartnerProgramSlugs,
-  toggleSavedPartnerProgram,
-} from '@/actions/saved-partner-programs';
-import { SAVED_PROGRAMS_KEY } from '@/lib/income-saved';
+import { useSavedProgramSlugs } from '@/components/income/save-program-button';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Props = {
@@ -167,53 +163,8 @@ export function IncomeWizard({ programs }: Props) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<Record<QuestionId, string>>>({});
   const [results, setResults] = useState<PartnerProgramCard[]>([]);
-  const [savedSlugs, setSavedSlugs] = useState<string[]>([]);
+  const { savedSlugs, toggleSlug } = useSavedProgramSlugs();
   const [feedback, setFeedback] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    async function loadSavedPrograms(): Promise<void> {
-      const stored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
-      let localSlugs: string[] = [];
-      if (stored) {
-        try {
-          const parsed: unknown = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
-            localSlugs = parsed;
-          }
-        } catch (error) {
-          console.error('[INCOME_WIZARD] Não foi possível ler oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
-        }
-      }
-
-      try {
-        const remoteSlugs = await getSavedPartnerProgramSlugs();
-        const latestStored = window.localStorage.getItem(SAVED_PROGRAMS_KEY);
-        let latestLocalSlugs = localSlugs;
-        if (latestStored) {
-          try {
-            const parsed: unknown = JSON.parse(latestStored);
-            if (Array.isArray(parsed) && parsed.every((value): value is string => typeof value === 'string')) {
-              latestLocalSlugs = parsed;
-            }
-          } catch (error) {
-            console.error('[INCOME_WIZARD] Não foi possível atualizar oportunidades salvas:', error instanceof Error ? error.message : 'erro desconhecido');
-          }
-        }
-        const mergedSlugs = Array.from(new Set([...remoteSlugs, ...latestLocalSlugs]));
-        if (active) setSavedSlugs(mergedSlugs);
-        const remoteSet = new Set(remoteSlugs);
-        await Promise.all(latestLocalSlugs.filter((slug) => !remoteSet.has(slug)).map((slug) => toggleSavedPartnerProgram(slug)));
-        window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(mergedSlugs));
-      } catch {
-        if (active && localSlugs.length > 0) setSavedSlugs(localSlugs);
-      }
-    }
-    void loadSavedPrograms();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const question = QUESTIONS[questionIndex];
   const savedPrograms = useMemo(
@@ -245,10 +196,7 @@ export function IncomeWizard({ programs }: Props) {
   }
 
   function toggleSaved(slug: string): void {
-    const nextSlugs = savedSlugs.includes(slug) ? savedSlugs.filter((item) => item !== slug) : [...savedSlugs, slug];
-    setSavedSlugs(nextSlugs);
-    window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(nextSlugs));
-    void toggleSavedPartnerProgram(slug).catch((error) => {
+    void toggleSlug(slug).catch((error) => {
       if (error instanceof Error && error.message.includes('Faça login')) return;
       console.error('[INCOME_WIZARD] Não foi possível sincronizar oportunidade:', error);
     });

@@ -102,13 +102,21 @@ function parseOpportunity(value: unknown): Micro1Opportunity | null {
   };
 }
 
-async function fetchPage(page: number): Promise<{ total: number; opportunities: Micro1Opportunity[] }> {
+export const MICRO1_FETCH_TIMEOUT_MS = 8_000;
+
+type FetchLike = typeof fetch;
+
+async function fetchPage(
+  page: number,
+  fetchImpl: FetchLike = fetch,
+): Promise<{ total: number; opportunities: Micro1Opportunity[] }> {
   const url = `${MICRO1_API_BASE}/${MICRO1_REFERRAL_CODE}/jobs?page=${page}&limit=${MICRO1_PAGE_SIZE}`;
-  const response = await fetch(url, {
+  const response = await fetchImpl(url, {
     headers: {
       accept: 'application/json',
       'x-custom-lang': 'en',
     },
+    signal: AbortSignal.timeout(MICRO1_FETCH_TIMEOUT_MS),
     next: { revalidate: 900 },
   });
 
@@ -128,19 +136,23 @@ async function fetchPage(page: number): Promise<{ total: number; opportunities: 
   return { total, opportunities };
 }
 
-export async function getMicro1Opportunities(): Promise<Micro1Opportunity[]> {
-  const firstPage = await fetchPage(1);
+export async function getMicro1Opportunities(
+  fetchImpl: FetchLike = fetch,
+): Promise<Micro1Opportunity[]> {
+  const firstPage = await fetchPage(1, fetchImpl);
   const pageCount = Math.ceil(firstPage.total / MICRO1_PAGE_SIZE);
   if (pageCount > MICRO1_MAX_PAGES) {
     throw new Error(`A lista da Micro1 excede o limite editorial de ${MICRO1_MAX_PAGES * MICRO1_PAGE_SIZE} vagas.`);
   }
   const remainingPages = await Promise.all(
-    Array.from({ length: Math.max(pageCount - 1, 0) }, (_, index) => fetchPage(index + 2)),
+    Array.from({ length: Math.max(pageCount - 1, 0) }, (_, index) => fetchPage(index + 2, fetchImpl)),
   );
   const opportunities = [firstPage, ...remainingPages].flatMap((page) => page.opportunities);
   const uniqueOpportunities = Array.from(new Map(opportunities.map((item) => [item.jobId, item])).values());
   if (uniqueOpportunities.length < firstPage.total) {
-    throw new Error(`A lista da Micro1 retornou ${uniqueOpportunities.length} de ${firstPage.total} vagas esperadas.`);
+    console.warn(
+      `[MICRO1] Paginação retornou ${uniqueOpportunities.length} de ${firstPage.total} vagas esperadas; mantendo itens únicos coletados.`,
+    );
   }
   return uniqueOpportunities;
 }

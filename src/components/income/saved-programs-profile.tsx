@@ -7,6 +7,12 @@ import {
   getSavedPartnerProgramSlugs,
   toggleSavedPartnerProgram,
 } from '@/actions/saved-partner-programs';
+import {
+  addLocalSavedProgramSlug,
+  publishSavedProgramSlugs,
+  removeLocalSavedProgramSlug,
+  writeLocalSavedProgramSlugs,
+} from '@/components/income/save-program-button';
 import { SAVED_PROGRAMS_KEY } from '@/lib/income-saved';
 
 type Props = {
@@ -20,6 +26,7 @@ function uniqueSlugs(values: string[]): string[] {
 
 export function SavedProgramsProfile({ initialPrograms, allPrograms }: Props) {
   const [savedSlugs, setSavedSlugs] = useState(() => initialPrograms.map((program) => program.slug));
+  const [pendingSlug, setPendingSlug] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -57,8 +64,9 @@ export function SavedProgramsProfile({ initialPrograms, allPrograms }: Props) {
         if (localOnly.length > 0) {
           setIsSyncing(true);
           await Promise.all(localOnly.map((slug) => toggleSavedPartnerProgram(slug)));
-          window.localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(mergedSlugs));
         }
+        writeLocalSavedProgramSlugs(mergedSlugs);
+        publishSavedProgramSlugs(mergedSlugs);
         if (active && localOnly.length > 0) setSyncMessage('Suas oportunidades salvas foram sincronizadas nesta conta.');
       } catch (error) {
         if (active && localSlugs.length === 0) {
@@ -75,6 +83,36 @@ export function SavedProgramsProfile({ initialPrograms, allPrograms }: Props) {
       active = false;
     };
   }, []);
+
+  async function handleUnsave(slug: string): Promise<void> {
+    if (pendingSlug) return;
+    setPendingSlug(slug);
+    const previousSlugs = savedSlugs;
+    const nextSlugs = previousSlugs.filter((item) => item !== slug);
+    setSavedSlugs(nextSlugs);
+    removeLocalSavedProgramSlug(slug);
+    publishSavedProgramSlugs(nextSlugs);
+
+    try {
+      const result = await toggleSavedPartnerProgram(slug);
+      if (result.saved) {
+        const restored = uniqueSlugs([...nextSlugs, slug]);
+        setSavedSlugs(restored);
+        addLocalSavedProgramSlug(slug);
+        publishSavedProgramSlugs(restored);
+      } else {
+        setSyncMessage('Oportunidade removida dos salvos.');
+      }
+    } catch (error) {
+      console.error('[PROFILE] Falha ao remover oportunidade salva:', error);
+      setSavedSlugs(previousSlugs);
+      writeLocalSavedProgramSlugs(previousSlugs);
+      publishSavedProgramSlugs(previousSlugs);
+      setSyncMessage('Não foi possível remover a oportunidade agora.');
+    } finally {
+      setPendingSlug(null);
+    }
+  }
 
   return (
     <section className="rounded-[1.5rem] border border-orange/30 bg-income-surface/90 p-5 shadow-[0_20px_60px_rgba(70,55,35,0.12)] md:p-7" aria-labelledby="saved-income-programs">
@@ -102,9 +140,20 @@ export function SavedProgramsProfile({ initialPrograms, allPrograms }: Props) {
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <span className="text-xs font-bold opacity-60">{program.averageEarning}</span>
-                <Link href={`/programas/${program.slug}`} className="text-sm font-bold text-neon hover:underline">
-                  Continuar lendo →
-                </Link>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => void handleUnsave(program.slug)}
+                    disabled={pendingSlug === program.slug}
+                    aria-label={`Remover ${program.name} dos salvos`}
+                    className="text-xs font-bold opacity-65 transition-opacity hover:text-orange hover:opacity-100 disabled:opacity-40"
+                  >
+                    Remover
+                  </button>
+                  <Link href={`/programas/${program.slug}`} className="text-sm font-bold text-neon hover:underline">
+                    Continuar lendo →
+                  </Link>
+                </div>
               </div>
             </article>
           ))}

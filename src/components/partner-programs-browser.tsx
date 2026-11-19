@@ -13,7 +13,7 @@ import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-mod
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
 import { ProgramStrategies } from '@/components/income/program-strategies';
-import { SaveProgramButton } from '@/components/income/save-program-button';
+import { SaveProgramButton, useSavedProgramSlugs } from '@/components/income/save-program-button';
 import { SmartTagList } from '@/components/income/smart-tag-list';
 import { SocialEmbed } from '@/components/video/social-embed';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
@@ -152,6 +152,8 @@ export function PartnerProgramsBrowser({
   initialEnglish,
 }: Props) {
   const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
+  const { savedSlugs } = useSavedProgramSlugs();
+  const savedSlugSet = useMemo(() => new Set(savedSlugs), [savedSlugs]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('todas');
   const [difficulty, setDifficulty] = useState('todas');
@@ -582,7 +584,13 @@ export function PartnerProgramsBrowser({
                     </OutboundLink>
                   )}
                   <span onClick={(event) => event.stopPropagation()}>
-                    <SaveProgramButton slug={program.slug} name={program.name} compact nextPath={`/programas/${program.slug}`} />
+                    <SaveProgramButton
+                      slug={program.slug}
+                      name={program.name}
+                      compact
+                      nextPath={`/programas/${program.slug}`}
+                      isSaved={savedSlugSet.has(program.slug)}
+                    />
                   </span>
                   <button
                     type="button"
@@ -706,7 +714,12 @@ export function PartnerProgramsBrowser({
               <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
                 {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
               </button>
-              <SaveProgramButton slug={selectedProgram.slug} name={selectedProgram.name} nextPath={`/programas/${selectedProgram.slug}`} />
+              <SaveProgramButton
+                slug={selectedProgram.slug}
+                name={selectedProgram.name}
+                nextPath={`/programas/${selectedProgram.slug}`}
+                isSaved={savedSlugSet.has(selectedProgram.slug)}
+              />
               <SocialEmbed
                 youtubeId={selectedProgram.youtubeVideoId}
                 tiktokId={selectedProgram.tiktokVideoId}
