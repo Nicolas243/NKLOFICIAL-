@@ -6,17 +6,11 @@ import {
   type NklRoleResult,
 } from "./nkl-router-runner.js";
 import type { NklRouterConfig } from "./nkl-router-config.js";
-import type { WorkerSessionOptions } from "./deepseek-mcp-worker.js";
+import type { DirectWorkerConfig } from "./nkl-openai-worker.js";
 
 const secret = "router-test-secret";
 const config: NklRouterConfig = {
-  cline: {
-    workspaceRoot: "C:\\workspace\\portal-nkl",
-    providerId: "openai-compatible",
-    modelId: "cline-coordinator",
-    apiKey: "cline-secret",
-    baseUrl: "https://cline.invalid/v1",
-  },
+  workspaceRoot: "C:\\workspace\\portal-nkl",
   router: {
     providerId: "openai-compatible",
     baseUrl: "https://router.invalid/v1",
@@ -32,56 +26,59 @@ const config: NklRouterConfig = {
   },
 };
 
-test("role runner uses the configured alias and fixed read-only workspace", async () => {
-  let options: WorkerSessionOptions | undefined;
+test("role runner sends configured alias directly to 9router worker without Cline", async () => {
+  let capturedConfig: DirectWorkerConfig | undefined;
   const result = await runNklRoleTask("reviewer", "review the compact plan", {
     config,
-    createSession: async (sessionOptions) => {
-      options = sessionOptions;
+    runDirectTask: async (_prompt, directConfig) => {
+      capturedConfig = directConfig;
       return {
-        async run() {
-          return {
-            status: "completed",
-            text: "The plan is consistent.",
-            finishReason: "stop",
-          };
-        },
-        async dispose() {},
+        status: "completed",
+        text: "The plan is consistent.",
+        finishReason: "stop",
       };
     },
   });
 
   assert.equal(result.status, "completed");
   assert.equal(result.role, "reviewer");
-  assert.equal(options?.modelId, "NKL-REVISOR");
-  assert.equal(options?.workspaceRoot, config.cline.workspaceRoot);
-  assert.equal(options?.cwd, config.cline.workspaceRoot);
-  assert.equal(options?.enableSpawnAgent, false);
-  assert.equal(options?.enableAgentTeams, false);
-  assert.equal(options?.enableEditing, false);
-  assert.equal(options?.enableCommands, false);
-  assert.equal(options?.enableWeb, false);
-  assert.equal(options?.enableSkills, false);
-  assert.equal(options?.enableMcp, false);
+  assert.equal(capturedConfig?.modelId, "NKL-REVISOR");
+  assert.equal(capturedConfig?.workspaceRoot, config.workspaceRoot);
+  assert.equal(capturedConfig?.baseUrl, config.router.baseUrl);
+  assert.equal(capturedConfig?.apiKey, secret);
+});
+
+test("role runner honors modelOverride for custom NKL combos", async () => {
+  let capturedModel: string | undefined;
+  const result = await runNklRoleTask("worker", "inspect routes", {
+    config,
+    modelOverride: "NKL-FAST",
+    runDirectTask: async (_prompt, directConfig) => {
+      capturedModel = directConfig.modelId;
+      return {
+        status: "completed",
+        text: "Done.",
+        finishReason: "stop",
+      };
+    },
+  });
+
+  assert.equal(result.status, "completed");
+  assert.equal(capturedModel, "NKL-FAST");
 });
 
 test("role runner bounds and deduplicates evidence while redacting secrets and blocked paths", async () => {
   const result = await runNklRoleTask("worker", "inspect the repository", {
     config,
-    createSession: async () => ({
-      async run() {
-        return {
-          status: "completed",
-          text:
-            `secret=${secret}\n` +
-            "EVIDENCE: src/auth.ts:10-12 | validates the input\n" +
-            "EVIDENCE: src/auth.ts:10-12 | validates the input\n" +
-            "EVIDENCE: .env.local:1 | must not be shared\n" +
-            "EVIDENCE: src/app.ts:4 | renders the page",
-          finishReason: "stop",
-        };
-      },
-      async dispose() {},
+    runDirectTask: async () => ({
+      status: "completed",
+      text:
+        `secret=${secret}\n` +
+        "EVIDENCE: src/auth.ts:10-12 | validates the input\n" +
+        "EVIDENCE: src/auth.ts:10-12 | validates the input\n" +
+        "EVIDENCE: .env.local:1 | must not be shared\n" +
+        "EVIDENCE: src/app.ts:4 | renders the page",
+      finishReason: "stop",
     }),
   });
 
@@ -108,11 +105,10 @@ test("role runner exposes provider failures as failed results without a success 
     "inspect the repository",
     {
       config,
-      createSession: async () => ({
-        async run() {
-          throw new Error(`provider failed with ${secret}`);
-        },
-        async dispose() {},
+      runDirectTask: async () => ({
+        status: "failed",
+        text: `provider failed with ${secret}`,
+        finishReason: "error",
       }),
     },
   );
@@ -120,7 +116,7 @@ test("role runner exposes provider failures as failed results without a success 
   assert.deepEqual(result, {
     role: "worker",
     status: "failed",
-    text: "DeepSeek task failed",
+    text: "provider failed with [redacted]",
     evidence: [],
     uncertainty: "The provider did not return a usable result.",
   });

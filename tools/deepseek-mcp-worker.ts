@@ -1,7 +1,11 @@
 import type { AgentTool, AgentResult } from "@cline/sdk";
 import type { DeepSeekMcpConfig } from "./deepseek-mcp-config.js";
 import { loadDeepSeekMcpConfig } from "./deepseek-mcp-config.js";
-import { listWorkspaceFiles, readWorkspaceFile } from "./deepseek-mcp-files.js";
+import {
+  listWorkspaceFiles,
+  readWorkspaceFile,
+  searchWorkspaceFiles,
+} from "./deepseek-mcp-files.js";
 
 export interface DeepSeekTaskResult {
   status: "completed" | "failed" | "aborted";
@@ -19,15 +23,14 @@ export interface WorkerSessionOptions {
   apiKey: string;
   baseUrl?: string;
   systemPrompt: string;
+  mode: "plan";
+  maxIterations: number;
   enableTools: true;
   enableSpawnAgent: false;
   enableAgentTeams: false;
-  enableEditing: false;
-  enableCommands: false;
-  enableWeb: false;
-  enableSkills: false;
-  enableMcp: false;
   disableMcpSettingsTools: true;
+  plugins: { "*": { enabled: false } };
+  configExtensions: [];
   extraTools: AgentTool[];
   toolPolicies: Record<string, { enabled: false }>;
 }
@@ -60,6 +63,7 @@ interface WorkerCoreEvent {
       text?: string;
       usage?: Record<string, unknown>;
       error?: unknown;
+      recoverable?: boolean;
     };
     reason?: string;
   };
@@ -112,7 +116,9 @@ export const CURRENT_CLINE_TOOL_IDS = [
 ] as const;
 
 const SAFE_SYSTEM_PROMPT =
-  "You are a read-only repository analysis worker. Use only the supplied workspace readers. " +
+  "You are a read-only repository analysis worker. Use only search_workspace, list_workspace_files, " +
+  "and line-bounded read_workspace_file (with startLine/endLine) to inspect relevant files efficiently. " +
+  "Stay concise and cite findings as: EVIDENCE: path:start-end | brief note. " +
   "Never request secrets, edit files, run commands, access the network, or delegate to another agent.";
 
 export async function runDeepSeekTask(
@@ -130,7 +136,8 @@ export async function runDeepSeekTask(
   let session: WorkerSession;
   try {
     session = await createSession(options, task);
-  } catch {
+  } catch (error) {
+    reportWorkerDiagnostic(error, config.apiKey);
     return {
       status: "failed",
       text: "DeepSeek task failed",
@@ -170,7 +177,8 @@ export async function runDeepSeekTask(
     }
 
     return redactResult(normalizeResult(outcome.result), config.apiKey);
-  } catch {
+  } catch (error) {
+    reportWorkerDiagnostic(error, config.apiKey);
     return {
       status: "failed",
       text: "DeepSeek task failed",
@@ -191,7 +199,7 @@ export async function runDeepSeekTask(
 export function createWorkerOptions(
   config: DeepSeekMcpConfig,
 ): WorkerSessionOptions {
-  const extraTools = createSafeTools();
+  const extraTools = createSafeTools(config.workspaceRoot);
   const toolPolicies = Object.fromEntries(
     CURRENT_CLINE_TOOL_IDS.map((name) => [name, { enabled: false as const }]),
   );
@@ -205,15 +213,14 @@ export function createWorkerOptions(
     apiKey: config.apiKey,
     ...(config.baseUrl ? { baseUrl: config.baseUrl } : {}),
     systemPrompt: SAFE_SYSTEM_PROMPT,
+    mode: "plan",
+    maxIterations: 12,
     enableTools: true,
     enableSpawnAgent: false,
     enableAgentTeams: false,
-    enableEditing: false,
-    enableCommands: false,
-    enableWeb: false,
-    enableSkills: false,
-    enableMcp: false,
     disableMcpSettingsTools: true,
+    plugins: { "*": { enabled: false } },
+    configExtensions: [],
     extraTools,
     toolPolicies,
   };
@@ -267,26 +274,25 @@ async function createClineSession(
         cwd: options.cwd,
         workspaceRoot: options.workspaceRoot,
         systemPrompt: options.systemPrompt,
+        mode: options.mode,
+        maxIterations: options.maxIterations,
         enableTools: options.enableTools,
         enableSpawnAgent: options.enableSpawnAgent,
         enableAgentTeams: options.enableAgentTeams,
-        enableEditing: options.enableEditing,
-        enableCommands: options.enableCommands,
-        enableWeb: options.enableWeb,
-        enableSkills: options.enableSkills,
-        enableMcp: options.enableMcp,
         disableMcpSettingsTools: options.disableMcpSettingsTools,
         toolPolicies: options.toolPolicies,
         checkpoint: { enabled: false },
       },
       localRuntime: {
         extraTools: options.extraTools,
+        configExtensions: options.configExtensions,
       },
+      plugins: options.plugins,
       toolPolicies: options.toolPolicies,
       prompt: task,
       interactive: false,
       source: "app",
-      mode: "plan",
+      mode: "subagent",
     });
     startedSessionId = started.sessionId;
     const pending = pendingEvents.get(startedSessionId);
@@ -342,6 +348,9 @@ function agentEventToResult(
     };
   }
   if (event.type === "error") {
+    if (event.recoverable === true) {
+      return undefined;
+    }
     return {
       status: "failed",
       text: "DeepSeek task failed",
@@ -351,7 +360,7 @@ function agentEventToResult(
   return undefined;
 }
 
-function createSafeTools(): AgentTool[] {
+function createSafeTools(workspaceRoot: string): AgentTool[] {
   return [
     {
       name: "list_workspace_files",
@@ -365,26 +374,89 @@ function createSafeTools(): AgentTool[] {
         additionalProperties: false,
       },
       async execute(input) {
-        return listWorkspaceFiles(input as { path?: string; maxEntries?: number });
+        return listWorkspaceFiles(
+          input as { path?: string; maxEntries?: number },
+          workspaceRoot,
+        );
       },
     },
     {
       name: "read_workspace_file",
-      description: "Read an allowed UTF-8 file from the fixed workspace.",
+      description:
+        "Read an allowed UTF-8 file (optionally bounded by startLine and endLine) from the fixed workspace.",
       inputSchema: {
         type: "object",
         properties: {
           path: { type: "string" },
           maxBytes: { type: "integer", minimum: 0 },
+          startLine: { type: "integer", minimum: 1 },
+          endLine: { type: "integer", minimum: 1 },
         },
         required: ["path"],
         additionalProperties: false,
       },
       async execute(input) {
-        return readWorkspaceFile(input as { path: string; maxBytes?: number });
+        return readWorkspaceFile(
+          input as {
+            path: string;
+            maxBytes?: number;
+            startLine?: number;
+            endLine?: number;
+          },
+          workspaceRoot,
+        );
+      },
+    },
+    {
+      name: "search_workspace",
+      description:
+        "Search allowed UTF-8 text files in the fixed workspace for a literal query string.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: { type: "string", minLength: 1 },
+          path: { type: "string" },
+          maxMatches: { type: "integer", minimum: 0 },
+          caseSensitive: { type: "boolean" },
+        },
+        required: ["query"],
+        additionalProperties: false,
+      },
+      async execute(input) {
+        return searchWorkspaceFiles(
+          input as {
+            query: string;
+            path?: string;
+            maxMatches?: number;
+            caseSensitive?: boolean;
+          },
+          workspaceRoot,
+        );
       },
     },
   ];
+}
+
+function reportWorkerDiagnostic(error: unknown, apiKey: string): void {
+  const errName = error instanceof Error ? error.name : "Error";
+  const errCode =
+    error instanceof Error &&
+    "code" in error &&
+    typeof (error as { code?: unknown }).code === "string"
+      ? (error as { code: string }).code
+      : undefined;
+  const rawLabel = errCode ? `${errName} (${errCode})` : errName;
+  const safeLabel = redactDiagnosticValue(rawLabel, apiKey);
+  process.stderr.write(`[portal-nkl-deepseek] worker error: ${safeLabel}\n`);
+}
+
+function redactDiagnosticValue(value: string, apiKey: string): string {
+  let redacted = apiKey ? value.replaceAll(apiKey, "[redacted]") : value;
+  redacted = redacted.replace(
+    /\b(?:sk|rk|key|token|secret)[-_][A-Za-z0-9._-]{8,}\b/gi,
+    "[redacted]",
+  );
+  return redacted.replace(/\bBearer\s+[A-Za-z0-9._~-]+\b/gi, "Bearer [redacted]");
 }
 
 function normalizeResult(result: DeepSeekTaskResult | AgentResult): DeepSeekTaskResult {

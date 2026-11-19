@@ -1,10 +1,9 @@
-import type { DeepSeekMcpConfig } from "./deepseek-mcp-config.js";
+import type { DeepSeekTaskResult } from "./deepseek-mcp-worker.js";
 import {
-  runDeepSeekTask,
-  type DeepSeekTaskResult,
-  type WorkerSession,
-  type WorkerSessionOptions,
-} from "./deepseek-mcp-worker.js";
+  runDirectOpenAiTask,
+  type DirectWorkerConfig,
+  type DirectWorkerDependencies,
+} from "./nkl-openai-worker.js";
 import type { NklRole, NklRouterConfig } from "./nkl-router-config.js";
 import { loadNklRouterConfig } from "./nkl-router-config.js";
 
@@ -29,11 +28,15 @@ export interface NklRoleResult {
 
 export interface RouterRunnerDependencies {
   config?: NklRouterConfig;
+  modelOverride?: string;
   deadlineMs?: number;
-  createSession?: (
-    options: WorkerSessionOptions,
+  maxIterations?: number;
+  fetchImpl?: typeof fetch;
+  runDirectTask?: (
     task: string,
-  ) => Promise<WorkerSession> | WorkerSession;
+    config: DirectWorkerConfig,
+    deps?: DirectWorkerDependencies,
+  ) => Promise<DeepSeekTaskResult>;
 }
 
 export async function runNklRoleTask(
@@ -44,17 +47,17 @@ export async function runNklRoleTask(
   const config =
     deps.config ?? loadNklRouterConfig(process.env, process.cwd());
   const boundedPrompt = boundText(prompt, MAX_ROLE_PROMPT_CHARS);
-  const roleConfig: DeepSeekMcpConfig = {
-    workspaceRoot: config.cline.workspaceRoot,
-    providerId: config.router.providerId,
-    modelId: config.router.models[role],
-    apiKey: config.router.apiKey,
+  const directConfig: DirectWorkerConfig = {
+    workspaceRoot: config.workspaceRoot,
     baseUrl: config.router.baseUrl,
+    apiKey: config.router.apiKey,
+    modelId: deps.modelOverride?.trim() || config.router.models[role],
   };
-  const result = await runDeepSeekTask(boundedPrompt, {
-    config: roleConfig,
+  const runDirectTask = deps.runDirectTask ?? runDirectOpenAiTask;
+  const result = await runDirectTask(boundedPrompt, directConfig, {
     deadlineMs: deps.deadlineMs,
-    createSession: deps.createSession,
+    maxIterations: deps.maxIterations,
+    fetchImpl: deps.fetchImpl,
   });
 
   return normalizeRoleResult(role, result, config.router.apiKey);

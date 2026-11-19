@@ -1,18 +1,19 @@
+import { realpathSync, statSync } from "node:fs";
 import type { DeepSeekMcpConfig } from "./deepseek-mcp-config.js";
-import { loadDeepSeekMcpConfig } from "./deepseek-mcp-config.js";
 
 export type NklRole = "orchestrator" | "worker" | "reviewer";
 
 export interface NklRouterConfig {
-  cline: DeepSeekMcpConfig;
+  workspaceRoot: string;
+  cline?: DeepSeekMcpConfig;
   router: {
     providerId: string;
     baseUrl: string;
     apiKey: string;
     models: Record<NklRole, string>;
-    maxWorkers: 3;
+    maxWorkers: 1 | 2 | 3;
     reviewerRequired: true;
-    retryLimit: 1;
+    retryLimit: 0 | 1;
   };
 }
 
@@ -20,11 +21,14 @@ export function loadNklRouterConfig(
   env: NodeJS.ProcessEnv,
   workspaceRoot: string,
 ): NklRouterConfig {
-  let cline: DeepSeekMcpConfig;
+  let canonicalWorkspaceRoot: string;
   try {
-    cline = loadDeepSeekMcpConfig(env, workspaceRoot);
-  } catch (error) {
-    throw redactNklConfigError(error);
+    canonicalWorkspaceRoot = realpathSync(workspaceRoot);
+    if (!statSync(canonicalWorkspaceRoot).isDirectory()) {
+      throw new Error("not a directory");
+    }
+  } catch {
+    throw configurationError("workspace root is not readable");
   }
 
   const apiKey = requiredValue(env.NINE_ROUTER_API_KEY, "NINE_ROUTER_API_KEY");
@@ -39,29 +43,33 @@ export function loadNklRouterConfig(
     );
   }
 
-  const maxWorkers = boundedExactValue<3>(
+  const maxWorkers = boundedRangeValue<1 | 2 | 3>(
     env.NINE_ROUTER_MAX_WORKERS,
     "NINE_ROUTER_MAX_WORKERS",
+    1,
+    3,
     3,
   );
-  const retryLimit = boundedExactValue<1>(
+  const retryLimit = boundedRangeValue<0 | 1>(
     env.NINE_ROUTER_RETRY_LIMIT,
     "NINE_ROUTER_RETRY_LIMIT",
+    0,
+    1,
     1,
   );
 
   return {
-    cline,
+    workspaceRoot: canonicalWorkspaceRoot,
     router: {
       providerId:
         env.NINE_ROUTER_PROVIDER_ID?.trim() ||
-        cline.providerId ||
         "openai-compatible",
       baseUrl,
       apiKey,
       models: {
         orchestrator: modelValue(
-          env.NINE_ROUTER_ORCHESTRATOR_MODEL,
+          env.NINE_ROUTER_ORCHESTRATOR_MODEL?.trim() ||
+            env.NINE_ROUTER_ORQUESTRADOR_MODEL?.trim(),
           "NINE_ROUTER_ORCHESTRATOR_MODEL",
           "NKL-ORQUESTRADOR",
         ),
@@ -114,18 +122,22 @@ function modelValue(
   return trimmed;
 }
 
-function boundedExactValue<T extends 3 | 1>(
+function boundedRangeValue<T extends number>(
   value: string | undefined,
   name: string,
-  expected: T,
+  min: number,
+  max: number,
+  fallback: T,
 ): T {
   if (value === undefined || value.trim() === "") {
-    return expected;
+    return fallback;
   }
-  if (!/^\d+$/.test(value.trim()) || Number(value) !== expected) {
-    throw configurationError(`${name} must be ${expected}`);
+  const trimmed = value.trim();
+  const parsed = Number(trimmed);
+  if (!/^\d+$/.test(trimmed) || !Number.isInteger(parsed) || parsed < min || parsed > max) {
+    throw configurationError(`${name} must be between ${min} and ${max}`);
   }
-  return expected;
+  return parsed as T;
 }
 
 function configurationError(message: string): Error {

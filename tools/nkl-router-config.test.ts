@@ -13,12 +13,8 @@ const routerSecret = "router-secret-that-must-not-leak";
 function validEnv(): NodeJS.ProcessEnv {
   return {
     NODE_ENV: "test",
-    CLINE_API_KEY: "cline-test-key",
-    CLINE_MODEL_ID: "cline-model",
-    CLINE_PROVIDER_ID: "openai-compatible",
-    CLINE_BASE_URL: "http://localhost:20128/dashboard",
     NINE_ROUTER_API_KEY: routerSecret,
-    NINE_ROUTER_BASE_URL: "http://localhost:20128/dashboard",
+    NINE_ROUTER_BASE_URL: "http://127.0.0.1:20128/v1",
     NINE_ROUTER_PROVIDER_ID: "openai-compatible",
     NINE_ROUTER_ORCHESTRATOR_MODEL: "NKL-ORQUESTRADOR",
     NINE_ROUTER_WORKER_MODEL: "NKL-OPERARIOS",
@@ -27,11 +23,12 @@ function validEnv(): NodeJS.ProcessEnv {
   };
 }
 
-test("loads exact router roles and fixed safety defaults", () => {
+test("loads pure 9router configuration without any CLINE_* variables", () => {
   const config = loadNklRouterConfig(validEnv(), workspaceRoot);
 
+  assert.equal(config.cline, undefined);
   assert.equal(config.router.providerId, "openai-compatible");
-  assert.equal(config.router.baseUrl, "http://localhost:20128/dashboard");
+  assert.equal(config.router.baseUrl, "http://127.0.0.1:20128/v1");
   assert.equal(config.router.apiKey, routerSecret);
   assert.deepEqual(config.router.models, {
     orchestrator: "NKL-ORQUESTRADOR",
@@ -41,16 +38,26 @@ test("loads exact router roles and fixed safety defaults", () => {
   assert.equal(config.router.maxWorkers, 3);
   assert.equal(config.router.reviewerRequired, true);
   assert.equal(config.router.retryLimit, 1);
-  assert.equal(config.cline.modelId, "cline-model");
 });
 
-test("rejects partial Cline configuration", () => {
-  const env = validEnv();
-  delete env.CLINE_MODEL_ID;
+test("accepts both NINE_ROUTER_ORQUESTRADOR_MODEL and NINE_ROUTER_ORCHESTRATOR_MODEL", () => {
+  const ptEnv = validEnv();
+  delete ptEnv.NINE_ROUTER_ORCHESTRATOR_MODEL;
+  ptEnv.NINE_ROUTER_ORQUESTRADOR_MODEL = "NKL-ORQ-PT";
+  const ptConfig = loadNklRouterConfig(ptEnv, workspaceRoot);
+  assert.equal(ptConfig.router.models.orchestrator, "NKL-ORQ-PT");
 
+  const enEnv = validEnv();
+  enEnv.NINE_ROUTER_ORCHESTRATOR_MODEL = "NKL-ORQ-EN";
+  enEnv.NINE_ROUTER_ORQUESTRADOR_MODEL = "NKL-ORQ-PT";
+  const enConfig = loadNklRouterConfig(enEnv, workspaceRoot);
+  assert.equal(enConfig.router.models.orchestrator, "NKL-ORQ-EN");
+});
+
+test("rejects unreadable workspace root", () => {
   assert.throws(
-    () => loadNklRouterConfig(env, workspaceRoot),
-    /CLINE_MODEL_ID/,
+    () => loadNklRouterConfig(validEnv(), `${workspaceRoot}\\missing-dir`),
+    /workspace root is not readable/,
   );
 });
 
@@ -74,20 +81,36 @@ test("rejects a non-literal Alll alias", () => {
   );
 });
 
-test("rejects invalid concurrency and retry overrides", () => {
-  const env = validEnv();
-  env.NINE_ROUTER_MAX_WORKERS = "4";
-  assert.throws(
-    () => loadNklRouterConfig(env, workspaceRoot),
-    /NINE_ROUTER_MAX_WORKERS/,
-  );
+test("accepts bounded concurrency and retry values and rejects out-of-range overrides", () => {
+  for (const workers of ["1", "2", "3"]) {
+    const env = validEnv();
+    env.NINE_ROUTER_MAX_WORKERS = workers;
+    assert.equal(loadNklRouterConfig(env, workspaceRoot).router.maxWorkers, Number(workers));
+  }
 
-  const retryEnv = validEnv();
-  retryEnv.NINE_ROUTER_RETRY_LIMIT = "2";
-  assert.throws(
-    () => loadNklRouterConfig(retryEnv, workspaceRoot),
-    /NINE_ROUTER_RETRY_LIMIT/,
-  );
+  for (const invalidWorkers of ["0", "4", "abc"]) {
+    const env = validEnv();
+    env.NINE_ROUTER_MAX_WORKERS = invalidWorkers;
+    assert.throws(
+      () => loadNklRouterConfig(env, workspaceRoot),
+      /NINE_ROUTER_MAX_WORKERS/,
+    );
+  }
+
+  for (const retry of ["0", "1"]) {
+    const env = validEnv();
+    env.NINE_ROUTER_RETRY_LIMIT = retry;
+    assert.equal(loadNklRouterConfig(env, workspaceRoot).router.retryLimit, Number(retry));
+  }
+
+  for (const invalidRetry of ["2", "-1"]) {
+    const retryEnv = validEnv();
+    retryEnv.NINE_ROUTER_RETRY_LIMIT = invalidRetry;
+    assert.throws(
+      () => loadNklRouterConfig(retryEnv, workspaceRoot),
+      /NINE_ROUTER_RETRY_LIMIT/,
+    );
+  }
 });
 
 test("redacts secrets from configuration errors", () => {

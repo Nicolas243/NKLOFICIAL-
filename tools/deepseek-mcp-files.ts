@@ -1,4 +1,4 @@
-import { open, opendir, realpath, stat } from "node:fs/promises";
+import { lstat, open, opendir, realpath, stat } from "node:fs/promises";
 import { constants } from "node:fs";
 import type { Dir } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
@@ -8,6 +8,10 @@ const DEFAULT_MAX_ENTRIES = 200;
 const MAX_ENTRIES = 1_000;
 const DEFAULT_MAX_BYTES = 64 * 1024;
 const MAX_BYTES = 1024 * 1024;
+const DEFAULT_MAX_MATCHES = 50;
+const MAX_MATCHES = 200;
+const SEARCH_MAX_FILE_BYTES = 512 * 1024;
+const MAX_MATCH_TEXT_CHARS = 240;
 const HANDLE_BACKED_DIRECTORY_LISTING_ERROR =
   "Workspace directory listing requires a handle-backed directory API";
 
@@ -62,10 +66,13 @@ export async function resolveReadableWorkspacePath(
   return canonicalCandidate;
 }
 
-export async function listWorkspaceFiles(input: {
-  path?: string;
-  maxEntries?: number;
-}): Promise<{ files: string[]; truncated: boolean }> {
+export async function listWorkspaceFiles(
+  input: {
+    path?: string;
+    maxEntries?: number;
+  },
+  workspaceRootInput: string = process.cwd(),
+): Promise<{ files: string[]; truncated: boolean }> {
   const requestedPath = input.path ?? ".";
   const maxEntries = boundedLimit(
     input.maxEntries,
@@ -73,9 +80,12 @@ export async function listWorkspaceFiles(input: {
     MAX_ENTRIES,
     "maxEntries",
   );
-  const resolvedPath = await resolveReadableWorkspacePath(process.cwd(), requestedPath);
+  const resolvedPath = await resolveReadableWorkspacePath(
+    workspaceRootInput,
+    requestedPath,
+  );
   const workspaceRoot = await resolveRealpath(
-    process.cwd(),
+    workspaceRootInput,
     "Workspace root is not readable",
   );
   if (maxEntries === 0) {
@@ -83,6 +93,43 @@ export async function listWorkspaceFiles(input: {
   }
 
   try {
+    if (!usesHandleBackedDirectoryListing()) {
+      const targetStat = await lstat(resolvedPath);
+      if (targetStat.isSymbolicLink()) {
+        throw new Error("Workspace path is not a readable directory");
+      }
+      const canonicalTarget = await validateCurrentTarget(
+        resolvedPath,
+        workspaceRoot,
+        "Workspace path is not a readable directory",
+      );
+      if (targetStat.isFile()) {
+        const file = await openFileAtUse(canonicalTarget, workspaceRoot);
+        try {
+          return {
+            files: [workspaceRelativePath(workspaceRoot, canonicalTarget)],
+            truncated: false,
+          };
+        } finally {
+          await file.close();
+        }
+      }
+      if (!targetStat.isDirectory()) {
+        throw new Error("Workspace path is not a readable directory");
+      }
+
+      const files: string[] = [];
+      const visited = new Set<string>();
+      const truncated = await visitDirectoryWin32(
+        canonicalTarget,
+        workspaceRoot,
+        files,
+        maxEntries,
+        visited,
+      );
+      return { files, truncated };
+    }
+
     const files: string[] = [];
     const directory = await openDirectoryAtUse(resolvedPath, workspaceRoot);
     if (!directory) {
@@ -120,19 +167,43 @@ export async function listWorkspaceFiles(input: {
   }
 }
 
-export async function readWorkspaceFile(input: {
+export async function readWorkspaceFile(
+  input: {
+    path: string;
+    maxBytes?: number;
+    startLine?: number;
+    endLine?: number;
+  },
+  workspaceRootInput: string = process.cwd(),
+): Promise<{
   path: string;
-  maxBytes?: number;
-}): Promise<{ path: string; content: string; truncated: boolean }> {
+  content: string;
+  truncated: boolean;
+  startLine?: number;
+  endLine?: number;
+  totalLines?: number;
+}> {
   const maxBytes = boundedLimit(
     input.maxBytes,
     DEFAULT_MAX_BYTES,
     MAX_BYTES,
     "maxBytes",
   );
-  const resolvedPath = await resolveReadableWorkspacePath(process.cwd(), input.path);
+  const hasLineRange =
+    input.startLine !== undefined || input.endLine !== undefined;
+  const startLine = positiveLineNumber(input.startLine, "startLine");
+  const endLine = positiveLineNumber(input.endLine, "endLine");
+  const effectiveStart = startLine ?? 1;
+  if (endLine !== undefined && endLine < effectiveStart) {
+    throw new Error("endLine must be greater than or equal to startLine");
+  }
+
+  const resolvedPath = await resolveReadableWorkspacePath(
+    workspaceRootInput,
+    input.path,
+  );
   const workspaceRoot = await resolveRealpath(
-    process.cwd(),
+    workspaceRootInput,
     "Workspace root is not readable",
   );
 
@@ -143,18 +214,152 @@ export async function readWorkspaceFile(input: {
     throw new Error("Workspace file is not readable");
   }
   try {
-    const buffer = Buffer.alloc(maxBytes + 1);
+    const relativePath = workspaceRelativePath(workspaceRoot, resolvedPath);
+    if (!hasLineRange) {
+      const buffer = Buffer.alloc(maxBytes + 1);
+      const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
+      return {
+        path: relativePath,
+        content: buffer.subarray(0, Math.min(bytesRead, maxBytes)).toString("utf8"),
+        truncated: bytesRead > maxBytes,
+      };
+    }
+
+    const buffer = Buffer.alloc(MAX_BYTES + 1);
     const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
+    const fileTruncated = bytesRead > MAX_BYTES;
+    const rawText = buffer
+      .subarray(0, Math.min(bytesRead, MAX_BYTES))
+      .toString("utf8");
+    const lines = bytesRead === 0 ? [] : rawText.split(/\r?\n/);
+    const totalLines = lines.length;
+    const effectiveEnd = Math.min(endLine ?? totalLines, totalLines);
+    const sliced =
+      effectiveStart <= totalLines
+        ? lines.slice(effectiveStart - 1, effectiveEnd)
+        : [];
+    const actualEnd = sliced.length > 0 ? effectiveStart + sliced.length - 1 : 0;
+    const joined = sliced.join("\n");
+    const { content, exceeded: byteTruncated } = sliceUtf8ToMaxBytes(
+      joined,
+      maxBytes,
+    );
+
     return {
-      path: workspaceRelativePath(workspaceRoot, resolvedPath),
-      content: buffer.subarray(0, Math.min(bytesRead, maxBytes)).toString("utf8"),
-      truncated: bytesRead > maxBytes,
+      path: relativePath,
+      content,
+      truncated: fileTruncated || byteTruncated,
+      startLine: effectiveStart,
+      endLine: actualEnd,
+      totalLines,
     };
   } catch {
     throw new Error("Workspace file is not readable");
   } finally {
     await file.close();
   }
+}
+
+export interface WorkspaceSearchMatch {
+  path: string;
+  line: number;
+  text: string;
+}
+
+export async function searchWorkspaceFiles(
+  input: {
+    query: string;
+    path?: string;
+    maxMatches?: number;
+    caseSensitive?: boolean;
+  },
+  workspaceRootInput: string = process.cwd(),
+): Promise<{ matches: WorkspaceSearchMatch[]; truncated: boolean }> {
+  if (typeof input.query !== "string" || input.query.trim().length === 0) {
+    throw new Error("query must be a non-empty string");
+  }
+
+  const maxMatches = boundedLimit(
+    input.maxMatches,
+    DEFAULT_MAX_MATCHES,
+    MAX_MATCHES,
+    "maxMatches",
+  );
+  if (maxMatches === 0) {
+    return { matches: [], truncated: true };
+  }
+
+  const listed = await listWorkspaceFiles(
+    { path: input.path ?? ".", maxEntries: MAX_ENTRIES },
+    workspaceRootInput,
+  );
+  const workspaceRoot = await resolveRealpath(
+    workspaceRootInput,
+    "Workspace root is not readable",
+  );
+  const caseSensitive = input.caseSensitive === true;
+  const needle = caseSensitive ? input.query : input.query.toLowerCase();
+  const matches: WorkspaceSearchMatch[] = [];
+  const buffer = Buffer.alloc(SEARCH_MAX_FILE_BYTES);
+  let matchTruncated = false;
+
+  for (const relativeFilePath of listed.files) {
+    let resolvedFilePath: string;
+    try {
+      resolvedFilePath = await resolveReadableWorkspacePath(
+        workspaceRoot,
+        relativeFilePath,
+      );
+    } catch {
+      continue;
+    }
+
+    let file;
+    try {
+      file = await openFileAtUse(resolvedFilePath, workspaceRoot);
+    } catch {
+      continue;
+    }
+
+    try {
+      const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
+      const fileBytes = buffer.subarray(0, bytesRead);
+      if (fileBytes.includes(0)) {
+        continue;
+      }
+
+      const lines = fileBytes.toString("utf8").split(/\r?\n/);
+      for (let index = 0; index < lines.length; index += 1) {
+        const lineText = lines[index] ?? "";
+        const haystack = caseSensitive ? lineText : lineText.toLowerCase();
+        if (!haystack.includes(needle)) {
+          continue;
+        }
+        if (matches.length >= maxMatches) {
+          matchTruncated = true;
+          break;
+        }
+        matches.push({
+          path: relativeFilePath,
+          line: index + 1,
+          text: lineText.trim().slice(0, MAX_MATCH_TEXT_CHARS),
+        });
+      }
+    } catch {
+      continue;
+    } finally {
+      await file.close();
+    }
+
+    if (matchTruncated) {
+      break;
+    }
+  }
+
+  return {
+    matches,
+    truncated: matchTruncated || listed.truncated,
+  };
 }
 
 function boundedLimit(
@@ -296,6 +501,135 @@ async function openDirectoryCursor(
     throw new Error(HANDLE_BACKED_DIRECTORY_LISTING_ERROR);
   }
   return opendir(handlePath, { bufferSize: 1 });
+}
+
+function usesHandleBackedDirectoryListing(): boolean {
+  return (
+    process.platform === "linux" ||
+    process.platform === "darwin" ||
+    process.platform.endsWith("bsd")
+  );
+}
+
+function positiveLineNumber(
+  value: number | undefined,
+  name: string,
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return value;
+}
+
+function sliceUtf8ToMaxBytes(
+  value: string,
+  maxBytes: number,
+): { content: string; exceeded: boolean } {
+  const buffer = Buffer.from(value, "utf8");
+  if (buffer.byteLength <= maxBytes) {
+    return { content: value, exceeded: false };
+  }
+  let end = maxBytes;
+  while (end > 0 && (buffer[end]! & 0xc0) === 0x80) {
+    end -= 1;
+  }
+  return {
+    content: buffer.subarray(0, end).toString("utf8"),
+    exceeded: true,
+  };
+}
+
+async function visitDirectoryWin32(
+  dirPath: string,
+  workspaceRoot: string,
+  files: string[],
+  maxEntries: number,
+  visited: Set<string>,
+): Promise<boolean> {
+  const canonicalDir = await validateCurrentTarget(
+    dirPath,
+    workspaceRoot,
+    "Workspace directory is not readable",
+  );
+  if (visited.has(canonicalDir)) {
+    return false;
+  }
+  visited.add(canonicalDir);
+
+  const directory = await opendir(canonicalDir, { bufferSize: 16 });
+  try {
+    while (true) {
+      if (files.length >= maxEntries) {
+        return true;
+      }
+      const entry = await directory.read();
+      if (!entry) {
+        return false;
+      }
+      await validateCurrentTarget(
+        canonicalDir,
+        workspaceRoot,
+        "Workspace directory is no longer readable",
+      );
+
+      const entryPath = path.join(canonicalDir, entry.name);
+      const relativeEntryPath = path.relative(workspaceRoot, entryPath);
+      if (isBlockedPath(relativeEntryPath) || entry.isSymbolicLink()) {
+        continue;
+      }
+
+      let entryStat;
+      let canonicalEntry: string;
+      try {
+        entryStat = await lstat(entryPath);
+        if (entryStat.isSymbolicLink()) {
+          continue;
+        }
+        canonicalEntry = await validateCurrentTarget(
+          entryPath,
+          workspaceRoot,
+          "Workspace path is not readable",
+        );
+      } catch {
+        continue;
+      }
+
+      if (entryStat.isDirectory()) {
+        const truncated = await visitDirectoryWin32(
+          canonicalEntry,
+          workspaceRoot,
+          files,
+          maxEntries,
+          visited,
+        );
+        if (truncated) {
+          return true;
+        }
+        continue;
+      }
+
+      if (!entryStat.isFile()) {
+        continue;
+      }
+
+      let file;
+      try {
+        file = await openFileAtUse(canonicalEntry, workspaceRoot);
+      } catch {
+        continue;
+      }
+      await file.close();
+      files.push(workspaceRelativePath(workspaceRoot, canonicalEntry));
+      if (files.length >= maxEntries) {
+        return true;
+      }
+    }
+  } finally {
+    await directory.close();
+  }
 }
 
 function directoryHandlePath(anchor: FileHandle): string | undefined {

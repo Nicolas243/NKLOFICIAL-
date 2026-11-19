@@ -3,12 +3,13 @@ import {
   runNklRoleTask,
   type NklEvidence,
   type NklRoleResult,
+  type RouterRunnerDependencies,
 } from "./nkl-router-runner.js";
 
 const WORKER_PROMPTS = [
-  "Inspect the task from the implementation and code-structure perspective. Cite only relevant paths and line ranges.",
-  "Inspect the task from the behavior, user-flow, and regression perspective. Cite only relevant paths and line ranges.",
-  "Inspect the task from the safety, configuration, and integration perspective. Cite only relevant paths and line ranges.",
+  "Inspect the task from the implementation and code-structure perspective. Cite only relevant paths and line ranges. Format key citations as: EVIDENCE: path:start-end | brief note.",
+  "Inspect the task from the behavior, user-flow, and regression perspective. Cite only relevant paths and line ranges. Format key citations as: EVIDENCE: path:start-end | brief note.",
+  "Inspect the task from the safety, configuration, and integration perspective. Cite only relevant paths and line ranges. Format key citations as: EVIDENCE: path:start-end | brief note.",
 ] as const;
 
 export interface NklOrchestrationResult {
@@ -22,6 +23,10 @@ export interface NklOrchestrationResult {
 
 export interface OrchestratorDependencies {
   config: NklRouterConfig;
+  deadlineMs?: number;
+  maxIterations?: number;
+  fetchImpl?: typeof fetch;
+  runDirectTask?: RouterRunnerDependencies["runDirectTask"];
   runRole?: (role: NklRole, prompt: string) => Promise<NklRoleResult>;
 }
 
@@ -32,7 +37,13 @@ export async function orchestrateNklTask(
   const runRole =
     deps.runRole ??
     ((role: NklRole, prompt: string) =>
-      runNklRoleTask(role, prompt, { config: deps.config }));
+      runNklRoleTask(role, prompt, {
+        config: deps.config,
+        deadlineMs: deps.deadlineMs,
+        maxIterations: deps.maxIterations,
+        fetchImpl: deps.fetchImpl,
+        runDirectTask: deps.runDirectTask,
+      }));
   const coordinator = await runRole(
     "orchestrator",
     `Create a compact plan for this repository task. Identify the objective, likely files, worker questions, and review criteria. Do not edit files or include file contents.\n\nTask: ${task}`,
@@ -56,12 +67,14 @@ export async function orchestrateNklTask(
         return firstAttempt;
       }
 
-      const retry = await runRole(
-        "worker",
-        `${prompt}\n\nRetry once using a different eligible route. Return only compact findings and citations.`,
-      );
-      if (retry.status === "completed") {
-        return retry;
+      if (deps.config.router.retryLimit >= 1) {
+        const retry = await runRole(
+          "worker",
+          `${prompt}\n\nRetry once using a different eligible route. Return only compact findings and citations.`,
+        );
+        if (retry.status === "completed") {
+          return retry;
+        }
       }
 
       fallbackUsed = true;
@@ -70,7 +83,10 @@ export async function orchestrateNklTask(
         status: "fallback",
         text: "Coordinator will complete the remaining worker analysis.",
         evidence: [],
-        uncertainty: "The worker failed after one retry.",
+        uncertainty:
+          deps.config.router.retryLimit >= 1
+            ? "The worker failed after one retry."
+            : "The worker failed without retries enabled.",
       } satisfies NklRoleResult;
     }),
   );

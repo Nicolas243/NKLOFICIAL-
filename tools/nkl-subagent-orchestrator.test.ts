@@ -9,13 +9,7 @@ import type { NklRole, NklRouterConfig } from "./nkl-router-config.js";
 import type { NklRoleResult } from "./nkl-router-runner.js";
 
 const config: NklRouterConfig = {
-  cline: {
-    workspaceRoot: "C:\\workspace\\portal-nkl",
-    providerId: "openai-compatible",
-    modelId: "cline-coordinator",
-    apiKey: "cline-secret",
-    baseUrl: "https://cline.invalid/v1",
-  },
+  workspaceRoot: "C:\\workspace\\portal-nkl",
   router: {
     providerId: "openai-compatible",
     baseUrl: "https://router.invalid/v1",
@@ -130,4 +124,37 @@ test("unavailable mandatory reviewer makes orchestration incomplete", async () =
   assert.equal(result.status, "incomplete");
   assert.equal(result.review.status, "failed");
   assert.equal(result.fallbackUsed, false);
+});
+
+test("orchestrator skips retries when retryLimit is 0", async () => {
+  let workerAttempts = 0;
+  const zeroRetryConfig: NklRouterConfig = {
+    ...config,
+    router: {
+      ...config.router,
+      retryLimit: 0,
+    },
+  };
+  const result = await orchestrateNklTask("analyze without retries", {
+    config: zeroRetryConfig,
+    runRole: async (role) => {
+      if (role === "orchestrator") {
+        return completed(role, "PLAN: inspect");
+      }
+      if (role === "worker") {
+        workerAttempts += 1;
+        return {
+          role,
+          status: "failed",
+          text: "worker failed",
+          evidence: [],
+        };
+      }
+      return completed(role, "Review recorded failure.");
+    },
+  });
+
+  assert.equal(workerAttempts, 3);
+  assert.equal(result.fallbackUsed, true);
+  assert.equal(result.workers.every((worker) => worker.status === "fallback"), true);
 });

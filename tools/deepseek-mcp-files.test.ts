@@ -15,6 +15,7 @@ import {
   listWorkspaceFiles,
   readWorkspaceFile,
   resolveReadableWorkspacePath,
+  searchWorkspaceFiles,
 } from "./deepseek-mcp-files";
 
 const fixtureRoot = path.join(
@@ -49,6 +50,14 @@ before(async () => {
     writeFile(path.join(fixtureRoot, "src", "second.ts"), "export const second = 2;\n"),
     writeFile(path.join(fixtureRoot, "src", "third.ts"), "export const third = 3;\n"),
     writeFile(path.join(fixtureRoot, "src", "large.txt"), "0123456789"),
+    writeFile(
+      path.join(fixtureRoot, "src", "multiline.ts"),
+      "line one ALPHA\nline two alpha\nline three beta\nline four ALPHA",
+    ),
+    writeFile(
+      path.join(fixtureRoot, "src", "binary.bin"),
+      Buffer.from([0x41, 0x00, 0x42, 0x41, 0x4c, 0x50, 0x48, 0x41]),
+    ),
     writeFile(path.join(fixtureRoot, ".env.local"), "CLINE_API_KEY=not-a-real-secret\n"),
     writeFile(path.join(fixtureRoot, ".git", "config"), "ignored"),
     writeFile(path.join(fixtureRoot, "node_modules", "package.json"), "ignored"),
@@ -143,26 +152,22 @@ test("does not expose the API key in configuration errors", () => {
 });
 
 test("lists and reads a relative source path", async () => {
-  if (supportsHandleBackedDirectoryListing()) {
-    const listed = await listWorkspaceFiles({
-      path: path.join(fixtureRelativeRoot, "src"),
-    });
-    assert.equal(listed.truncated, false);
-    assert.equal(
-      listed.files.includes(
-        path
-          .join(fixtureRelativeRoot, "src", "source.ts")
-          .split(path.sep)
-          .join("/"),
-      ),
-      true,
-    );
-  } else {
-    await assert.rejects(
-      listWorkspaceFiles({ path: path.join(fixtureRelativeRoot, "src") }),
-      /handle-backed directory API/,
-    );
-  }
+  const listed = await listWorkspaceFiles({
+    path: path.join(fixtureRelativeRoot, "src"),
+  });
+  assert.equal(listed.truncated, false);
+  assert.equal(
+    listed.files.includes(
+      path
+        .join(fixtureRelativeRoot, "src", "source.ts")
+        .split(path.sep)
+        .join("/"),
+    ),
+    true,
+  );
+
+  const explicitRootListed = await listWorkspaceFiles({ path: "src" }, fixtureRoot);
+  assert.equal(explicitRootListed.files.includes("src/source.ts"), true);
 
   const result = await readWorkspaceFile({
     path: path.join(fixtureRelativeRoot, "src", "source.ts"),
@@ -202,13 +207,6 @@ test("rejects symlink escapes", async (t) => {
 });
 
 test("does not list entries exposed through a symlinked directory", async (t) => {
-  if (!supportsHandleBackedDirectoryListing()) {
-    await assert.rejects(
-      listWorkspaceFiles({ path: fixtureRelativeRoot }),
-      /handle-backed directory API/,
-    );
-    return;
-  }
   if (!symlinkAvailable) {
     t.skip("symbolic links are unavailable in this environment");
     return;
@@ -237,25 +235,18 @@ test("rejects sensitive workspace paths", async () => {
 });
 
 test("sets truncated when directory and file limits are reached", async () => {
-  if (supportsHandleBackedDirectoryListing()) {
-    const empty = await listWorkspaceFiles({
-      path: path.join(fixtureRelativeRoot, "src"),
-      maxEntries: 0,
-    });
-    assert.deepEqual(empty, { files: [], truncated: true });
+  const empty = await listWorkspaceFiles({
+    path: path.join(fixtureRelativeRoot, "src"),
+    maxEntries: 0,
+  });
+  assert.deepEqual(empty, { files: [], truncated: true });
 
-    const listed = await listWorkspaceFiles({
-      path: path.join(fixtureRelativeRoot, "src"),
-      maxEntries: 1,
-    });
-    assert.equal(listed.files.length, 1);
-    assert.equal(listed.truncated, true);
-  } else {
-    await assert.rejects(
-      listWorkspaceFiles({ path: path.join(fixtureRelativeRoot, "src") }),
-      /handle-backed directory API/,
-    );
-  }
+  const listed = await listWorkspaceFiles({
+    path: path.join(fixtureRelativeRoot, "src"),
+    maxEntries: 1,
+  });
+  assert.equal(listed.files.length, 1);
+  assert.equal(listed.truncated, true);
 
   const result = await readWorkspaceFile({
     path: path.join(fixtureRelativeRoot, "src", "large.txt"),
@@ -265,25 +256,105 @@ test("sets truncated when directory and file limits are reached", async () => {
   assert.equal(result.truncated, true);
 });
 
-test("refuses directory listing when handle-backed APIs are unavailable", async () => {
+test("lists files safely when running on win32", async () => {
   await withPlatform("win32", async () => {
-    await assert.rejects(
-      listWorkspaceFiles({ path: fixtureRelativeRoot }),
-      /handle-backed directory API/,
+    const listed = await listWorkspaceFiles({ path: "." }, fixtureRoot);
+    assert.equal(listed.files.includes("src/source.ts"), true);
+    assert.equal(
+      listed.files.some(
+        (file) =>
+          file.includes(".env") ||
+          file.includes(".git") ||
+          file.includes("node_modules") ||
+          file.includes(".next") ||
+          file.includes("outside.txt"),
+      ),
+      false,
     );
   });
 });
 
+test("reads a bounded line range with metadata and validates bounds", async () => {
+  const ranged = await readWorkspaceFile(
+    {
+      path: "src/multiline.ts",
+      startLine: 2,
+      endLine: 3,
+    },
+    fixtureRoot,
+  );
+  assert.deepEqual(ranged, {
+    path: "src/multiline.ts",
+    content: "line two alpha\nline three beta",
+    truncated: false,
+    startLine: 2,
+    endLine: 3,
+    totalLines: 4,
+  });
+
+  const byteCapped = await readWorkspaceFile(
+    {
+      path: "src/multiline.ts",
+      startLine: 1,
+      endLine: 4,
+      maxBytes: 14,
+    },
+    fixtureRoot,
+  );
+  assert.equal(byteCapped.content, "line one ALPHA");
+  assert.equal(byteCapped.truncated, true);
+  assert.equal(byteCapped.totalLines, 4);
+
+  await assert.rejects(
+    readWorkspaceFile({ path: "src/multiline.ts", startLine: 0 }, fixtureRoot),
+    /positive integer/,
+  );
+  await assert.rejects(
+    readWorkspaceFile(
+      { path: "src/multiline.ts", startLine: 3, endLine: 2 },
+      fixtureRoot,
+    ),
+    /endLine must be greater than or equal to startLine/,
+  );
+});
+
+test("searches UTF-8 workspace files while excluding blocked and binary files", async () => {
+  const insensitive = await searchWorkspaceFiles(
+    { query: "ALPHA" },
+    fixtureRoot,
+  );
+  assert.equal(insensitive.truncated, false);
+  assert.deepEqual(insensitive.matches, [
+    { path: "src/multiline.ts", line: 1, text: "line one ALPHA" },
+    { path: "src/multiline.ts", line: 2, text: "line two alpha" },
+    { path: "src/multiline.ts", line: 4, text: "line four ALPHA" },
+  ]);
+
+  const sensitive = await searchWorkspaceFiles(
+    { query: "ALPHA", caseSensitive: true },
+    fixtureRoot,
+  );
+  assert.deepEqual(sensitive.matches, [
+    { path: "src/multiline.ts", line: 1, text: "line one ALPHA" },
+    { path: "src/multiline.ts", line: 4, text: "line four ALPHA" },
+  ]);
+
+  const capped = await searchWorkspaceFiles(
+    { query: "ALPHA", maxMatches: 2 },
+    fixtureRoot,
+  );
+  assert.equal(capped.matches.length, 2);
+  assert.equal(capped.truncated, true);
+
+  const blockedSearch = await searchWorkspaceFiles(
+    { query: "not-a-real-secret" },
+    fixtureRoot,
+  );
+  assert.deepEqual(blockedSearch.matches, []);
+});
+
 function cLineEnv(values: Record<string, string>): NodeJS.ProcessEnv {
   return values as NodeJS.ProcessEnv;
-}
-
-function supportsHandleBackedDirectoryListing(): boolean {
-  return (
-    process.platform === "linux" ||
-    process.platform === "darwin" ||
-    process.platform.endsWith("bsd")
-  );
 }
 
 async function withPlatform(

@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import {
+  askNklWorkerInputSchema,
   createDeepSeekMcpServer,
   createDeepSeekToolHandler,
   delegateToDeepSeekInputSchema,
@@ -27,7 +28,7 @@ const config = {
 };
 
 const nklConfig: NklRouterConfig = {
-  cline: config,
+  workspaceRoot: "C:\\workspace\\portal-nkl",
   router: {
     providerId: "openai-compatible",
     baseUrl: "https://router.invalid/v1",
@@ -43,12 +44,28 @@ const nklConfig: NklRouterConfig = {
   },
 };
 
-test("delegate_to_deepseek requires a non-empty task", () => {
+test("delegate_to_deepseek and ask_nkl_worker require a non-empty task", () => {
   assert.throws(() => delegateToDeepSeekInputSchema.parse({ task: "" }));
   assert.throws(() => delegateToDeepSeekInputSchema.parse({ task: "   " }));
   assert.deepEqual(
-    delegateToDeepSeekInputSchema.parse({ task: "inspect the repository" }),
-    { task: "inspect the repository" },
+    delegateToDeepSeekInputSchema.parse({
+      task: "inspect the repository",
+      mode: "single",
+      role: "worker",
+      model: "NKL-CUSTOM",
+    }),
+    {
+      task: "inspect the repository",
+      mode: "single",
+      role: "worker",
+      model: "NKL-CUSTOM",
+    },
+  );
+
+  assert.throws(() => askNklWorkerInputSchema.parse({ task: "" }));
+  assert.deepEqual(
+    askNklWorkerInputSchema.parse({ task: "check file", model: "NKL-FAST" }),
+    { task: "check file", model: "NKL-FAST" },
   );
 });
 
@@ -198,18 +215,20 @@ test("ClineCore lifecycle waits for the asynchronous agent completion event", as
   let startInput:
     | {
         config: {
+          mode: string;
+          maxIterations: number;
           enableTools: boolean;
           enableSpawnAgent: boolean;
           enableAgentTeams: boolean;
-          enableEditing: boolean;
-          enableCommands: boolean;
-          enableWeb: boolean;
-          enableSkills: boolean;
-          enableMcp: boolean;
           disableMcpSettingsTools: boolean;
           toolPolicies: Record<string, { enabled: boolean }>;
         };
-        localRuntime: { extraTools: unknown[] };
+        localRuntime: {
+          extraTools: Array<{ name: string }>;
+          configExtensions: unknown[];
+        };
+        plugins: Record<string, { enabled: boolean }>;
+        mode: string;
       }
     | undefined;
   const result = await runDeepSeekTask("inspect the repository", {
@@ -253,21 +272,82 @@ test("ClineCore lifecycle waits for the asynchronous agent completion event", as
 
   assert.equal(disposed, true);
   assert.ok(startInput);
+  assert.equal(startInput.config.mode, "plan");
+  assert.equal(startInput.config.maxIterations, 12);
   assert.equal(startInput.config.enableTools, true);
   assert.equal(startInput.config.enableSpawnAgent, false);
   assert.equal(startInput.config.enableAgentTeams, false);
-  assert.equal(startInput.config.enableEditing, false);
-  assert.equal(startInput.config.enableCommands, false);
-  assert.equal(startInput.config.enableWeb, false);
-  assert.equal(startInput.config.enableSkills, false);
-  assert.equal(startInput.config.enableMcp, false);
   assert.equal(startInput.config.disableMcpSettingsTools, true);
+  assert.deepEqual(startInput.localRuntime.configExtensions, []);
+  assert.deepEqual(startInput.plugins, { "*": { enabled: false } });
+  assert.equal(startInput.mode, "subagent");
   assert.equal(startInput.config.toolPolicies.fetch_web_content.enabled, false);
   assert.equal(startInput.config.toolPolicies.ask_question.enabled, false);
   assert.equal(startInput.config.toolPolicies.tasks.enabled, false);
   assert.equal(startInput.config.toolPolicies.spawn_agent.enabled, false);
   assert.equal(startInput.config.toolPolicies.team_status.enabled, false);
-  assert.equal(startInput.localRuntime.extraTools.length, 2);
+  assert.deepEqual(
+    startInput.localRuntime.extraTools.map((tool) => tool.name),
+    ["list_workspace_files", "read_workspace_file", "search_workspace"],
+  );
+});
+
+test("ClineCore ignores recoverable error events and completes on done", async () => {
+  let listener:
+    | ((event: {
+        type: "agent_event";
+        payload: {
+          sessionId: string;
+          event: {
+            type: "done" | "error";
+            reason?: string;
+            text?: string;
+            recoverable?: boolean;
+          };
+        };
+      }) => void)
+    | undefined;
+
+  const result = await runDeepSeekTask("recover and complete", {
+    config,
+    createCore: async () => ({
+      subscribe(nextListener) {
+        listener = nextListener as typeof listener;
+        return () => {};
+      },
+      async start() {
+        setTimeout(() => {
+          listener?.({
+            type: "agent_event",
+            payload: {
+              sessionId: "session-rec",
+              event: {
+                type: "error",
+                recoverable: true,
+              },
+            },
+          });
+          listener?.({
+            type: "agent_event",
+            payload: {
+              sessionId: "session-rec",
+              event: {
+                type: "done",
+                reason: "completed",
+                text: "recovered cleanly",
+              },
+            },
+          });
+        }, 5);
+        return { sessionId: "session-rec" };
+      },
+      async abort() {},
+      async dispose() {},
+    }),
+  });
+
+  assert.equal(result.status, "completed");
+  assert.equal(result.text, "recovered cleanly");
 });
 
 test("worker uses a fixed local read-only Cline configuration", async () => {
@@ -287,16 +367,16 @@ test("worker uses a fixed local read-only Cline configuration", async () => {
 
   assert.equal(options?.backendMode, "local");
   assert.equal(options?.cwd, config.workspaceRoot);
+  assert.equal(options?.mode, "plan");
+  assert.equal(options?.maxIterations, 12);
   assert.equal(options?.enableSpawnAgent, false);
   assert.equal(options?.enableAgentTeams, false);
-  assert.equal(options?.enableEditing, false);
-  assert.equal(options?.enableCommands, false);
-  assert.equal(options?.enableWeb, false);
-  assert.equal(options?.enableSkills, false);
-  assert.equal(options?.enableMcp, false);
+  assert.deepEqual(options?.plugins, { "*": { enabled: false } });
+  assert.deepEqual(options?.configExtensions, []);
   assert.deepEqual(options?.extraTools.map((tool) => tool.name), [
     "list_workspace_files",
     "read_workspace_file",
+    "search_workspace",
   ]);
   assert.equal(options?.disableMcpSettingsTools, true);
   assert.equal(options?.toolPolicies.editor?.enabled, false);
@@ -449,7 +529,87 @@ test("combined handler serializes requests and startup detects partial router co
     hasNklRouterConfiguration({ NODE_ENV: "test", CLINE_API_KEY: "present" }),
     false,
   );
+  assert.equal(
+    hasNklRouterConfiguration({
+      NODE_ENV: "test",
+      NINE_ROUTER_ORCHESTRATOR_MODEL: "NKL-ORQUESTRADOR",
+    }),
+    true,
+  );
 
-  const server = createDeepSeekMcpServer({ config, nklConfig });
-  assert.ok(server);
+  const pureRouterServer = createDeepSeekMcpServer({
+    nklConfig,
+    listModels: async () => ({
+      status: "completed",
+      models: ["NKL-OPERARIOS", "NKL-ORQUESTRADOR"],
+    }),
+  });
+  assert.ok(pureRouterServer);
+});
+
+test("single-worker mode and model override run pure 9router without Cline or orchestration", async () => {
+  let orchestratorCalled = false;
+  let capturedRole: string | undefined;
+  let capturedPrompt: string | undefined;
+  let capturedModelOverride: string | undefined;
+
+  const handler = createDeepSeekToolHandler({
+    nklConfig,
+    runOrchestrator: async () => {
+      orchestratorCalled = true;
+      throw new Error("orchestrator must not run in single mode");
+    },
+    runRole: async (role, prompt, deps) => {
+      capturedRole = role;
+      capturedPrompt = prompt;
+      capturedModelOverride = deps?.modelOverride;
+      return {
+        role,
+        status: "completed",
+        text: `finding with ${nklConfig.router.apiKey}`,
+        evidence: [
+          {
+            path: "src/app/page.tsx",
+            lines: "1-10",
+            note: `secret=${nklConfig.router.apiKey}`,
+          },
+        ],
+      };
+    },
+  });
+
+  const result = await handler({
+    task: "check home page",
+    mode: "single",
+    role: "worker",
+  });
+
+  assert.equal(orchestratorCalled, false);
+  assert.equal(capturedRole, "worker");
+  assert.equal(capturedPrompt, "check home page");
+  assert.equal(capturedModelOverride, undefined);
+  assert.equal(result.isError, undefined);
+  assert.equal(JSON.stringify(result).includes(nklConfig.router.apiKey), false);
+
+  await handler({
+    task: "use custom combo",
+    model: "NKL-CUSTOM",
+  });
+  assert.equal(orchestratorCalled, false);
+  assert.equal(capturedModelOverride, "NKL-CUSTOM");
+
+  const failedHandler = createDeepSeekToolHandler({
+    nklConfig,
+    runRole: async (role) => ({
+      role,
+      status: "failed",
+      text: "9router task failed",
+      evidence: [],
+    }),
+  });
+  const failedResult = await failedHandler({
+    task: "check home page",
+    mode: "single",
+  });
+  assert.equal(failedResult.isError, true);
 });
