@@ -23,37 +23,93 @@ const CONTENT: Record<LanguageGuideSlug, {
 export function getLanguageGuideMetadata(slug: LanguageGuideSlug): Metadata {
   const content = CONTENT[slug];
   return {
-    title: `${content.title} | E-book Portal NKL`,
+    title: `${content.title} (Em breve) | E-book Portal NKL`,
     description: content.description,
     alternates: { canonical: absoluteSiteUrl(`/guias/${slug}`) },
   };
 }
 
-export function LanguageGuideSalesPage({ slug }: { slug: LanguageGuideSlug }) {
+export function LanguageGuideSalesPage({
+  slug,
+  comingSoon,
+}: {
+  slug: LanguageGuideSlug;
+  comingSoon?: boolean;
+}) {
   const content = CONTENT[slug];
   const offer = getLanguageEbookByOffer(content.offerVariant);
+  const isComingSoon = comingSoon ?? offer?.comingSoon ?? true;
+
   return (
     <main className="mx-auto max-w-5xl px-4 pb-16 pt-8 md:pt-14">
       <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-start">
         <section>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">E-book NKL · leitura no celular</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">E-book NKL · leitura no celular</p>
+            {isComingSoon && (
+              <span className="rounded-full border border-orange/40 bg-orange/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange">
+                Em breve
+              </span>
+            )}
+          </div>
           <h1 className="mt-4 font-playfair text-5xl font-bold leading-[1.02] md:text-7xl">{content.title}</h1>
           <p className="mt-6 text-lg leading-relaxed text-foreground/75">{content.description}</p>
           <div className="mt-7 rounded-2xl border border-border bg-income-surface p-5">
-            <p className="font-bold">Você vai encontrar:</p>
+            <p className="font-bold">{isComingSoon ? 'O que está sendo preparado na edição completa:' : 'Você vai encontrar:'}</p>
             <ul className="mt-4 space-y-3 text-sm">
               {content.topics.map((topic) => <li key={topic} className="flex gap-3"><span className="text-orange">✓</span><span>{topic}</span></li>)}
             </ul>
           </div>
-          <p className="mt-6 text-sm leading-relaxed text-foreground/65">São 100 lições, 500 exemplos traduzidos por cores, links de pronúncia, diálogos e ferramentas práticas. O material ensina possibilidades, não garante renda ou contratação.</p>
+          <p className="mt-6 text-sm leading-relaxed text-foreground/65">
+            {isComingSoon
+              ? 'A edição completa paga com 100 lições autorais e 500 exemplos traduzidos por cores está atualmente em produção editorial. Enquanto finalizamos o material completo, você já pode estudar gratuitamente pelo guia interativo do Portal NKL.'
+              : 'São 100 lições, 500 exemplos traduzidos por cores, links de pronúncia, diálogos e ferramentas práticas. O material ensina possibilidades, não garante renda ou contratação.'}
+          </p>
         </section>
         <aside className="rounded-2xl border border-orange/30 bg-income-surface p-6 shadow-[var(--card-shadow)] md:sticky md:top-24 md:p-8">
-          <p className="text-sm font-bold text-orange">E-book completo</p>
-          <p className="mt-3 font-playfair text-5xl font-bold">R$ 47</p>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/70">Pagamento único · PDF personalizado · acesso protegido</p>
-          <GuideCheckoutButton label="Comprar e receber o e-book" offerVariant={content.offerVariant} />
-          <Link href={`/guias/${slug}/ebook`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-5 py-3 text-sm font-bold hover:border-orange hover:text-orange">Abrir prévia paginada</Link>
-          <p className="mt-3 text-center text-xs leading-relaxed text-foreground/55">Pagamento processado pelo Stripe. O acesso é liberado após a confirmação.</p>
+          {isComingSoon ? (
+            <>
+              <div className="inline-flex items-center rounded-full border border-orange/40 bg-orange/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange">
+                Em breve · Em produção editorial
+              </div>
+              <p className="mt-4 font-playfair text-3xl font-bold">Edição completa de 100 lições em preparação</p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/75">
+                A edição paga de {offer?.language ?? slug} com 100 lições inéditas está passando por revisão editorial. O checkout de R$ 47 permanece desativado até a publicação final.
+              </p>
+              <div className="mt-5 flex flex-col gap-3">
+                <Link
+                  href={`/blog/aprender/${slug}`}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-orange px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-orange-dark"
+                >
+                  Estudar agora na página gratuita de {offer?.language ?? slug}
+                </Link>
+                <Link
+                  href={`/guias/${slug}/ebook`}
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-5 py-3 text-center text-sm font-bold transition hover:border-orange hover:text-orange"
+                >
+                  Ver prévia do formato do e-book
+                </Link>
+                <Link
+                  href="/guias/ingles"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-md border border-neon/40 bg-neon/5 px-5 py-3 text-center text-sm font-bold text-neon transition hover:border-neon"
+                >
+                  Conhecer o e-book disponível: Inglês para ganhar dinheiro
+                </Link>
+              </div>
+              <p className="mt-4 text-center text-xs leading-relaxed text-foreground/55">
+                Nenhuma cobrança é realizada para títulos com status Em breve.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-bold text-orange">E-book completo</p>
+              <p className="mt-3 font-playfair text-5xl font-bold">R$ 47</p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/70">Pagamento único · PDF personalizado · acesso protegido</p>
+              <GuideCheckoutButton label="Comprar e receber o e-book" offerVariant={content.offerVariant} />
+              <Link href={`/guias/${slug}/ebook`} className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-border px-5 py-3 text-sm font-bold hover:border-orange hover:text-orange">Abrir prévia paginada</Link>
+              <p className="mt-3 text-center text-xs leading-relaxed text-foreground/55">Pagamento processado pelo Stripe. O acesso é liberado após a confirmação.</p>
+            </>
+          )}
         </aside>
       </div>
       <div className="mt-10"><AffiliateDisclaimer /></div>

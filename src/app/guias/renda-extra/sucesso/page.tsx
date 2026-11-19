@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import type Stripe from 'stripe';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
@@ -6,7 +7,7 @@ import { guidePurchases, guideSubscriptions } from '@/db/schema';
 import { GuideAssetDownloads } from '@/components/sales/guide-asset-downloads';
 import { GuestGuideStatus } from '@/components/sales/guest-guide-status';
 import { GuidePurchaseAnalytics } from '@/components/sales/guide-purchase-analytics';
-import { getGuideAssetsForOffer, GUIDE_ASSETS } from '@/lib/guide-assets';
+import { getGuideAssetsForOffer } from '@/lib/guide-assets';
 import { getStripeClient } from '@/lib/stripe/server';
 import { createClient } from '@/lib/supabase/server';
 import { getLanguageEbookByOffer, isEnglishEbookOffer } from '@/lib/guide-offer';
@@ -32,12 +33,36 @@ type SuccessPageProps = {
   }>;
 };
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
+
+function parseGuestReference(reference: string): { kind: 'purchase' | 'subscription'; id: string } | null {
+  const match = /^guide_(purchase|subscription):(.+)$/u.exec(reference);
+  if (!match || !UUID_PATTERN.test(match[2])) return null;
+  return { kind: match[1] as 'purchase' | 'subscription', id: match[2] };
+}
+
 export default async function GuidePurchaseSuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
   if (params.reference && params.guest_access_token) {
-    const reference = params.reference.replace(/^guide_purchase:/u, '');
-    const [guestPurchase] = params.reference.startsWith('guide_purchase:')
-      ? await db.select({ offerVariant: guidePurchases.offerVariant }).from(guidePurchases).where(eq(guidePurchases.id, reference)).limit(1)
+    const guestReference = parseGuestReference(params.reference);
+    if (!guestReference) {
+      return (
+        <div className="mx-auto max-w-3xl px-4 py-16">
+          <section className="rounded-2xl border border-orange/30 bg-orange/5 p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Link inválido</p>
+            <h1 className="mt-3 font-playfair text-3xl font-bold">Não encontramos este acesso.</h1>
+            <p className="mt-4 leading-relaxed text-foreground/75">
+              O link está incompleto ou foi alterado. Use o link enviado por e-mail ou recupere seu acesso na página do guia.
+            </p>
+            <Link href="/guias/renda-extra" className="mt-6 inline-flex font-bold text-neon hover:underline">
+              Voltar para os guias
+            </Link>
+          </section>
+        </div>
+      );
+    }
+    const [guestPurchase] = guestReference.kind === 'purchase'
+      ? await db.select({ offerVariant: guidePurchases.offerVariant }).from(guidePurchases).where(eq(guidePurchases.id, guestReference.id)).limit(1)
       : [];
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
@@ -62,9 +87,8 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
   const stripeReference = typeof stripeSession?.metadata?.reference === 'string'
     ? stripeSession.metadata.reference
     : '';
-  const purchaseReference = stripeReference.startsWith('guide_purchase:')
-    ? stripeReference.replace(/^guide_purchase:/u, '')
-    : '';
+  const parsedStripeReference = parseGuestReference(stripeReference);
+  const purchaseReference = parsedStripeReference?.kind === 'purchase' ? parsedStripeReference.id : '';
   const [purchase] = user?.id && purchaseReference
     ? await db.select({
       id: guidePurchases.id,
@@ -147,7 +171,7 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           <p className="mt-4 leading-relaxed text-foreground/75">A assinatura dos Guias para Liberdade Financeira está ativa. Os materiais ficam disponíveis por download protegido enquanto o acesso estiver ativo.</p>
           {user?.id && (
             <GuideAssetDownloads
-              assets={GUIDE_ASSETS.filter((asset) => asset.id !== 'ingles-para-ganhar-dinheiro')}
+              assets={getGuideAssetsForOffer(subscription.offerVariant)}
               initialRemainingDownloads={subscriptionDownloadsRemaining}
             />
           )}

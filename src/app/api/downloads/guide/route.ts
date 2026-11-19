@@ -40,7 +40,7 @@ async function readLocalGuideAsset(assetId: z.infer<typeof requestSchema>['asset
   const candidatePaths = [
     path.join(process.cwd(), 'Conteudo de novembro', asset.filename),
     path.join(process.cwd(), asset.filename),
-    path.join(process.cwd(), 'public', 'guias', asset.filename),
+    path.join(process.cwd(), 'private-assets', 'guias', asset.filename),
   ];
   for (const candidatePath of candidatePaths) {
     try {
@@ -200,10 +200,11 @@ export async function POST(request: Request): Promise<NextResponse> {
     fullName: userProfiles.fullName,
     email: userProfiles.email,
   }).from(userProfiles).where(eq(userProfiles.id, user.id)).limit(1);
-  const [purchase] = await db.select({
+  const purchases = await db.select({
     id: guidePurchases.id,
     offerVariant: guidePurchases.offerVariant,
     cpf: guidePurchases.cpf,
+    encryptedCpf: guidePurchases.encryptedCpf,
     downloadCount: guidePurchases.downloadCount,
     maxDownloads: guidePurchases.maxDownloads,
   }).from(guidePurchases)
@@ -212,12 +213,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       eq(guidePurchases.status, 'approved'),
       lt(guidePurchases.downloadCount, guidePurchases.maxDownloads),
     ))
-    .orderBy(desc(guidePurchases.createdAt))
-    .limit(1);
-  const [subscription] = purchase ? [] : await db.select({
+    .orderBy(desc(guidePurchases.createdAt));
+  const subscriptions = await db.select({
     id: guideSubscriptions.id,
     offerVariant: guideSubscriptions.offerVariant,
     cpf: guideSubscriptions.cpf,
+    encryptedCpf: guideSubscriptions.encryptedCpf,
     downloadCount: guideSubscriptions.downloadCount,
     maxDownloads: guideSubscriptions.maxDownloads,
   }).from(guideSubscriptions)
@@ -226,20 +227,32 @@ export async function POST(request: Request): Promise<NextResponse> {
       eq(guideSubscriptions.status, 'active'),
       lt(guideSubscriptions.downloadCount, guideSubscriptions.maxDownloads),
     ))
-    .orderBy(desc(guideSubscriptions.createdAt))
-    .limit(1);
+    .orderBy(desc(guideSubscriptions.createdAt));
 
-  const access = purchase ? { kind: 'purchase' as const, ...purchase } : subscription
-    ? { kind: 'subscription' as const, ...subscription }
-    : null;
-  if (!access || !access.cpf || !profile?.fullName || !profile.email) {
+  const asset = getGuideAsset(parsedBody.assetId);
+  const candidates = [
+    ...purchases.map((row) => ({ kind: 'purchase' as const, ...row })),
+    ...subscriptions.map((row) => ({ kind: 'subscription' as const, ...row })),
+  ];
+  const access = candidates.find((candidate) => (
+    getGuideAssetsForOffer(candidate.offerVariant).some((granted) => granted.id === asset.id)
+  ));
+  if (!access || !profile?.fullName || !profile.email) {
+    const reason = candidates.length > 0 && !access ? 'guide_asset_not_in_purchase' : 'guide_access_not_available';
+    return NextResponse.json({ error: reason, message: INVALID_ACCESS_MESSAGE }, { status: 403 });
+  }
+
+  let cpf: string | null = null;
+  try {
+    cpf = access.encryptedCpf ? decryptGuestCpf(access.encryptedCpf) : access.cpf;
+  } catch (error) {
+    console.error('[GUIDE_DOWNLOAD] Falha ao descriptografar identidade do acesso:', error instanceof Error ? error.message : 'erro desconhecido');
+  }
+  if (!cpf && access.encryptedCpf && access.cpf) cpf = access.cpf;
+  if (!cpf) {
     return NextResponse.json({ error: 'guide_access_not_available', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
   }
 
-  const asset = getGuideAsset(parsedBody.assetId);
-  if (!getGuideAssetsForOffer(access.offerVariant).some((candidate) => candidate.id === asset.id)) {
-    return NextResponse.json({ error: 'guide_asset_not_in_purchase', message: INVALID_ACCESS_MESSAGE }, { status: 403 });
-  }
   const source = await readGuideSource(parsedBody.assetId);
   if (!source) {
     return NextResponse.json({
@@ -252,7 +265,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   try {
     personalized = await personalizeGuideAsset(asset, source, {
       fullName: profile.fullName,
-      cpf: access.cpf,
+      cpf,
       email: profile.email,
       shortId: user.id.slice(0, 8),
     });

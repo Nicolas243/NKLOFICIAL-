@@ -20,9 +20,9 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 const assetsDirectories = [
+  path.join(process.cwd(), 'private-assets', 'guias'),
   path.join(process.cwd(), 'Conteudo de novembro'),
   process.cwd(),
-  path.join(process.cwd(), 'public', 'guias'),
 ];
 
 async function readAsset(filename: string): Promise<Buffer> {

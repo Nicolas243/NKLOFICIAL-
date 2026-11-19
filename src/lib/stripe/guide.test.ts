@@ -12,18 +12,6 @@ test('builds a one-time Guide Checkout session from the server price', () => {
     offerVariant: 'guide-page-cta:2',
   });
 
-  test('builds the English ebook checkout at R$47 with the English product title', () => {
-    const params = buildGuidePurchaseCheckoutParams({
-      purchaseId: 'purchase-english',
-      siteUrl: 'https://nkloficial.com.br',
-      offerVariant: 'english-ebook-sales-page',
-    });
-
-    assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
-    assert.equal(params.lineItems[0]?.price_data?.product_data?.name, 'Inglês para ganhar dinheiro | E-book Portal NKL');
-    assert.equal(params.metadata.reference, 'guide_purchase:purchase-english');
-  });
-
   assert.equal(params.mode, 'payment');
   assert.equal(params.lineItems[0]?.price_data?.unit_amount, 3900);
   assert.deepEqual(params.metadata, {
@@ -31,6 +19,39 @@ test('builds a one-time Guide Checkout session from the server price', () => {
     offer_variant: 'guide-page-cta:2',
   });
   assert.equal(params.successUrl, 'https://nkloficial.com.br/guias/renda-extra/sucesso?session_id={CHECKOUT_SESSION_ID}');
+  assert.equal(params.cancelUrl, 'https://nkloficial.com.br/guias/renda-extra');
+});
+
+test('builds the English ebook checkout at R$47 with the English product title', () => {
+  const params = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-english',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'english-ebook-sales-page',
+  });
+
+  assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
+  assert.equal(params.lineItems[0]?.price_data?.product_data?.name, 'Inglês para ganhar dinheiro | E-book Portal NKL');
+  assert.equal(params.metadata.reference, 'guide_purchase:purchase-english');
+  assert.equal(params.cancelUrl, 'https://nkloficial.com.br/guias/ingles');
+});
+
+test('builds each language ebook checkout at R$47 and cancels back to its own page', () => {
+  for (const [offerVariant, title, slug] of [
+    ['italian-ebook-sales-page', 'Italiano para ganhar possibilidades | E-book Portal NKL', 'italiano'],
+    ['french-ebook-sales-page', 'Francês para ganhar possibilidades | E-book Portal NKL', 'frances'],
+    ['german-ebook-sales-page', 'Alemão para ganhar possibilidades | E-book Portal NKL', 'alemao'],
+    ['spanish-ebook-sales-page', 'Espanhol para ganhar possibilidades | E-book Portal NKL', 'espanhol'],
+    ['mandarin-ebook-sales-page', 'Mandarim para ganhar possibilidades | E-book Portal NKL', 'chines'],
+  ] as const) {
+    const params = buildGuidePurchaseCheckoutParams({
+      purchaseId: `purchase-${offerVariant}`,
+      siteUrl: 'https://nkloficial.com.br/',
+      offerVariant,
+    });
+    assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
+    assert.equal(params.lineItems[0]?.price_data?.product_data?.name, title);
+    assert.equal(params.cancelUrl, `https://nkloficial.com.br/guias/${slug}`);
+  }
 });
 
 test('builds a recurring Guide Checkout session with the payer email', () => {
@@ -41,24 +62,6 @@ test('builds a recurring Guide Checkout session with the payer email', () => {
     offerVariant: undefined,
   });
 
-  test('builds each language ebook checkout at R$47', () => {
-    for (const [offerVariant, title] of [
-      ['italian-ebook-sales-page', 'Italiano para ganhar possibilidades | E-book Portal NKL'],
-      ['french-ebook-sales-page', 'Francês para ganhar possibilidades | E-book Portal NKL'],
-      ['german-ebook-sales-page', 'Alemão para ganhar possibilidades | E-book Portal NKL'],
-      ['spanish-ebook-sales-page', 'Espanhol para ganhar possibilidades | E-book Portal NKL'],
-      ['mandarin-ebook-sales-page', 'Mandarim para ganhar possibilidades | E-book Portal NKL'],
-    ] as const) {
-      const params = buildGuidePurchaseCheckoutParams({
-        purchaseId: `purchase-${offerVariant}`,
-        siteUrl: 'https://nkloficial.com.br',
-        offerVariant,
-      });
-      assert.equal(params.lineItems[0]?.price_data?.unit_amount, 4700);
-      assert.equal(params.lineItems[0]?.price_data?.product_data?.name, title);
-    }
-  });
-
   assert.equal(params.mode, 'subscription');
   assert.equal(params.lineItems[0]?.price_data?.unit_amount, 1900);
   assert.equal(params.lineItems[0]?.price_data?.recurring?.interval, 'month');
@@ -66,6 +69,7 @@ test('builds a recurring Guide Checkout session with the payer email', () => {
     reference: 'guide_subscription:subscription-id',
   });
   assert.equal(params.customerEmail, 'cliente@example.com');
+  assert.equal(params.cancelUrl, 'https://nkloficial.com.br/guias/renda-extra');
 });
 
 test('keeps guest access token only in the success handoff and out of Stripe metadata', () => {

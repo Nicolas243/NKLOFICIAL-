@@ -6,6 +6,7 @@ import {
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
   GUIDE_SUBSCRIPTION_TITLE,
   GUIDE_TITLE,
+  getGuideCancelPath,
   getLanguageEbookByOffer,
 } from '@/lib/guide-offer';
 import type { CreateCheckoutSessionParams } from './checkout';
@@ -44,7 +45,7 @@ export function buildGuidePurchaseCheckoutParams({
     successUrl: guestAccessToken
       ? `${successUrl}&reference=${encodeURIComponent(`guide_purchase:${purchaseId}`)}&guest_access_token=${encodeURIComponent(guestAccessToken)}`
       : successUrl,
-    cancelUrl: `${normalizedSiteUrl}/guias/renda-extra`,
+    cancelUrl: `${normalizedSiteUrl}${getGuideCancelPath(offerVariant)}`,
   };
 }
 

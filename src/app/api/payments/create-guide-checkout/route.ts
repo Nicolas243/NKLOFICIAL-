@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { guidePurchases, userProfiles } from '@/db/schema';
 import { env } from '@/env';
-import { ENGLISH_EBOOK_OFFER_VARIANT, ENGLISH_EBOOK_PRICE_CENTS, GUIDE_PRICE_CENTS, isLanguageEbookOffer } from '@/lib/guide-offer';
+import { ENGLISH_EBOOK_OFFER_VARIANT, ENGLISH_EBOOK_PRICE_CENTS, GUIDE_PRICE_CENTS, isComingSoonLanguageOffer, isLanguageEbookOffer } from '@/lib/guide-offer';
 import {
   createGuestAccessToken,
   encryptGuestCpf,
@@ -59,6 +59,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       : undefined;
     if (parsedBody.data.offerVariant && !offerVariant) {
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
+    }
+
+    if (isComingSoonLanguageOffer(offerVariant)) {
+      return NextResponse.json({ error: 'coming_soon', message: 'Este guia ainda está em produção editorial.' }, { status: 409 });
     }
 
     const access = createGuestAccessToken();
