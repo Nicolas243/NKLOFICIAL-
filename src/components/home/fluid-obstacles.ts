@@ -13,6 +13,72 @@ export type FluidObstacleRect = {
   radiusY: number;
 };
 
+export type FluidObstacleInput = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  borderRadiusPx: number;
+  viewportWidth: number;
+  viewportHeight: number;
+};
+
+function clamp01(value: number): number {
+  return value < 0 ? 0 : value > 1 ? 1 : value;
+}
+
+/**
+ * Builds a strictly inset "ghost" collider inside a visible painted DOM rect so
+ * coarse fluid simulation cells deflect smoothly around rounded/circular edges
+ * without protruding corners or square outlines.
+ */
+export function buildGhostObstacleRect(input: FluidObstacleInput): FluidObstacleRect | null {
+  const { left, top, right, bottom, borderRadiusPx, viewportWidth, viewportHeight } = input;
+  const vw = Math.max(viewportWidth, 1);
+  const vh = Math.max(viewportHeight, 1);
+  const w = right - left;
+  const h = bottom - top;
+  const minDim = Math.min(w, h);
+
+  if (w < 20 || h < 20 || right <= 0 || left >= vw || bottom <= 0 || top >= vh) {
+    return null;
+  }
+
+  const clampedRadius = Math.max(0, Math.min(borderRadiusPx, minDim * 0.5));
+  const isPillOrCircle = clampedRadius >= minDim * 0.42;
+  const rawInset = isPillOrCircle
+    ? Math.max(5, Math.min(12, minDim * 0.16))
+    : Math.max(8, Math.min(16, Math.max(8, clampedRadius * 0.35)));
+
+  const insetX = Math.min(rawInset, w * 0.24);
+  const insetY = Math.min(rawInset, h * 0.24);
+
+  const gLeft = left + insetX;
+  const gRight = right - insetX;
+  const gTop = top + insetY;
+  const gBottom = bottom - insetY;
+  const gw = gRight - gLeft;
+  const gh = gBottom - gTop;
+
+  if (gw < 10 || gh < 10) {
+    return null;
+  }
+
+  const innerMinDim = Math.min(gw, gh);
+  const ghostRadiusPx = isPillOrCircle
+    ? innerMinDim * 0.5
+    : Math.min(Math.max(clampedRadius, 6), innerMinDim * 0.5);
+
+  return {
+    left: clamp01(gLeft / vw),
+    top: clamp01(gTop / vh),
+    right: clamp01(gRight / vw),
+    bottom: clamp01(gBottom / vh),
+    radiusX: ghostRadiusPx / vw,
+    radiusY: ghostRadiusPx / vh,
+  };
+}
+
 /**
  * Rasterizes normalized DOM rectangles (with optional rounded corners) into a
  * 1-channel or RGBA obstacle mask buffer for Canvas2D or WebGL simulation grids.
@@ -41,8 +107,8 @@ export function rasterizeObstaclesMask(
     const maxY = Math.min(height - 1, Math.ceil(bottom * height) - 1);
     if (minX > maxX || minY > maxY) continue;
 
-    const rx = Math.max(0, Math.min(rect.radiusX, (right - left) * 0.45));
-    const ry = Math.max(0, Math.min(rect.radiusY, (bottom - top) * 0.45));
+    const rx = Math.max(0, Math.min(rect.radiusX, (right - left) * 0.5));
+    const ry = Math.max(0, Math.min(rect.radiusY, (bottom - top) * 0.5));
     const hasRadius = rx > 1e-6 && ry > 1e-6;
     const innerL = left + rx;
     const innerR = right - rx;

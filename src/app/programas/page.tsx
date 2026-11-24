@@ -13,15 +13,15 @@ import { getActiveAdSlots, getAdPricing, type ActiveAdSlot } from '@/lib/ad-inve
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
 
 export const metadata: Metadata = {
-  title: 'Programas de Parceria e Renda Extra',
-  description: 'Um mapa editorial para encontrar oportunidades de renda extra, freelancing, pesquisas, conteúdo e trabalho remoto.',
+  title: '55+ Formas Reais de Renda Extra e Programas de Parceria',
+  description: 'Catálogo com mais de 50 formas reais de renda extra, ferramentas complementares, trabalho remoto, afiliados, E-books e projetos com IA.',
   alternates: {
     canonical: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog),
   },
   openGraph: {
     type: 'website',
-    title: 'Programas de Parceria e Renda Extra | Portal NKL',
-    description: 'Um mapa editorial para encontrar oportunidades de renda extra, freelancing, pesquisas, conteúdo e trabalho remoto.',
+    title: '55+ Formas Reais de Renda Extra | Portal NKL',
+    description: 'Catálogo com mais de 50 formas reais de renda extra, ferramentas complementares, trabalho remoto, afiliados, E-books e projetos com IA.',
     url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog),
   },
 };
@@ -74,12 +74,12 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
             <IncomeWizard programs={programs} />
           </div>
           <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Renda Extra NKL · mapa de oportunidades</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Renda Extra NKL · {programs.length} formas reais catalogadas</p>
             <h1 className="font-playfair text-4xl font-bold leading-[1.05] md:text-7xl">
               Renda extra sem cair em promessa fácil.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed opacity-75 md:mt-6 md:text-lg">
-              Um catálogo para descobrir caminhos possíveis, entender como cada plataforma funciona e escolher o próximo passo com mais clareza.
+              Um catálogo completo com {programs.length} formas reais de gerar renda extra — sem investimento inicial ou com capital enxuto — mostrando ferramentas práticas e critérios claros antes de você começar.
             </p>
             <div className="mt-5 flex flex-wrap gap-3 md:mt-8">
               <a href="#catalogo" className="rounded-md bg-neon px-5 py-3 text-sm font-bold text-black transition-transform hover:-translate-y-0.5">
@@ -93,11 +93,11 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
           <div className="grid grid-cols-2 gap-3 lg:max-w-xs lg:justify-self-end">
             <div className="rounded-2xl border border-border bg-income-card/80 p-4">
               <p className="text-3xl font-bold text-neon">{programs.length}</p>
-              <p className="mt-1 text-xs leading-relaxed opacity-65">oportunidades catalogadas</p>
+              <p className="mt-1 text-xs leading-relaxed opacity-65">formas reais de renda extra catalogadas</p>
             </div>
             <div className="rounded-2xl border border-border bg-income-card/80 p-4">
-            <p className="text-3xl font-bold text-neon">{categoryCount}</p>
-            <p className="mt-1 text-xs leading-relaxed opacity-65">formas de começar</p>
+              <p className="text-3xl font-bold text-neon">{categoryCount}</p>
+              <p className="mt-1 text-xs leading-relaxed opacity-65">categorias e frentes de ganho</p>
             </div>
             <div className="col-span-2 rounded-2xl border border-neon/30 bg-income-card/80 p-4">
               <p className="text-sm font-bold">A ideia é simples</p>
@@ -121,13 +121,13 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
       <section className="mb-5 grid gap-4 rounded-2xl border border-neon/30 bg-income-surface/85 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="business-quiz-cta-title">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não sabe por onde começar?</p>
-          <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Responda ao Quiz de Negócios</h2>
+          <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Use a Bússola de Negócios</h2>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">
-            Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para descobrir qual modelo de negócio ou renda extra faz mais sentido para o seu momento.
+            Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para receber seus 3 melhores caminhos reais de negócio ou renda extra.
           </p>
         </div>
         <Link href="/quiz-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
-          Fazer Quiz de Negócios
+          Abrir Bússola de Negócios
         </Link>
       </section>
 

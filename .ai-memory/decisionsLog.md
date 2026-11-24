@@ -10,6 +10,11 @@ updated: 2026-11-24
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-016 (2026-11-24) Colisores Fantasma Arredondados + Fluido +30% Chroma + Checklist Offline
+- Decisao: substituir caixas fixas no fluido por `buildGhostObstacleRect` (colisor menor interno com `rx/ry` ate `0.5` e filtro `hasPaintedSurface` para ignorar wrappers transparentes), elevar saturacao das paletas WebGL/Canvas2D com reforco `+32%` de croma em `DISPLAY_SHADER`, destacar explicitamente `55 formas reais` em `/programas` e consolidar o roteiro manual de afiliados/KDP/Cloudflare em `docs/CHECKLIST-OFFLINE-NKL.md`.
+- Motivo: eliminar contornos quadrados ao redor de circulos/cards curvos, remover aparencia acinzentada sem queimar fundo escuro ou perder contraste claro, evidenciar a cobertura completa de renda extra e entregar lista acionavel para operacao offline.
+- Descartado: injetar nodes fantasma reais no DOM (overhead de layout/mutation) ou aumentar alpha global no dark mode (lavaria o fundo escuro).
+
 ## ADR-015 (2026-11-24) Desbloqueio dos 6 Idiomas, Upsell 30%/50%, Catalogo 55 + Mural Dinamico e Push por Sub-App
 - Decisao: liberar os 6 idiomas (`comingSoon: false`) com `LanguageAiAndPlanner` e desconto progressivo automatico no Stripe (`nkl_idioma_30`/`nkl_idioma_50` via contagem de `guide_purchases`), expandir `partner_programs` para 55 (15 cards/pagina + recursos do portal integrados) e `business_profiles` para 18 (Top-3 com playbooks reais), abrir `/mural-de-parceiros` ilimitado agrupado por `businessCategory`, segmentar `push_subscriptions.app_scope` com envio no `/admin`, e gerar livro Amazon KDP em Kindle + 6x9" via `build-amazon-book.ts`.
 - Motivo: transformar a entrega de idiomas em pacote completo irresistivel, atender perfis sem capital e com investimento inicial com clareza realista, permitir crescimento ilimitado de anunciantes por area e segmentar comunicados por sub-app instalado.

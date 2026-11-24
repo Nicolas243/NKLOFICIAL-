@@ -92,7 +92,7 @@ export class FluidSimulation {
     const speed = Math.hypot(velX, velY);
     const dyeScale = 1 / Math.sqrt(steps);
     const baseDye = clamp((0.14 + speed * 0.025) * power, 0.14, 0.46) * dyeScale;
-    const warmDye = clamp((speed - 1.2) * 0.03 * power, 0, 0.28) * dyeScale;
+    const warmDye = clamp((speed - 0.8) * 0.04 * power, 0, 0.34) * dyeScale;
     const radius = 2.7;
     const invRadiusSq = 1 / (radius * radius);
 
@@ -198,22 +198,22 @@ export class FluidSimulation {
   render(imageData: ImageData, isDark: boolean): void {
     const data = imageData.data;
 
-    // Light: cores escuras (ink navy / slate petrol / espresso, alpha max ~0.58).
-    // Dark: cores claras suaves com teto de opacidade para nunca clarear o fundo escuro (alpha max ~0.41).
-    const r0 = isDark ? 138 : 10;
-    const g0 = isDark ? 210 : 28;
-    const b0 = isDark ? 252 : 64;
+    // Light: cores escuras com +30% chroma (cobalto / esmeralda / terracota, alpha max ~0.61).
+    // Dark: cores claras vibrantes com teto de opacidade para nunca lavar o fundo escuro (alpha max ~0.42).
+    const r0 = isDark ? 38 : 4;
+    const g0 = isDark ? 205 : 42;
+    const b0 = isDark ? 255 : 186;
 
-    const r1 = isDark ? 196 : 20;
-    const g1 = isDark ? 228 : 48;
-    const b1 = isDark ? 255 : 88;
+    const r1 = isDark ? 152 : 6;
+    const g1 = isDark ? 148 : 102;
+    const b1 = isDark ? 255 : 158;
 
-    const rWarm = isDark ? 255 : 88;
-    const gWarm = isDark ? 196 : 32;
-    const bWarm = isDark ? 124 : 12;
+    const rWarm = isDark ? 255 : 188;
+    const gWarm = isDark ? 142 : 42;
+    const bWarm = isDark ? 68 : 8;
 
-    const maxAlpha = isDark ? 104 : 148;
-    const maxWarmWeight = isDark ? 0.58 : 0.52;
+    const maxAlpha = isDark ? 108 : 156;
+    const maxWarmWeight = isDark ? 0.65 : 0.58;
     const wGrid = this.width;
     const hGrid = this.height;
 
@@ -264,10 +264,10 @@ export class FluidSimulation {
   private seedInitialField(): void {
     const w = this.width;
     const h = this.height;
-    this.depositSplat(w * 0.74, h * 0.24, -0.9, 0.5, 0.38, 0.04, 1 / 22);
-    this.depositSplat(w * 0.24, h * 0.72, 0.8, -0.45, 0.36, 0.03, 1 / 24);
-    this.depositSplat(w * 0.52, h * 0.46, 0.55, 0.38, 0.3, 0.02, 1 / 28);
-    this.depositSplat(w * 0.36, h * 0.28, -0.6, -0.32, 0.28, 0.03, 1 / 22);
+    this.depositSplat(w * 0.74, h * 0.24, -0.9, 0.5, 0.38, 0.09, 1 / 22);
+    this.depositSplat(w * 0.24, h * 0.72, 0.8, -0.45, 0.36, 0.07, 1 / 24);
+    this.depositSplat(w * 0.52, h * 0.46, 0.55, 0.38, 0.3, 0.05, 1 / 28);
+    this.depositSplat(w * 0.36, h * 0.28, -0.6, -0.32, 0.28, 0.06, 1 / 22);
     for (let i = 0; i < 4; i += 1) {
       this.step(0.016, i * 0.08);
     }
@@ -321,13 +321,13 @@ export class FluidSimulation {
     const ay1 = h * (0.36 + 0.2 * Math.sin(ambientTime * 0.28));
     const vx1 = Math.sin(ambientTime * 0.34) * 1.9 * dt;
     const vy1 = Math.cos(ambientTime * 0.26) * 1.6 * dt;
-    this.depositSplat(ax1, ay1, vx1, vy1, 0.55 * dt, 0.03 * dt, 1 / 16);
+    this.depositSplat(ax1, ay1, vx1, vy1, 0.55 * dt, 0.08 * dt, 1 / 16);
 
     const ax2 = w * (0.48 + 0.26 * Math.sin(ambientTime * 0.19 + 1.4));
     const ay2 = h * (0.64 + 0.18 * Math.cos(ambientTime * 0.24 + 0.8));
     const vx2 = -Math.cos(ambientTime * 0.31) * 1.7 * dt;
     const vy2 = Math.sin(ambientTime * 0.27) * 1.45 * dt;
-    this.depositSplat(ax2, ay2, vx2, vy2, 0.5 * dt, 0, 1 / 19);
+    this.depositSplat(ax2, ay2, vx2, vy2, 0.5 * dt, 0.04 * dt, 1 / 19);
   }
 
   private applyVorticity(dt: number): void {

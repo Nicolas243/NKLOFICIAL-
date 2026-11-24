@@ -10,7 +10,10 @@ import {
   PORTAL_FLUID_STORAGE_KEY,
   PORTAL_FLUID_TOGGLE_EVENT,
 } from '@/components/home/portal-fluid-toggle';
-import { type FluidObstacleRect } from '@/components/home/fluid-obstacles';
+import {
+  buildGhostObstacleRect,
+  type FluidObstacleRect,
+} from '@/components/home/fluid-obstacles';
 import {
   createWebGLFluidEngine,
   type WebGLFluidEngine,
@@ -42,13 +45,84 @@ const MAX_SCROLL_INPUT = 1600;
 const IMMEDIATE_SEED_FACTOR = 0.12;
 const MAX_SUBMERGED_BODIES_PER_TICK = 6;
 const SCROLL_IMPULSE_COOLDOWN_MS = 55;
-const OBSTACLE_INSET_PX = 3;
-const OBSTACLE_CORNER_MAX_PX = 14;
 const OBSTACLE_SELECTOR =
   '.portal-topbar, .portal-hero-main, .portal-quickstart, .portal-bento-tile, .portal-track-selector, .portal-track-priority-banner, .portal-filter-pill, .portal-card, .portal-empty';
 
 function clamp01(value: number): number {
   return value < 0 ? 0 : value > 1 ? 1 : value;
+}
+
+function parseColorAlpha(colorValue: string | null | undefined): number {
+  if (!colorValue) return 0;
+  const trimmed = colorValue.trim().toLowerCase();
+  if (!trimmed || trimmed === 'transparent' || trimmed === 'none') return 0;
+  const slashMatch = trimmed.match(/\/\s*([\d.]+)(%?)\s*\)$/);
+  if (slashMatch) {
+    const raw = Number.parseFloat(slashMatch[1]);
+    if (!Number.isFinite(raw)) return 0;
+    return slashMatch[2] === '%' ? raw / 100 : raw;
+  }
+  const rgbaMatch = trimmed.match(/^rgba\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\s*\)$/);
+  if (rgbaMatch) {
+    const raw = Number.parseFloat(rgbaMatch[1]);
+    return Number.isFinite(raw) ? raw : 0;
+  }
+  return 1;
+}
+
+function hasPaintedSurface(style: CSSStyleDeclaration): boolean {
+  if (
+    style.display === 'none' ||
+    style.visibility === 'hidden' ||
+    Number.parseFloat(style.opacity || '1') <= 0.05
+  ) {
+    return false;
+  }
+  if (parseColorAlpha(style.backgroundColor) > 0.06) {
+    return true;
+  }
+  if (style.backgroundImage && style.backgroundImage !== 'none') {
+    return true;
+  }
+  const borderTop = Number.parseFloat(style.borderTopWidth || '0');
+  const borderLeft = Number.parseFloat(style.borderLeftWidth || '0');
+  if (
+    (borderTop > 0.4 || borderLeft > 0.4) &&
+    parseColorAlpha(style.borderTopColor || style.borderColor) > 0.08
+  ) {
+    return true;
+  }
+  const backdrop =
+    style.backdropFilter ||
+    (style as unknown as { webkitBackdropFilter?: string }).webkitBackdropFilter;
+  if (backdrop && backdrop !== 'none') {
+    return true;
+  }
+  return false;
+}
+
+function readComputedBorderRadiusPx(
+  style: CSSStyleDeclaration,
+  width: number,
+  height: number,
+): number {
+  const minDim = Math.min(width, height);
+  const corners = [
+    style.borderTopLeftRadius,
+    style.borderTopRightRadius,
+    style.borderBottomRightRadius,
+    style.borderBottomLeftRadius,
+  ];
+  let maxRadius = 0;
+  for (const raw of corners) {
+    if (!raw) continue;
+    const token = raw.trim().split(/\s+/)[0] || '';
+    const parsed = Number.parseFloat(token);
+    if (!Number.isFinite(parsed) || parsed <= 0) continue;
+    const px = token.endsWith('%') ? (parsed / 100) * minDim : parsed;
+    if (px > maxRadius) maxRadius = px;
+  }
+  return Math.min(maxRadius, minDim * 0.5);
 }
 
 function readStoredFluidPaused(): boolean {
@@ -127,8 +201,8 @@ export function PortalHomeParallax() {
       for (const body of cachedBodies) {
         const rect = body.getBoundingClientRect();
         if (
-          rect.width < 16 ||
-          rect.height < 16 ||
+          rect.width < 20 ||
+          rect.height < 20 ||
           rect.bottom <= 0 ||
           rect.top >= vh ||
           rect.right <= 0 ||
@@ -136,26 +210,21 @@ export function PortalHomeParallax() {
         ) {
           continue;
         }
+        const style = window.getComputedStyle(body);
+        if (!hasPaintedSurface(style)) continue;
 
-        const leftPx = rect.left + OBSTACLE_INSET_PX;
-        const topPx = rect.top + OBSTACLE_INSET_PX;
-        const rightPx = rect.right - OBSTACLE_INSET_PX;
-        const bottomPx = rect.bottom - OBSTACLE_INSET_PX;
-        if (rightPx <= leftPx || bottomPx <= topPx) continue;
-
-        const cornerPx = Math.min(
-          OBSTACLE_CORNER_MAX_PX,
-          (rightPx - leftPx) * 0.2,
-          (bottomPx - topPx) * 0.2,
-        );
-        rects.push({
-          left: clamp01(leftPx / vw),
-          top: clamp01(topPx / vh),
-          right: clamp01(rightPx / vw),
-          bottom: clamp01(bottomPx / vh),
-          radiusX: cornerPx / vw,
-          radiusY: cornerPx / vh,
+        const ghost = buildGhostObstacleRect({
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          borderRadiusPx: readComputedBorderRadiusPx(style, rect.width, rect.height),
+          viewportWidth: vw,
+          viewportHeight: vh,
         });
+        if (ghost) {
+          rects.push(ghost);
+        }
       }
 
       webglEngine?.setObstacles(rects);
@@ -385,12 +454,36 @@ export function PortalHomeParallax() {
           ) {
             continue;
           }
-          const leftN = clamp01(rect.left / vw);
-          const topN = clamp01(rect.top / vh);
-          const rightN = clamp01(rect.right / vw);
-          const bottomN = clamp01(rect.bottom / vh);
-          webglEngine?.displaceRect(leftN, topN, rightN, bottomN, cardVelY, intensity);
-          canvas2dSim?.displaceRect(leftN, topN, rightN, bottomN, cardVelY, intensity);
+          const style = window.getComputedStyle(body);
+          if (!hasPaintedSurface(style)) continue;
+
+          const ghost = buildGhostObstacleRect({
+            left: rect.left,
+            top: rect.top,
+            right: rect.right,
+            bottom: rect.bottom,
+            borderRadiusPx: readComputedBorderRadiusPx(style, rect.width, rect.height),
+            viewportWidth: vw,
+            viewportHeight: vh,
+          });
+          if (!ghost) continue;
+
+          webglEngine?.displaceRect(
+            ghost.left,
+            ghost.top,
+            ghost.right,
+            ghost.bottom,
+            cardVelY,
+            intensity,
+          );
+          canvas2dSim?.displaceRect(
+            ghost.left,
+            ghost.top,
+            ghost.right,
+            ghost.bottom,
+            cardVelY,
+            intensity,
+          );
           displaced += 1;
         }
         return displaced;

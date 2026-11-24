@@ -51,22 +51,22 @@ const VELOCITY_DISSIPATION = 0.9;
 const DENSITY_DISSIPATION = 2.6;
 const SPLAT_RADIUS_BASE = 0.0014;
 
-// Paletas liquidas calibradas: escuras no tema claro, claras no tema escuro.
+// Paletas liquidas com +30% mais saturacao: escuras no tema claro, luminosas no tema escuro.
 const DARK_PALETTE: readonly RGB[] = [
-  [0.56, 0.84, 1.0], // Ice Sky Blue
-  [0.48, 0.92, 0.96], // Soft Cyan Mist
-  [0.68, 0.78, 1.0], // Pale Periwinkle
-  [0.76, 0.87, 0.98], // Silver Mist Blue
+  [0.16, 0.84, 1.0], // Electric Cyan
+  [0.12, 0.94, 0.78], // Luminous Mint Teal
+  [0.46, 0.56, 1.0], // Vivid Electric Indigo
+  [0.24, 0.72, 1.0], // Bright Azure
 ];
-const DARK_WARM_ACCENT: RGB = [1.0, 0.76, 0.48];
+const DARK_WARM_ACCENT: RGB = [1.0, 0.52, 0.18];
 
 const LIGHT_PALETTE: readonly RGB[] = [
-  [0.04, 0.11, 0.25], // Deep Ink Navy
-  [0.03, 0.16, 0.24], // Dark Slate Petrol
-  [0.08, 0.10, 0.26], // Deep Midnight Indigo
-  [0.07, 0.13, 0.21], // Dark Charcoal Blue
+  [0.02, 0.16, 0.52], // Deep Cobalt Ink
+  [0.01, 0.32, 0.36], // Deep Emerald Teal
+  [0.20, 0.08, 0.50], // Deep Royal Indigo
+  [0.03, 0.24, 0.48], // Rich Sapphire Ink
 ];
-const LIGHT_WARM_ACCENT: RGB = [0.34, 0.12, 0.04];
+const LIGHT_WARM_ACCENT: RGB = [0.64, 0.18, 0.03];
 
 const BASE_VERTEX_SHADER = `
   precision highp float;
@@ -385,6 +385,8 @@ const DISPLAY_SHADER = `
     }
 
     vec3 pigment = clamp(raw.rgb / max(density, 0.004), 0.0, 1.0);
+    float luma = dot(pigment, vec3(0.299, 0.587, 0.114));
+    pigment = clamp(mix(vec3(luma), pigment, 1.32), 0.0, 1.0);
     float dL = clamp(texture2D(uTexture, vL).a, 0.0, 1.0);
     float dR = clamp(texture2D(uTexture, vR).a, 0.0, 1.0);
     float dT = clamp(texture2D(uTexture, vT).a, 0.0, 1.0);
@@ -872,7 +874,7 @@ export class WebGLFluidEngine {
     const forceX = Math.max(-750, Math.min(750, safeDx * forceScale));
     const forceY = Math.max(-750, Math.min(750, safeDy * forceScale));
     const baseColor = this.pickWakeColor();
-    const dyeStrength = (this.isDark ? 0.34 : 0.44) / Math.sqrt(subSteps);
+    const dyeStrength = (this.isDark ? 0.38 : 0.48) / Math.sqrt(subSteps);
 
     for (let s = 1; s <= subSteps; s += 1) {
       const t = s / subSteps;
@@ -1005,7 +1007,7 @@ export class WebGLFluidEngine {
       [0.08, 0.74, 175, -85, 1.05],
       [0.92, 0.72, -175, 80, 1.0],
     ];
-    const dyeStrength = this.isDark ? 0.36 : 0.46;
+    const dyeStrength = this.isDark ? 0.40 : 0.50;
     for (const [x, y, vx, vy, radiusScale] of wakes) {
       const color = this.pickWakeColor();
       this.emitSplat(x, y, vx, vy, color, dyeStrength, radiusScale);
@@ -1156,12 +1158,12 @@ export class WebGLFluidEngine {
     gl.uniform2f(this.displayProgram.uniforms.texelSize, this.dye.texelSizeX, this.dye.texelSizeY);
     gl.uniform1i(this.displayProgram.uniforms.uTexture, this.dye.read.attach(0));
     gl.uniform1i(this.displayProgram.uniforms.uObstacles, this.attachObstacles(1));
-    gl.uniform1f(this.displayProgram.uniforms.uAlphaCap, this.isDark ? 0.42 : 0.56);
+    gl.uniform1f(this.displayProgram.uniforms.uAlphaCap, this.isDark ? 0.45 : 0.60);
     gl.uniform1f(this.displayProgram.uniforms.uSpecularBoost, this.isDark ? 0.14 : 0.06);
     if (this.isDark) {
-      gl.uniform3f(this.displayProgram.uniforms.uSheenColor, 0.88, 0.95, 1.0);
+      gl.uniform3f(this.displayProgram.uniforms.uSheenColor, 0.72, 0.92, 1.0);
     } else {
-      gl.uniform3f(this.displayProgram.uniforms.uSheenColor, 0.16, 0.24, 0.36);
+      gl.uniform3f(this.displayProgram.uniforms.uSheenColor, 0.08, 0.22, 0.44);
     }
     this.drawQuad();
     gl.disable(gl.BLEND);
@@ -1188,8 +1190,8 @@ export class WebGLFluidEngine {
 
   private pickWakeColor(): RGB {
     this.strokeCounter += 1;
-    // Aprox. 25% dos impulsos recebem o destaque quente controlado.
-    if (this.strokeCounter % 4 === 0) {
+    // Aprox. 33% dos impulsos recebem o destaque quente controlado.
+    if (this.strokeCounter % 3 === 0) {
       return this.isDark ? DARK_WARM_ACCENT : LIGHT_WARM_ACCENT;
     }
     const palette = this.isDark ? DARK_PALETTE : LIGHT_PALETTE;

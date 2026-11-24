@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  buildGhostObstacleRect,
   rasterizeObstaclesMask,
   type FluidObstacleRect,
 } from '@/components/home/fluid-obstacles';
@@ -41,11 +42,13 @@ function swirlPointer(sim: FluidSimulation, turns = 30): void {
 function measureVisiblePixels(data: Uint8ClampedArray): {
   count: number;
   meanLuminance: number;
+  meanSpread: number;
   maxAlpha: number;
   sumAlpha: number;
 } {
   let count = 0;
   let rgbSum = 0;
+  let spreadSum = 0;
   let maxAlpha = 0;
   let sumAlpha = 0;
 
@@ -55,13 +58,18 @@ function measureVisiblePixels(data: Uint8ClampedArray): {
     if (a > maxAlpha) maxAlpha = a;
     if (a > 20) {
       count += 1;
-      rgbSum += (data[i] + data[i + 1] + data[i + 2]) / 3;
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      rgbSum += (r + g + b) / 3;
+      spreadSum += Math.max(r, g, b) - Math.min(r, g, b);
     }
   }
 
   return {
     count,
     meanLuminance: count > 0 ? rgbSum / count : 0,
+    meanSpread: count > 0 ? spreadSum / count : 0,
     maxAlpha,
     sumAlpha,
   };
@@ -161,6 +169,88 @@ test('rasterizeObstaclesMask handles interior, exterior, rounded corners, and fl
   assert.equal(rgbaWebgl[flippedRowOffset], 255);
   assert.equal(rgbaWebgl[flippedRowOffset + 3], 255);
   assert.equal(rgbaWebgl[unflippedRowOffset], 0);
+});
+
+test('preserves rich chroma (+30% vibrant palette) instead of gray smoke in both light and dark modes', () => {
+  const sim = new FluidSimulation();
+  const imageData = createMockImageData(FLUID_GRID_WIDTH, FLUID_GRID_HEIGHT);
+
+  swirlPointer(sim, 30);
+
+  sim.render(imageData, false);
+  const lightMetrics = measureVisiblePixels(imageData.data);
+  assert.ok(
+    lightMetrics.meanSpread >= 60,
+    `Expected rich colorful chroma (>= 60 RGB spread) in light mode, got ${lightMetrics.meanSpread.toFixed(2)}`,
+  );
+
+  sim.render(imageData, true);
+  const darkMetrics = measureVisiblePixels(imageData.data);
+  assert.ok(
+    darkMetrics.meanSpread >= 60,
+    `Expected rich colorful chroma (>= 60 RGB spread) in dark mode, got ${darkMetrics.meanSpread.toFixed(2)}`,
+  );
+});
+
+test('buildGhostObstacleRect keeps rasterized colliders strictly inside circles, pills, and rounded cards', () => {
+  const vw = 1000;
+  const vh = 800;
+  const cases = [
+    { name: 'circle', left: 200, top: 200, right: 300, bottom: 300, borderRadiusPx: 9999 },
+    { name: 'pill', left: 400, top: 100, right: 560, bottom: 136, borderRadiusPx: 9999 },
+    { name: 'card', left: 100, top: 420, right: 420, bottom: 660, borderRadiusPx: 24 },
+  ];
+
+  const maskW = 200;
+  const maskH = 160;
+  const mask = new Uint8Array(maskW * maskH);
+
+  for (const box of cases) {
+    const ghost = buildGhostObstacleRect({
+      ...box,
+      viewportWidth: vw,
+      viewportHeight: vh,
+    });
+    assert.ok(ghost, `Expected ghost collider for ${box.name}`);
+
+    const w = box.right - box.left;
+    const h = box.bottom - box.top;
+    const outerRadius = Math.min(box.borderRadiusPx, Math.min(w, h) * 0.5);
+    assert.ok(ghost.left * vw > box.left, `Expected inset left for ${box.name}`);
+    assert.ok(ghost.right * vw < box.right, `Expected inset right for ${box.name}`);
+    assert.ok(ghost.top * vh > box.top, `Expected inset top for ${box.name}`);
+    assert.ok(ghost.bottom * vh < box.bottom, `Expected inset bottom for ${box.name}`);
+
+    rasterizeObstaclesMask([ghost], maskW, maskH, mask, 1, false);
+    let solidCount = 0;
+    const innerL = box.left + outerRadius;
+    const innerR = box.right - outerRadius;
+    const innerT = box.top + outerRadius;
+    const innerB = box.bottom - outerRadius;
+
+    for (let gy = 0; gy < maskH; gy += 1) {
+      const py = ((gy + 0.5) / maskH) * vh;
+      for (let gx = 0; gx < maskW; gx += 1) {
+        if (mask[gy * maskW + gx] !== 1) continue;
+        solidCount += 1;
+        const px = ((gx + 0.5) / maskW) * vw;
+        assert.ok(
+          px >= box.left && px <= box.right && py >= box.top && py <= box.bottom,
+          `Ghost cell (${px}, ${py}) leaked outside bounding rect of ${box.name}`,
+        );
+        const dx = px < innerL ? innerL - px : px > innerR ? px - innerR : 0;
+        const dy = py < innerT ? innerT - py : py > innerB ? py - innerB : 0;
+        if (outerRadius > 0 && dx > 0 && dy > 0) {
+          const distSq = (dx / outerRadius) ** 2 + (dy / outerRadius) ** 2;
+          assert.ok(
+            distSq <= 1,
+            `Ghost corner cell (${px}, ${py}) leaked outside rounded edge of ${box.name} (distSq=${distSq.toFixed(3)})`,
+          );
+        }
+      }
+    }
+    assert.ok(solidCount > 0, `Expected non-empty rasterized mask for ${box.name}`);
+  }
 });
 
 test('solid obstacle blocks fluid penetration and deflects a horizontal jet around its edges', () => {
