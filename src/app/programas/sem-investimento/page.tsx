@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteSiteUrl('/programas/sem-investimento') },
 };
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function NoInvestmentHubPage() {
   const programs = await loadPrograms();

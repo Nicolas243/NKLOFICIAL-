@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteSiteUrl('/programas/iniciantes') },
 };
 
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function BeginnersProgramsPage() {
   const programs = await loadPrograms();
