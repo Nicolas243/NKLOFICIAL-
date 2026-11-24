@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getPartnerPrograms } from '@/actions/partner-programs';
+import { PAID_PRODUCT_SLUGS } from '@/config/products';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
 import { absoluteSiteUrl } from '@/lib/site';
 import { PROGRAM_HUBS } from '@/lib/program-hubs';
@@ -12,6 +13,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = [
     { url: absoluteSiteUrl('/'), lastModified, changeFrequency: 'daily', priority: 1.0 },
+    { url: absoluteSiteUrl('/instalar'), lastModified, changeFrequency: 'weekly', priority: 0.8 },
+    ...PAID_PRODUCT_SLUGS.map((slug) => ({
+      url: absoluteSiteUrl(`/ofertas/${slug}`),
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     { url: absoluteSiteUrl('/musica/naipe_cordas'), lastModified, changeFrequency: 'daily', priority: 0.9 },
     { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog), lastModified, changeFrequency: 'daily', priority: 0.9 },
     { url: absoluteSiteUrl('/quiz-negocios'), lastModified, changeFrequency: 'weekly', priority: 0.8 },

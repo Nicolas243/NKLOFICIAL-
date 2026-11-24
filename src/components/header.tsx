@@ -126,10 +126,10 @@ export function Header() {
 
   const authBtn = sessionLoading ? null : (
     <Link
-      href={isLoggedIn ? '/perfil' : buildLoginPath(pathname, null, loginArea)}
+      href={isLoggedIn ? '/minha-conta' : buildLoginPath(pathname, null, loginArea)}
       className="inline-flex min-h-11 items-center justify-center px-4 text-sm font-bold bg-foreground text-background rounded-[3px] transition-opacity hover:opacity-90 active:scale-95 shrink-0"
     >
-      {isLoggedIn ? 'Perfil' : 'Entrar'}
+      {isLoggedIn ? 'Minha conta' : 'Entrar'}
     </Link>
   )
 
@@ -142,7 +142,7 @@ export function Header() {
         <Link href={INCOME_PORTAL_ROUTES.catalog} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Explorar</Link>
         <Link href="/ia" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>IA na Prática</Link>
         <Link href="/blog/aprender/ingles" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Idiomas</Link>
-        <Link href="/quiz-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Diagnóstico</Link>
+        <Link href="/ofertas/bussola-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Bússola de Negócios</Link>
         <Link href={MUSIC_PORTAL_HOME} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>NKL Cordas</Link>
         <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className={ecosystemLinkCls}>Sugerir site</a>
       </>
@@ -151,8 +151,8 @@ export function Header() {
     const brandHref = isIncomeRoute ? INCOME_PORTAL_ROUTES.catalog : '/'
     const brandTitle = isIncomeRoute ? 'Renda Extra' : 'Portal NKL'
     const brandSubtitle = isIncomeRoute
-      ? 'O mapa editorial do Portal NKL'
-      : 'Ecossistema editorial multidisciplinar'
+      ? 'Guias e caminhos práticos do Portal NKL'
+      : 'Guias e ferramentas práticas do Portal NKL'
 
     return (
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
@@ -164,7 +164,7 @@ export function Header() {
               <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">{brandSubtitle}</span>
             </span>
           </Link>
-          <nav className="hidden items-center gap-4 xl:gap-5 lg:flex" aria-label="Navegação do ecossistema">{portalLinks}</nav>
+          <nav className="hidden items-center gap-4 xl:gap-5 lg:flex" aria-label="Navegação do Portal NKL">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
             {authBtn}
             {isLoggedIn && <NotificationBell href="/programas/notificacoes" area="income" />}

@@ -2,13 +2,53 @@
 id: decisionsLog
 tags: [adr, decisoes, descartes, historico]
 links: [projectBrief, techContext, systemPatterns, activeContext]
-updated: 2026-11-19
+updated: 2026-11-24
 ---
 
 # Decisions Log - ADRs Concisos
 
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
+
+## ADR-015 (2026-11-24) Desbloqueio dos 6 Idiomas, Upsell 30%/50%, Catalogo 55 + Mural Dinamico e Push por Sub-App
+- Decisao: liberar os 6 idiomas (`comingSoon: false`) com `LanguageAiAndPlanner` e desconto progressivo automatico no Stripe (`nkl_idioma_30`/`nkl_idioma_50` via contagem de `guide_purchases`), expandir `partner_programs` para 55 (15 cards/pagina + recursos do portal integrados) e `business_profiles` para 18 (Top-3 com playbooks reais), abrir `/mural-de-parceiros` ilimitado agrupado por `businessCategory`, segmentar `push_subscriptions.app_scope` com envio no `/admin`, e gerar livro Amazon KDP em Kindle + 6x9" via `build-amazon-book.ts`.
+- Motivo: transformar a entrega de idiomas em pacote completo irresistivel, atender perfis sem capital e com investimento inicial com clareza realista, permitir crescimento ilimitado de anunciantes por area e segmentar comunicados por sub-app instalado.
+- Descartado: manter 5 idiomas travados em `coming-soon`, limitar `/mural-de-parceiros` aos 10 slots fixos do in-feed ou acoplar envio de notificacoes exclusivamente a chaves VAPID ausentes.
+
+## ADR-014 (2026-11-24) Propagacao de `productSlug` no Checkout e Provisionamento Stripe Live -> Vercel
+- Decisao: propagar `productSlug` explicito de `ProductCheckoutClient` ate `/api/payments/create-ai-checkout`, `/api/payments/create-guide-checkout` e `buildGuidePurchaseCheckoutParams`; criar em `acct_1UZsOzQzOKRNmIif` o catalogo `IA na Prática NKL` (`prod_VgX0id233sZwnv`, 2 precos BRL) + webhook de 13 eventos (`we_1Uf9wpQzOKRNmIifj8PgQnwE`) enviando `STRIPE_WEBHOOK_SECRET` direto em memoria para a Vercel via stdin, e remover as 8 vars legadas Hotmart/MercadoPago.
+- Motivo: evitar fallback errado de SKU entre `bussola-negocios`/`pacote-renda-extra` e `ferramenta-ia`/`curso-ia-pratica`, ativar os endpoints de checkout/webhook Live na Vercel sem expor segredos em logs ou historico, e eliminar variaveis mortas.
+- Descartado: depender apenas de `offerVariant` legado no webhook ou gravar segredos via argumentos de shell/arquivos temporarios.
+
+## ADR-013 (2026-11-23) Execucao da Fase B Remota + Endurecimento RLS/RPC no Supabase
+- Decisao: aplicar apenas as migracoes faltantes `0041`, `0046`, `0047` e `0048` em `vgogceknmqdqzzpztkrr` mantendo `relrowsecurity = true` default-deny nas tabelas acessadas apenas via Drizzle server-side (`user_entitlements` com `user_entitlements_select_own`), revogar `EXECUTE` de `public.rls_auto_enable()` para `PUBLIC, anon, authenticated`, e subir os 11/11 ativos pagos em `guide-assets-private`.
+- Motivo: `0042`–`0045` ja estavam aplicadas no banco de producao, o codigo nao consulta essas tabelas via PostgREST no cliente, e o Security Advisor exigia bloqueio imediato da funcao `SECURITY DEFINER` (`0028`/`0029`) antes do upload de todos os guias privados.
+- Descartado: re-aplicar `0042`–`0045` manualmente ou abrir politicas `anon`/`authenticated` permissivas em tabelas exclusivas do servidor (`quiz_leads`, `ai_access_grants`).
+
+## ADR-012 (2026-11-22) Obstaculos Solidos DOM na Simulacao Navier-Stokes
+- Decisao: rasterizar caixas arredondadas dos cards e blocos visiveis da home em `fluid-obstacles.ts` (`uObstacles` RGBA na GPU + array 1-canal no fallback Canvas2D), aplicando reflexao de divergencia, condicao de Neumann na pressao, deslizamento livre (free-slip) sem penetracao e descarte no shader de exibicao, sincronizando via flag `obstaclesDirty`.
+- Motivo: fazer o fluido colidir fisicamente com as bordas dos elementos e escoar ao redor em vez de passar por tras dos containers, sem disparar `getBoundingClientRect` ou uploads WebGL ociosos quando nao ha scroll/resize/mutacao.
+- Descartado: recortar apenas com CSS/SVG estatico (sem fisica de deflexao no campo de velocidade) ou varrer o DOM em todo frame mesmo parado.
+
+## ADR-011 (2026-11-20) Fluido Submerso em Cards + Desbloqueio Windows Reduced-Motion + Capas 16:9
+- Decisao: desacoplar o fluido/parallax de `prefers-reduced-motion` (que congelava o canvas no Windows quando `SPI_GETCLIENTAREAANIMATION=False`), expor controle explicito `PortalFluidToggle`, adicionar `displaceRect()` em WebGL2/Canvas2D para cards empurrarem o fluido no scroll, substituir 15 capas por arte editorial 960x540 mantendo `idioma-chines.jpg`, e isolar `.worktrees`/`AntigoNKL` nas configs de lint/TS/IDE.
+- Motivo: restaurar interatividade continua para visitantes em Windows com animacoes do sistema desligadas, criar sensacao fisica de containers submersos em liquido e eliminar falso-positivos de CSS/TS/Tailwind do workspace.
+- Descartado: manter trava automatica por `matchMedia('(prefers-reduced-motion: reduce)')` e apagar worktrees Git.
+
+## ADR-010 (2026-11-20) Marca Portal NKL + Sub-apps por Area + CTA Unico de Conta + Fluido dt-Independente
+- Decisao: unificar a marca instalavel principal como `Portal NKL` (removendo `Rumo`), nomear cada sub-app PWA pela sua area (`Renda Extra`, `Musica`, `Idiomas`, `IA na Pratica`), exibir apenas um botao contextual de conta (`Entrar` ou `Minha conta`), e corrigir a dissipacao por `dt` e forca por substep nos motores `webgl-fluid-engine.ts` e `fluid-simulation.ts`.
+- Motivo: evitar dupla entrada redundante na barra, alinhar o nome instalado no celular ao dominio escolhido pelo usuario e garantir rastros fluidos visiveis ao mexer com mouse, toque e rolagem tanto no tema claro quanto no escuro.
+- Descartado: manter marca separada `Rumo`, botoes simultaneos `Entrar` + `Minha conta` e divisao de velocidade por substeps.
+
+## ADR-009 (2026-11-20) Funil Seletor de Trilha e PWAs isolados (marca substituida por ADR-010)
+- Decisao: estruturar a home em 4 trilhas (`src/config/tracks.ts`) levando a `/instalar?trilha=...` -> `/ofertas/[slug]` (`src/config/products.ts`), e servir manifests isolados em `/app/[slug]/manifest.webmanifest` apenas para ferramentas standalone (`bussola-negocios`, `ferramenta-ia`), substituindo a marca raiz Rumo por `Portal NKL` conforme ADR-010.
+- Motivo: transformar a entrada por objetivo em um funil claro sem jargao corporativo e permitir instalacao dedicada por aplicativo no celular sem prefixo NKL nem mistura entre ferramentas e e-books estaticos.
+- Descartado: manter um unico manifest generico para todas as ferramentas ou links diretos de card pago para fluxos internos sem pagina de oferta.
+
+## ADR-008 (2026-11-20) Acesso individual por SKU em `user_entitlements` + guard no servidor
+- Decisao: isolar cada produto pago por `(user_id, product_slug)` na tabela `user_entitlements` (`drizzle/0048_user_entitlements.sql`, `src/lib/entitlements.ts`), exigir `requireProductAccess(slug)` nas rotas protegidas (`/app/[slug]`, `/quiz-negocios`, `/resultado`, `/ia/curso`, `/ia/resultado`) e liberar/revogar via webhook Stripe (`product_entitlement`).
+- Motivo: garantir no servidor que o comprador acesse somente os SKUs adquiridos sem vazamento entre produtos, contas ou rotas diretas nao autenticadas, mantendo `Minha Conta` como hub fiel.
+- Descartado: flag unica de assinatura global no perfil ou bloqueio apenas visual no cliente.
 
 ## ADR-007 (2026-11-19) Manifesto cross-IDE + sync nao destrutivo
 - Decisao: centralizar servidores MCP em `tools/ide-mcp-manifest.json` e sincronizar `.vscode/mcp.json`, `.mcp.json`, `.cursor/mcp.json` e `~/.gemini/config/mcp_config.json` via `scripts/sync-ide-configs.mjs`.

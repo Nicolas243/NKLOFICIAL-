@@ -103,6 +103,10 @@ test('sends a contextual welcome email through Resend', async () => {
     assert.match(requestBody, /Bem-vindo/u);
     assert.match(requestBody, /Renda Extra/u);
     assert.match(requestBody, /portal\.example\.com/u);
+    assert.match(requestBody, /NKL\.png/u);
+    assert.match(requestBody, /\/ia/u);
+    assert.match(requestBody, /\/musica\/naipe_cordas/u);
+    assert.match(requestBody, /\/instalar/u);
     assert.match(requestBody, /guias\/renda-extra/u);
     assert.match(requestBody, /programas/u);
     assert.match(requestBody, /perfil/u);

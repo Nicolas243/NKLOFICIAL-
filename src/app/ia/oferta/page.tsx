@@ -89,7 +89,7 @@ export default function AiOfferPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/ia" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-neon px-6 py-3 font-bold text-black transition hover:scale-[1.02]">
-                Fazer diagnóstico grátis
+                Montar roteiro inicial grátis
               </Link>
               <a href="#perguntas" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-border px-6 py-3 font-bold transition hover:border-neon hover:text-neon">
                 Ver as perguntas do curso
@@ -170,7 +170,7 @@ export default function AiOfferPage() {
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">Por dentro do curso</p>
               <h2 className="mt-4 font-playfair text-4xl font-bold md:text-5xl">Uma trilha para usar, não apenas assistir.</h2>
             </div>
-            <Link href="/ia" className="font-bold text-neon hover:underline">Fazer diagnóstico gratuito →</Link>
+            <Link href="/ia" className="font-bold text-neon hover:underline">Montar roteiro inicial gratuito →</Link>
           </div>
           <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {modules.map((module, index) => (
@@ -238,14 +238,14 @@ export default function AiOfferPage() {
           </details>
           <details className="border-t border-border p-5">
             <summary className="cursor-pointer font-bold">Posso conhecer o método antes?</summary>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed opacity-70">Sim. Faça o diagnóstico gratuito, veja seu primeiro caminho e conheça o conteúdo antes de decidir.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed opacity-70">Sim. Monte seu roteiro inicial gratuito, veja seu primeiro caminho e conheça o conteúdo antes de decidir.</p>
           </details>
         </div>
         <div className="mt-10 rounded-3xl border border-neon/30 bg-neon/5 p-6 text-center md:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-neon">Seu primeiro passo</p>
           <h2 className="mt-3 font-playfair text-4xl font-bold">Descubra o que você precisa aprender primeiro.</h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed opacity-70">Responda oito perguntas e receba uma trilha inicial gratuita, feita para o seu objetivo.</p>
-          <Link href="/ia" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-lg bg-neon px-7 py-3 font-bold text-black transition hover:scale-[1.02]">Fazer meu diagnóstico grátis</Link>
+          <Link href="/ia" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-lg bg-neon px-7 py-3 font-bold text-black transition hover:scale-[1.02]">Montar meu roteiro inicial grátis</Link>
         </div>
       </section>
     </main>

@@ -13,7 +13,7 @@ const payloadSchema = z.object({
   email: z.string().trim().email().max(320),
   answers: answerSchema,
   privacyConsent: z.literal(true, {
-    error: 'Confirme o consentimento com a Política de Privacidade para processar o diagnóstico.',
+    error: 'Confirme o consentimento com a Política de Privacidade para gerar seu perfil prático.',
   }),
 });
 

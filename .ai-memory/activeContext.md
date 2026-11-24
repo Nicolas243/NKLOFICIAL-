@@ -1,43 +1,9 @@
----
-id: activeContext
-tags: [contexto-ativo, milestone, workstreams, overnight]
-links: [progress, decisionsLog, projectBrief, systemPatterns, techContext]
-updated: 2026-11-19
----
+# Contexto Ativo (Portal NKL)
 
-# Active Context
+## Foco Atual
+- **Fase D & Expansao Pre-Deploy concluida (2026-11-24):** Stripe Live + cupons `nkl_idioma_30`/`nkl_idioma_50`, migracao `0049` (55 oportunidades, 18 perfis, `push_subscriptions.app_scope`), backfill de 22 e-mails Resend com logo e secoes do portal, 6 idiomas liberados com guia de IA por idade + planner 90d + upsell 30%/50%, Estúdio IA Lab + NotebookLM semanal, Mural ilimitado por area e livro Amazon KDP (Kindle + 6x9").
 
-Limite rigido: menos de 80 linhas. Atualizar ao concluir qualquer tarefa.
-Checklist detalhado em [[progress]]; decisoes em [[decisionsLog]]; roteiro executivo em [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md).
-
-## Milestone atual
-
-Sprint overnight + sincronizacao cross-IDE concluidas localmente em `master`:
-5 branches integradas sem conflitos + manifesto/sync MCP/CLI/extensoes (`npm run ide:sync` / `ide:doctor`) preservando `.vscode/mcp.json` (`microsoft-clarity`, `cloudflare-api`) e configs globais + `npm run verify` verde + 199/199 testes unitarios + 46/46 E2E.
-
-## Workstreams integradas em `master` (commits locais, sem push)
-
-| Branch | Dono | Status |
-|---|---|---|
-| `feat/memory-second-brain` | memory-architect | Integrado em `master` (`.ai-memory/`, skill `ai-memory-graph`, protocolo cross-IDE) |
-| `feat/home-base-music-move` | home-and-shell | Integrado em `master` (Home base `/`, musica em `/musica/naipe_cordas`, shell unificado, `portal-areas`) |
-| `feat/guides-funnel-downloads` | guides-funnel | Integrado em `master` (Amostra de 5 aulas de ingles, download 403 corrigido, 5 idiomas "Em breve", `/api/materials`) |
-| `feat/ia-quiz-compliance` | ia-and-quiz | Integrado em `master` (Checkout/webhook IA na Pratica, Quiz de Negocios, LGPD `compliance.ts`, migracoes 0046/0047) |
-| `feat/ads-catalog-seo` | ads-catalog-seo | Integrado em `master` (Moderacao de anuncios, lock transacional de slots, mural real, saved programs, Micro1, sitemap/robots) |
-
-## Regras da rodada
-
-- Nenhuma branch enviada a remoto; proibido push, deploy ou migracao remota sem aprovacao explicita.
-- Segredos nunca impressos ou versionados; `.env.local` intocado.
-- Zero emojis em codigo, notas e commits.
-
-## Proximo passo imediato (aguardando aprovacao do usuario)
-
-1. Revisao visual local de `/`, `/musica/naipe_cordas`, `/guias/ingles/ebook`, `/ia/oferta`, `/quiz-negocios`, `/programas` e `/mural-de-parceiros`.
-2. Executar as Fases A -> B -> C -> D de [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md) na janela de mudanca aprovada (banco e bucket privado -> variaveis de ambiente -> build/deploy -> smoke test e monitoria).
-3. Obter aprovacao explicita de NKL_OFICIAL antes de qualquer `git push` ou deploy em producao.
-
-## Riscos conhecidos
-
-- Migracoes locais (`0044` a `0047`) ainda nao foram aplicadas no banco Supabase remoto (ver Fase A de [ROADMAP-DEPLOY.md](../docs/ROADMAP-DEPLOY.md)).
-- Paginas de idiomas nao ingleses permanecem `coming-soon` (HTTP 409 no checkout) ate revisao editorial final.
+## Pendencias Somente Manuais do Usuario (Browser / Contas Externas)
+1. **Cloudflare Email Routing (`@nkloficial.com.br`):** migrar NS no Registro.br preservando Vercel A/CNAME + `send` do Resend conforme `docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md`.
+2. **Amazon KDP & NotebookLM:** subir `private-assets/amazon-book/` na KDP e publicar episodios de audio NotebookLM no YouTube Nao Listado ou Cloudflare R2.
+3. **Opcional Push OS / CLI:** cadastrar chaves VAPID na Vercel e fazer `stripe switch` caso deseje usar Stripe CLI no terminal local.

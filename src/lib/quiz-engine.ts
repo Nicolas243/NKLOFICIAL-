@@ -74,14 +74,14 @@ export function resolveRequiredSocial(profile: BusinessProfile): number {
 }
 
 function profileScore(profile: BusinessProfile, calculated: CalculatedQuizProfile): number {
-  const capitalCapacity = calculated.capital * 500;
+  const capitalCapacity = calculated.capital <= 1 ? 0 : calculated.capital * 500;
   const timeCapacity = calculated.time * 4;
   const capitalGap = Math.max(0, Number(profile.minCapital) - capitalCapacity) / 500;
   const timeGap = Math.max(0, profile.minTimeHours - timeCapacity) / 20;
   const levelGap = levelDistance(calculated.tech, profile.techLevel) + levelDistance(calculated.risk, profile.riskLevel);
   const socialFit = Math.abs(calculated.social - resolveRequiredSocial(profile));
 
-  return capitalGap * 4 + timeGap * 4 + levelGap + socialFit;
+  return capitalGap * 6 + timeGap * 4 + levelGap + socialFit;
 }
 
 export function rankBusinessProfiles(

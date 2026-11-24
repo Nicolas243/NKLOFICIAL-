@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     ".worktrees/**",
+    "AntigoNKL/**",
+    "Alignerr _ Powered by Labelbox_files/**",
     "next-env.d.ts",
   ]),
 ]);

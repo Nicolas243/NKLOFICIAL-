@@ -8,9 +8,12 @@ import { MUSIC_PORTAL_HOME, getPortalSurface } from '@/lib/income-portal';
 import { SharePageButton } from '@/components/ui/share-page-button';
 import { getSupportLinkClassName } from '@/lib/ui/support-layout';
 
+const WHATSAPP_AUTO_MESSAGE_DELAY_MS = 2 * 60 * 1000;
 const WHATSAPP_MESSAGE_INTERVAL_MS = 6500;
 const WHATSAPP_MESSAGE_VISIBLE_MS = 12000;
 const COMMUNITY_NOTIFICATION_KEY = 'community_notified';
+// Verified supporter count displayed in the home footer pill.
+const PROJECT_SUPPORTERS_COUNT: number = 0;
 
 export function Footer() {
   const pathname = usePathname();
@@ -43,16 +46,29 @@ export function Footer() {
 
   useEffect(() => {
     if (window.sessionStorage.getItem(COMMUNITY_NOTIFICATION_KEY)) return;
-    window.sessionStorage.setItem(COMMUNITY_NOTIFICATION_KEY, new Date().toISOString());
-    const showTimer = window.setTimeout(() => setShowWhatsappMessage(true), 0);
-    const visibilityTimer = window.setTimeout(() => setShowWhatsappMessage(false), WHATSAPP_MESSAGE_VISIBLE_MS);
-    const timer = window.setInterval(() => {
-      setWhatsappMessageIndex((index) => (index + 1) % whatsappMessages.length);
-    }, WHATSAPP_MESSAGE_INTERVAL_MS);
+    let visibilityTimer: number | undefined;
+    let intervalTimer: number | undefined;
+
+    const showTimer = window.setTimeout(() => {
+      window.sessionStorage.setItem(COMMUNITY_NOTIFICATION_KEY, new Date().toISOString());
+      setShowWhatsappMessage(true);
+      visibilityTimer = window.setTimeout(
+        () => setShowWhatsappMessage(false),
+        WHATSAPP_MESSAGE_VISIBLE_MS,
+      );
+      intervalTimer = window.setInterval(() => {
+        setWhatsappMessageIndex((index) => (index + 1) % whatsappMessages.length);
+      }, WHATSAPP_MESSAGE_INTERVAL_MS);
+    }, WHATSAPP_AUTO_MESSAGE_DELAY_MS);
+
     return () => {
-      window.clearTimeout(visibilityTimer);
       window.clearTimeout(showTimer);
-      window.clearInterval(timer);
+      if (visibilityTimer !== undefined) {
+        window.clearTimeout(visibilityTimer);
+      }
+      if (intervalTimer !== undefined) {
+        window.clearInterval(intervalTimer);
+      }
     };
   }, [whatsappMessages.length]);
 
@@ -112,7 +128,7 @@ export function Footer() {
           <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
         </a>
       </div>
-      <footer className="site-footer">
+      <footer className={isHomeSurface ? 'site-footer site-footer-home' : 'site-footer'}>
         {toast && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] px-6 py-3 bg-foreground text-background rounded-xl shadow-2xl font-bold text-sm animate-[fadeInUp_0.3s_ease-out]">
             {toast}
@@ -159,7 +175,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-box">
             <h4>Sua voz importa</h4>
-            <p>{isMusicSurface ? 'Ajude a construir o melhor portal de violino do Brasil.' : 'Ajude a manter o ecossistema editorial claro e atualizado.'}</p>
+            <p>{isMusicSurface ? 'Ajude a construir o melhor portal de violino do Brasil.' : 'Ajude a manter os guias e catálogos claros e atualizados.'}</p>
             <a href="https://forms.gle/mcfnxfXuF7bmuhPDA" target="_blank" rel="noopener noreferrer" className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200">Deixar Feedback Rapido</a>
           </div>
           <div className="footer-box">
@@ -169,24 +185,69 @@ export function Footer() {
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
-            <p>{isMusicSurface ? 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.' : 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.'}</p>
-            <p className="mt-2 text-sm opacity-75">Apoio direto para manter os guias, catálogos e estudos abertos.</p>
-            <div className="flex w-full flex-wrap gap-2">
-              <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar NKL</a>
-              <button type="button" onClick={() => setPixOpen(true)} className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar por Pix</button>
-              <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Buy Me a Coffee</a>
-            </div>
+            {isHomeSurface ? (
+              <>
+                <p>Sua ajuda mantém os guias, catálogos e estudos gratuitos para todo mundo.</p>
+                <p className="portal-supporters-counter" data-testid="portal-supporters-count">
+                  <span className="portal-supporters-dot" aria-hidden="true" />
+                  <span>
+                    {PROJECT_SUPPORTERS_COUNT >= 1 ? (
+                      <>
+                        Pessoas que já apoiaram o projeto: <strong>{PROJECT_SUPPORTERS_COUNT}</strong>
+                      </>
+                    ) : (
+                      'Projeto recém-lançado — seja o primeiro a apoiar esta iniciativa.'
+                    )}
+                  </span>
+                </p>
+                <div className="portal-support-grid" data-testid="portal-support-grid">
+                  <a
+                    href="https://link.mercadopago.com.br/apoienkloficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="portal-support-btn"
+                  >
+                    Apoiar NKL
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setPixOpen(true)}
+                    className="portal-support-btn"
+                  >
+                    Apoiar por Pix
+                  </button>
+                  <a
+                    href="https://www.buymeacoffee.com/ni2co3san9c"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="portal-support-btn"
+                  >
+                    Buy Me a Coffee
+                  </a>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>{isMusicSurface ? 'Todo o conteudo gratuito exige pesquisa. Apoie nossa estrutura.' : 'A curadoria exige pesquisa e revisão contínuas. Apoie nossa estrutura.'}</p>
+                <p className="mt-2 text-sm opacity-75">Apoio direto para manter os guias, catálogos e estudos abertos.</p>
+                <div className="flex w-full flex-wrap gap-2">
+                  <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar NKL</a>
+                  <button type="button" onClick={() => setPixOpen(true)} className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar por Pix</button>
+                  <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Buy Me a Coffee</a>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="footer-box footer-legal items-center text-center">
-          <h4>Ecossistema Portal NKL</h4>
+          <h4>Áreas do Portal NKL</h4>
           <nav className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Navegação do rodapé">
             <Link href="/" className="text-sm hover:text-neon hover:underline">Início</Link>
             <Link href={MUSIC_PORTAL_HOME} className="text-sm hover:text-neon hover:underline">NKL Cordas</Link>
             <Link href="/programas" className="text-sm hover:text-neon hover:underline">Oportunidades</Link>
             <Link href="/ia" className="text-sm hover:text-neon hover:underline">IA na Prática</Link>
             <Link href="/blog/aprender/ingles" className="text-sm hover:text-neon hover:underline">Idiomas</Link>
-            <Link href="/quiz-negocios" className="text-sm hover:text-neon hover:underline">Diagnóstico</Link>
+            <Link href="/ofertas/bussola-negocios" className="text-sm hover:text-neon hover:underline">Bússola de Negócios</Link>
             <Link href="/mural-de-parceiros" className="text-sm hover:text-neon hover:underline">Mural de Parceiros</Link>
           </nav>
           <h4>Legal / Conformidade</h4>

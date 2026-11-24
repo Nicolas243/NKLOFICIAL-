@@ -1,4 +1,4 @@
-import { and, eq, gt, isNull, or } from 'drizzle-orm';
+import { and, desc, eq, gt, isNull, or } from 'drizzle-orm';
 import type { db as DbClient } from '@/db';
 import { adCampaigns, adInventorySlots } from '@/db/schema';
 import {
@@ -92,6 +92,42 @@ export function adAssetExtension(file: File): string {
     'video/webm': 'webm',
   };
   return extensionByMime[file.type] ?? 'bin';
+}
+
+export type ActiveMuralCampaign = {
+  id: string;
+  businessName: string;
+  businessCategory: string;
+  offerDescription: string | null;
+  assetUrl: string | null;
+  assetMimeType: string | null;
+  assetAltText: string;
+  destinationUrl: string;
+  monthlyAmountCents: number;
+};
+
+export async function getActiveMuralCampaigns(): Promise<ActiveMuralCampaign[]> {
+  const { db } = await import('@/db');
+  const rows = await db
+    .select({
+      id: adCampaigns.id,
+      businessName: adCampaigns.businessName,
+      businessCategory: adCampaigns.businessCategory,
+      offerDescription: adCampaigns.offerDescription,
+      assetUrl: adCampaigns.assetUrl,
+      assetMimeType: adCampaigns.assetMimeType,
+      assetAltText: adCampaigns.assetAltText,
+      destinationUrl: adCampaigns.destinationUrl,
+      monthlyAmountCents: adCampaigns.monthlyAmountCents,
+    })
+    .from(adCampaigns)
+    .where(and(eq(adCampaigns.status, 'active'), eq(adCampaigns.billingStatus, 'active')))
+    .orderBy(desc(adCampaigns.adminApprovedAt), desc(adCampaigns.createdAt));
+
+  return rows.map((row) => ({
+    ...row,
+    businessCategory: row.businessCategory?.trim() || 'Parceiros gerais',
+  }));
 }
 
 export async function getActiveAdSlots(): Promise<ActiveAdSlot[]> {

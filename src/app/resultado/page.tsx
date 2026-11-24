@@ -40,12 +40,12 @@ export default function QuizResultPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 md:pt-14">
-      <Link href="/quiz-negocios" className="text-sm font-bold text-neon hover:underline">← Refazer o diagnóstico</Link>
+      <Link href="/quiz-negocios" className="text-sm font-bold text-neon hover:underline">← Refazer a Bússola de Negócios</Link>
       <header className="mt-6 max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Seu diagnóstico</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Seu perfil prático</p>
         <h1 className="mt-3 font-playfair text-4xl font-bold md:text-6xl">{result.archetype}</h1>
         <p className="mt-5 text-lg leading-relaxed opacity-80">{result.analysis}</p>
-        <p className="mt-3 text-xs opacity-60">Diagnóstico salvo localmente neste navegador para consulta imediata.</p>
+        <p className="mt-3 text-xs opacity-60">Resultado salvo localmente neste navegador para consulta imediata.</p>
       </header>
       <section className="mt-8 grid gap-3 sm:grid-cols-5" aria-label="Pontuação por eixo">
         {PROFILE_AXES.map((axis) => {
@@ -72,7 +72,7 @@ export default function QuizResultPage() {
           ))}
         </div>
       </section>
-      <p className="mt-10 rounded-xl border border-orange/30 bg-orange/5 p-4 text-sm leading-relaxed opacity-80">Este diagnóstico é editorial e não garante renda ou aprovação em nenhuma plataforma. Confirme regras, custos, disponibilidade e segurança diretamente com cada serviço.</p>
+      <p className="mt-10 rounded-xl border border-orange/30 bg-orange/5 p-4 text-sm leading-relaxed opacity-80">Este roteiro inicial é informativo e não garante renda ou aprovação em nenhuma plataforma. Confirme regras, custos, disponibilidade e segurança diretamente com cada serviço.</p>
     </div>
   );
 }

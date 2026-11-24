@@ -18,9 +18,31 @@ type ThemeContextValue = {
   setTheme: (theme: Theme) => void;
 };
 
-const THEME_CHANGE_THROTTLE_MS = 180;
-
 const ThemeContext = React.createContext<ThemeContextValue | null>(null);
+
+function applyTheme(next: Theme): void {
+  const root = document.documentElement;
+  root.classList.toggle('dark', next === 'dark');
+  root.dataset.theme = next;
+  root.style.colorScheme = next;
+}
+
+function readStoredTheme(): Theme | null {
+  try {
+    const stored = window.localStorage.getItem('theme');
+    return stored === 'light' || stored === 'dark' ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredTheme(next: Theme): void {
+  try {
+    window.localStorage.setItem('theme', next);
+  } catch {
+    // Ignore storage quota/privacy restrictions cleanly.
+  }
+}
 
 export function useTheme() {
   const context = React.useContext(ThemeContext);
@@ -33,37 +55,29 @@ export function useTheme() {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const defaultTheme = props.defaultTheme ?? 'light';
   const [theme, setThemeState] = React.useState<Theme>(defaultTheme);
-  const lastThemeChange = React.useRef(0);
-
   React.useEffect(() => {
-    const storedTheme = window.localStorage.getItem('theme');
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const storedTheme = readStoredTheme();
+    const systemTheme: Theme = window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
-    const nextTheme = storedTheme === 'light' || storedTheme === 'dark'
+    const nextTheme: Theme = storedTheme
       ? storedTheme
       : props.enableSystem
         ? systemTheme
         : defaultTheme;
 
-    React.startTransition(() => {
-      setThemeState(nextTheme);
-    });
+    applyTheme(nextTheme);
+    writeStoredTheme(nextTheme);
+    // Sincroniza estado React com localStorage na montagem inicial sem sobrescrever tema salvo.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setThemeState(nextTheme);
   }, [defaultTheme, props.enableSystem]);
 
-  React.useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
-    root.dataset.theme = theme;
-    window.localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const setTheme = (nextTheme: Theme) => {
-    const now = Date.now();
-    if (now - lastThemeChange.current < THEME_CHANGE_THROTTLE_MS) return;
-    lastThemeChange.current = now;
+  const setTheme = React.useCallback((nextTheme: Theme) => {
+    applyTheme(nextTheme);
+    writeStoredTheme(nextTheme);
     setThemeState(nextTheme);
-  };
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme: theme, setTheme }}>

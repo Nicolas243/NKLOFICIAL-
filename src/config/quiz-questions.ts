@@ -524,7 +524,7 @@ export const QUIZ_QUESTIONS: Question[] = [
       'Prefiro não ter contato direto com clientes',
       'Aceito apenas trocas curtas de mensagens por texto',
       'Converso bem quando o pedido já chega claro e estruturado',
-      'Gosto de conduzir reuniões de diagnóstico e apresentar propostas',
+      'Gosto de conduzir reuniões para entender demandas e apresentar propostas',
       'Tenho alta energia para consultoria, vendas e negociação direta',
     ]),
   },

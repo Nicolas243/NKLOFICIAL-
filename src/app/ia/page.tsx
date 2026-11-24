@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AiDiagnostic } from '@/components/ai/ai-diagnostic';
+import { AiPromptLab } from '@/components/ai/ai-prompt-lab';
 import { getAiCourseModules } from '@/lib/ai-course';
 import { absoluteSiteUrl } from '@/lib/site';
 
@@ -20,7 +21,7 @@ export default function AiLandingPage() {
           <h1 className="mt-4 max-w-3xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Pare de só perguntar. Aprenda a usar IA.</h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed opacity-80">Um caminho prático para estudar, trabalhar, criar, vender e programar com mais clareza — sem confiar cegamente em respostas automáticas.</p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <a href="#diagnostico" className="inline-flex min-h-11 items-center rounded-lg bg-neon px-5 py-3 font-bold text-black">Fazer diagnóstico grátis</a>
+            <a href="#diagnostico" className="inline-flex min-h-11 items-center rounded-lg bg-neon px-5 py-3 font-bold text-black">Montar roteiro inicial grátis</a>
             <Link href="/ia/oferta" className="inline-flex min-h-11 items-center rounded-lg border border-border px-5 py-3 font-bold">Conhecer o curso</Link>
           </div>
         </div>
@@ -32,6 +33,10 @@ export default function AiLandingPage() {
           <p className="mt-6 text-xs leading-relaxed opacity-60">Orientação educacional. Nenhuma aula promete renda, emprego ou resultado garantido.</p>
         </div>
       </header>
+
+      <div className="mt-12">
+        <AiPromptLab />
+      </div>
 
       <section id="diagnostico" className="mt-10 grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-start">
         <div className="md:sticky md:top-20">
@@ -46,7 +51,19 @@ export default function AiLandingPage() {
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">O caminho completo</p>
         <h2 id="ai-modules-title" className="mt-3 font-playfair text-4xl font-bold md:text-5xl">Do primeiro prompt ao processo confiável.</h2>
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {modules.map((module, index) => <article key={module.slug} className="rounded-2xl border border-border bg-surface p-5"><span className="text-sm font-bold text-neon">0{index + 1}</span><h3 className="mt-3 text-xl font-bold">{module.title}</h3><p className="mt-2 text-sm leading-relaxed opacity-70">{module.summary}</p></article>)}
+          {modules.map((module, index) => (
+            <article key={module.slug} className="rounded-2xl border border-border bg-surface p-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-bold text-neon">0{index + 1}</span>
+                <span className="rounded-full border border-border px-2.5 py-0.5 text-[11px] font-semibold text-foreground/70">
+                  {module.unlockAfterDays === 0 ? 'Dia 1' : `Semana ${Math.ceil(module.unlockAfterDays / 7) + 1}`}
+                </span>
+              </div>
+              <h3 className="mt-3 text-xl font-bold">{module.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed opacity-70">{module.summary}</p>
+              <p className="mt-3 text-[11px] font-semibold text-orange/90">{module.notebookLmFormat}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>

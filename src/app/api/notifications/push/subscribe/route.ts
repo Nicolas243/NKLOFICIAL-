@@ -3,11 +3,21 @@ import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
 import { pushSubscriptions } from '@/db/schema';
 
+const ALLOWED_APP_SCOPES = ['portal', 'renda-extra', 'musica', 'idiomas', 'ia'] as const;
+type AllowedAppScope = (typeof ALLOWED_APP_SCOPES)[number];
+
 type SubscriptionPayload = {
   endpoint?: unknown;
   keys?: unknown;
   expirationTime?: unknown;
+  appScope?: unknown;
 };
+
+function resolveAppScope(value: unknown): AllowedAppScope {
+  return typeof value === 'string' && ALLOWED_APP_SCOPES.includes(value as AllowedAppScope)
+    ? (value as AllowedAppScope)
+    : 'portal';
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
   const supabase = await createClient();
@@ -19,9 +29,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Inscrição de push inválida.' }, { status: 400 });
   }
 
+  const appScope = resolveAppScope(payload.appScope);
+
   await db.insert(pushSubscriptions).values({
     userId: user.id,
     endpoint: payload.endpoint,
+    appScope,
     subscription: {
       endpoint: payload.endpoint,
       keys: payload.keys as Record<string, unknown>,
@@ -31,6 +44,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     target: pushSubscriptions.endpoint,
     set: {
       userId: user.id,
+      appScope,
       subscription: {
         endpoint: payload.endpoint,
         keys: payload.keys as Record<string, unknown>,
@@ -40,5 +54,5 @@ export async function POST(request: Request): Promise<NextResponse> {
     },
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, appScope });
 }

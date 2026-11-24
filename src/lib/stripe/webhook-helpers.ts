@@ -1,26 +1,53 @@
 import type Stripe from 'stripe';
+import { isValidProductSlug, type ProductSlug } from '@/config/products';
 
-export type StripeReference = {
-  type:
-    | 'guide_purchase'
-    | 'guide_subscription'
-    | 'booking'
-    | 'premium_subscription'
-    | 'ad_campaign'
-    | 'ai_one_time'
-    | 'ai_subscription';
-  id: string;
-};
+export type StripeReference =
+  | {
+      type:
+        | 'guide_purchase'
+        | 'guide_subscription'
+        | 'booking'
+        | 'premium_subscription'
+        | 'ad_campaign'
+        | 'ai_one_time'
+        | 'ai_subscription';
+      id: string;
+    }
+  | {
+      type: 'product_entitlement';
+      id: string;
+      userId: string;
+      productSlug: ProductSlug;
+    };
 
 export type AiGrantStatus = 'pending' | 'active' | 'canceling' | 'canceled' | 'past_due';
 
 const REFERENCE_PATTERN = /^(guide_purchase|guide_subscription|booking|premium_subscription|ad_campaign|ai_one_time|ai_subscription):([^:]+)$/;
+const PRODUCT_ENTITLEMENT_PATTERN = /^product_entitlement:([^:]+):([^:]+)$/;
 
 export function parseClientReferenceId(reference: string | null | undefined): StripeReference | null {
   if (typeof reference !== 'string') return null;
-  const match = REFERENCE_PATTERN.exec(reference.trim());
-  if (!match) return null;
-  return { type: match[1] as StripeReference['type'], id: match[2] };
+  const trimmed = reference.trim();
+  const match = REFERENCE_PATTERN.exec(trimmed);
+  if (match) {
+    return { type: match[1] as Exclude<StripeReference['type'], 'product_entitlement'>, id: match[2] };
+  }
+
+  const entitlementMatch = PRODUCT_ENTITLEMENT_PATTERN.exec(trimmed);
+  if (entitlementMatch) {
+    const userId = entitlementMatch[1].trim();
+    const productSlug = entitlementMatch[2].trim();
+    if (userId.length > 0 && isValidProductSlug(productSlug)) {
+      return {
+        type: 'product_entitlement',
+        id: userId,
+        userId,
+        productSlug,
+      };
+    }
+  }
+
+  return null;
 }
 
 export function getStripeReference(
@@ -33,15 +60,43 @@ export function getStripeReference(
   const fromClientReference = parseClientReferenceId(clientReferenceId);
   if (fromClientReference) return fromClientReference;
 
+  const productSlug = metadata?.productSlug?.trim();
+  const userId = metadata?.userId?.trim();
+  if (productSlug && userId && !userId.includes(':') && isValidProductSlug(productSlug)) {
+    return {
+      type: 'product_entitlement',
+      id: userId,
+      userId,
+      productSlug,
+    };
+  }
+
   const product = metadata?.product?.trim();
   const plan = metadata?.plan?.trim();
-  const userId = metadata?.userId?.trim();
   if ((product === 'ia-na-pratica' || product === 'ai-na-pratica') && userId && !userId.includes(':')) {
     if (plan === 'one_time') return { type: 'ai_one_time', id: userId };
     if (plan === 'subscription') return { type: 'ai_subscription', id: userId };
   }
 
   return null;
+}
+
+export function resolveGuideProductSlug(
+  offerVariant: string | null | undefined,
+  metadataProductSlug?: string | null,
+): ProductSlug {
+  const normalizedMetadataSlug = metadataProductSlug?.trim();
+  if (normalizedMetadataSlug && isValidProductSlug(normalizedMetadataSlug)) {
+    return normalizedMetadataSlug;
+  }
+  const normalizedVariant = offerVariant?.trim();
+  if (normalizedVariant === 'english-ebook-sales-page') {
+    return 'ebook-ingles';
+  }
+  if (normalizedVariant && isValidProductSlug(normalizedVariant)) {
+    return normalizedVariant;
+  }
+  return 'pacote-renda-extra';
 }
 
 export function normalizeStripeSubscriptionStatus(status: string | null | undefined): string {

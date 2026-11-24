@@ -4,9 +4,11 @@ import { eq, inArray } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { isUndefinedTableError } from '@/lib/entitlements';
 import { db } from '@/db';
 import {
   userProfiles,
+  userEntitlements,
   businessDirectory,
   aiAccessGrants,
   aiLearningProgress,
@@ -29,6 +31,20 @@ import {
   passwordChangeAttempts,
 } from '@/db/schema';
 
+async function readUserEntitlementsForExport(userId: string) {
+  try {
+    return await db
+      .select()
+      .from(userEntitlements)
+      .where(eq(userEntitlements.userId, userId));
+  } catch (error) {
+    if (isUndefinedTableError(error)) {
+      return [];
+    }
+    throw error;
+  }
+}
+
 /**
  * Portabilidade de dados (LGPD/GDPR — Art. 18): retorna um snapshot JSON de
  * todos os dados vinculados ao usuário autenticado.
@@ -45,6 +61,7 @@ export async function exportUserData(): Promise<string> {
 
   const [
     profileRows,
+    entitlements,
     aiGrants,
     aiProgress,
     savedPrograms,
@@ -62,6 +79,7 @@ export async function exportUserData(): Promise<string> {
     notifs,
   ] = await Promise.all([
     db.select().from(userProfiles).where(eq(userProfiles.id, user.id)),
+    readUserEntitlementsForExport(user.id),
     db.select().from(aiAccessGrants).where(eq(aiAccessGrants.userId, user.id)),
     db.select().from(aiLearningProgress).where(eq(aiLearningProgress.userId, user.id)),
     db.select().from(savedPartnerPrograms).where(eq(savedPartnerPrograms.userId, user.id)),
@@ -83,6 +101,7 @@ export async function exportUserData(): Promise<string> {
     {
       exportedAt: new Date().toISOString(),
       profile: profileRows[0] ?? null,
+      userEntitlements: entitlements,
       aiAccessGrants: aiGrants,
       aiLearningProgress: aiProgress,
       savedPartnerPrograms: savedPrograms,
@@ -150,6 +169,15 @@ export async function deleteUserAccount(): Promise<void> {
   try {
     await db.transaction(async (tx) => {
       // Acesso e progresso em produtos digitais, programas salvos e campanhas.
+      try {
+        await tx.transaction(async (savepointTx) => {
+          await savepointTx.delete(userEntitlements).where(eq(userEntitlements.userId, userId));
+        });
+      } catch (entitlementError) {
+        if (!isUndefinedTableError(entitlementError)) {
+          throw entitlementError;
+        }
+      }
       await tx.delete(aiLearningProgress).where(eq(aiLearningProgress.userId, userId));
       await tx.delete(aiAccessGrants).where(eq(aiAccessGrants.userId, userId));
       await tx.delete(savedPartnerPrograms).where(eq(savedPartnerPrograms.userId, userId));

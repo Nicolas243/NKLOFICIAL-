@@ -85,7 +85,7 @@ export default function PrivacidadePage() {
             Brasil, com salvaguardas contratuais e técnicas aplicáveis.
           </p>
           <ul className="mt-3 list-disc space-y-2 pl-5 opacity-85">
-            <li>Supabase e Vercel: autenticação, banco, armazenamento, hospedagem e entrega do site.</li>
+            <li>Supabase e Vercel: autenticação, banco, armazenamento, hospedagem, entrega do site e métricas técnicas anônimas de desempenho (Vercel Speed Insights, sem cookies).</li>
             <li>Resend: envio transacional dos materiais solicitados, com o PDF anexado e o nome/e-mail informado.</li>
             <li>Formspree: recebimento de dados enviados em formulários editoriais específicos.</li>
             <li>Stripe: pagamentos, assinaturas, conciliação e suporte da compra.</li>

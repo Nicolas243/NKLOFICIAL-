@@ -89,7 +89,7 @@ export function BusinessMatchmaker() {
         <div
           className="h-2 overflow-hidden rounded-full bg-border"
           role="progressbar"
-          aria-label="Progresso do diagnóstico"
+          aria-label="Progresso da Bússola de Negócios"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress)}
@@ -103,9 +103,9 @@ export function BusinessMatchmaker() {
           <motion.form key="gate" onSubmit={submit} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="space-y-6">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.16em] text-neon">Último passo</p>
-              <h2 id="quiz-title" className="mt-3 font-playfair text-3xl font-bold md:text-5xl">Informe seu e-mail para abrir o diagnóstico</h2>
+              <h2 id="quiz-title" className="mt-3 font-playfair text-3xl font-bold md:text-5xl">Informe seu e-mail para abrir seu plano prático</h2>
               <p className="mt-4 leading-relaxed opacity-75">
-                Seu e-mail registra este diagnóstico no Portal NKL. O resultado completo abre imediatamente na página /resultado e fica salvo neste navegador.
+                Seu e-mail registra sua Bússola de Negócios no Portal NKL. O resultado completo abre imediatamente na página /resultado e fica salvo neste navegador.
               </p>
             </div>
             <label className="block text-sm font-bold" htmlFor="quiz-email">
@@ -123,7 +123,7 @@ export function BusinessMatchmaker() {
                 className="mt-1 h-4 w-4 rounded border-border accent-neon"
               />
               <span>
-                Concordo com o registro do meu e-mail e das respostas deste diagnóstico nos termos da{' '}
+                Concordo com o registro do meu e-mail e das respostas da Bússola de Negócios nos termos da{' '}
                 <Link href="/privacidade" className="font-bold text-neon underline">
                   Política de Privacidade
                 </Link>{' '}

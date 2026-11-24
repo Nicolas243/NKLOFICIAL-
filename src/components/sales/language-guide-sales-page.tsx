@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
+import { LanguageAiAndPlanner } from '@/components/sales/language-ai-and-planner';
 import { absoluteSiteUrl } from '@/lib/site';
 import { getLanguageEbookByOffer } from '@/lib/guide-offer';
 
@@ -23,7 +24,7 @@ const CONTENT: Record<LanguageGuideSlug, {
 export function getLanguageGuideMetadata(slug: LanguageGuideSlug): Metadata {
   const content = CONTENT[slug];
   return {
-    title: `${content.title} (Em breve) | E-book Portal NKL`,
+    title: `${content.title} | E-book Portal NKL`,
     description: content.description,
     alternates: { canonical: absoluteSiteUrl(`/guias/${slug}`) },
   };
@@ -38,7 +39,7 @@ export function LanguageGuideSalesPage({
 }) {
   const content = CONTENT[slug];
   const offer = getLanguageEbookByOffer(content.offerVariant);
-  const isComingSoon = comingSoon ?? offer?.comingSoon ?? true;
+  const isComingSoon = comingSoon ?? offer?.comingSoon ?? false;
 
   return (
     <main className="mx-auto max-w-5xl px-4 pb-16 pt-8 md:pt-14">
@@ -112,6 +113,7 @@ export function LanguageGuideSalesPage({
           )}
         </aside>
       </div>
+      <LanguageAiAndPlanner language={offer?.language ?? slug} slug={slug} />
       <div className="mt-10"><AffiliateDisclaimer /></div>
       {offer === undefined && <p className="sr-only">Oferta indisponível.</p>}
     </main>

@@ -1,5 +1,34 @@
 {
   "css.lint.unknownAtRules": "ignore",
+  "css.lint.vendorPrefix": "ignore",
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
+  "tailwindCSS.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/.worktrees/**",
+    "**/AntigoNKL/**",
+    "**/Alignerr _ Powered by Labelbox_files/**"
+  ],
+  "python.analysis.exclude": [
+    ".worktrees/**",
+    "node_modules/**",
+    ".next/**",
+    "AntigoNKL/**"
+  ],
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.worktrees/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true
+  },
+  "search.exclude": {
+    "**/.worktrees/**": true,
+    "**/AntigoNKL/**": true,
+    "**/Alignerr _ Powered by Labelbox_files/**": true,
+    "**/.next/**": true
+  },
   "liveServer.settings.multiRootWorkspaceName": "portal-nkl",
-  "python-envs.defaultEnvManager": "ms-python.python:system"
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "chat.mcp.autostart": "never"
 }

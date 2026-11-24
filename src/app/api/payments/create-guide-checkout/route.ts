@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray, or } from 'drizzle-orm';
+import { isValidProductSlug, type ProductSlug } from '@/config/products';
 import { db } from '@/db';
 import { guidePurchases, userProfiles } from '@/db/schema';
 import { env } from '@/env';
-import { ENGLISH_EBOOK_OFFER_VARIANT, ENGLISH_EBOOK_PRICE_CENTS, GUIDE_PRICE_CENTS, isComingSoonLanguageOffer, isLanguageEbookOffer } from '@/lib/guide-offer';
+import {
+  ALL_LANGUAGE_OFFER_VARIANTS,
+  ENGLISH_EBOOK_OFFER_VARIANT,
+  GUIDE_PRICE_CENTS,
+  calculateLanguageBundleDiscount,
+  getDiscountedLanguagePriceCents,
+  isComingSoonLanguageOffer,
+  isLanguageEbookOffer,
+} from '@/lib/guide-offer';
 import {
   createGuestAccessToken,
   encryptGuestCpf,
@@ -15,6 +24,7 @@ import { createCheckoutSession } from '@/lib/stripe/checkout';
 import { buildGuidePurchaseCheckoutParams } from '@/lib/stripe/guide';
 import { createClient } from '@/lib/supabase/server';
 const checkoutSchema = z.object({
+  productSlug: z.string().trim().max(80).optional(),
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
   fullName: z.string().trim().max(160).optional(),
   email: z.string().trim().max(320).optional(),
@@ -60,6 +70,11 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (parsedBody.data.offerVariant && !offerVariant) {
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
     }
+    const rawProductSlug = parsedBody.data.productSlug;
+    if (rawProductSlug !== undefined && !isValidProductSlug(rawProductSlug)) {
+      return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
+    }
+    const validatedProductSlug: ProductSlug | undefined = rawProductSlug;
 
     if (isComingSoonLanguageOffer(offerVariant)) {
       return NextResponse.json({ error: 'coming_soon', message: 'Este guia ainda está em produção editorial.' }, { status: 409 });
@@ -71,6 +86,34 @@ export async function POST(request: Request): Promise<NextResponse> {
       && profile?.email
       && profile.email.toLowerCase() === guestData.email,
     );
+    const isLanguageOffer =
+      offerVariant === ENGLISH_EBOOK_OFFER_VARIANT || isLanguageEbookOffer(offerVariant);
+
+    let discountPercent: 0 | 30 | 50 = 0;
+    let amountCents = GUIDE_PRICE_CENTS;
+    if (isLanguageOffer) {
+      const ownerCondition = usesAuthenticatedProfile && user?.id
+        ? or(eq(guidePurchases.userId, user.id), eq(guidePurchases.email, guestData.email))
+        : eq(guidePurchases.email, guestData.email);
+      const ownedRows = await db
+        .select({ offerVariant: guidePurchases.offerVariant })
+        .from(guidePurchases)
+        .where(
+          and(
+            eq(guidePurchases.status, 'approved'),
+            inArray(guidePurchases.offerVariant, [...ALL_LANGUAGE_OFFER_VARIANTS]),
+            ownerCondition,
+          ),
+        );
+      const distinctOwnedOthers = new Set(
+        ownedRows
+          .map((row) => row.offerVariant)
+          .filter((variant): variant is string => Boolean(variant) && variant !== offerVariant),
+      );
+      discountPercent = calculateLanguageBundleDiscount(distinctOwnedOthers.size);
+      amountCents = getDiscountedLanguagePriceCents(distinctOwnedOthers.size);
+    }
+
     const [purchase] = await db.insert(guidePurchases).values({
       userId: usesAuthenticatedProfile ? user?.id ?? null : null,
       email: guestData.email,
@@ -82,9 +125,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       cpfConsentAt: new Date(),
       guestAccessTokenHash: access.tokenHash,
       guestAccessTokenExpiresAt: access.expiresAt,
-      amountCents: offerVariant === ENGLISH_EBOOK_OFFER_VARIANT || isLanguageEbookOffer(offerVariant)
-        ? ENGLISH_EBOOK_PRICE_CENTS
-        : GUIDE_PRICE_CENTS,
+      amountCents,
       offerVariant: offerVariant ?? undefined,
     }).returning({ id: guidePurchases.id });
 
@@ -97,6 +138,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       siteUrl: env.NEXT_PUBLIC_SITE_URL,
       offerVariant: offerVariant ?? undefined,
       guestAccessToken: access.token,
+      productSlug: validatedProductSlug,
+      discountPercent,
+      overrideAmountCents: amountCents,
     }));
 
     if (!session.url) {

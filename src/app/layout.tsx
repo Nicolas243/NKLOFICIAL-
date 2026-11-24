@@ -12,6 +12,7 @@ import { SiteGuidance } from '@/components/site-guidance'
 import { SpotlightTutorial } from '@/components/ui/spotlight-tutorial'
 import { RifaCampaignShell } from '@/components/rifa-campaign/rifa-campaign-shell'
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -51,10 +52,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const googleAdsVerification = process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION;
+  const themeInitScript =
+    "(function(){try{var d=window.localStorage.getItem('theme')==='dark';var r=document.documentElement;r.classList.toggle('dark',d);r.dataset.theme=d?'dark':'light';r.style.colorScheme=d?'dark':'light';}catch(e){}})();";
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {googleAdsVerification && <meta name="google-site-verification" content={googleAdsVerification} />}
         <meta name="google-adsense-account" content="ca-pub-8249438839607534" />
       </head>
@@ -86,6 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <RifaCampaignShell />
           <Footer />
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   )

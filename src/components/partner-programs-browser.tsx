@@ -23,6 +23,7 @@ import { SITE_URL } from '@/lib/site';
 import { INCOME_SUGGESTION_FORM_URL } from '@/lib/income-portal';
 import { EDITORIAL_CARDS, EditorialCardView } from '@/components/global-editorial-cards';
 import { AdBannerContent } from '@/components/ads/ad-banner-content';
+import { PAID_PRODUCTS } from '@/config/products';
 import type { ActiveAdSlot } from '@/lib/ad-inventory';
 import type { Micro1Opportunity } from '@/lib/micro1-opportunities';
 
@@ -52,16 +53,25 @@ const REVIEW_TAG_GROUPS = [
     tags: ['baixa remuneração', 'poucas tarefas disponíveis', 'pagamento atrasado', 'suporte ruim', 'cadastro demorado', 'requisitos confusos', 'tarefas repetitivas'],
   },
 ];
-const PROGRAMS_PER_PAGE = 9;
+const PROGRAMS_PER_PAGE = 15;
+const EMBEDDED_PORTAL_RESOURCE_SLUGS = [
+  'bussola-negocios',
+  'ferramenta-ia',
+  'pacote-renda-extra',
+  'pacote-idiomas-ia',
+] as const;
 const DISCOVERY_TAGS = [
-  { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift'] },
-  { label: 'Ganhar sem fazer nada', slugs: ['honeygain'] },
-  { label: 'Ganhar com pesquisas', slugs: ['prolific', 'dataannotation', 'crowdato'] },
-  { label: 'Testar apps e sites', slugs: ['aligner', 'utest', 'testlio'] },
-  { label: 'Vender serviços', slugs: ['fiverr', 'upwork'] },
-  { label: 'Ganhar indicando', slugs: ['mercado-pago', 'marketplaces-afiliados', 'hotmart', 'sideshift', 'quintoandar-indica-ai'] },
-  { label: 'Renda extra pelo celular', slugs: ['mercado-pago', 'honeygain', 'clickworker', 'oneforma', 'sideshift'] },
-  { label: 'Renda extra sem investimento', slugs: ['prolific', 'honeygain', 'apphub', 'clickworker', 'oneforma', 'dataannotation', 'crowdato', 'outlier-ai', 'utest', 'testlio', 'claru-ia', 'quintoandar-indica-ai'] },
+  { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift', 'producao-videos-ia', 'edicao-cortes-virais-ia'] },
+  { label: 'Ganhar sem fazer nada', slugs: ['honeygain', 'repocket', 'ia-remunerada-curadoria-dados'] },
+  { label: 'Ganhar com pesquisas', slugs: ['prolific', 'dscout', 'dataannotation', 'crowdato', 'attapoll'] },
+  { label: 'Testar apps e sites', slugs: ['aligner', 'utest', 'testlio', 'testes-ux-narrados'] },
+  { label: 'Vender serviços', slugs: ['fiverr', 'upwork', 'automacao-ia-negocios-locais', 'trafego-pago-negocios-locais', 'edicao-cortes-virais-ia'] },
+  { label: 'Ganhar indicando', slugs: ['mercado-pago', 'marketplaces-afiliados', 'hotmart', 'sideshift', 'quintoandar-indica-ai', 'afiliados-b2b-tubebuddy-make'] },
+  { label: 'Renda extra pelo celular', slugs: ['mercado-pago', 'honeygain', 'clickworker', 'oneforma', 'sideshift', 'attapoll', 'edicao-cortes-virais-ia'] },
+  { label: 'Renda extra sem investimento', slugs: ['prolific', 'dscout', 'honeygain', 'apphub', 'clickworker', 'oneforma', 'dataannotation', 'crowdato', 'outlier-ai', 'utest', 'testlio', 'claru-ia', 'quintoandar-indica-ai', 'amazon-kdp-ebooks', 'learn-to-earn-bolsas-digitais', 'ia-remunerada-curadoria-dados'] },
+  { label: 'Com investimento inicial', slugs: ['comunidades-pagas-skool-systeme', 'montink-embaixador', 'walmart-marketplace-revenda', 'producao-videos-ia', 'printful-print-on-demand', 'loja-templates-etsy-gumroad', 'automacao-ia-negocios-locais', 'trafego-pago-negocios-locais', 'edicao-cortes-virais-ia'] },
+  { label: 'Estudar e ganhar / IA', slugs: ['learn-to-earn-bolsas-digitais', 'ia-remunerada-curadoria-dados', 'outlier-ai', 'micro1', 'dataannotation', 'mindrift', 'claru-ia'] },
+  { label: 'E-books e produtos digitais', slugs: ['amazon-kdp-ebooks', 'loja-templates-etsy-gumroad', 'hotmart', 'comunidades-pagas-skool-systeme'] },
 ];
 
 type FormState = {
@@ -234,10 +244,14 @@ export function PartnerProgramsBrowser({
       const currencyMatches = initialCurrency !== 'usd' || program.averageEarning.startsWith('US$');
       const englishMatches = initialEnglish !== 'nao' || program.languages.includes('Português');
 
+      const matchesSelectedTag = !selectedSlugs
+        || selectedSlugs.includes(program.slug)
+        || (selectedDiscoveryTag === 'Com investimento inicial' && !program.zeroInvestmentRequired);
+
       return objectiveMatches
         && currencyMatches
         && englishMatches
-        && (!selectedSlugs || selectedSlugs.includes(program.slug))
+        && matchesSelectedTag
         && (!normalizedQuery || searchable.includes(normalizedQuery))
         && (category === 'todas' || program.category === category)
         && (difficulty === 'todas' || program.difficulty === difficulty);
@@ -255,6 +269,11 @@ export function PartnerProgramsBrowser({
       return sortDirection === 'asc' ? comparison : comparison * -1;
     });
   }, [category, difficulty, initialCurrency, initialEnglish, initialObjective, programs, query, selectedDiscoveryTag, sort, sortDirection]);
+
+  const embeddedResources = useMemo(
+    () => PAID_PRODUCTS.filter((product) => EMBEDDED_PORTAL_RESOURCE_SLUGS.includes(product.slug as (typeof EMBEDDED_PORTAL_RESOURCE_SLUGS)[number])),
+    [],
+  );
 
   const totalPages = Math.ceil(filteredPrograms.length / PROGRAMS_PER_PAGE);
   const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
@@ -475,10 +494,49 @@ export function PartnerProgramsBrowser({
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
           const isDescriptionExpanded = expandedDescriptionSlugs.includes(program.slug);
+          const embeddedResource =
+            index === 3
+              ? embeddedResources[0]
+              : index === 7
+                ? embeddedResources[1]
+                : index === 10
+                  ? embeddedResources[2]
+                  : index === 13
+                    ? embeddedResources[3]
+                    : undefined;
 
           return (
             <Fragment key={program.id}>
             {index === 2 && <EditorialCardView card={EDITORIAL_CARDS[0]} />}
+            {embeddedResource && (
+              <article className="group relative flex flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 transition-colors hover:border-neon/60 md:gap-5 md:p-6">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-neon">Ferramenta do Portal</p>
+                    <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{embeddedResource.title}</h2>
+                  </div>
+                  <span className="inline-flex shrink-0 items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
+                    {embeddedResource.badgeLabel}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed opacity-80">{embeddedResource.aspirationalLead}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {embeddedResource.bonuses.slice(0, 2).map((bonus) => (
+                    <span key={bonus} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium opacity-80">
+                      {bonus}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-auto flex items-center gap-2">
+                  <Link
+                    href={embeddedResource.offerRoute}
+                    className="inline-flex h-11 flex-1 items-center justify-center rounded-md bg-neon px-3 text-sm font-bold text-black hover:opacity-90"
+                  >
+                    Conhecer recurso
+                  </Link>
+                </div>
+              </article>
+            )}
             {index === 5 && (
               <div className="col-span-full">
                 <AdBannerContent

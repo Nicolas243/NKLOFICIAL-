@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { isValidProductSlug, type ProductSlug } from '@/config/products';
 import {
   getAiOfferCheckoutMode,
   getAiOfferClientReferenceId,
@@ -14,6 +15,7 @@ import { createClient } from '@/lib/supabase/server';
 
 const checkoutRequestSchema = z.object({
   plan: z.enum(['one_time', 'subscription']),
+  productSlug: z.string().trim().max(80).optional(),
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -39,7 +41,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const { plan } = parsed.data;
+    const { plan, productSlug: rawProductSlug } = parsed.data;
+    if (rawProductSlug !== undefined && !isValidProductSlug(rawProductSlug)) {
+      return NextResponse.json(
+        { error: 'invalid_ai_checkout_request', message: 'Produto de checkout inválido.' },
+        { status: 400 },
+      );
+    }
+    const resolvedProductSlug: ProductSlug | undefined = rawProductSlug;
+
     const stripeApiKey = getStripeApiKey({
       STRIPE_API_KEY: process.env.STRIPE_API_KEY,
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
@@ -67,6 +77,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       reference: clientReferenceId,
       expectedPriceCents: String(priceCents),
       title: offerTitle,
+      ...(resolvedProductSlug ? { productSlug: resolvedProductSlug } : {}),
     };
 
     const stripe = getStripeClient();
@@ -77,8 +88,16 @@ export async function POST(request: Request): Promise<NextResponse> {
       metadata,
       ...(mode === 'subscription' ? { subscription_data: { metadata } } : {}),
       ...(user.email ? { customer_email: user.email } : {}),
-      success_url: absoluteSiteUrl('/ia/curso?checkout=success'),
-      cancel_url: absoluteSiteUrl('/ia/oferta?checkout=cancelled'),
+      success_url: absoluteSiteUrl(
+        resolvedProductSlug
+          ? `/app/${resolvedProductSlug}?checkout=success`
+          : '/ia/curso?checkout=success',
+      ),
+      cancel_url: absoluteSiteUrl(
+        resolvedProductSlug
+          ? `/ofertas/${resolvedProductSlug}?checkout=cancelled`
+          : '/ia/oferta?checkout=cancelled',
+      ),
     });
 
     if (!session.url) {

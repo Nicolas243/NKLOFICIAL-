@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CONSENT_STORAGE_KEY } from '@/components/privacy-scripts';
-import { trackOfferFunnelEvent } from '@/lib/analytics';
+import { trackOfferFunnelEvent, trackPortalFunnelEvent } from '@/lib/analytics';
 import { createPageViewEvent } from '@/lib/analytics-pageview';
 
 test('creates a Google Analytics page_view event for the current route', () => {
@@ -81,4 +81,89 @@ test('keeps program secondary CTA attribution unchanged', async () => {
       eventType: 'checkout',
     }),
   }]);
+});
+
+test('blocks trackPortalFunnelEvent emission when LGPD consent is absent or rejected', () => {
+  const gtagCalls: Array<{ name: string; params?: Record<string, string | number | boolean> }> = [];
+  const vaCalls: Array<{ event: string; payload?: unknown }> = [];
+
+  for (const storedConsent of [null, 'rejected']) {
+    Object.assign(globalThis, {
+      window: {
+        localStorage: {
+          getItem: (key: string) => (key === CONSENT_STORAGE_KEY ? storedConsent : null),
+        },
+        gtag: (_command: 'event', name: string, params?: Record<string, string | number | boolean>) => {
+          gtagCalls.push({ name, params });
+        },
+        va: (event: 'beforeSend' | 'event' | 'pageview', payload?: unknown) => {
+          vaCalls.push({ event, payload });
+        },
+      },
+    });
+
+    trackPortalFunnelEvent('track_select', { track_id: 'renda-extra', source: 'home_selector' });
+    trackPortalFunnelEvent('offer_cta_click', { product_slug: 'ferramenta-ia', track_id: 'ia-completa' });
+  }
+
+  assert.equal(gtagCalls.length, 0);
+  assert.equal(vaCalls.length, 0);
+});
+
+test('emits track_select, install_cta_click, install_prompt_accepted and offer_cta_click to gtag and window.va when consent is accepted', () => {
+  const gtagCalls: Array<{ name: string; params?: Record<string, string | number | boolean> }> = [];
+  const vaCalls: Array<{ event: string; payload?: unknown }> = [];
+
+  Object.assign(globalThis, {
+    window: {
+      localStorage: {
+        getItem: (key: string) => (key === CONSENT_STORAGE_KEY ? 'accepted' : null),
+      },
+      gtag: (_command: 'event', name: string, params?: Record<string, string | number | boolean>) => {
+        gtagCalls.push({ name, params });
+      },
+      va: (event: 'beforeSend' | 'event' | 'pageview', payload?: unknown) => {
+        vaCalls.push({ event, payload });
+      },
+    },
+  });
+
+  trackPortalFunnelEvent('track_select', { track_id: 'ia-completa', source: 'home_selector' });
+  trackPortalFunnelEvent('install_cta_click', { track_id: 'ia-completa', source: 'home_selector', target: 'instalar' });
+  trackPortalFunnelEvent('install_prompt_accepted', { track_id: 'ia-completa', platform: 'desktop' });
+  trackPortalFunnelEvent('offer_cta_click', { product_slug: 'ferramenta-ia', track_id: 'ia-completa', placement: 'hero' });
+
+  assert.deepEqual(
+    gtagCalls.map((call) => call.name),
+    ['track_select', 'install_cta_click', 'install_prompt_accepted', 'offer_cta_click'],
+  );
+  assert.deepEqual(
+    vaCalls.map((call) => ({
+      event: call.event,
+      name: (call.payload as { name?: string })?.name,
+      data: (call.payload as { data?: Record<string, unknown> })?.data,
+    })),
+    [
+      {
+        event: 'event',
+        name: 'track_select',
+        data: { track_id: 'ia-completa', source: 'home_selector' },
+      },
+      {
+        event: 'event',
+        name: 'install_cta_click',
+        data: { track_id: 'ia-completa', source: 'home_selector', target: 'instalar' },
+      },
+      {
+        event: 'event',
+        name: 'install_prompt_accepted',
+        data: { track_id: 'ia-completa', platform: 'desktop' },
+      },
+      {
+        event: 'event',
+        name: 'offer_cta_click',
+        data: { product_slug: 'ferramenta-ia', track_id: 'ia-completa', placement: 'hero' },
+      },
+    ],
+  );
 });

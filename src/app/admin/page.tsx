@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { adCampaigns, businessDirectory, entityReports, teacherReviews, userProfiles } from '@/db/schema';
+import { adCampaigns, businessDirectory, entityReports, pushSubscriptions, teacherReviews, userProfiles } from '@/db/schema';
 import { asc, count, eq } from 'drizzle-orm';
 import { getNewsFeed } from '@/actions/news';
 import {
@@ -14,9 +14,11 @@ import {
   rejectNewsSuggestion,
 } from '@/actions/news-admin';
 import { getPlatformMetrics } from '@/actions/admin-analytics';
+import { dispatchSubAppNotification } from '@/actions/admin-push';
 import { AdminPromoteForm } from '@/components/admin-promote-form';
 import { setEntitySuspensionStateAction, updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
 import { approveAdCampaign, rejectAdCampaign } from '@/actions/ad-campaigns';
+import { getServerPushConfiguration } from '@/lib/notifications/push';
 
 export const metadata = { title: 'Admin | Portal NKL' };
 
@@ -35,7 +37,8 @@ export default async function AdminDashboardPage() {
   ]);
 
   const isAdmin = profile?.role === 'admin';
-  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories, pendingAdCampaigns] = await Promise.all([
+  const pushConfig = getServerPushConfiguration();
+  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories, pendingAdCampaigns, pushSubRows] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
     isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
@@ -62,7 +65,20 @@ export default async function AdminDashboardPage() {
       billingStatus: adCampaigns.billingStatus,
       createdAt: adCampaigns.createdAt,
     }).from(adCampaigns).where(eq(adCampaigns.status, 'pending_review')).orderBy(asc(adCampaigns.createdAt)) : Promise.resolve([]),
+    isAdmin ? db.select({ appScope: pushSubscriptions.appScope }).from(pushSubscriptions) : Promise.resolve([]),
   ]);
+
+  const scopeCounts: Record<string, number> = {
+    portal: 0,
+    'renda-extra': 0,
+    musica: 0,
+    idiomas: 0,
+    ia: 0,
+  };
+  for (const row of pushSubRows) {
+    const scope = row.appScope || 'portal';
+    scopeCounts[scope] = (scopeCounts[scope] ?? 0) + 1;
+  }
 
   const metricCards: { label: string; value: string }[] = metrics
     ? [
@@ -227,6 +243,45 @@ export default async function AdminDashboardPage() {
             <Link href="/programas/admin" className="w-fit rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
               Gerenciar programas
             </Link>
+          </section>
+
+          <section aria-label="Apps Instalados e Notificações por Área" className="p-6 bg-surface border border-border rounded-xl space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-playfair text-xl font-bold">Apps Instalados e Notificações por Área</h2>
+                <p className="text-sm opacity-70 mt-1">Envie comunicados segmentados por sub-app instalado (Portal NKL, Renda Extra, Música, Idiomas ou IA).</p>
+              </div>
+              <span className={`rounded-full border px-3 py-1 text-xs font-bold ${pushConfig.enabled ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400' : 'border-orange/40 bg-orange/10 text-orange'}`}>
+                {pushConfig.enabled ? 'Web Push VAPID ativo' : 'In-app ativo (adicione VAPID para Push OS)'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {Object.entries(scopeCounts).map(([scope, total]) => (
+                <div key={scope} className="rounded-lg border border-border bg-background p-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wider opacity-60">{scope}</p>
+                  <p className="mt-1 font-playfair text-2xl font-bold text-neon">{total}</p>
+                </div>
+              ))}
+            </div>
+
+            <form action={dispatchSubAppNotification} className="space-y-3 border-t border-border pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-[0.35fr_0.65fr] gap-3">
+                <select name="appScope" defaultValue="all" className="p-3 bg-background border border-border rounded-md text-sm">
+                  <option value="all">Todos os apps instalados</option>
+                  <option value="portal">Portal NKL (Geral)</option>
+                  <option value="renda-extra">Renda Extra</option>
+                  <option value="musica">Música</option>
+                  <option value="idiomas">Idiomas</option>
+                  <option value="ia">IA na Prática</option>
+                </select>
+                <input type="text" name="title" required placeholder="Título da notificação" className="p-3 bg-background border border-border rounded-md text-sm" />
+              </div>
+              <textarea name="message" rows={3} required placeholder="Mensagem clara para os usuários dessa área..." className="w-full p-3 bg-background border border-border rounded-md text-sm" />
+              <button type="submit" className="rounded-md bg-neon px-5 py-2.5 text-sm font-bold text-black hover:opacity-90">
+                Enviar notificação segmentada
+              </button>
+            </form>
           </section>
 
           <section className="p-6 bg-surface border border-border rounded-xl">

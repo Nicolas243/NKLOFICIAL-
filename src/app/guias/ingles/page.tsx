@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
+import { LanguageAiAndPlanner } from '@/components/sales/language-ai-and-planner';
 import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ export default function EnglishGuideSalesPage() {
           <p className="mt-3 text-center text-xs leading-relaxed text-foreground/55">Pagamento único de R$ 47 pelo Stripe. O acesso é liberado após a confirmação.</p>
         </aside>
       </div>
+      <LanguageAiAndPlanner language="Inglês" slug="ingles" />
       <div className="mt-10"><AffiliateDisclaimer /></div>
     </main>
   );

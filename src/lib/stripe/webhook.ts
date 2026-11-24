@@ -15,7 +15,13 @@ import {
   userProfiles,
 } from '@/db/schema';
 import { env } from '@/env';
+import { isValidProductSlug, type ProductSlug } from '@/config/products';
 import { AI_PRODUCT_KEY } from '@/lib/ai-product';
+import {
+  grantEntitlementByOrder,
+  isUndefinedTableError,
+  revokeEntitlementByProduct,
+} from '@/lib/entitlements';
 import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 import { getOfferExperimentFromVariant, parseValidatedOfferVariant } from '@/lib/offer-experiment';
@@ -24,6 +30,7 @@ import {
   normalizeAiSubscriptionStatus,
   normalizeStripeSubscriptionStatus,
   parseStripePeriodEnd,
+  resolveGuideProductSlug,
   type AiGrantStatus,
   type StripeReference,
 } from './webhook-helpers';
@@ -49,9 +56,27 @@ async function markEventProcessed(event: Stripe.Event): Promise<boolean> {
   return inserted.length > 0;
 }
 
+async function syncEntitlementSafely(
+  operation: () => Promise<unknown>,
+  context: string,
+): Promise<void> {
+  try {
+    await operation();
+  } catch (error) {
+    if (isUndefinedTableError(error)) {
+      console.warn(
+        `[STRIPE_WEBHOOK] Tabela user_entitlements indisponível (42P01) ao sincronizar ${context}.`,
+      );
+      return;
+    }
+    throw error;
+  }
+}
+
 async function processGuidePurchase(session: Stripe.Checkout.Session, reference: StripeReference): Promise<void> {
   const [purchase] = await db.select({
     id: guidePurchases.id,
+    userId: guidePurchases.userId,
     offerVariant: guidePurchases.offerVariant,
   }).from(guidePurchases).where(eq(guidePurchases.id, reference.id)).limit(1);
   if (!purchase) return;
@@ -62,6 +87,26 @@ async function processGuidePurchase(session: Stripe.Checkout.Session, reference:
     email: session.customer_details?.email ?? null,
     updatedAt: new Date(),
   }).where(and(eq(guidePurchases.id, purchase.id), eq(guidePurchases.status, 'pending')));
+
+  if (purchase.userId) {
+    const productSlug = resolveGuideProductSlug(
+      purchase.offerVariant,
+      session.metadata?.productSlug,
+    );
+    const orderReference = typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : session.id;
+    await syncEntitlementSafely(
+      () =>
+        grantEntitlementByOrder({
+          userId: purchase.userId!,
+          productSlug,
+          orderReference,
+          expiresAt: null,
+        }),
+      'guide_purchase',
+    );
+  }
 
   const experiment = getOfferExperiment(purchase.offerVariant);
   if (!experiment) return;
@@ -210,6 +255,22 @@ async function processAiOneTimePurchase(
       updatedAt: new Date(),
     },
   });
+
+  const rawSlug = session.metadata?.productSlug?.trim();
+  const productSlug: ProductSlug = isValidProductSlug(rawSlug) ? rawSlug : 'ferramenta-ia';
+  const orderReference = typeof session.payment_intent === 'string'
+    ? session.payment_intent
+    : session.id;
+  await syncEntitlementSafely(
+    () =>
+      grantEntitlementByOrder({
+        userId: reference.id,
+        productSlug,
+        orderReference,
+        expiresAt: null,
+      }),
+    'ai_one_time',
+  );
 }
 
 async function processAiSubscription(
@@ -244,6 +305,58 @@ async function processAiSubscription(
       updatedAt: new Date(),
     },
   });
+
+  const rawSlug = subscription.metadata?.productSlug?.trim();
+  const productSlug: ProductSlug = isValidProductSlug(rawSlug) ? rawSlug : 'curso-ia-pratica';
+  if (status === 'active' || status === 'canceling') {
+    await syncEntitlementSafely(
+      () =>
+        grantEntitlementByOrder({
+          userId: reference.id,
+          productSlug,
+          orderReference: subscription.id,
+          expiresAt: accessUntil,
+        }),
+      'ai_subscription',
+    );
+  } else if (status === 'canceled' || status === 'past_due') {
+    await syncEntitlementSafely(
+      () =>
+        revokeEntitlementByProduct({
+          userId: reference.id,
+          productSlug,
+          nextStatus: status === 'canceled' ? 'revoked' : 'expired',
+        }),
+      'ai_subscription_revoke',
+    );
+  }
+}
+
+async function processProductEntitlementSubscription(
+  subscription: Stripe.Subscription,
+  reference: Extract<StripeReference, { type: 'product_entitlement' }>,
+  statusOverride?: AiGrantStatus,
+): Promise<void> {
+  const expiresAt = parseStripePeriodEnd(subscription.items.data[0]?.current_period_end);
+  const status = statusOverride ?? normalizeAiSubscriptionStatus(subscription);
+
+  if (status === 'active' || status === 'canceling') {
+    await grantEntitlementByOrder({
+      userId: reference.userId,
+      productSlug: reference.productSlug,
+      orderReference: subscription.id,
+      expiresAt,
+    });
+    return;
+  }
+
+  if (status === 'canceled' || status === 'past_due') {
+    await revokeEntitlementByProduct({
+      userId: reference.userId,
+      productSlug: reference.productSlug,
+      nextStatus: status === 'canceled' ? 'revoked' : 'expired',
+    });
+  }
 }
 
 async function processChargeRiskEvent(
@@ -343,6 +456,23 @@ async function processBooking(session: Stripe.Checkout.Session, reference: Strip
 async function processCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
   const reference = getStripeReference(session.metadata, session.client_reference_id);
   if (!reference) throw new Error('Stripe Checkout session is missing valid domain metadata.');
+  if (reference.type === 'product_entitlement') {
+    if (typeof session.subscription === 'string') {
+      const subscription = await getStripeClient().subscriptions.retrieve(session.subscription);
+      await processProductEntitlementSubscription(subscription, reference, 'active');
+    } else if (session.payment_status === 'paid') {
+      const orderReference = typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.id;
+      await grantEntitlementByOrder({
+        userId: reference.userId,
+        productSlug: reference.productSlug,
+        orderReference,
+        expiresAt: null,
+      });
+    }
+    return;
+  }
   if (reference.type === 'guide_purchase' && session.payment_status === 'paid') {
     await processGuidePurchase(session, reference);
   } else if (reference.type === 'booking' && session.payment_status === 'paid') {
@@ -383,6 +513,10 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         const subscription = event.data.object as Stripe.Subscription;
         const reference = getStripeReference(subscription.metadata);
         if (!reference) throw new Error('Stripe subscription is missing valid domain metadata.');
+        if (reference.type === 'product_entitlement') {
+          const statusOverride = event.type === 'customer.subscription.deleted' ? 'canceled' : undefined;
+          await processProductEntitlementSubscription(subscription, reference, statusOverride);
+        }
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
         if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);
@@ -405,6 +539,15 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
         const subscription = await getStripeClient().subscriptions.retrieve(subscriptionId);
         const reference = getStripeReference(subscription.metadata);
         if (!reference) throw new Error('Stripe invoice subscription is missing valid domain metadata.');
+        if (reference.type === 'product_entitlement') {
+          const statusOverride = event.type === 'invoice.payment_failed'
+            ? 'past_due'
+            : normalizeAiSubscriptionStatus({
+              status: 'active',
+              cancel_at_period_end: subscription.cancel_at_period_end,
+            });
+          await processProductEntitlementSubscription(subscription, reference, statusOverride);
+        }
         if (reference.type === 'guide_subscription') await processGuideSubscription(subscription, reference);
         if (reference.type === 'premium_subscription') await processPremiumSubscription(subscription, reference);
         if (reference.type === 'ad_campaign') await processAdCampaignSubscription(subscription, reference);

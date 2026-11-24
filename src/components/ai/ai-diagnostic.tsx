@@ -39,7 +39,7 @@ export function AiDiagnostic() {
   return (
     <section className="rounded-3xl border border-neon/25 bg-surface p-5 shadow-sm md:p-8" aria-labelledby="ai-diagnostic-title">
       <div className="flex items-center justify-between gap-4">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Diagnóstico gratuito</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Roteiro inicial gratuito</p>
         <span className="text-sm font-semibold opacity-70">{progress}%</span>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-border" aria-hidden="true">

@@ -137,6 +137,16 @@ const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages
   'afiliados-b2b-tubebuddy-make': { averageEarning: 'US$ 100 ±', languages: ['Inglês', 'Português'] },
   'redes-cpa-affiliaxe': { averageEarning: 'R$ 250 ±', languages: ['Português', 'Inglês'] },
   'monetizacao-atencao-web': { averageEarning: 'US$ 80 ±', languages: ['Inglês', 'Português'] },
+  'walmart-marketplace-revenda': { averageEarning: 'US$ 500+ / mês', languages: ['Inglês'] },
+  'amazon-kdp-ebooks': { averageEarning: 'R$ 150 a R$ 2.500+', languages: ['Português', 'Inglês'] },
+  'producao-videos-ia': { averageEarning: 'R$ 400 a R$ 3.000+', languages: ['Português', 'Inglês'] },
+  'printful-print-on-demand': { averageEarning: 'US$ 100 a US$ 1.200+', languages: ['Inglês', 'Português'] },
+  'loja-templates-etsy-gumroad': { averageEarning: 'R$ 200 a R$ 2.000+', languages: ['Português', 'Inglês'] },
+  'automacao-ia-negocios-locais': { averageEarning: 'R$ 800 a R$ 4.000+', languages: ['Português'] },
+  'trafego-pago-negocios-locais': { averageEarning: 'R$ 600 a R$ 2.000/mês', languages: ['Português'] },
+  'edicao-cortes-virais-ia': { averageEarning: 'R$ 400 a R$ 1.800/mês', languages: ['Português', 'Inglês'] },
+  'learn-to-earn-bolsas-digitais': { averageEarning: 'US$ 25 a US$ 1.000+', languages: ['Inglês', 'Português'] },
+  'ia-remunerada-curadoria-dados': { averageEarning: 'US$ 5 a US$ 45/mês', languages: ['Inglês', 'Português'] },
 };
 
 function editorialProgramName(slug: string, name: string): string {

@@ -7,7 +7,7 @@ test.describe('Espinha dorsal crítica do Portal NKL', () => {
     const portalHeading = page.getByRole('heading', { level: 1 });
     await expect(portalHeading).toBeVisible();
     await expect(portalHeading).toContainText(
-      'Música, inteligência artificial, idiomas e negócios digitais',
+      'Renda extra, música, idiomas e IA de um jeito simples',
     );
 
     const portalLoginLink = page.getByRole('link', { name: 'Entrar', exact: true });

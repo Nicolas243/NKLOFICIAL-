@@ -59,3 +59,71 @@ test('fails explicitly when the Stripe secret is missing', async () => {
     /STRIPE_SECRET_KEY/,
   );
 });
+
+test('buildGuidePurchaseCheckoutParams forwards exact productSlug and specialized SKU titles', async () => {
+  const { buildGuidePurchaseCheckoutParams } = await import('./guide');
+
+  const bussolaParams = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-bussola',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'sales-page',
+    productSlug: 'bussola-negocios',
+  });
+  assert.equal(bussolaParams.metadata.productSlug, 'bussola-negocios');
+  assert.equal(
+    (bussolaParams.lineItems[0] as { price_data?: { product_data?: { name?: string } } })?.price_data?.product_data?.name,
+    'Bússola de Negócios',
+  );
+
+  const idiomasParams = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-idiomas',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'english-ebook-sales-page',
+    productSlug: 'pacote-idiomas-ia',
+  });
+  assert.equal(idiomasParams.metadata.productSlug, 'pacote-idiomas-ia');
+  assert.equal(
+    (idiomasParams.lineItems[0] as { price_data?: { product_data?: { name?: string } } })?.price_data?.product_data?.name,
+    'Pacote Idiomas com IA',
+  );
+});
+
+test('resolveGuideProductSlug prioritizes valid metadata.productSlug across all guide SKUs', async () => {
+  const { resolveGuideProductSlug } = await import('./webhook-helpers');
+
+  assert.equal(resolveGuideProductSlug('sales-page', 'bussola-negocios'), 'bussola-negocios');
+  assert.equal(resolveGuideProductSlug('english-ebook-sales-page', 'pacote-idiomas-ia'), 'pacote-idiomas-ia');
+  assert.equal(resolveGuideProductSlug('sales-page', 'pacote-renda-extra'), 'pacote-renda-extra');
+  assert.equal(resolveGuideProductSlug('english-ebook-sales-page', 'ebook-ingles'), 'ebook-ingles');
+  assert.equal(resolveGuideProductSlug('sales-page', 'slug-desconhecido'), 'pacote-renda-extra');
+});
+
+test('buildGuidePurchaseCheckoutParams applies 30% and 50% progressive language loyalty discounts', async () => {
+  const { buildGuidePurchaseCheckoutParams } = await import('./guide');
+
+  const secondLang = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-2nd',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'italian-ebook-sales-page',
+    discountPercent: 30,
+    overrideAmountCents: 3290,
+  });
+  assert.equal(secondLang.metadata.loyaltyDiscountPercent, '30');
+  assert.equal(
+    (secondLang.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
+    3290,
+  );
+
+  const thirdLang = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-3rd',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'spanish-ebook-sales-page',
+    discountPercent: 50,
+    overrideAmountCents: 2350,
+  });
+  assert.equal(thirdLang.metadata.loyaltyDiscountPercent, '50');
+  assert.equal(
+    (thirdLang.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
+    2350,
+  );
+});

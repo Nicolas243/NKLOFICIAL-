@@ -10,6 +10,8 @@ import {
   loadFreeMaterial,
 } from '@/lib/guide-assets';
 import {
+  calculateLanguageBundleDiscount,
+  getDiscountedLanguagePriceCents,
   getGuideCancelPath,
   isComingSoonLanguageOffer,
 } from '@/lib/guide-offer';
@@ -58,7 +60,7 @@ test('uses canonical chines-para-ganhar-possibilidades.pdf filename for Mandarin
   assert.equal(granted[0]?.filename, 'chines-para-ganhar-possibilidades.pdf');
 });
 
-test('marks the 5 non-English language ebook offers as comingSoon and resolves cancel paths', () => {
+test('marks all 6 language ebook offers as active, resolves cancel paths, and applies 30%/50% progressive upsell', () => {
   for (const [offerVariant, cancelPath] of [
     ['italian-ebook-sales-page', '/guias/italiano'],
     ['french-ebook-sales-page', '/guias/frances'],
@@ -66,12 +68,20 @@ test('marks the 5 non-English language ebook offers as comingSoon and resolves c
     ['spanish-ebook-sales-page', '/guias/espanhol'],
     ['mandarin-ebook-sales-page', '/guias/chines'],
   ] as const) {
-    assert.equal(isComingSoonLanguageOffer(offerVariant), true);
+    assert.equal(isComingSoonLanguageOffer(offerVariant), false);
     assert.equal(getGuideCancelPath(offerVariant), cancelPath);
   }
   assert.equal(isComingSoonLanguageOffer('english-ebook-sales-page'), false);
   assert.equal(getGuideCancelPath('english-ebook-sales-page'), '/guias/ingles');
   assert.equal(getGuideCancelPath('guide-page-cta:1'), '/guias/renda-extra');
+
+  assert.equal(calculateLanguageBundleDiscount(0), 0);
+  assert.equal(calculateLanguageBundleDiscount(1), 30);
+  assert.equal(calculateLanguageBundleDiscount(2), 50);
+  assert.equal(calculateLanguageBundleDiscount(4), 50);
+  assert.equal(getDiscountedLanguagePriceCents(0), 4700);
+  assert.equal(getDiscountedLanguagePriceCents(1), 3290);
+  assert.equal(getDiscountedLanguagePriceCents(2), 2350);
 });
 
 test('limits public English ebook sample to 5 full lessons and strips locked lessons 6-100 bodies', async () => {

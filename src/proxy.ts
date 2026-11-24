@@ -77,6 +77,6 @@ export const config = {
      * Ignora rotas internas do Next.js e arquivos estáticos
      * para não onerar o pool de requisições de autenticação.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|_vercel|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

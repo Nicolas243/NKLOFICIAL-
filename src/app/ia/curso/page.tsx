@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getAiLearningAccess } from '@/actions/ai-learning';
 import { getAiCourseModules } from '@/lib/ai-course';
+import { hasProductEntitlement } from '@/lib/entitlements';
 
 export const metadata = { title: 'Curso de IA | Portal NKL' };
 
 export default async function AiCoursePage() {
   const access = await getAiLearningAccess();
-  if (!access.hasAccess) redirect('/ia/oferta');
+  const hasEntitlement = await hasProductEntitlement(access.userId, 'curso-ia-pratica');
+  if (!access.hasAccess && !hasEntitlement) redirect('/ofertas/curso-ia-pratica');
 
   const modules = getAiCourseModules();
   return (

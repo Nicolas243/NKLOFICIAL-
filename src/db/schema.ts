@@ -5,6 +5,7 @@ export const businessTechLevelEnum = pgEnum('business_tech_level', ['low', 'medi
 export const businessRiskLevelEnum = pgEnum('business_risk_level', ['low', 'medium', 'high']);
 export const aiAccessStatusEnum = pgEnum('ai_access_status', ['pending', 'active', 'canceling', 'canceled', 'past_due']);
 export const aiAccessPlanEnum = pgEnum('ai_access_plan', ['one_time', 'subscription']);
+export const entitlementStatusEnum = pgEnum('entitlement_status', ['active', 'revoked', 'expired']);
 
 export type QuizAnswerMap = Record<string, number>;
 export type CalculatedQuizProfile = {
@@ -55,6 +56,25 @@ export const aiLearningProgress = pgTable('ai_learning_progress', {
   primaryKey({ name: 'ai_learning_progress_pk', columns: [table.userId, table.lessonSlug] }),
   index('ai_learning_progress_lesson_idx').on(table.lessonSlug),
 ]);
+
+export const userEntitlements = pgTable(
+  'user_entitlements',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .references(() => userProfiles.id, { onDelete: 'cascade' })
+      .notNull(),
+    productSlug: varchar('product_slug', { length: 80 }).notNull(),
+    status: entitlementStatusEnum('status').notNull().default('active'),
+    orderReference: varchar('order_reference', { length: 255 }).notNull(),
+    grantedAt: timestamp('granted_at', { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }),
+  },
+  (table) => [
+    unique('user_entitlements_user_product_unique').on(table.userId, table.productSlug),
+    index('user_entitlements_user_id_idx').on(table.userId),
+  ],
+);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -556,6 +576,7 @@ export const pushSubscriptions = pgTable('push_subscriptions', {
     .notNull(),
   endpoint: text('endpoint').notNull().unique(),
   subscription: jsonb('subscription').$type<Record<string, unknown>>().notNull(),
+  appScope: varchar('app_scope', { length: 40 }).default('portal').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -575,6 +596,14 @@ export const userProfilesRelations = relations(userProfiles, ({ many }) => ({
   portfolioItems: many(luthierPortfolio, { relationName: 'portfolioOfLuthier' }),
   passwordChangeAttempts: many(passwordChangeAttempts),
   savedPartnerPrograms: many(savedPartnerPrograms),
+  userEntitlements: many(userEntitlements),
+}));
+
+export const userEntitlementsRelations = relations(userEntitlements, ({ one }) => ({
+  user: one(userProfiles, {
+    fields: [userEntitlements.userId],
+    references: [userProfiles.id],
+  }),
 }));
 
 export const businessDirectoryRelations = relations(businessDirectory, ({ one }) => ({
@@ -1005,3 +1034,5 @@ export type GuidePurchase = InferSelectModel<typeof guidePurchases>;
 export type NewGuidePurchase = InferInsertModel<typeof guidePurchases>;
 export type GuideSubscription = InferSelectModel<typeof guideSubscriptions>;
 export type NewGuideSubscription = InferInsertModel<typeof guideSubscriptions>;
+export type UserEntitlement = InferSelectModel<typeof userEntitlements>;
+export type NewUserEntitlement = InferInsertModel<typeof userEntitlements>;
