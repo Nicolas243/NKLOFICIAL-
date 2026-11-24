@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     apple: '/nkl.png',
   },
   title: {
-    default: 'Portal NKL | Luthieria, Cordas e Oportunidades',
+    default: 'Portal NKL | Renda Extra, IA na Prática, Idiomas e Música',
     template: '%s | Portal NKL',
   },
-  description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+  description: 'Mais de 55 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
   ...(process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION } }
     : {}),
@@ -39,14 +39,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'pt_BR',
     siteName: 'Portal NKL',
-    title: 'Portal NKL | Luthieria, Cordas e Oportunidades',
-    description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+    title: 'Portal NKL | Renda Extra, IA na Prática, Idiomas e Música',
+    description: 'Mais de 55 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
     url: absoluteSiteUrl('/'),
+    images: [
+      {
+        url: absoluteSiteUrl('/images/areas/renda-extra.jpg'),
+        width: 960,
+        height: 540,
+        alt: 'Portal NKL — Renda Extra, IA, Idiomas e Música',
+      },
+    ],
   },
   twitter: {
-    card: 'summary',
-    title: 'Portal NKL | Luthieria, Cordas e Oportunidades',
-    description: 'Catálogo de cordas, luthieria, professores e oportunidades freelance em um só portal.',
+    card: 'summary_large_image',
+    title: 'Portal NKL | Renda Extra, IA na Prática, Idiomas e Música',
+    description: 'Mais de 55 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
+    images: [absoluteSiteUrl('/images/areas/renda-extra.jpg')],
   },
 }
 
@@ -68,8 +77,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@graph': [
-            { '@type': 'Organization', name: 'Portal NKL', url: SITE_URL },
-            { '@type': 'WebSite', name: 'Portal NKL', url: SITE_URL },
+            {
+              '@type': 'Organization',
+              name: 'Portal NKL',
+              url: SITE_URL,
+              logo: absoluteSiteUrl('/NKL.png'),
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'customer support',
+                email: 'contato@nkloficial.com.br',
+                availableLanguage: ['Portuguese'],
+              },
+            },
+            {
+              '@type': 'WebSite',
+              name: 'Portal NKL',
+              url: SITE_URL,
+              inLanguage: 'pt-BR',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: `${SITE_URL}/programas?q={search_term_string}`,
+                },
+                'query-input': 'required name=search_term_string',
+              },
+            },
           ],
         }} />
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>

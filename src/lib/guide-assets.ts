@@ -258,9 +258,9 @@ export async function loadFreeMaterial(
   baseDir: string = process.cwd(),
 ): Promise<{ filename: string; content: Buffer }> {
   const spec = FREE_MATERIALS[area];
-  const candidatePath = path.join(baseDir, ...spec.versionedRelativePath);
+  const candidatePath = path.join(/*turbopackIgnore: true*/ baseDir, ...spec.versionedRelativePath);
   try {
-    const content = await readFile(candidatePath);
+    const content = await readFile(/*turbopackIgnore: true*/ candidatePath);
     if (content.byteLength > 0) {
       return { filename: spec.filename, content };
     }

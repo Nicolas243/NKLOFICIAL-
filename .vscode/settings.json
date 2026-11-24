@@ -1,14 +1,31 @@
 {
   "css.lint.unknownAtRules": "ignore",
   "css.lint.vendorPrefix": "ignore",
+  "css.lint.compatibleVendorPrefixes": "ignore",
+  "css.lint.emptyRules": "ignore",
+  "css.lint.duplicateProperties": "ignore",
+  "css.lint.boxModel": "ignore",
+  "css.lint.universalSelector": "ignore",
+  "css.lint.important": "ignore",
+  "css.lint.float": "ignore",
+  "css.lint.idSelector": "ignore",
+  "css.lint.zeroUnits": "ignore",
+  "html.validate.scripts": false,
+  "html.validate.styles": false,
+  "markdown.validate.enabled": false,
   "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
+  "tailwindCSS.lint.cssConflict": "ignore",
   "tailwindCSS.files.exclude": [
     "**/.git/**",
     "**/node_modules/**",
     "**/.next/**",
     "**/.worktrees/**",
     "**/AntigoNKL/**",
-    "**/Alignerr _ Powered by Labelbox_files/**"
+    "**/Alignerr _ Powered by Labelbox_files/**",
+    "**/private-assets/**",
+    "**/public/**",
+    "**/.agents/**",
+    "**/docs/**"
   ],
   "python.analysis.exclude": [
     ".worktrees/**",
@@ -20,13 +37,17 @@
     "**/.git/objects/**": true,
     "**/.worktrees/**": true,
     "**/node_modules/**": true,
-    "**/.next/**": true
+    "**/.next/**": true,
+    "**/private-assets/**": true,
+    "**/.agents/**": true
   },
   "search.exclude": {
     "**/.worktrees/**": true,
     "**/AntigoNKL/**": true,
     "**/Alignerr _ Powered by Labelbox_files/**": true,
-    "**/.next/**": true
+    "**/.next/**": true,
+    "**/private-assets/**": true,
+    "**/.agents/**": true
   },
   "liveServer.settings.multiRootWorkspaceName": "portal-nkl",
   "python-envs.defaultEnvManager": "ms-python.python:system",

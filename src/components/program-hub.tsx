@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { OutboundLink } from '@/components/ui/outbound-link';
+import { JsonLd } from '@/components/seo/json-ld';
 import type { ProgramHubDefinition } from '@/lib/program-hubs';
 import { EditorialSupportOffers } from '@/components/income/editorial-support-offers';
+import { absoluteSiteUrl } from '@/lib/site';
 
 type Props = {
+  slug?: string;
   title: string;
   description: string;
   programs: PartnerProgramCard[];
@@ -13,9 +16,42 @@ type Props = {
   relatedHubs?: ProgramHubDefinition[];
 };
 
-export function ProgramHub({ title, description, programs, intro, criteria = [], relatedHubs = [] }: Props) {
+export function ProgramHub({ slug, title, description, programs, intro, criteria = [], relatedHubs = [] }: Props) {
+  const pageUrl = absoluteSiteUrl(slug ? `/programas/${slug}` : '/programas');
+
   return (
     <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'CollectionPage',
+            name: title,
+            description,
+            url: pageUrl,
+            inLanguage: 'pt-BR',
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: absoluteSiteUrl('/') },
+              { '@type': 'ListItem', position: 2, name: 'Renda Extra', item: absoluteSiteUrl('/programas') },
+              ...(slug ? [{ '@type': 'ListItem', position: 3, name: title, item: pageUrl }] : []),
+            ],
+          },
+          {
+            '@type': 'ItemList',
+            name: title,
+            numberOfItems: programs.length,
+            itemListElement: programs.map((program, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              name: program.name,
+              url: absoluteSiteUrl(`/programas/${program.slug}`),
+            })),
+          },
+        ],
+      }} />
       <Link href="/programas" className="text-sm font-bold text-neon hover:underline">← Ver catálogo completo</Link>
       <header className="mt-5 max-w-3xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Guia de escolha</p>

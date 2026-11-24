@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPartnerProgramBySlug } from '@/actions/partner-programs';
+import { getPartnerProgramBySlug, getPartnerPrograms } from '@/actions/partner-programs';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { ProgramActions } from '@/components/income/program-actions';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
@@ -16,6 +16,7 @@ import { SocialEmbed } from '@/components/video/social-embed';
 import { PwaInstallButton } from '@/components/pwa';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
+import { getMatchingProgramHubs } from '@/lib/program-hubs';
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site';
 
 type Params = Promise<{ slug: string }>;
@@ -31,6 +32,12 @@ const loadProgram = unstable_cache(
   { revalidate: 300 },
 );
 
+const loadAllPrograms = unstable_cache(
+  async () => getPartnerPrograms(),
+  ['partner-program-detail-all'],
+  { revalidate: 300 },
+);
+
 export async function generateMetadata(props: { params: Params }): Promise<Metadata> {
   const { slug } = await props.params;
   const program = await loadProgram(slug);
@@ -39,15 +46,32 @@ export async function generateMetadata(props: { params: Params }): Promise<Metad
     return { title: 'Oportunidade não encontrada' };
   }
 
+  const seoTitle = `${program.name}: como funciona, quanto paga e se vale a pena`;
+  const seoDescription = `${program.shortDescription} Veja requisitos, remuneração (${program.averageEarning}), pontos positivos e como começar na ${program.name}.`;
+
   return {
-    title: program.name,
-    description: program.shortDescription,
+    title: seoTitle,
+    description: seoDescription,
     alternates: { canonical: absoluteSiteUrl(`/programas/${program.slug}`) },
     openGraph: {
       type: 'article',
-      title: program.name,
-      description: program.shortDescription,
+      title: seoTitle,
+      description: seoDescription,
       url: absoluteSiteUrl(`/programas/${program.slug}`),
+      images: [
+        {
+          url: absoluteSiteUrl('/images/areas/renda-extra.jpg'),
+          width: 960,
+          height: 540,
+          alt: `${program.name} — Renda Extra Portal NKL`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDescription,
+      images: [absoluteSiteUrl('/images/areas/renda-extra.jpg')],
     },
   };
 }
@@ -59,9 +83,28 @@ function formatVerifiedDate(value: string | null): string | null {
 
 export default async function PartnerProgramDetailsPage(props: { params: Params }) {
   const { slug } = await props.params;
-  const program = await loadProgram(slug);
+  const [program, allPrograms] = await Promise.all([
+    loadProgram(slug),
+    loadAllPrograms().catch(() => []),
+  ]);
 
   if (!program) notFound();
+
+  const matchingHubs = getMatchingProgramHubs(program);
+  const tagSet = new Set(program.tags.map((tag) => tag.toLowerCase()));
+  const relatedPrograms = allPrograms
+    .filter((item) => item.slug !== program.slug)
+    .map((item) => {
+      let score = item.category === program.category ? 3 : 0;
+      for (const tag of item.tags) {
+        if (tagSet.has(tag.toLowerCase())) score += 1;
+      }
+      return { item, score };
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score || b.item.finalRating - a.item.finalRating)
+    .slice(0, 4)
+    .map((entry) => entry.item);
 
   const verifiedDate = formatVerifiedDate(program.lastVerifiedAt);
   const siteUrl = SITE_URL;
@@ -217,7 +260,49 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             </div>
           </aside>
         </div>
-        <div className="border-t border-border p-6 md:p-10">
+        <div className="border-t border-border p-6 md:p-10 space-y-6">
+          {(matchingHubs.length > 0 || program.averageEarning.includes('US$')) && (
+            <section aria-label="Categorias e guias relacionados">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Guias desta trilha</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {matchingHubs.map((hub) => (
+                  <Link
+                    key={hub.slug}
+                    href={`/programas/${hub.slug}`}
+                    className="rounded-full border border-border bg-income-card/80 px-3 py-1.5 text-xs font-bold transition-colors hover:border-neon hover:text-neon"
+                  >
+                    {hub.title}
+                  </Link>
+                ))}
+                {program.averageEarning.includes('US$') && (
+                  <Link
+                    href="/programas/dolar"
+                    className="rounded-full border border-border bg-income-card/80 px-3 py-1.5 text-xs font-bold transition-colors hover:border-neon hover:text-neon"
+                  >
+                    Oportunidades em dólar
+                  </Link>
+                )}
+              </div>
+            </section>
+          )}
+          {relatedPrograms.length > 0 && (
+            <section aria-label="Outras oportunidades parecidas de renda extra">
+              <h2 className="font-playfair text-2xl font-bold">Outras oportunidades parecidas de renda extra</h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {relatedPrograms.map((related) => (
+                  <Link
+                    key={related.slug}
+                    href={`/programas/${related.slug}`}
+                    className="rounded-xl border border-border bg-income-card/80 p-4 transition-colors hover:border-neon"
+                  >
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-neon">{related.category}</p>
+                    <p className="mt-1 font-bold">{related.name}</p>
+                    <p className="mt-1 text-xs opacity-70">{related.averageEarning}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
           <AffiliateDisclaimer />
         </div>
       </article>

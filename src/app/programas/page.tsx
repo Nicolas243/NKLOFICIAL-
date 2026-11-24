@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
@@ -12,17 +13,86 @@ import { PROGRAM_HUBS } from '@/lib/program-hubs';
 import { getActiveAdSlots, getAdPricing, type ActiveAdSlot } from '@/lib/ad-inventory';
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
 
+const RENDA_EXTRA_FAQS = [
+  {
+    question: 'Qual é a melhor forma de fazer renda extra em 2026?',
+    answer: 'Não existe uma única opção ideal para todo mundo. Quem busca retorno sem capital inicial costuma começar com treinamento de IA, testes de usabilidade, pesquisas acadêmicas (Prolific/Dscout) ou criação de conteúdo UGC; quem já domina serviços digitais, automação ou afiliados consegue escalar ganhos maiores.',
+  },
+  {
+    question: 'Como fazer renda extra pelo celular sem investir nada?',
+    answer: 'Você pode atuar com microtarefas e projetos no celular (Clickworker, OneForma, AppHub, Billo), indicações de aplicativos financeiros e programas de afiliados da Shopee, Mercado Livre e Amazon usando apenas redes sociais ou links diretos.',
+  },
+  {
+    question: 'Quais plataformas realmente pagam em dólar para brasileiros?',
+    answer: 'Plataformas globais como Outlier AI, Micro1, DataAnnotation, Prolific, Dscout, uTest, Testlio, Fiverr e Upwork remuneram em USD via PayPal, Wise ou Payoneer conforme aprovação em testes, perfil e disponibilidade de tarefas.',
+  },
+  {
+    question: 'Dá para fazer renda extra usando Inteligência Artificial?',
+    answer: 'Sim. Há duas frentes reais: avaliar e treinar respostas de modelos de IA em plataformas especializadas, ou oferecer serviços produtivos com apoio de IA (cortes virais, automação com Make, roteiros, criação de e-books para Amazon KDP e gestão de negócios locais).',
+  },
+  {
+    question: 'Quanto tempo leva para receber o primeiro saque?',
+    answer: 'O prazo varia por plataforma: tarefas rápidas e afiliados locais costumam liberar em 7 a 30 dias após confirmação; projetos globais em dólar normalmente pagam semanalmente ou quinzenalmente após atingir o valor mínimo de saque.',
+  },
+  {
+    question: 'Como saber se uma plataforma de renda extra é confiável e evitar golpes?',
+    answer: 'Plataformas legítimas nunca cobram taxa para liberar cadastro, tarefa ou saque. Confira métodos de pagamento transparentes, regras claras de elegibilidade, suporte real e histórico editorial antes de enviar documentos ou investir tempo.',
+  },
+] as const;
+
+const getCachedPartnerPrograms = unstable_cache(
+  async () => getPartnerPrograms(),
+  ['programas-page-catalog'],
+  { revalidate: 300 },
+);
+
+const getCachedActiveAdSlots = unstable_cache(
+  async () => getActiveAdSlots(),
+  ['programas-page-ad-slots'],
+  { revalidate: 120 },
+);
+
+const getCachedMicro1Opportunities = unstable_cache(
+  async () => getMicro1Opportunities(),
+  ['programas-page-micro1'],
+  { revalidate: 300 },
+);
+
 export const metadata: Metadata = {
-  title: '55+ Formas Reais de Renda Extra e Programas de Parceria',
-  description: 'Catálogo com mais de 50 formas reais de renda extra, ferramentas complementares, trabalho remoto, afiliados, E-books e projetos com IA.',
+  title: 'Renda Extra 2026: 55+ Formas Reais e Plataformas Verificadas',
+  description: 'Descubra mais de 55 formas reais de fazer renda extra online, pelo celular, em dólar, sem investimento inicial ou com IA. Comparativo atualizado sem promessas fáceis.',
+  keywords: [
+    'renda extra',
+    'como ganhar renda extra',
+    'renda extra online',
+    'renda extra pelo celular',
+    'renda extra sem investimento',
+    'plataformas que pagam em dólar',
+    'renda extra com ia',
+    'programas de afiliados',
+  ],
   alternates: {
     canonical: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog),
   },
   openGraph: {
     type: 'website',
-    title: '55+ Formas Reais de Renda Extra | Portal NKL',
-    description: 'Catálogo com mais de 50 formas reais de renda extra, ferramentas complementares, trabalho remoto, afiliados, E-books e projetos com IA.',
+    title: 'Renda Extra 2026: 55+ Formas Reais | Portal NKL',
+    description: 'Mais de 55 caminhos reais de renda extra online, em dólar, pelo celular, sem investimento ou com IA — com requisitos, ferramentas e comparador.',
     url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog),
+    images: [
+      {
+        url: absoluteSiteUrl('/images/areas/renda-extra.jpg'),
+        width: 960,
+        height: 540,
+        alt: 'Catálogo de 55+ formas reais de renda extra no Portal NKL',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Renda Extra 2026: 55+ Formas Reais | Portal NKL',
+    description: 'Compare 55+ plataformas e estratégias reais de renda extra online, em dólar, pelo celular ou com IA.',
+    images: [absoluteSiteUrl('/images/areas/renda-extra.jpg')],
   },
 };
 
@@ -32,12 +102,12 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function PartnerProgramsPage({ searchParams }: { searchParams?: SearchParams }) {
   const [programs, adSlots, micro1Result] = await Promise.all([
-    getPartnerPrograms(),
-    getActiveAdSlots().catch((error: unknown) => {
+    getCachedPartnerPrograms(),
+    getCachedActiveAdSlots().catch((error: unknown) => {
       console.error('[PROGRAMS_PAGE] Falha ao carregar inventário publicitário:', error);
       return [] as ActiveAdSlot[];
     }),
-    getMicro1Opportunities().then((opportunities) => ({ opportunities, error: null as string | null })).catch((error: unknown) => {
+    getCachedMicro1Opportunities().then((opportunities) => ({ opportunities, error: null as string | null })).catch((error: unknown) => {
       console.error('[PROGRAMS_PAGE] Falha ao carregar oportunidades da Micro1:', error);
       return {
         opportunities: [],
@@ -52,19 +122,50 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
     return Array.isArray(value) ? value[0] : value;
   };
   const categoryCount = new Set(programs.map((program) => program.category)).size;
+  const catalogUrl = absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog);
 
   return (
     <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-0 md:pb-20">
       <JsonLd data={{
         '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: 'Oportunidades de renda extra do Portal NKL',
-        itemListElement: programs.map((program, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          name: program.name,
-          url: absoluteSiteUrl(`/programas/${program.slug}`),
-        })),
+        '@graph': [
+          {
+            '@type': 'CollectionPage',
+            name: 'Renda Extra 2026: 55+ Formas Reais e Plataformas Verificadas',
+            description: 'Catálogo editorial com mais de 55 formas reais de gerar renda extra online, pelo celular, em dólar, como afiliado ou usando Inteligência Artificial.',
+            url: catalogUrl,
+            inLanguage: 'pt-BR',
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: absoluteSiteUrl('/') },
+              { '@type': 'ListItem', position: 2, name: 'Renda Extra', item: catalogUrl },
+            ],
+          },
+          {
+            '@type': 'ItemList',
+            name: 'Oportunidades de renda extra do Portal NKL',
+            numberOfItems: programs.length,
+            itemListElement: programs.map((program, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              name: program.name,
+              url: absoluteSiteUrl(`/programas/${program.slug}`),
+            })),
+          },
+          {
+            '@type': 'FAQPage',
+            mainEntity: RENDA_EXTRA_FAQS.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+              },
+            })),
+          },
+        ],
       }} />
       <header className="relative mb-6 overflow-hidden rounded-[1.5rem] border border-border bg-income-surface/90 px-5 py-8 shadow-[0_20px_60px_rgba(70,55,35,0.12)] md:mb-8 md:rounded-[2rem] md:px-12 md:py-12">
         <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-neon/15 blur-3xl" />
@@ -164,6 +265,16 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
               <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
             </Link>
           ))}
+          <Link href="/programas/iniciantes" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
+            <h3 className="font-bold">Renda extra para iniciantes</h3>
+            <p className="mt-2 text-sm leading-relaxed opacity-65">Caminhos com entrada simples ou curva moderada para dar os primeiros passos sem se perder.</p>
+            <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
+          </Link>
+          <Link href="/programas/dolar" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
+            <h3 className="font-bold">Oportunidades pagas em dólar</h3>
+            <p className="mt-2 text-sm leading-relaxed opacity-65">Plataformas com referência de pagamento em USD, métodos de saque e exigências de idioma.</p>
+            <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
+          </Link>
         </div>
       </details>
 
@@ -184,6 +295,21 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
         <ProgramCompare programs={programs} />
       </div>
       <EditorialSupportOffers />
+
+      <section id="perguntas-frequentes" className="mt-10 rounded-2xl border border-border bg-income-surface/90 p-5 md:mt-14 md:p-8" aria-labelledby="faq-renda-extra-title">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Perguntas frequentes</p>
+        <h2 id="faq-renda-extra-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">
+          Dúvidas comuns sobre renda extra online
+        </h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {RENDA_EXTRA_FAQS.map((faq) => (
+            <article key={faq.question} className="rounded-xl border border-border bg-income-card/80 p-4 md:p-5">
+              <h3 className="font-bold text-base">{faq.question}</h3>
+              <p className="mt-2 text-sm leading-relaxed opacity-75">{faq.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <details className="mt-10 rounded-2xl border border-border bg-income-surface/90 p-4 md:mt-16 md:p-6">
         <summary className="cursor-pointer text-sm font-bold transition-colors hover:text-neon">

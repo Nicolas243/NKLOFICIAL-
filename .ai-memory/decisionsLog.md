@@ -10,6 +10,11 @@ updated: 2026-11-24
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-017 (2026-11-24) Saneamento Supabase 0050, Build Phase Segura na Vercel, IDE Clean & 5 Pilares SEO Renda Extra
+- Decisao: aplicar `0050_performance_fk_indexes_and_rls_policies.sql` (24 indices de FK + policies restritivas `deny_direct_client_access` em 37 tabelas Drizzle server-only), isolar placeholders de env apenas em `NEXT_PHASE === 'phase-production-build'` com `/*turbopackIgnore: true*/` nos `readFile` locais, suprimir scans de docs/HTML/skills em `.vscode/settings.json`, e implantar os 5 pilares SEO (`SearchAction`, `FAQPage`, 8 hubs ISR, malha interna `/programas/[slug]` e `sitemap.ts` sem redirect).
+- Motivo: zerar 61 avisos acionaveis do Supabase Advisor, corrigir falha `/api/ads/click` em Vercel Preview builds sem expor segredos de producao, eliminar 238 falsos positivos na IDE e concentrar autoridade semantica de `renda extra` no Google.
+- Descartado: desabilitar validacao Zod de env em runtime, abrir politicas RLS permissivas para `anon` ou replicar secrets de producao em Preview.
+
 ## ADR-016 (2026-11-24) Colisores Fantasma Arredondados + Fluido +30% Chroma + Checklist Offline
 - Decisao: substituir caixas fixas no fluido por `buildGhostObstacleRect` (colisor menor interno com `rx/ry` ate `0.5` e filtro `hasPaintedSurface` para ignorar wrappers transparentes), elevar saturacao das paletas WebGL/Canvas2D com reforco `+32%` de croma em `DISPLAY_SHADER`, destacar explicitamente `55 formas reais` em `/programas` e consolidar o roteiro manual de afiliados/KDP/Cloudflare em `docs/CHECKLIST-OFFLINE-NKL.md`.
 - Motivo: eliminar contornos quadrados ao redor de circulos/cards curvos, remover aparencia acinzentada sem queimar fundo escuro ou perder contraste claro, evidenciar a cobertura completa de renda extra e entregar lista acionavel para operacao offline.

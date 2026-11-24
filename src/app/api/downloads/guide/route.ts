@@ -38,13 +38,12 @@ function getRequestIdentifier(request: Request): string {
 async function readLocalGuideAsset(assetId: z.infer<typeof requestSchema>['assetId']): Promise<Buffer | null> {
   const asset = getGuideAsset(assetId);
   const candidatePaths = [
-    path.join(process.cwd(), 'Conteudo de novembro', asset.filename),
-    path.join(process.cwd(), asset.filename),
-    path.join(process.cwd(), 'private-assets', 'guias', asset.filename),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'Conteudo de novembro', asset.filename),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), 'private-assets', 'guias', asset.filename),
   ];
   for (const candidatePath of candidatePaths) {
     try {
-      return await readFile(candidatePath);
+      return await readFile(/*turbopackIgnore: true*/ candidatePath);
     } catch {
       continue;
     }

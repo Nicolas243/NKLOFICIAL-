@@ -23,9 +23,29 @@ const envSchema = z.object({
   NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION: z.string().min(1).optional(),
 });
 
-const parsedEnv = envSchema.parse(process.env);
+const isNextBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
 
-if (process.env.NODE_ENV === 'production' && !hasStripeConfiguration(parsedEnv)) {
+const buildPhaseInput = isNextBuildPhase
+  ? {
+      ...process.env,
+      DATABASE_URL:
+        process.env.DATABASE_URL || 'postgresql://build:build@localhost:5432/build',
+      UPSTASH_REDIS_REST_URL:
+        process.env.UPSTASH_REDIS_REST_URL || 'https://build-placeholder.upstash.io',
+      UPSTASH_REDIS_REST_TOKEN:
+        process.env.UPSTASH_REDIS_REST_TOKEN || 'build-placeholder-token',
+      DAILY_API_KEY: process.env.DAILY_API_KEY || 'build-placeholder-daily-key',
+      CRON_SECRET: process.env.CRON_SECRET || 'build-placeholder-cron-secret',
+      NEXT_PUBLIC_SUPABASE_URL:
+        process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://build-placeholder.supabase.co',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY:
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'build-placeholder-anon-key',
+    }
+  : process.env;
+
+const parsedEnv = envSchema.parse(buildPhaseInput);
+
+if (!isNextBuildPhase && process.env.NODE_ENV === 'production' && !hasStripeConfiguration(parsedEnv)) {
   throw new Error('STRIPE_API_KEY (ou STRIPE_SECRET_KEY) e STRIPE_WEBHOOK_SECRET são obrigatórios em produção.');
 }
 

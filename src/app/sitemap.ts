@@ -21,16 +21,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     { url: absoluteSiteUrl('/musica/naipe_cordas'), lastModified, changeFrequency: 'daily', priority: 0.9 },
-    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog), lastModified, changeFrequency: 'daily', priority: 0.9 },
-    { url: absoluteSiteUrl('/quiz-negocios'), lastModified, changeFrequency: 'weekly', priority: 0.8 },
+    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog), lastModified, changeFrequency: 'daily', priority: 1.0 },
     { url: absoluteSiteUrl('/mural-de-parceiros'), lastModified, changeFrequency: 'weekly', priority: 0.7 },
-    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.beginnerPrograms), lastModified, changeFrequency: 'weekly', priority: 0.8 },
-    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.dollarPrograms), lastModified, changeFrequency: 'weekly', priority: 0.8 },
+    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.beginnerPrograms), lastModified, changeFrequency: 'weekly', priority: 0.85 },
+    { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.dollarPrograms), lastModified, changeFrequency: 'weekly', priority: 0.85 },
     ...Object.values(PROGRAM_HUBS).map((hub) => ({
       url: absoluteSiteUrl(`/programas/${hub.slug}`),
       lastModified,
       changeFrequency: 'weekly' as const,
-      priority: 0.7,
+      priority: 0.85,
     })),
     ...programs.map((program) => ({
       url: absoluteSiteUrl(`/programas/${program.slug}`),
@@ -46,8 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),
-    { url: absoluteSiteUrl('/guias/ingles'), lastModified, changeFrequency: 'monthly', priority: 0.7 },
-    ...['italiano', 'frances', 'alemao', 'espanhol', 'chines'].flatMap((language) => [
+    ...['ingles', 'italiano', 'frances', 'alemao', 'espanhol', 'chines'].flatMap((language) => [
       { url: absoluteSiteUrl(`/guias/${language}`), lastModified, changeFrequency: 'monthly' as const, priority: 0.7 },
       { url: absoluteSiteUrl(`/guias/${language}/ebook`), lastModified, changeFrequency: 'monthly' as const, priority: 0.6 },
     ]),

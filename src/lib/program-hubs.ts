@@ -1,6 +1,14 @@
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 
-export type ProgramHubSlug = 'celular' | 'sem-investimento' | 'trabalho-remoto' | 'pesquisas-remuneradas';
+export type ProgramHubSlug =
+  | 'celular'
+  | 'sem-investimento'
+  | 'trabalho-remoto'
+  | 'pesquisas-remuneradas'
+  | 'com-ia'
+  | 'afiliados'
+  | 'home-office'
+  | 'com-investimento';
 
 export type ProgramHubDefinition = {
   slug: ProgramHubSlug;
@@ -37,7 +45,7 @@ export const PROGRAM_HUBS: Record<ProgramHubSlug, ProgramHubDefinition> = {
       'Leia as regras de indicação, conteúdo ou coleta de dados antes de aceitar.',
       'Comece por uma atividade pequena e registre tempo, custos e retorno real.',
     ],
-    relatedHubs: ['sem-investimento', 'pesquisas-remuneradas'],
+    relatedHubs: ['sem-investimento', 'home-office', 'pesquisas-remuneradas'],
     matches: (program) => includesAny(searchableProgramText(program), [
       'celular',
       'app',
@@ -56,7 +64,7 @@ export const PROGRAM_HUBS: Record<ProgramHubSlug, ProgramHubDefinition> = {
       'Separe custos indiretos, como internet, equipamento, transporte e impostos.',
       'Confirme as condições diretamente na plataforma antes de compartilhar dados.',
     ],
-    relatedHubs: ['celular', 'trabalho-remoto'],
+    relatedHubs: ['celular', 'com-ia', 'trabalho-remoto'],
     matches: (program) => program.zeroInvestmentRequired,
   },
   'trabalho-remoto': {
@@ -69,7 +77,7 @@ export const PROGRAM_HUBS: Record<ProgramHubSlug, ProgramHubDefinition> = {
       'Confirme idioma, horário, país elegível e forma de pagamento.',
       'Leia o briefing e as regras de uso de imagem, dados e propriedade intelectual.',
     ],
-    relatedHubs: ['celular', 'pesquisas-remuneradas'],
+    relatedHubs: ['home-office', 'com-ia', 'pesquisas-remuneradas'],
     matches: (program) => includesAny(searchableProgramText(program), [
       'remoto',
       'freelance',
@@ -89,7 +97,7 @@ export const PROGRAM_HUBS: Record<ProgramHubSlug, ProgramHubDefinition> = {
       'Confira a remuneração, o tempo estimado e o método de saque antes de participar.',
       'Nunca pague para responder uma pesquisa ou liberar um saque.',
     ],
-    relatedHubs: ['sem-investimento', 'trabalho-remoto'],
+    relatedHubs: ['sem-investimento', 'celular', 'trabalho-remoto'],
     matches: (program) => includesAny(searchableProgramText(program), [
       'pesquisa',
       'pesquisas',
@@ -97,6 +105,88 @@ export const PROGRAM_HUBS: Record<ProgramHubSlug, ProgramHubDefinition> = {
       'estudos',
       'entrevista',
     ]),
+  },
+  'com-ia': {
+    slug: 'com-ia',
+    title: 'Renda extra com Inteligência Artificial (IA)',
+    description: 'Plataformas de treinamento de modelos de IA, curadoria de dados, criação de vídeos, cortes virais e automações digitais.',
+    intro: 'O mercado de Inteligência Artificial abriu duas frentes práticas: atuar como avaliador e treinador de respostas de IA (em plataformas remotas) ou usar ferramentas de IA para acelerar serviços, vídeos, e-books e automações.',
+    criteria: [
+      'Verifique se o projeto exige inglês técnico ou testes de qualificação iniciais.',
+      'Use contas de recebimento internacional transparentes (como Wise ou Payoneer) quando o pagamento for em dólar.',
+      'Não automatize tarefas onde a plataforma exige validação humana autêntica.',
+    ],
+    relatedHubs: ['trabalho-remoto', 'sem-investimento', 'com-investimento'],
+    matches: (program) => includesAny(searchableProgramText(program), [
+      'ia ',
+      ' ia',
+      'inteligência artificial',
+      'ai ',
+      'outlier',
+      'micro1',
+      'dataannotation',
+      'claru',
+      'mindrift',
+      'notebooklm',
+      'automação',
+      'cortes virais',
+    ]),
+  },
+  afiliados: {
+    slug: 'afiliados',
+    title: 'Renda extra como afiliado',
+    description: 'Programas de indicação, marketplaces brasileiros, afiliados B2B recorrentes e recomendações com comissão real por venda ou cadastro.',
+    intro: 'Trabalhar com links de afiliado exige audiência qualificada, comparação honesta de produtos ou solução direta de uma dúvida do comprador. Priorize programas oficiais e ferramentas que você realmente testou.',
+    criteria: [
+      'Sempre informe com clareza quando um link for de indicação ou parceria.',
+      'Compare comissão única (marketplaces) versus comissão recorrente (SaaS B2B).',
+      'Crie conteúdo útil que resolva o problema da busca antes de enviar o link.',
+    ],
+    relatedHubs: ['sem-investimento', 'home-office', 'com-ia'],
+    matches: (program) => includesAny(searchableProgramText(program), [
+      'afiliad',
+      'indica',
+      'comiss',
+      'marketplace',
+      'hotmart',
+      'amazon',
+      'b2b',
+    ]),
+  },
+  'home-office': {
+    slug: 'home-office',
+    title: 'Renda extra em casa (Home Office)',
+    description: 'Ideias e plataformas para trabalhar de casa no computador ou celular com horários flexíveis, UGC, escrita, testes e freelancing.',
+    intro: 'Fazer renda extra em casa funciona melhor quando você separa blocos fixos na agenda e escolhe canais compatíveis com a sua estrutura (internet estável, fone/microfone básico ou computador).',
+    criteria: [
+      'Defina quantas horas por semana você realmente consegue manter com consistência.',
+      'Comece por 1 ou 2 plataformas antes de se cadastrar em dez ao mesmo tempo.',
+      'Organize custos e recebimentos separados da sua conta pessoal principal.',
+    ],
+    relatedHubs: ['trabalho-remoto', 'celular', 'afiliados'],
+    matches: (program) => includesAny(searchableProgramText(program), [
+      'em casa',
+      'home office',
+      'remoto',
+      'ugc',
+      'freelance',
+      'kdp',
+      'ebook',
+      'e-book',
+    ]),
+  },
+  'com-investimento': {
+    slug: 'com-investimento',
+    title: 'Renda extra com baixo investimento inicial',
+    description: 'Modelos escaláveis que pedem ferramentas, anúncios ou capital enxuto para acelerar criação de produtos, lojas, automações e canais.',
+    intro: 'Diferente das plataformas de tarefas avulsas, modelos com pequeno investimento inicial (como ferramentas de IA, hospedagem, print on demand ou tráfego) exigem gestão de caixa, validação de demanda e disciplina de execução.',
+    criteria: [
+      'Nunca comprometa reserva de emergência em ferramentas ou anúncios.',
+      'Valide a primeira venda no orgânico antes de escalar verba paga.',
+      'Calcule margem líquida descontando plataforma, câmbio e impostos.',
+    ],
+    relatedHubs: ['com-ia', 'afiliados', 'sem-investimento'],
+    matches: (program) => !program.zeroInvestmentRequired,
   },
 };
 
@@ -106,4 +196,8 @@ export function getProgramHub(slug: string): ProgramHubDefinition | null {
 
 export function filterProgramsForHub(programs: PartnerProgramCard[], slug: ProgramHubSlug): PartnerProgramCard[] {
   return programs.filter(PROGRAM_HUBS[slug].matches);
+}
+
+export function getMatchingProgramHubs(program: PartnerProgramCard): ProgramHubDefinition[] {
+  return Object.values(PROGRAM_HUBS).filter((hub) => hub.matches(program));
 }
