@@ -254,12 +254,32 @@ export function AdCampaignForm({
       </p>
 
       <fieldset>
-        <legend className="text-sm font-bold">Quantidade de cotas</legend>
+        <legend className="text-sm font-bold">Escolha um pacote ou quantidade de cotas</legend>
         <p className="mt-2 text-xs leading-relaxed text-foreground/65">
-          Cada cota corresponde a uma posição independente na faixa de anúncios. Você pode reservar de 1 a 10 posições:
+          Cada cota corresponde a uma posição independente na faixa de anúncios. Você pode escolher um dos 3 pacotes recomendados ou personalizar de 1 a 10 posições:
           quanto mais cotas escolher, maior será a presença da sua marca na faixa e maior será o valor mensal.
-          A mensalidade exibida abaixo já considera a quantidade selecionada.
         </p>
+        <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
+          {[
+            { slots: 1, badge: 'Entrada', label: '1 cota na faixa' },
+            { slots: 3, badge: 'Mais escolhido', label: '3 cotas combinadas' },
+            { slots: 10, badge: 'Domínio Total', label: '10 cotas (faixa cheia)' },
+          ].map((preset) => (
+            <button
+              key={preset.slots}
+              type="button"
+              onClick={() => setSlotCount(preset.slots)}
+              aria-pressed={slotCount === preset.slots}
+              className={`flex flex-col items-start rounded-xl border p-3 text-left transition-colors ${slotCount === preset.slots ? 'border-neon bg-neon/10 text-foreground' : 'border-border bg-background/60 hover:border-neon/60'}`}
+            >
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neon">{preset.badge}</span>
+              <span className="mt-1 text-sm font-bold">{preset.label}</span>
+              <span className="mt-0.5 text-xs font-semibold text-foreground/75">
+                {formatPrice(monthlyPriceCents * preset.slots)}/mês
+              </span>
+            </button>
+          ))}
+        </div>
         <div className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-10">
           {Array.from({ length: 10 }, (_, index) => {
             const value = index + 1;

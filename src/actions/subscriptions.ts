@@ -15,9 +15,9 @@ export type CheckoutResult = {
 };
 
 /**
- * Gera a URL de checkout do plano Premium no Stripe.
+ * Gera a URL de checkout do plano Premium no Stripe (mensal ou anual).
  */
-export async function startPremiumCheckout(): Promise<CheckoutResult> {
+export async function startPremiumCheckout(plan: 'monthly' | 'annual' = 'monthly'): Promise<CheckoutResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,10 +37,12 @@ export async function startPremiumCheckout(): Promise<CheckoutResult> {
     throw new Error('Apenas luthiers podem assinar o plano Premium.');
   }
 
+  const isAnnual = plan === 'annual';
   const session = await createCheckoutSession(buildPremiumCheckoutParams({
     userId: user.id,
     siteUrl: env.NEXT_PUBLIC_SITE_URL,
-    priceCents: 4990,
+    priceCents: isAnnual ? 47900 : 4990,
+    interval: isAnnual ? 'year' : 'month',
   }));
   if (!session.url) {
     throw new Error('O Stripe não retornou um endereço de checkout válido.');

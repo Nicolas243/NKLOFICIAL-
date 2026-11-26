@@ -14,7 +14,14 @@ import { z } from 'zod';
 import type { PaidProduct } from '@/config/products';
 import { trackBeginCheckout } from '@/lib/analytics';
 import { getAiOfferPriceCents, type AiOfferPlan } from '@/lib/ai-product';
-import { getGuideTierPriceCents } from '@/lib/guide-offer';
+import {
+  formatBrlFromCents,
+  getGuideTierPriceCents,
+  isEnglishEbookOffer,
+  isLanguageEbookOffer,
+  withOfferTier,
+  type OfferTier,
+} from '@/lib/guide-offer';
 import { isValidCpf, normalizeCpf } from '@/lib/guide-personalization';
 
 type ProductCheckoutClientProps = {
@@ -79,6 +86,7 @@ export function ProductCheckoutClient({
   const [selectedPlan, setSelectedPlan] = useState<AiOfferPlan>(
     product.legacyOfferVariant === 'ai-subscription' ? 'subscription' : 'one_time',
   );
+  const [selectedTier, setSelectedTier] = useState<OfferTier>('complete');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState(userEmail ?? '');
   const [cpf, setCpf] = useState('');
@@ -88,6 +96,72 @@ export function ProductCheckoutClient({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [requiresAuthAction, setRequiresAuthAction] = useState(false);
+
+  const isLanguageSku =
+    isEnglishEbookOffer(product.legacyOfferVariant) ||
+    isLanguageEbookOffer(product.legacyOfferVariant);
+
+  const guideTierOptions: ReadonlyArray<{
+    id: OfferTier;
+    title: string;
+    subtitle: string;
+    priceLabel: string;
+    badge?: string;
+  }> = isLanguageSku
+    ? [
+        {
+          id: 'essential',
+          title: 'Edição Essencial (só o E-book)',
+          subtitle: '100 lições e 500 exemplos coloridos em PDF.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'essential', 0).amountCents),
+          badge: 'Entrada',
+        },
+        {
+          id: 'complete',
+          title: 'Pacote Completo + IA & Planner',
+          subtitle: 'E-book completo, guia de IA por idade e planner de 90 dias.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'complete', 0).amountCents),
+          badge: 'Mais escolhido',
+        },
+        {
+          id: 'vip',
+          title: 'Passaporte Poliglota 6 Idiomas + Renda Extra',
+          subtitle: 'Todos os 6 e-books de idiomas e o Guia Essencial Renda Extra 2027.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'vip', 0).amountCents),
+          badge: 'Acervo completo',
+        },
+      ]
+    : [
+        {
+          id: 'essential',
+          title: 'Edição Essencial',
+          subtitle: 'Acesso enxuto ao material principal em PDF com marca d’água.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'essential', 0).amountCents),
+          badge: 'Entrada',
+        },
+        {
+          id: 'complete',
+          title: 'Pacote Completo',
+          subtitle: 'Todos os 5 arquivos principais, planilhas e checklists práticos.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'complete', 0).amountCents),
+          badge: 'Mais escolhido',
+        },
+        {
+          id: 'vip',
+          title: 'Acervo Total NKL (11 Materiais)',
+          subtitle: 'Todos os guias e planilhas de Renda Extra + os 6 E-books de idiomas.',
+          priceLabel: formatBrlFromCents(getGuideTierPriceCents(product.legacyOfferVariant, 'vip', 0).amountCents),
+          badge: 'Acervo completo',
+        },
+      ];
+
+  const activePriceSummary = product.stripeCheckoutKind === 'ai'
+    ? selectedPlan === 'subscription'
+      ? 'R$ 39/mês na assinatura'
+      : selectedPlan === 'vip'
+        ? 'R$ 397,00 (Passe Total · 6 produtos)'
+        : 'R$ 99,00 em pagamento único'
+    : `${guideTierOptions.find((opt) => opt.id === selectedTier)?.priceLabel ?? product.priceLabel} (${guideTierOptions.find((opt) => opt.id === selectedTier)?.title ?? ''})`;
 
   async function handleAiCheckout(): Promise<void> {
     trackBeginCheckout({
@@ -170,12 +244,13 @@ export function ProductCheckoutClient({
       return;
     }
 
+    const resolvedOfferVariant = withOfferTier(product.legacyOfferVariant, selectedTier);
     setIsSubmitting(true);
     trackBeginCheckout({
       funnel: `product-checkout:${product.slug}`,
-      tier: 'complete',
-      valueBrl: getGuideTierPriceCents(product.legacyOfferVariant, 'complete', 0).amountCents / 100,
-      offerVariant: product.legacyOfferVariant,
+      tier: selectedTier,
+      valueBrl: getGuideTierPriceCents(resolvedOfferVariant, selectedTier, 0).amountCents / 100,
+      offerVariant: resolvedOfferVariant,
       productSlug: product.slug,
     });
 
@@ -185,7 +260,8 @@ export function ProductCheckoutClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           productSlug: product.slug,
-          offerVariant: product.legacyOfferVariant,
+          offerVariant: resolvedOfferVariant,
+          tier: selectedTier,
           fullName: parsed.data.fullName,
           email: parsed.data.email,
           cpf: normalizeCpf(parsed.data.cpf),
@@ -242,7 +318,7 @@ export function ProductCheckoutClient({
               {product.title}
             </h1>
             <p className="mt-2 text-lg font-bold text-[#c2410c] dark:text-[#fb923c]">
-              {product.priceLabel}
+              {activePriceSummary}
             </p>
             <p className="mt-1 text-sm leading-relaxed text-foreground/75">
               {product.billingNote}
@@ -321,39 +397,8 @@ export function ProductCheckoutClient({
 
                 <fieldset className="space-y-3">
                   <legend className="text-xs font-bold uppercase tracking-[0.12em] text-foreground/65">
-                    Escolha a modalidade de acesso
+                    Escolha a modalidade de acesso (3 opções)
                   </legend>
-
-                  <label
-                    className={[
-                      'flex min-h-[52px] cursor-pointer items-start justify-between gap-3 rounded-2xl border p-4 transition-colors',
-                      selectedPlan === 'one_time'
-                        ? 'border-[#c2410c] bg-[#c2410c]/10 dark:border-[#f97316] dark:bg-[#f97316]/15'
-                        : 'border-border bg-background hover:border-[#c2410c]/50',
-                    ].join(' ')}
-                  >
-                    <span className="flex items-start gap-3">
-                      <input
-                        type="radio"
-                        name="ai-plan"
-                        value="one_time"
-                        checked={selectedPlan === 'one_time'}
-                        onChange={() => setSelectedPlan('one_time')}
-                        className="mt-1 h-4 w-4 accent-[#c2410c]"
-                      />
-                      <span>
-                        <span className="block text-sm font-bold text-foreground">
-                          Acesso completo (pagamento único)
-                        </span>
-                        <span className="mt-0.5 block text-xs text-foreground/70">
-                          Pague uma vez para usar sem mensalidade.
-                        </span>
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-sm font-bold text-foreground">
-                      R$ 99,00
-                    </span>
-                  </label>
 
                   <label
                     className={[
@@ -374,15 +419,77 @@ export function ProductCheckoutClient({
                       />
                       <span>
                         <span className="block text-sm font-bold text-foreground">
-                          Assinatura mensal
+                          Assinatura mensal · Entrada
                         </span>
                         <span className="mt-0.5 block text-xs text-foreground/70">
-                          Renovação mensal flexível direto pelo Stripe.
+                          Acesso contínuo direto pelo Stripe com cancelamento quando quiser.
                         </span>
                       </span>
                     </span>
                     <span className="shrink-0 text-sm font-bold text-foreground">
                       R$ 39/mês
+                    </span>
+                  </label>
+
+                  <label
+                    className={[
+                      'flex min-h-[52px] cursor-pointer items-start justify-between gap-3 rounded-2xl border p-4 transition-colors',
+                      selectedPlan === 'one_time'
+                        ? 'border-[#c2410c] bg-[#c2410c]/10 dark:border-[#f97316] dark:bg-[#f97316]/15'
+                        : 'border-border bg-background hover:border-[#c2410c]/50',
+                    ].join(' ')}
+                  >
+                    <span className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="ai-plan"
+                        value="one_time"
+                        checked={selectedPlan === 'one_time'}
+                        onChange={() => setSelectedPlan('one_time')}
+                        className="mt-1 h-4 w-4 accent-[#c2410c]"
+                      />
+                      <span>
+                        <span className="block text-sm font-bold text-foreground">
+                          Acesso completo vitalício · Mais escolhido
+                        </span>
+                        <span className="mt-0.5 block text-xs text-foreground/70">
+                          Pague uma vez para usar sem mensalidade.
+                        </span>
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-sm font-bold text-foreground">
+                      R$ 99,00
+                    </span>
+                  </label>
+
+                  <label
+                    className={[
+                      'flex min-h-[52px] cursor-pointer items-start justify-between gap-3 rounded-2xl border p-4 transition-colors',
+                      selectedPlan === 'vip'
+                        ? 'border-[#c2410c] bg-[#c2410c]/10 dark:border-[#f97316] dark:bg-[#f97316]/15'
+                        : 'border-border bg-background hover:border-[#c2410c]/50',
+                    ].join(' ')}
+                  >
+                    <span className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        name="ai-plan"
+                        value="vip"
+                        checked={selectedPlan === 'vip'}
+                        onChange={() => setSelectedPlan('vip')}
+                        className="mt-1 h-4 w-4 accent-[#c2410c]"
+                      />
+                      <span>
+                        <span className="block text-sm font-bold text-foreground">
+                          Passe Total Portal NKL · Todos os 6 produtos
+                        </span>
+                        <span className="mt-0.5 block text-xs text-foreground/70">
+                          Estúdio IA, Curso IA, Bússola de Negócios, Renda Extra, Idiomas com IA e E-book Inglês.
+                        </span>
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-sm font-bold text-foreground">
+                      R$ 397,00
                     </span>
                   </label>
                 </fieldset>
@@ -408,6 +515,46 @@ export function ProductCheckoutClient({
                 className="mt-5 space-y-4"
                 noValidate
               >
+                <fieldset className="space-y-2.5">
+                  <legend className="text-xs font-bold uppercase tracking-[0.12em] text-foreground/65">
+                    Escolha o nível de acesso (3 opções)
+                  </legend>
+                  {guideTierOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      className={[
+                        'flex min-h-[52px] cursor-pointer items-start justify-between gap-3 rounded-2xl border p-3.5 transition-colors',
+                        selectedTier === option.id
+                          ? 'border-[#c2410c] bg-[#c2410c]/10 dark:border-[#f97316] dark:bg-[#f97316]/15'
+                          : 'border-border bg-background hover:border-[#c2410c]/50',
+                      ].join(' ')}
+                    >
+                      <span className="flex items-start gap-3">
+                        <input
+                          type="radio"
+                          name="guide-tier"
+                          value={option.id}
+                          checked={selectedTier === option.id}
+                          onChange={() => setSelectedTier(option.id)}
+                          className="mt-1 h-4 w-4 accent-[#c2410c]"
+                        />
+                        <span>
+                          <span className="block text-sm font-bold text-foreground">
+                            {option.title}
+                            {option.badge ? ` · ${option.badge}` : ''}
+                          </span>
+                          <span className="mt-0.5 block text-xs text-foreground/70">
+                            {option.subtitle}
+                          </span>
+                        </span>
+                      </span>
+                      <span className="shrink-0 text-sm font-bold text-foreground">
+                        {option.priceLabel}
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
+
                 <p className="text-sm leading-relaxed text-foreground/75">
                   Preencha seus dados abaixo para gerar a cópia personalizada e seguir ao
                   checkout seguro no Stripe.

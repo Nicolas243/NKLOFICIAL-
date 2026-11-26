@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-023 (2026-11-26) 3 Faixas de Preço Universais + Provisionamento Idempotente de 12 Produtos / 33 Preços no Stripe
+- Decisao: adicionar seleção completa de 3 opções em `ProductCheckoutClient` (IA `R$ 39/99/397`, Renda/Bússola `R$ 19/39/247`, Idiomas `R$ 27/47/297`), presets de 1/3/10 cotas em `AdCampaignForm` e plano anual `R$ 479/ano` em `/dashboard/luthier/planos` + `buildPremiumCheckoutParams`, além de expandir `scripts/migrate-stripe-account.mjs` para provisionar e verificar os 12 produtos e 33 preços BRL via `metadata.portal_catalog_key` e `metadata.portal_price_key`.
+- Motivo: garantir que toda superfície comercial do portal aplique Decoy Pricing com checkout real funcionando em todas as faixas e que a virada da conta Live `nkloficial` crie o catálogo inteiro de forma reproduzível em 1 comando sem tocar em `Buymeacoffee` (`acct_1UZsOzQzOKRNmIif`).
+- Descartado: manter checkouts avulsos de `/ofertas/[slug]/checkout`, anúncios ou planos luthier presos a 1–2 opções ou cadastrar manualmente dezenas de produtos/preços no painel da Stripe Live.
+
 ## ADR-022 (2026-11-26) Paridade DDL `0051` (Webhooks & Aulas), Correção de Entitlements e Teste E2E de Todos os Gateways
 - Decisao: aplicar a migração aditiva idempotente `drizzle/0051_missing_webhook_and_booking_tables.sql` (restaurando `stripe_webhook_events`, `class_bookings`, `student_plan_enrollments`, `teacher_availability`, `teacher_reviews`, `entity_reports` e colunas de moderação em `business_directory`), normalizar sufixos `:essential`/`:vip` e os 5 idiomas em `resolveGuideProductSlug`, incluir `vip` no fallback `getStripeReference`, redirecionar automaticamente em `PremiumCheckoutButton` e evoluir `scripts/test-all-payments-stripe.mjs` para testar todos os 7 gateways ponta a ponta contra Sandbox `acct_1UbswFItNBn1daZu`.
 - Motivo: auditoria E2E real revelou que o banco remoto não tinha `stripe_webhook_events` (quebrando `markEventProcessed` com `42P01`), nem `class_bookings`/colunas de moderação (quebrando `/lojas` e reservas), e que compras de outros idiomas sem `metadata.productSlug` recebiam entitlement incorreto de renda extra.

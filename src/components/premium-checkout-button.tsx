@@ -3,7 +3,13 @@
 import { useState, useTransition } from 'react';
 import { startPremiumCheckout, type CheckoutResult } from '@/actions/subscriptions';
 
-export function PremiumCheckoutButton() {
+export function PremiumCheckoutButton({
+  plan = 'monthly',
+  label = 'Assinar Premium',
+}: {
+  plan?: 'monthly' | 'annual';
+  label?: string;
+}) {
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
@@ -12,7 +18,7 @@ export function PremiumCheckoutButton() {
     setFeedback(null);
     startTransition(async () => {
       try {
-        const result: CheckoutResult = await startPremiumCheckout();
+        const result: CheckoutResult = await startPremiumCheckout(plan);
         setFeedback(result.message);
         setCheckoutUrl(result.checkoutUrl);
         if (result.checkoutUrl) {
@@ -34,7 +40,7 @@ export function PremiumCheckoutButton() {
         disabled={isPending}
         className="w-full py-3 bg-neon text-black font-bold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
       >
-        {isPending ? 'Preparando checkout...' : 'Assinar Premium'}
+        {isPending ? 'Preparando checkout...' : label}
       </button>
 
       {feedback && <p className="text-xs opacity-80 text-center">{feedback}</p>}

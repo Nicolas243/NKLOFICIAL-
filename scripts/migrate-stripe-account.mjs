@@ -21,11 +21,83 @@ const WEBHOOK_EVENTS = [
   'radar.early_fraud_warning.created',
 ];
 
-const AI_PRODUCT_NAME = 'IA na Prática NKL';
-const REQUIRED_PRICES = [
-  { envName: 'AI_SUBSCRIPTION_STRIPE_PRICE_ID', unitAmount: 3900, recurring: { interval: 'month' }, nickname: 'IA na Prática — Assinatura Mensal' },
-  { envName: 'AI_ONE_TIME_STRIPE_PRICE_ID', unitAmount: 9900, recurring: null, nickname: 'IA na Prática — Acesso Completo Vitalício' },
-  { envName: 'AI_VIP_STRIPE_PRICE_ID', unitAmount: 39700, recurring: null, nickname: 'IA na Prática — Passe Total Portal NKL' },
+const LANGUAGE_PRODUCTS = [
+  { key: 'ebook-ingles', name: 'E-book Inglês para ganhar dinheiro | Portal NKL', description: '100 lições coloridas, método de IA por faixa etária e planner de 90 dias em inglês.' },
+  { key: 'ebook-italiano', name: 'E-book Italiano para ganhar possibilidades | Portal NKL', description: '100 lições coloridas, guia de IA por idade e planner de 90 dias em italiano.' },
+  { key: 'ebook-frances', name: 'E-book Francês para ganhar possibilidades | Portal NKL', description: '100 lições coloridas, guia de IA por idade e planner de 90 dias em francês.' },
+  { key: 'ebook-alemao', name: 'E-book Alemão para ganhar possibilidades | Portal NKL', description: '100 lições coloridas, guia de IA por idade e planner de 90 dias em alemão.' },
+  { key: 'ebook-espanhol', name: 'E-book Espanhol para ganhar possibilidades | Portal NKL', description: '100 lições coloridas, guia de IA por idade e planner de 90 dias em espanhol.' },
+  { key: 'ebook-mandarim', name: 'E-book Mandarim para ganhar possibilidades | Portal NKL', description: '100 lições com pinyin, guia de IA por idade e planner de 90 dias em mandarim.' },
+];
+
+export const STRIPE_CATALOG_SPEC = [
+  {
+    key: 'ia-na-pratica',
+    name: 'IA na Prática NKL',
+    description: 'Curso prático, laboratório de prompts e Estúdio IA do Portal NKL.',
+    prices: [
+      { priceKey: 'ia:subscription', envName: 'AI_SUBSCRIPTION_STRIPE_PRICE_ID', unitAmount: 3900, recurring: { interval: 'month' }, nickname: 'IA na Prática — Assinatura Mensal' },
+      { priceKey: 'ia:one_time', envName: 'AI_ONE_TIME_STRIPE_PRICE_ID', unitAmount: 9900, recurring: null, nickname: 'IA na Prática — Acesso Completo Vitalício' },
+      { priceKey: 'ia:vip', envName: 'AI_VIP_STRIPE_PRICE_ID', unitAmount: 39700, recurring: null, nickname: 'IA na Prática — Passe Total Portal NKL' },
+    ],
+  },
+  {
+    key: 'guia-renda-extra',
+    name: 'Guia Essencial Renda Extra 2027 | Portal NKL',
+    description: 'Guias práticos e planilhas Raio-X Financeiro para renda extra online.',
+    prices: [
+      { priceKey: 'renda-extra:essential', unitAmount: 1900, recurring: null, nickname: 'Guia Renda Extra — Edição Essencial (1 PDF)' },
+      { priceKey: 'renda-extra:complete', unitAmount: 3900, recurring: null, nickname: 'Guia Renda Extra — Pacote Completo (5 arquivos)' },
+      { priceKey: 'renda-extra:vip', unitAmount: 24700, recurring: null, nickname: 'Acervo Total NKL (11 Materiais: Renda Extra + 6 Idiomas)' },
+    ],
+  },
+  {
+    key: 'guias-assinatura',
+    name: 'Guias para Liberdade Financeira NKL',
+    description: 'Assinatura mensal contínua dos guias e atualizações financeiras NKL.',
+    prices: [
+      { priceKey: 'guias-assinatura:monthly', unitAmount: 1900, recurring: { interval: 'month' }, nickname: 'Guias para Liberdade Financeira — Mensal' },
+    ],
+  },
+  {
+    key: 'bussola-negocios',
+    name: 'Bússola de Negócios NKL',
+    description: 'Diagnóstico interativo e roteiros de execução para o negócio dos seus sonhos.',
+    prices: [
+      { priceKey: 'bussola:essential', unitAmount: 1900, recurring: null, nickname: 'Bússola de Negócios — Edição Essencial' },
+      { priceKey: 'bussola:complete', unitAmount: 3900, recurring: null, nickname: 'Bússola de Negócios — Pacote Completo + App' },
+      { priceKey: 'bussola:vip', unitAmount: 24700, recurring: null, nickname: 'Bússola + Acervo Total NKL (11 Materiais)' },
+    ],
+  },
+  ...LANGUAGE_PRODUCTS.map((lang) => ({
+    key: lang.key,
+    name: lang.name,
+    description: lang.description,
+    prices: [
+      { priceKey: `${lang.key}:essential`, unitAmount: 2700, recurring: null, nickname: `${lang.name} — Só E-book` },
+      { priceKey: `${lang.key}:complete`, unitAmount: 4700, recurring: null, nickname: `${lang.name} — Pacote Completo + IA & Planner` },
+      { priceKey: `${lang.key}:vip`, unitAmount: 29700, recurring: null, nickname: `${lang.name} — Passaporte 6 Idiomas + Renda Extra` },
+    ],
+  })),
+  {
+    key: 'anuncie-portal',
+    name: 'Anuncie no Portal NKL (Mural de Parceiros)',
+    description: 'Reservas mensais de cotas na faixa publicitária editorial do Portal NKL.',
+    prices: [
+      { priceKey: 'anuncie:1-cota', unitAmount: 1990, recurring: { interval: 'month' }, nickname: 'Anúncio Portal NKL — 1 Cota Mensal' },
+      { priceKey: 'anuncie:3-cotas', unitAmount: 5970, recurring: { interval: 'month' }, nickname: 'Anúncio Portal NKL — 3 Cotas Combinadas' },
+      { priceKey: 'anuncie:10-cotas', unitAmount: 19900, recurring: { interval: 'month' }, nickname: 'Anúncio Portal NKL — Domínio Total (10 Cotas)' },
+    ],
+  },
+  {
+    key: 'luthier-premium',
+    name: 'Plano Premium para Luthiers Portal NKL',
+    description: 'Vitrine destacada, portfólio ilimitado e métricas de conversão para luthiers.',
+    prices: [
+      { priceKey: 'luthier:monthly', unitAmount: 4990, recurring: { interval: 'month' }, nickname: 'Plano Premium Luthier — Mensal' },
+      { priceKey: 'luthier:annual', unitAmount: 47900, recurring: { interval: 'year' }, nickname: 'Mestre Luthier — Anual (20% OFF)' },
+    ],
+  },
 ];
 
 const REQUIRED_COUPONS = [
@@ -84,41 +156,90 @@ function upsertVercelProductionEnv(name, value) {
   });
 }
 
-async function ensureProductAndPrices(stripe) {
-  const products = await stripe.products.list({ limit: 50, active: true });
-  let product = products.data.find((p) => p.name === AI_PRODUCT_NAME);
-  let createdProduct = false;
-  if (!product) {
-    product = await stripe.products.create({
-      name: AI_PRODUCT_NAME,
-      description: 'Curso prático, laboratório de prompts e Estúdio IA do Portal NKL.',
-    });
-    createdProduct = true;
+async function listAllActiveProducts(stripe) {
+  const all = [];
+  for await (const prod of stripe.products.list({ limit: 100, active: true })) {
+    all.push(prod);
   }
+  return all;
+}
 
-  const prices = await stripe.prices.list({ product: product.id, limit: 50, active: true });
-  const priceMap = {};
-  for (const spec of REQUIRED_PRICES) {
-    let price = prices.data.find((p) =>
-      p.currency === 'brl'
-      && p.unit_amount === spec.unitAmount
-      && (spec.recurring ? p.recurring?.interval === spec.recurring.interval : !p.recurring),
+async function ensureFullCatalogAndPrices(stripe) {
+  const existingProducts = await listAllActiveProducts(stripe);
+  const envPriceMap = {};
+  const catalogSummary = [];
+
+  for (const spec of STRIPE_CATALOG_SPEC) {
+    let product = existingProducts.find((p) =>
+      p.metadata?.portal_catalog_key === spec.key
+      || p.name === spec.name,
     );
-    let created = false;
-    if (!price) {
-      price = await stripe.prices.create({
-        product: product.id,
-        currency: 'brl',
-        unit_amount: spec.unitAmount,
-        nickname: spec.nickname,
-        ...(spec.recurring ? { recurring: spec.recurring } : {}),
+    let createdProduct = false;
+
+    if (!product) {
+      product = await stripe.products.create({
+        name: spec.name,
+        description: spec.description,
+        metadata: { portal_catalog_key: spec.key },
       });
-      created = true;
+      existingProducts.push(product);
+      createdProduct = true;
+    } else if (product.metadata?.portal_catalog_key !== spec.key) {
+      product = await stripe.products.update(product.id, {
+        metadata: { ...(product.metadata ?? {}), portal_catalog_key: spec.key },
+      });
     }
-    priceMap[spec.envName] = { id: price.id, amount: spec.unitAmount, created };
+
+    const prices = await stripe.prices.list({ product: product.id, limit: 100, active: true });
+    const provisionedPrices = [];
+
+    for (const priceSpec of spec.prices) {
+      let price = prices.data.find((p) =>
+        p.metadata?.portal_price_key === priceSpec.priceKey
+        || (
+          p.currency === 'brl'
+          && p.unit_amount === priceSpec.unitAmount
+          && (priceSpec.recurring
+            ? p.recurring?.interval === priceSpec.recurring.interval
+            : !p.recurring)
+        ),
+      );
+      let createdPrice = false;
+
+      if (!price) {
+        price = await stripe.prices.create({
+          product: product.id,
+          currency: 'brl',
+          unit_amount: priceSpec.unitAmount,
+          nickname: priceSpec.nickname,
+          metadata: { portal_price_key: priceSpec.priceKey },
+          ...(priceSpec.recurring ? { recurring: priceSpec.recurring } : {}),
+        });
+        prices.data.push(price);
+        createdPrice = true;
+      }
+
+      if (priceSpec.envName) {
+        envPriceMap[priceSpec.envName] = { id: price.id, amount: priceSpec.unitAmount, created: createdPrice };
+      }
+      provisionedPrices.push({
+        key: priceSpec.priceKey,
+        id: price.id,
+        unitAmount: priceSpec.unitAmount,
+        interval: priceSpec.recurring?.interval ?? 'one_time',
+        created: createdPrice,
+      });
+    }
+
+    catalogSummary.push({
+      key: spec.key,
+      productId: product.id,
+      createdProduct,
+      prices: provisionedPrices,
+    });
   }
 
-  return { productId: product.id, createdProduct, priceMap };
+  return { envPriceMap, catalogSummary };
 }
 
 async function ensureCoupons(stripe) {
@@ -197,15 +318,24 @@ export async function main() {
     assertLiveProductionSafety({ secretKey, publishableKey, account, allowTestInProd });
   }
 
-  const catalog = await ensureProductAndPrices(stripe);
+  const catalog = await ensureFullCatalogAndPrices(stripe);
   const coupons = await ensureCoupons(stripe);
   const webhook = await ensureWebhook(stripe, skipWebhook);
 
+  const totalPrices = catalog.catalogSummary.reduce((acc, item) => acc + item.prices.length, 0);
+  const createdProductsCount = catalog.catalogSummary.filter((item) => item.createdProduct).length;
+  const createdPricesCount = catalog.catalogSummary.reduce(
+    (acc, item) => acc + item.prices.filter((p) => p.created).length,
+    0,
+  );
+
   console.log('=== Provisioned Catalog & Webhook ===');
   console.log(JSON.stringify({
-    productId: catalog.productId,
-    createdProduct: catalog.createdProduct,
-    prices: catalog.priceMap,
+    productsTotal: catalog.catalogSummary.length,
+    pricesTotal: totalPrices,
+    createdProductsCount,
+    createdPricesCount,
+    envPrices: catalog.envPriceMap,
     coupons,
     webhook: {
       id: webhook.id ?? null,
@@ -214,15 +344,22 @@ export async function main() {
       skipped: Boolean(webhook.skipped),
       hasNewSecret: Boolean(webhook.secret),
     },
-  }));
+    catalog: catalog.catalogSummary.map((c) => ({
+      key: c.key,
+      productId: c.productId,
+      createdProduct: c.createdProduct,
+      pricesCount: c.prices.length,
+      createdPrices: c.prices.filter((p) => p.created).length,
+    })),
+  }, null, 2));
 
   if (syncVercelProd) {
     const varsToSync = [
       ['STRIPE_SECRET_KEY', secretKey],
       ...(publishableKey ? [['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', publishableKey]] : []),
-      ['AI_SUBSCRIPTION_STRIPE_PRICE_ID', catalog.priceMap.AI_SUBSCRIPTION_STRIPE_PRICE_ID.id],
-      ['AI_ONE_TIME_STRIPE_PRICE_ID', catalog.priceMap.AI_ONE_TIME_STRIPE_PRICE_ID.id],
-      ['AI_VIP_STRIPE_PRICE_ID', catalog.priceMap.AI_VIP_STRIPE_PRICE_ID.id],
+      ['AI_SUBSCRIPTION_STRIPE_PRICE_ID', catalog.envPriceMap.AI_SUBSCRIPTION_STRIPE_PRICE_ID.id],
+      ['AI_ONE_TIME_STRIPE_PRICE_ID', catalog.envPriceMap.AI_ONE_TIME_STRIPE_PRICE_ID.id],
+      ['AI_VIP_STRIPE_PRICE_ID', catalog.envPriceMap.AI_VIP_STRIPE_PRICE_ID.id],
       ...(webhook.secret ? [['STRIPE_WEBHOOK_SECRET', webhook.secret]] : []),
     ];
 

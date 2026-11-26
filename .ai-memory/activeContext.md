@@ -2,10 +2,10 @@
 
 ## Foco Atual
 
-- **Auditoria Completa de Todos os Gateways Stripe + Paridade DB `0051` (2026-11-26):**
-  - **Descoberta e correção crítica no banco remoto:** aplicada migração aditiva `drizzle/0051_missing_webhook_and_booking_tables.sql` restaurando `stripe_webhook_events` (`0035`), `teacher_availability`, `student_plan_enrollments`, `class_bookings`, `teacher_reviews`, `entity_reports` (`0011`–`0016`) e colunas de moderação de `business_directory` + índices/RLS `(SELECT auth.uid())` + política `deny_direct_client_access`.
-  - **Correções em helpers e checkout:** `resolveGuideProductSlug` agora normaliza sufixos `:essential`/`:vip` e mapeia os 5 idiomas adicionais para `'pacote-idiomas-ia'`; `getStripeReference` aceita `plan === 'vip'` no fallback de IA; `PremiumCheckoutButton` redireciona via `window.location.assign`.
-  - **Bateria E2E real (`scripts/test-all-payments-stripe.mjs`):** validou cartões oficiais Stripe (`pm_card_visa`, `pm_card_mastercard` + 4 códigos de recusa) e todos os 7 gateways (webhooks HMAC/Stripe, guias + downloads PDF/XLSX com marca d'água + 30%/50% idiomas, assinatura de guias, IA 3 planos, anúncios 2 cotas, luthier premium e aulas + Daily.co) em Sandbox `acct_1UbswFItNBn1daZu`.
+- **Estratégia 3 Preços Universal + Catálogo Completo 12 Produtos Stripe (2026-11-26):**
+  - **3 preços em todas as frentes:** `ProductCheckoutClient` agora oferece 3 opções em IA (`R$ 39/mês`, `R$ 99`*, `R$ 397` Passe Total) e em todos os guias/Bússola/Idiomas (`R$ 19/39/247` ou `R$ 27/47/297`); `/programas/anuncie` ganhou presets (`1` / `3`* / `10` cotas); e `/dashboard/luthier/planos` exibe Gratuito (`R$ 0`), Premium Mensal (`R$ 49,90/mês`*) e Mestre Luthier Anual (`R$ 479/ano`, 20% OFF).
+  - **Catálogo Stripe 12 produtos / 33 preços (`scripts/migrate-stripe-account.mjs`):** provisionamento duplo idempotente validado no Sandbox `acct_1UbswFItNBn1daZu` (`12` produtos, `33` preços, cupons `30%`/`50%` e webhook 13 eventos).
+  - **Pendência para virar para `nkloficial` Live:** `.env.local` ainda aponta `STRIPE_SECRET_KEY` para `Buymeacoffee` (`acct_1UZsOzQzOKRNmIif`); aguardando NKL_OFICIAL colar `pk_live_` / `sk_live_` da `nkloficial` em `.env.local` para rodar `npm run stripe:provision -- --sync-vercel-prod` e `vercel deploy --prod --yes`.
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 

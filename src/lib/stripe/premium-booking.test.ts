@@ -17,6 +17,19 @@ test('builds the Premium subscription with the authenticated user reference', ()
   assert.deepEqual(params.metadata, {
     reference: 'premium_subscription:luthier-id',
   });
+
+  const annualParams = buildPremiumCheckoutParams({
+    userId: 'luthier-id',
+    siteUrl: 'https://nkloficial.com.br',
+    priceCents: 47900,
+    interval: 'year',
+  });
+  assert.equal(annualParams.lineItems[0]?.price_data?.unit_amount, 47900);
+  assert.equal(annualParams.lineItems[0]?.price_data?.recurring?.interval, 'year');
+  assert.deepEqual(annualParams.metadata, {
+    reference: 'premium_subscription:luthier-id',
+    billingInterval: 'year',
+  });
 });
 
 test('builds a booking payment from the server-calculated total', () => {

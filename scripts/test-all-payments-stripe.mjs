@@ -570,7 +570,9 @@ async function main() {
       await buyLoggedGuide({ offerVariant: 'german-ebook-sales-page', tier: 'complete', expectedAmountCents: 2350, expectedDiscount: '50', settle: false });
       await buyLoggedGuide({ offerVariant: 'spanish-ebook-sales-page', tier: 'vip', expectedAmountCents: 29700, settle: false });
 
-      await buyLoggedGuide({ offerVariant: 'sales-page', productSlug: 'bussola-negocios', expectedAmountCents: 3900 });
+      await buyLoggedGuide({ offerVariant: 'sales-page', tier: 'essential', productSlug: 'bussola-negocios', expectedAmountCents: 1900, settle: false });
+      await buyLoggedGuide({ offerVariant: 'sales-page', tier: 'complete', productSlug: 'bussola-negocios', expectedAmountCents: 3900 });
+      await buyLoggedGuide({ offerVariant: 'sales-page', tier: 'vip', productSlug: 'bussola-negocios', expectedAmountCents: 24700, settle: false });
 
       const buyerEntitlements = await db.select().from(schema.userEntitlements).where(eq(schema.userEntitlements.userId, buyer.id));
       const slugSet = new Set(buyerEntitlements.map((e) => e.productSlug));
@@ -824,19 +826,60 @@ async function main() {
       const [cancelledCamp] = await db.select().from(schema.adCampaigns).where(eq(schema.adCampaigns.id, campaignId)).limit(1);
       assert.equal(cancelledCamp?.status, 'cancelled');
 
+      // Test remaining preset packages (1 cota = R$19,90; 3 cotas = R$59,70; 10 cotas = R$199,00) sequentially
+      // releasing slot reservations right after creating each Checkout Session.
+      for (const [presetSlots, expectedPresetCents] of [[1, 1990], [3, 5970], [10, 19900]]) {
+        const presetFd = new FormData();
+        presetFd.set('businessName', `Preset ${presetSlots} Cotas ${runId}`);
+        presetFd.set('responsibleName', buyer.fullName);
+        presetFd.set('whatsapp', '11999998888');
+        presetFd.set('businessCategory', 'Tecnologia e IA');
+        presetFd.set('offerDescription', 'Teste automático de pacote de cotas publicitárias.');
+        presetFd.set('campaignObjective', 'Gerar cliques no site');
+        presetFd.set('destinationUrl', 'minhaloja-teste.com.br');
+        presetFd.set('slotCount', String(presetSlots));
+        presetFd.set('contractAccepted', 'true');
+
+        const presetRes = await fetch(`${BASE_URL}/api/payments/create-ad-subscription`, {
+          method: 'POST',
+          headers: { cookie: buyer.cookie },
+          body: presetFd,
+        });
+        const presetPayload = await presetRes.json();
+        assert.equal(presetRes.status, 200, `Ad preset ${presetSlots} failed: ${JSON.stringify(presetPayload)}`);
+        const presetSid = assertSandboxSessionUrl(presetPayload.checkoutUrl, `ad-preset:${presetSlots}`);
+        const presetSess = await stripe.checkout.sessions.retrieve(presetSid);
+        assert.equal(presetSess.amount_total, expectedPresetCents);
+        const presetCid = presetSess.metadata?.reference?.replace('ad_campaign:', '');
+        if (presetCid) {
+          createdCampaignIds.push(presetCid);
+          await db.update(schema.adCampaigns).set({ status: 'cancelled' }).where(eq(schema.adCampaigns.id, presetCid));
+        }
+      }
+
       gatewaySummary.push({
         gateway: '4.create-ad-subscription',
         status: 'PASSED',
-        details: `2 cotas R$39,80 (${adSub.id}), URL normalization, pending_review -> charge.refunded -> cancelled`,
+        details: `3 presets (1/3/10 cotas = R$19,90/R$59,70/R$199) + 2 cotas R$39,80 (${adSub.id}), pending_review -> charge.refunded -> cancelled`,
       });
     }
 
-    // GATEWAY 5: LUTHIER PREMIUM
+    // GATEWAY 5: LUTHIER PREMIUM (Mensal R$49,90 + Anual R$479)
     {
+      const premAnnualSession = await createCheckoutSession(buildPremiumCheckoutParams({
+        userId: luthier.id,
+        siteUrl: BASE_URL,
+        priceCents: 47900,
+        interval: 'year',
+      }));
+      assertSandboxSessionUrl(premAnnualSession.url, 'luthier-premium-annual');
+      assert.equal(premAnnualSession.amount_total, 47900);
+
       const premSession = await createCheckoutSession(buildPremiumCheckoutParams({
         userId: luthier.id,
         siteUrl: BASE_URL,
         priceCents: 4990,
+        interval: 'month',
       }));
       assertSandboxSessionUrl(premSession.url, 'luthier-premium');
       assert.equal(premSession.amount_total, 4990);
