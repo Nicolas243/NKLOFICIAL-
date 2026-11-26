@@ -50,6 +50,15 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: securityHeaders,
       },
+      {
+        source: "/(.*)\\.webmanifest",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex",
+          },
+        ],
+      },
     ];
   },
   async redirects() {
@@ -77,6 +86,31 @@ const nextConfig: NextConfig = {
       {
         source: "/blog/renda-extra",
         destination: "/programas",
+        statusCode: 301,
+      },
+      {
+        source: "/comparador-de-cordas.html",
+        destination: "/comparar",
+        statusCode: 301,
+      },
+      {
+        source: "/guia-de-cordas.html",
+        destination: "/guia-de-cordas",
+        statusCode: 301,
+      },
+      {
+        source: "/index.html",
+        destination: "/",
+        statusCode: 301,
+      },
+      {
+        source: "/en/index.html",
+        destination: "/",
+        statusCode: 301,
+      },
+      {
+        source: "/es/index.html",
+        destination: "/",
         statusCode: 301,
       },
     ];

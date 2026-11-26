@@ -11,10 +11,11 @@
   - Zona `a9a32df7401d381a84426bfc7d9bb338` (`nkloficial.com.br`, `pending` aguardando delegação Registro.br de `cloe`/`doug.ns.cloudflare.com`): os 4 registros (`A @` x2, `CNAME www`, `CNAME track`) foram alterados para `proxied: false` (`DNS only`) e os registros do Resend (`send`, `resend._domainkey`, `_dmarc`) preservados.
   - Email Routing pré-configurado: destino `ni2co3san9@gmail.com` verificado e regras `contato@nkloficial.com.br` e `suporte@nkloficial.com.br` ativas (`enabled: true`). Falta apenas rodar `POST /email/routing/dns` assim que a zona ficar `active`.
 
-- **Web Push VAPID (Item 10) + Auditoria Redirects/Sitemap (2026-11-26):**
+- **Web Push VAPID (Item 10) + Saneamento SEO Redirects 404 & Webmanifest (2026-11-26):**
   - Chaves VAPID (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT=mailto:contato@nkloficial.com.br`) gravadas no `.env.local`, sincronizadas na Vercel Production e validadas ao vivo no deploy `dpl_HzGuUdSDG79hCekYdj2eRjFJq81x` (`/api/notifications/push/config` retorna `HTTP 200`, `enabled: true`).
-  - Auditoria ao vivo em `https://nkloficial.com.br/sitemap.xml`: **115/115 URLs retornam HTTP 200 (0 redirects, 0 erros)** e **0 links internos em `src/` apontam para rotas de redirect** (`next.config.ts` / `src/proxy.ts` possuem apenas 301s legados intencionais e HTTP->HTTPS 308).
-  - Zona Cloudflare `a9a32df7401d381a84426bfc7d9bb338` segue `pending` na transição de NS do Registro.br; subagente do Chrome aguardando `chrome://inspect/#remote-debugging` ativo para auditar o Search Console.
+  - `next.config.ts` atualizado com 5 redirects `301` para rotas legadas `.html` reportadas como `404` no Search Console (`/comparador-de-cordas.html`, `/guia-de-cordas.html`, `/index.html`, `/en/index.html`, `/es/index.html`) e header `X-Robots-Tag: noindex` para `/(.*)\\.webmanifest`.
+  - Auditoria ao vivo em `https://nkloficial.com.br/sitemap.xml`: **115/115 URLs retornam HTTP 200 (0 redirects, 0 erros)** e **0 links internos em `src/` apontam para rotas de redirect**.
+  - Zona Cloudflare `a9a32df7401d381a84426bfc7d9bb338` segue `pending` na transição de NS do Registro.br.
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 
