@@ -141,6 +141,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       productSlug: validatedProductSlug,
       discountPercent,
       overrideAmountCents: amountCents,
+      customerEmail: guestData.email,
     }));
 
     if (!session.url) {

@@ -34,6 +34,11 @@
       "url": "https://mcp.cloudflare.com/mcp",
       "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
     },
+    "stripe": {
+      "transport": "http",
+      "url": "https://mcp.stripe.com",
+      "targets": ["vscode", "mcp-json", "cursor", "antigravity"]
+    },
     "microsoft-clarity": {
       "transport": "stdio",
       "command": "npx",

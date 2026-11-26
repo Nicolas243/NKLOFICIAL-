@@ -23,8 +23,9 @@ const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, str
 export function getLanguageEbookPreviewMetadata(slug: LanguageEbookSlug): Metadata {
   const offer = LANGUAGE_EBOOKS[slug];
   const details = DETAILS[slug];
+  const cleanTitle = offer.title.replace(/\s*\|\s*E-book Portal NKL$/u, '');
   return {
-    title: `Prévia do E-book ${offer.title}`,
+    title: `Prévia do E-book ${cleanTitle}`,
     description: details.intro,
     alternates: { canonical: absoluteSiteUrl(`/guias/${slug}/ebook`) },
   };

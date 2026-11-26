@@ -127,6 +127,37 @@ export function normalizeAiSubscriptionStatus(
   return 'pending';
 }
 
+export function extractStripeInvoiceSubscriptionId(invoice: unknown): string | null {
+  if (typeof invoice !== 'object' || invoice === null) return null;
+
+  const candidate = invoice as {
+    subscription?: unknown;
+    parent?: {
+      subscription_details?: {
+        subscription?: unknown;
+      } | null;
+    } | null;
+  };
+
+  const nested = candidate.parent?.subscription_details?.subscription;
+  const legacy = candidate.subscription;
+
+  for (const source of [nested, legacy]) {
+    if (typeof source === 'string') {
+      const trimmed = source.trim();
+      if (trimmed.length > 0) return trimmed;
+    } else if (typeof source === 'object' && source !== null && 'id' in source) {
+      const id = (source as { id?: unknown }).id;
+      if (typeof id === 'string') {
+        const trimmed = id.trim();
+        if (trimmed.length > 0) return trimmed;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function parseStripePeriodEnd(value: number | string | null | undefined): Date | null {
   if (typeof value === 'number' && Number.isFinite(value)) return new Date(value * 1000);
   if (typeof value === 'string') {

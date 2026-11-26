@@ -19,6 +19,7 @@ type GuideCheckoutBase = {
   productSlug?: ProductSlug;
   discountPercent?: 0 | 30 | 50;
   overrideAmountCents?: number;
+  customerEmail?: string;
 };
 
 export function buildGuidePurchaseCheckoutParams({
@@ -29,6 +30,7 @@ export function buildGuidePurchaseCheckoutParams({
   productSlug,
   discountPercent = 0,
   overrideAmountCents,
+  customerEmail,
 }: GuideCheckoutBase & { purchaseId: string }): CreateCheckoutSessionParams {
   const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
   const successUrl = `${normalizedSiteUrl}/guias/renda-extra/sucesso?session_id={CHECKOUT_SESSION_ID}`;
@@ -76,6 +78,7 @@ export function buildGuidePurchaseCheckoutParams({
       ? `${successUrl}&reference=${encodeURIComponent(`guide_purchase:${purchaseId}`)}&guest_access_token=${encodeURIComponent(guestAccessToken)}`
       : successUrl,
     cancelUrl: `${normalizedSiteUrl}${getGuideCancelPath(offerVariant)}`,
+    ...(customerEmail ? { customerEmail } : {}),
   };
 }
 

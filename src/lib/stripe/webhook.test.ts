@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  extractStripeInvoiceSubscriptionId,
   getStripeReference,
   normalizeAiSubscriptionStatus,
   normalizeStripeSubscriptionStatus,
@@ -49,4 +50,25 @@ test('parses Stripe period timestamps and rejects invalid values', () => {
   assert.equal(parseStripePeriodEnd('2025-01-01T00:00:00.000Z')?.toISOString(), '2025-01-01T00:00:00.000Z');
   assert.equal(parseStripePeriodEnd('invalid'), null);
   assert.equal(parseStripePeriodEnd(undefined), null);
+});
+
+test('extracts subscription id from both 2026-10-28.endive parent shape and legacy invoice shape', () => {
+  assert.equal(
+    extractStripeInvoiceSubscriptionId({ parent: { subscription_details: { subscription: 'sub_endive_1' } } }),
+    'sub_endive_1',
+  );
+  assert.equal(
+    extractStripeInvoiceSubscriptionId({ parent: { subscription_details: { subscription: { id: 'sub_endive_2' } } } }),
+    'sub_endive_2',
+  );
+  assert.equal(
+    extractStripeInvoiceSubscriptionId({ subscription: 'sub_legacy_1' }),
+    'sub_legacy_1',
+  );
+  assert.equal(
+    extractStripeInvoiceSubscriptionId({ subscription: { id: 'sub_legacy_2' } }),
+    'sub_legacy_2',
+  );
+  assert.equal(extractStripeInvoiceSubscriptionId({ parent: null, subscription: null }), null);
+  assert.equal(extractStripeInvoiceSubscriptionId(null), null);
 });

@@ -10,6 +10,11 @@ updated: 2026-11-24
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-019 (2026-11-26) Webhook Stripe `2026-10-28.endive`, Checkout Email & Manifesto Stripe MCP
+- Decisao: adicionar `extractStripeInvoiceSubscriptionId` em `webhook-helpers.ts` lendo `parent.subscription_details.subscription` antes de `invoice.subscription`, preservar e normalizar `email` em `processGuidePurchase`, sincronizar `businessDirectory.planType` em `processPremiumSubscription`, pre-preencher `customerEmail` em `buildGuidePurchaseCheckoutParams`, remover o sufixo duplicado `| E-book Portal NKL` em `language-ebook-preview.tsx` e incluir `"stripe"` (`https://mcp.stripe.com`) em `tools/ide-mcp-manifest.json`.
+- Motivo: eventos da conta Stripe live usam a versao `2026-10-28.endive` (onde o ID de assinatura na fatura fica aninhado em `parent.subscription_details`), e unificar o MCP do Stripe cross-IDE acelera futuras atualizacoes e diagnosticos de pagamentos.
+- Descartado: depender apenas de `invoice.subscription` legado ou configurar MCP Stripe manualmente fora do manifesto compartilhado.
+
 ## ADR-018 (2026-11-26) Auditoria SEO 20 Pontos: 404 Real, 301s, SSR /comparar, Canonicals Unicos, sameAs & AuthorBio
 - Decisao: remover `src/app/loading.tsx` e `src/app/programas/[slug]/loading.tsx` para restaurar HTTP `404` real em rotas dinamicas (`notFound()`), centralizar redirecionamentos `301` (`/musica`, `/anuncie`, `/anuncie/contrato`, `/blog/renda-extra`, `/comparador`) em `next.config.ts`, converter `/comparar` em Server Component + cliente, remover `canonical` do `layout.tsx`, preencher titulos/canonicals unicos, adicionar `sameAs` em `Organization`, zerar orfas no `footer.tsx` e montar `<AuthorBio />` factual (`NKL_oficial`).
 - Motivo: `loading.tsx` forcava streaming `200` com `<meta noindex>` (Soft 404), `canonical` no root `layout.tsx` vazava `/` para rotas filhas sem canonical, `next/navigation redirect()` emitia `307`, titulos replicavam `| Portal NKL` e `/comparar` dependia de fetch client-side.

@@ -168,19 +168,23 @@ test('syncIdeConfigs writes non-destructively and dryRun leaves disk untouched',
   assert.equal(Boolean(vscodeJson.servers['legacy-vscode-server']), true);
   assert.equal(Boolean(vscodeJson.servers['microsoft-clarity']), true);
   assert.equal(Boolean(vscodeJson.servers['cloudflare-api']), true);
+  assert.equal(vscodeJson.servers.stripe?.url, 'https://mcp.stripe.com');
   assert.equal(Boolean(vscodeJson.servers['portal-nkl-deepseek']), true);
   assert.equal(vscodeJson.inputs.some((i) => i.id === 'clarity-api-token'), true);
 
   assert.equal(mcpJson.mcpServers['portal-nkl-deepseek'].args[0], './node_modules/tsx/dist/cli.mjs');
   assert.equal(Boolean(mcpJson.mcpServers['cloudflare-api']), true);
+  assert.equal(mcpJson.mcpServers.stripe?.url, 'https://mcp.stripe.com');
   assert.equal(mcpJson.mcpServers['microsoft-clarity'], undefined);
 
   assert.equal(cursorJson.mcpServers['portal-nkl-deepseek'].args[1], './tools/deepseek-mcp.ts');
+  assert.equal(cursorJson.mcpServers.stripe?.url, 'https://mcp.stripe.com');
   assert.equal(cursorJson.mcpServers['microsoft-clarity'], undefined);
 
   assert.equal(agyJson.mcpServers['custom-agy-only'].url, 'https://agy.invalid/mcp');
   assert.equal(agyJson.mcpServers.supabase.serverUrl, 'https://mcp.supabase.com/mcp');
   assert.equal(agyJson.mcpServers['cloudflare-api'].serverUrl, 'https://mcp.cloudflare.com/mcp');
+  assert.equal(agyJson.mcpServers.stripe?.serverUrl, 'https://mcp.stripe.com');
   assert.equal(
     agyJson.mcpServers['portal-nkl-deepseek'].args[0],
     path.resolve(root, 'node_modules/tsx/dist/cli.mjs'),

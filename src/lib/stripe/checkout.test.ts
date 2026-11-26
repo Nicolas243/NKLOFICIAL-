@@ -120,8 +120,10 @@ test('buildGuidePurchaseCheckoutParams applies 30% and 50% progressive language 
     offerVariant: 'spanish-ebook-sales-page',
     discountPercent: 50,
     overrideAmountCents: 2350,
+    customerEmail: 'comprador@example.com',
   });
   assert.equal(thirdLang.metadata.loyaltyDiscountPercent, '50');
+  assert.equal(thirdLang.customerEmail, 'comprador@example.com');
   assert.equal(
     (thirdLang.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
     2350,

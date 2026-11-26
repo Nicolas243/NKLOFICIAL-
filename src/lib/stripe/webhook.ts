@@ -3,6 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   aiAccessGrants,
+  businessDirectory,
   classBookings,
   adCampaigns,
   adInventorySlots,
@@ -26,6 +27,7 @@ import { getModalityMetadata, type ClassPlanModality } from '@/lib/pricing';
 import { createBookingNotification } from '@/lib/notifications/booking-alerts';
 import { getOfferExperimentFromVariant, parseValidatedOfferVariant } from '@/lib/offer-experiment';
 import {
+  extractStripeInvoiceSubscriptionId,
   getStripeReference,
   normalizeAiSubscriptionStatus,
   normalizeStripeSubscriptionStatus,
@@ -37,6 +39,7 @@ import {
 import { getStripeClient } from './server';
 
 export {
+  extractStripeInvoiceSubscriptionId,
   getStripeReference,
   normalizeAiSubscriptionStatus,
   normalizeStripeSubscriptionStatus,
@@ -81,10 +84,11 @@ async function processGuidePurchase(session: Stripe.Checkout.Session, reference:
   }).from(guidePurchases).where(eq(guidePurchases.id, reference.id)).limit(1);
   if (!purchase) return;
 
+  const normalizedCheckoutEmail = session.customer_details?.email?.trim().toLowerCase();
   await db.update(guidePurchases).set({
     status: 'approved',
     paymentId: typeof session.payment_intent === 'string' ? session.payment_intent : session.id,
-    email: session.customer_details?.email ?? null,
+    ...(normalizedCheckoutEmail ? { email: normalizedCheckoutEmail } : {}),
     updatedAt: new Date(),
   }).where(and(eq(guidePurchases.id, purchase.id), eq(guidePurchases.status, 'pending')));
 
@@ -388,9 +392,13 @@ async function processPremiumSubscription(
       updatedAt: new Date(),
     },
   });
+  const planType = subscription.status === 'active' ? 'premium' : 'free';
   await db.update(userProfiles).set({
-    planType: subscription.status === 'active' ? 'premium' : 'free',
+    planType,
   }).where(eq(userProfiles.id, reference.id));
+  await db.update(businessDirectory).set({
+    planType,
+  }).where(eq(businessDirectory.userId, reference.id));
 }
 
 async function processBooking(session: Stripe.Checkout.Session, reference: StripeReference): Promise<void> {
@@ -529,12 +537,7 @@ export async function processStripeEvent(event: Stripe.Event): Promise<void> {
       case 'invoice.paid':
       case 'invoice.payment_succeeded':
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice & {
-          subscription?: string | Stripe.Subscription | null;
-        };
-        const subscriptionId = typeof invoice.subscription === 'string'
-          ? invoice.subscription
-          : invoice.subscription?.id;
+        const subscriptionId = extractStripeInvoiceSubscriptionId(event.data.object);
         if (!subscriptionId) return;
         const subscription = await getStripeClient().subscriptions.retrieve(subscriptionId);
         const reference = getStripeReference(subscription.metadata);

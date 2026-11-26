@@ -28,6 +28,10 @@
     "cloudflare-api": {
       "type": "http",
       "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "stripe": {
+      "type": "http",
+      "url": "https://mcp.stripe.com"
     }
   }
 }

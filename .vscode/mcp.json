@@ -45,6 +45,10 @@
         "analytics-mcp==1.1.0",
         "google-analytics-mcp"
       ]
+    },
+    "stripe": {
+      "type": "http",
+      "url": "https://mcp.stripe.com"
     }
   }
 }
