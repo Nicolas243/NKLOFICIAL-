@@ -6,7 +6,7 @@ import { LanguageAiAndPlanner } from '@/components/sales/language-ai-and-planner
 import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Inglês para ganhar dinheiro | E-book Portal NKL',
+  title: 'Inglês para ganhar dinheiro — E-book',
   description: 'Conheça o e-book prático para estudar inglês no celular e transformar o aprendizado em mais possibilidades profissionais.',
   alternates: { canonical: absoluteSiteUrl('/guias/ingles') },
 };

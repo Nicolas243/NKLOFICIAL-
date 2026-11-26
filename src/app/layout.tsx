@@ -14,8 +14,8 @@ import { RifaCampaignShell } from '@/components/rifa-campaign/rifa-campaign-shel
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -32,9 +32,6 @@ export const metadata: Metadata = {
   ...(process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION } }
     : {}),
-  alternates: {
-    canonical: absoluteSiteUrl('/'),
-  },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
@@ -82,6 +79,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               name: 'Portal NKL',
               url: SITE_URL,
               logo: absoluteSiteUrl('/NKL.png'),
+              sameAs: [
+                'https://www.instagram.com/nkloficial/',
+                'https://www.tiktok.com/@nkloficial',
+                'https://www.youtube.com/@nkloficial',
+              ],
               contactPoint: {
                 '@type': 'ContactPoint',
                 contactType: 'customer support',

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { and, desc, eq } from 'drizzle-orm';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,6 +20,11 @@ import { isUndefinedTableError, requireProductAccess } from '@/lib/entitlements'
 import { GUIDE_ASSETS, getGuideAssetsForOffer, type GuideAsset } from '@/lib/guide-assets';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Área Exclusiva do App',
+  robots: { index: false, follow: false },
+};
 
 type AppToolPageProps = {
   params: Promise<{ slug: string }>;

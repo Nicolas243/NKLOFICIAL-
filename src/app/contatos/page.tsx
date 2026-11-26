@@ -19,8 +19,8 @@ const LINKS = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Contatos | Portal NKL',
-  description: 'NKL_oficial — Engenheiro · Criador de conteudo. Links oficiais.',
+  title: 'Contatos e Links Oficiais',
+  description: 'NKL_oficial — Engenheiro · Criador de conteúdo. Links oficiais no Instagram, TikTok, YouTube e Portal NKL.',
   alternates: { canonical: absoluteSiteUrl('/contatos') },
 };
 

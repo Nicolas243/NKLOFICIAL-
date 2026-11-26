@@ -18,7 +18,7 @@ export async function generateMetadata({
   const track = getTrackById(params.trilha) ?? PORTAL_TRACKS[0];
 
   return {
-    title: `Instalar ${APP_BRAND_NAME} · ${track.shortLabel} | Portal NKL`,
+    title: `Instalar ${APP_BRAND_NAME} · ${track.shortLabel}`,
     description: `Instale o app ${APP_BRAND_NAME} e acompanhe sua trilha de ${track.shortLabel} em 3 passos práticos.`,
     alternates: {
       canonical: absoluteSiteUrl('/instalar'),

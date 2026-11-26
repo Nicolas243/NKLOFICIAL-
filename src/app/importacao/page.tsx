@@ -2,10 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { CopyCouponButton } from '@/components/copy-coupon-button';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Importacao Direta | Metodo NKL',
-  description: 'Descubra como adquirir violinos, arcos e acessorios de alta performance cortando intermediarios e economizando ate 40%.',
+  title: 'Importação Direta de Instrumentos — Método NKL',
+  description: 'Descubra como adquirir violinos, arcos e acessórios de alta performance diretamente das fontes internacionais com segurança.',
+  alternates: { canonical: absoluteSiteUrl('/importacao') },
 };
 
 export default function ImportacaoPage() {

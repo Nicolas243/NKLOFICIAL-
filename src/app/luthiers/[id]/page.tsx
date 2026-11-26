@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,8 +9,24 @@ import { getLuthierPortfolio } from '@/actions/portfolio';
 import { FavoriteButton } from '@/components/favorite-button';
 import { WhatsAppLeadButton } from '@/components/whatsapp-lead-button';
 import { createClient } from '@/lib/supabase/server';
+import { absoluteSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
+
+export async function generateMetadata(props: { params: Params }): Promise<Metadata> {
+  const { id } = await props.params;
+  const luthier = await getLuthierDetails(id).catch(() => null);
+  if (!luthier) {
+    return { title: 'Luthier não encontrado' };
+  }
+  const name = luthier.businessName ?? luthier.fullName ?? 'Luthier';
+  const loc = [luthier.city, luthier.state].filter(Boolean).join(', ');
+  return {
+    title: `${name} — Luthier`,
+    description: luthier.bio || `Perfil profissional e portfólio de ${name}${loc ? ` (${loc})` : ''} no Portal NKL.`,
+    alternates: { canonical: absoluteSiteUrl(`/luthiers/${id}`) },
+  };
+}
 
 export default async function LuthierDetailsPage(props: { params: Params }) {
   const { id } = await props.params;

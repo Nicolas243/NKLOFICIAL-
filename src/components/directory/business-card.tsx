@@ -31,7 +31,7 @@ export function BusinessCard({
     <article className="flex h-full flex-col gap-4 rounded-xl border border-border bg-surface p-6 transition-colors hover:border-neon">
       {avatarUrl ? (
         <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-border/40">
-          <Image src={avatarUrl} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+          <Image src={avatarUrl} alt={`Foto de ${name} — ${specialty}`} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
         </div>
       ) : (
         <div className="flex aspect-[16/9] items-center justify-center rounded-lg border border-border bg-accent/20">

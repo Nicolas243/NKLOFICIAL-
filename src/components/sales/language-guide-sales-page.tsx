@@ -24,7 +24,7 @@ const CONTENT: Record<LanguageGuideSlug, {
 export function getLanguageGuideMetadata(slug: LanguageGuideSlug): Metadata {
   const content = CONTENT[slug];
   return {
-    title: `${content.title} | E-book Portal NKL`,
+    title: `${content.title} — E-book`,
     description: content.description,
     alternates: { canonical: absoluteSiteUrl(`/guias/${slug}`) },
   };

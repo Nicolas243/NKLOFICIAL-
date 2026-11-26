@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { recommendedProducts, sections, type RecommendedProduct } from '@/data/recomendados';
 import { RecommendedClient } from './recommended-client';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Equipamentos Recomendados | Portal NKL',
-  description: 'Selecao criteriosa de acessorios e arcos testados na bancada e aprovados por alunos.',
+  title: 'Equipamentos Recomendados para Cordas',
+  description: 'Seleção criteriosa de acessórios, arcos e equipamentos testados e aprovados para instrumentos de cordas.',
+  alternates: { canonical: absoluteSiteUrl('/recomendados') },
 };
 
 type Props = {

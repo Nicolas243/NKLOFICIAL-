@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import FisicaExpandSection from './fisica-expand-section';
+import { AuthorBio } from '@/components/seo/author-bio';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Fisica do Som | Portal NKL',
-  description: 'Da crina do arco ate o ouvido: compreenda o milagre mecanico e acustico que da vida ao violino.',
+  title: 'Física do Som no Violino',
+  description: 'Da crina do arco até o ouvido: compreenda o mecanismo mecânico e acústico que dá vida ao violino.',
+  alternates: { canonical: absoluteSiteUrl('/fisica-do-som') },
 };
 
 const SECTIONS = [
@@ -54,6 +57,7 @@ export default function FisicaDoSomPage() {
       {SECTIONS.map((section) => (
         <FisicaExpandSection key={section.id} section={section} />
       ))}
+      <AuthorBio updatedLabel="Artigo técnico de acústica aplicada ao violino" />
     </div>
   );
 }

@@ -1,8 +1,9 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Termos de Uso | Portal NKL',
+export const metadata: Metadata = {
+  title: 'Termos de Uso',
   description: 'Regras de utilização, responsabilidades e contratos do Portal NKL.',
   alternates: { canonical: absoluteSiteUrl('/termos') },
 };

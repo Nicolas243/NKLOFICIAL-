@@ -1,13 +1,16 @@
+import type { Metadata } from 'next';
 import { getLuthiersDirectory } from '@/actions/directory';
 import { getFavoriteLuthiers, toggleFavoriteLuthier } from '@/actions/favorites';
 import { DirectoryCardView } from '@/components/directory-card';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { JsonLd } from '@/components/seo/json-ld';
+import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Diretório de Luthiers | Portal NKL',
-  description: 'Encontre luthiers verificados e profissionais do mercado.',
+export const metadata: Metadata = {
+  title: 'Diretório de Luthiers',
+  description: 'Encontre luthiers verificados, oficinas e profissionais de manutenção e restauração de instrumentos de arco.',
+  alternates: { canonical: absoluteSiteUrl('/luthiers') },
 };
 
 export default async function LuthiersPage() {

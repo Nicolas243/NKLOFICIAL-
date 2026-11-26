@@ -1,9 +1,13 @@
+import type { Metadata } from 'next';
 import { getStringsCatalog } from '@/actions/strings';
 import { CatalogClient } from './catalog-client';
 import { AdBanner } from '@/components/ads/ad-banner';
+import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Catálogo de Cordas | Portal NKL',
+export const metadata: Metadata = {
+  title: 'Catálogo de Cordas',
+  description: 'Explore e filtre encordoamentos para violino por núcleo, projeção, brilho, durabilidade e avaliações da comunidade.',
+  alternates: { canonical: absoluteSiteUrl('/catalogo') },
 };
 
 export const dynamic = 'force-dynamic';

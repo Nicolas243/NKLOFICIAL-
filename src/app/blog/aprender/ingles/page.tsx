@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { EnglishLearningPractice } from '@/components/english-learning-practice';
+import { AuthorBio } from '@/components/seo/author-bio';
 import { JsonLd } from '@/components/seo/json-ld';
 import { tokenizeExample } from '@/lib/english-ebook';
 import { absoluteSiteUrl } from '@/lib/site';
@@ -134,7 +135,16 @@ export default function EnglishLearningPage() {
         headline: 'Aprender inglês do zero: um plano iluminador para começar hoje',
         description: metadata.description,
         mainEntityOfPage: absoluteSiteUrl('/blog/aprender/ingles'),
-        author: { '@type': 'Organization', name: 'Portal NKL' },
+        author: {
+          '@type': 'Person',
+          name: 'NKL_oficial',
+          url: absoluteSiteUrl('/contatos'),
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Portal NKL',
+          url: absoluteSiteUrl('/'),
+        },
       }} />
 
       <header className="relative overflow-hidden rounded-[2rem] border border-orange/30 bg-income-surface px-5 py-10 md:px-12 md:py-16">
@@ -255,6 +265,8 @@ export default function EnglishLearningPage() {
         <h2 className="mt-2 font-playfair text-3xl font-bold md:text-4xl">Você não está atrasado. Você está construindo.</h2>
         <p className="mt-3 max-w-3xl leading-relaxed text-foreground/75">Uma frase falada hoje pode parecer pequena, mas ela reduz a distância entre você e a conversa que deseja ter. Volte amanhã e faça outra. É assim que uma habilidade muda sua autonomia.</p>
       </section>
+
+      <AuthorBio updatedLabel="Guia editorial atualizado para o plano prático de 90 dias" />
 
       <section className="mt-12"><AffiliateDisclaimer /></section>
     </article>

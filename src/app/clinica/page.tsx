@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { AuthorBio } from '@/components/seo/author-bio';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Clinica de Lutheria | Portal NKL',
-  description: 'O Cuidado Oculto por tras da Voz do Instrumento.',
+  title: 'Clínica de Luteria',
+  description: 'Entenda como cavalete, alma, estandarte e rabicho moldam a voz e a projeção acústica do violino.',
+  alternates: { canonical: absoluteSiteUrl('/clinica') },
 };
 
 type Section = {
@@ -85,6 +88,7 @@ export default function ClinicaPage() {
           ))}
         </section>
       ))}
+      <AuthorBio updatedLabel="Curadoria técnica em luteria e instrumentos de arco" />
     </div>
   );
 }

@@ -59,6 +59,26 @@ const nextConfig: NextConfig = {
         destination: "/comparar",
         statusCode: 301,
       },
+      {
+        source: "/musica",
+        destination: "/musica/naipe_cordas",
+        statusCode: 301,
+      },
+      {
+        source: "/anuncie",
+        destination: "/programas/anuncie",
+        statusCode: 301,
+      },
+      {
+        source: "/anuncie/contrato",
+        destination: "/programas/anuncie/contrato",
+        statusCode: 301,
+      },
+      {
+        source: "/blog/renda-extra",
+        destination: "/programas",
+        statusCode: 301,
+      },
     ];
   },
 };

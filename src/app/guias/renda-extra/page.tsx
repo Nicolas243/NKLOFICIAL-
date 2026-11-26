@@ -8,7 +8,7 @@ import { parseGuidePageCtaVariant } from '@/lib/offer-experiment';
 import { parseGuideResumeIntent } from '@/lib/auth/return-intent';
 
 export const metadata: Metadata = {
-  title: 'Guia Essencial Renda Extra 2027 | Portal NKL',
+  title: 'Guia Essencial Renda Extra 2027',
   description: 'O Guia Essencial Renda Extra 2027 do Portal NKL para filtrar oportunidades e começar com mais clareza.',
   alternates: {
     canonical: absoluteSiteUrl(INCOME_PORTAL_ROUTES.guide),

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AD_CONTRACT_CLAUSES, AD_CONTRACT_VERSION } from '@/lib/ad-contract';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contrato de Publicidade',
-  description: 'Termos para campanhas publicitárias no Portal NKL.',
+  description: 'Termos e cláusulas para campanhas publicitárias e mural de parceiros no Portal NKL.',
+  alternates: { canonical: absoluteSiteUrl('/programas/anuncie/contrato') },
 };
 
 export default function AdvertisingContractPage() {

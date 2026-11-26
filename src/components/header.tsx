@@ -31,11 +31,11 @@ const groups = [
   ]},
   { label: 'Notícias', items: [
     { href: '/noticias', label: 'Notícias' },
-    { href: '/noticias#anunciar', label: 'Anunciar' },
+    { href: '/noticias/anunciar', label: 'Anunciar' },
   ]},
   { label: 'Encontre um...', items: [
     { href: '/luthiers', label: 'Luthier' },
-    { href: '/luthiers#professor', label: 'Professor(a)' },
+    { href: '/professores', label: 'Professor(a)' },
     { href: '/recomendados', label: 'Loja' },
   ]},
 ]
@@ -158,7 +158,7 @@ export function Header() {
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-3 bg-white px-4 dark:bg-black">
           <Link href={brandHref} className="group flex min-w-0 items-center gap-3">
-            <Image src="/NKL/NKL.png" alt="NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
+            <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
               <span className="block truncate font-playfair text-xl font-bold tracking-tight">{brandTitle}</span>
               <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">{brandSubtitle}</span>
@@ -218,7 +218,7 @@ export function Header() {
       {/* Row 1 */}
       <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between min-w-0 bg-white dark:bg-black">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <Image src="/NKL/NKL.png" alt="NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
+          <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
           <Link href={MUSIC_PORTAL_HOME} className="font-playfair font-bold text-lg tracking-tight truncate">NKL Cordas</Link>
           <Link href="/" className="hidden sm:inline-flex items-center rounded border border-border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider opacity-75 hover:border-neon hover:text-neon transition-colors">
             Portal NKL

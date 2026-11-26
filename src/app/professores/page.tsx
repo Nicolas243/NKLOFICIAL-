@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import { getProfessorsDirectory, type ProfessorCard } from '@/actions/directory';
 import { BusinessCard } from '@/components/directory/business-card';
+import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Diretório de Professores | Portal NKL',
-  description: 'Encontre professores de música e instrumentos.',
+export const metadata: Metadata = {
+  title: 'Diretório de Professores de Música',
+  description: 'Encontre professores de violino, viola, violoncelo e instrumentos de cordas para aulas online ou presenciais.',
+  alternates: { canonical: absoluteSiteUrl('/professores') },
 };
 
 const fallbackProfessors: ProfessorCard[] = [

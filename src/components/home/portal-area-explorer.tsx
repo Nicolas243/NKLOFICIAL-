@@ -35,7 +35,7 @@ const FILTER_TABS: readonly { id: FilterId; label: string; heading: string; subt
     id: 'languages',
     label: 'Idiomas',
     heading: 'Estudo de idiomas',
-    subtitle: 'Inglês disponível hoje e cinco idiomas em preparo.',
+    subtitle: 'Inglês, espanhol, italiano, francês, alemão e mandarim disponíveis hoje.',
   },
   {
     id: 'learning',
@@ -59,7 +59,7 @@ const CATEGORY_LABELS: Record<PortalAreaCategory, string> = {
   partners: 'Parceiros',
 };
 
-function PortalCardContent({ card }: { card: PortalAreaCard }) {
+function PortalCardContent({ card, priority = false }: { card: PortalAreaCard; priority?: boolean }) {
   const isComingSoon = card.status === 'coming-soon';
 
   return (
@@ -70,6 +70,7 @@ function PortalCardContent({ card }: { card: PortalAreaCard }) {
             src={card.media.src}
             alt={card.media.alt}
             fill
+            priority={priority}
             sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
             unoptimized={card.media.src.endsWith('.svg')}
             className="portal-card-media-img"
@@ -131,7 +132,7 @@ function PortalCardContent({ card }: { card: PortalAreaCard }) {
   );
 }
 
-function PortalCard({ card }: { card: PortalAreaCard }) {
+function PortalCard({ card, priority = false }: { card: PortalAreaCard; priority?: boolean }) {
   if (card.status === 'coming-soon') {
     return (
       <article
@@ -141,7 +142,7 @@ function PortalCard({ card }: { card: PortalAreaCard }) {
         data-card-category={card.category}
         data-card-status={card.status}
       >
-        <PortalCardContent card={card} />
+        <PortalCardContent card={card} priority={priority} />
       </article>
     );
   }
@@ -161,7 +162,7 @@ function PortalCard({ card }: { card: PortalAreaCard }) {
         data-card-category={card.category}
         data-card-status={card.status}
       >
-        <PortalCardContent card={card} />
+        <PortalCardContent card={card} priority={priority} />
       </a>
     );
   }
@@ -175,7 +176,7 @@ function PortalCard({ card }: { card: PortalAreaCard }) {
       data-card-category={card.category}
       data-card-status={card.status}
     >
-      <PortalCardContent card={card} />
+      <PortalCardContent card={card} priority={priority} />
     </Link>
   );
 }
@@ -232,8 +233,8 @@ export function PortalAreaExplorer({ cards }: { cards: readonly PortalAreaCard[]
                 </div>
               </div>
               <div className="portal-grid portal-grid-featured">
-                {featuredCards.map((card) => (
-                  <PortalCard key={card.id} card={card} />
+                {featuredCards.map((card, index) => (
+                  <PortalCard key={card.id} card={card} priority={index < 4} />
                 ))}
               </div>
             </div>

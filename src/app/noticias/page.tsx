@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getNewsFeed, getNewsComments, isNewsLiked } from '@/actions/news';
 import { createClient } from '@/lib/supabase/server';
 import Image from 'next/image';
@@ -6,9 +7,12 @@ import SuggestNewsModal from './suggest-news-modal';
 import { SuggestNewsBannerButton } from './suggest-news-banner-button';
 import { NewsEngagement } from '@/components/news-engagement';
 import { getHiddenScrollbarClassName } from '@/lib/ui/support-layout';
+import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Mural de Notícias | Portal NKL',
+export const metadata: Metadata = {
+  title: 'Mural de Notícias e Eventos',
+  description: 'Acompanhe notícias, eventos e novidades da comunidade de música, cordas e luthieria do Portal NKL.',
+  alternates: { canonical: absoluteSiteUrl('/noticias') },
 };
 
 export default async function NoticiasPage() {

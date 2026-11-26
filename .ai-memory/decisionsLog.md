@@ -10,6 +10,11 @@ updated: 2026-11-24
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-018 (2026-11-26) Auditoria SEO 20 Pontos: 404 Real, 301s, SSR /comparar, Canonicals Unicos, sameAs & AuthorBio
+- Decisao: remover `src/app/loading.tsx` e `src/app/programas/[slug]/loading.tsx` para restaurar HTTP `404` real em rotas dinamicas (`notFound()`), centralizar redirecionamentos `301` (`/musica`, `/anuncie`, `/anuncie/contrato`, `/blog/renda-extra`, `/comparador`) em `next.config.ts`, converter `/comparar` em Server Component + cliente, remover `canonical` do `layout.tsx`, preencher titulos/canonicals unicos, adicionar `sameAs` em `Organization`, zerar orfas no `footer.tsx` e montar `<AuthorBio />` factual (`NKL_oficial`).
+- Motivo: `loading.tsx` forcava streaming `200` com `<meta noindex>` (Soft 404), `canonical` no root `layout.tsx` vazava `/` para rotas filhas sem canonical, `next/navigation redirect()` emitia `307`, titulos replicavam `| Portal NKL` e `/comparar` dependia de fetch client-side.
+- Descartado: manter `loading.tsx` com wrapper condicional ou inventar biografias/redes nao verificadas em `sameAs`.
+
 ## ADR-017 (2026-11-24) Saneamento Supabase 0050, Build Phase Segura na Vercel, IDE Clean & 5 Pilares SEO Renda Extra
 - Decisao: aplicar `0050_performance_fk_indexes_and_rls_policies.sql` (24 indices de FK + policies restritivas `deny_direct_client_access` em 37 tabelas Drizzle server-only), isolar placeholders de env apenas em `NEXT_PHASE === 'phase-production-build'` com `/*turbopackIgnore: true*/` nos `readFile` locais, suprimir scans de docs/HTML/skills em `.vscode/settings.json`, e implantar os 5 pilares SEO (`SearchAction`, `FAQPage`, 8 hubs ISR, malha interna `/programas/[slug]` e `sitemap.ts` sem redirect).
 - Motivo: zerar 61 avisos acionaveis do Supabase Advisor, corrigir falha `/api/ads/click` em Vercel Preview builds sem expor segredos de producao, eliminar 238 falsos positivos na IDE e concentrar autoridade semantica de `renda extra` no Google.

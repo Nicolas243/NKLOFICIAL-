@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { absoluteSiteUrl } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'Guia de Cordas | Portal NKL',
+  title: 'Guia e Gráfico de Cordas',
   description: 'Aprenda a ler as especificações de qualquer encordoamento do mundo e descubra exatamente o que o seu violino está pedindo.',
+  alternates: { canonical: absoluteSiteUrl('/guia-de-cordas') },
 }
 
 export default function GuiaDeCordasPage() {

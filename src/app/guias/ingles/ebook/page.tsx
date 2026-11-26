@@ -12,7 +12,7 @@ import { absoluteSiteUrl } from '@/lib/site';
 import './ebook.css';
 
 export const metadata: Metadata = {
-  title: 'Amostra Gratuita: E-book Inglês para ganhar dinheiro | Portal NKL',
+  title: 'Amostra Gratuita: E-book Inglês para ganhar dinheiro',
   description: 'Experimente gratuitamente as 5 primeiras lições interativas do e-book Inglês para ganhar dinheiro e consulte o sumário completo das 100 lições.',
   alternates: { canonical: absoluteSiteUrl('/guias/ingles/ebook') },
 };

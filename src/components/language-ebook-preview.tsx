@@ -1,6 +1,8 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { LANGUAGE_EBOOKS, type LanguageEbookSlug } from '@/lib/guide-offer';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const YOUGLISH_LANGUAGE_SLUGS: Record<LanguageEbookSlug, 'italian' | 'french' | 'german' | 'spanish' | 'chinese'> = {
   italiano: 'italian',
@@ -17,6 +19,16 @@ const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, str
   espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']], color: '#dc2626' },
   chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']], color: '#b91c1c' },
 };
+
+export function getLanguageEbookPreviewMetadata(slug: LanguageEbookSlug): Metadata {
+  const offer = LANGUAGE_EBOOKS[slug];
+  const details = DETAILS[slug];
+  return {
+    title: `Prévia do E-book ${offer.title}`,
+    description: details.intro,
+    alternates: { canonical: absoluteSiteUrl(`/guias/${slug}/ebook`) },
+  };
+}
 
 export function LanguageEbookPreview({ slug }: { slug: string }) {
   if (!(slug in LANGUAGE_EBOOKS)) notFound();

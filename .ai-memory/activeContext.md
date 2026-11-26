@@ -1,12 +1,12 @@
 # Contexto Ativo (Portal NKL)
 
 ## Foco Atual
-- **Saneamento Infra + IDE + SEO Google #1 Renda Extra (2026-11-24):**
-  - Supabase (`vgogceknmqdqzzpztkrr`): migracao `0050_performance_fk_indexes_and_rls_policies.sql` aplicada — 24 FKs indexadas e 37 tabelas server-only com policy restritiva `deny_direct_client_access` (0 `unindexed_foreign_keys`, 0 `rls_enabled_no_policy`).
-  - Vercel Preview & Build: `src/env.ts` com fallback exclusivo de `phase-production-build` evitando quebra em Preview builds no `/api/ads/click`; `/*turbopackIgnore: true*/` em `guide/route.ts` e `guide-assets.ts` zerando tracing warnings.
-  - IDE Problems: `.vscode/settings.json` ajustado para ignorar falsos positivos de links MD em skills/auditorias, CSS legacy e scans em `private-assets/`, `public/`, `.agents/` e `docs/`.
-  - SEO Google #1 Renda Extra: `WebSite SearchAction` + metadata root (`layout.tsx`), `CollectionPage` + `FAQPage` (6 FAQs) + `BreadcrumbList` + `ItemList` em `/programas`, 4 novos hubs programáticos ISR (`com-ia`, `afiliados`, `home-office`, `com-investimento`), malha de links internos e titulos high-CTR nos `/programas/[slug]`, e sitemap sem redirect (`/quiz-negocios`).
+- **Auditoria Completa 20 Pontos SEO, Fatos e CWV concluida (2026-11-26):**
+  - 404 real HTTP `404` restaurado em rotas dinamicas (`/programas/[slug]`, `/catalogo/[id]`) removendo `loading.tsx` que forcava streaming `200`.
+  - Redirecionamentos `301` sem cadeia em `next.config.ts` (`/comparador`, `/musica`, `/anuncie`, `/anuncie/contrato`, `/blog/renda-extra`).
+  - `/comparar` convertido para Server Component + `comparar-client.tsx`; `<title>` unico sem duplicacao `| Portal NKL` e `rel="canonical"` proprio em todas as paginas publicas (removido `canonical: '/'` vazando do `layout.tsx`).
+  - `Organization` JSON-LD com `sameAs` (`instagram.com/nkloficial/`, `tiktok.com/@nkloficial`, `youtube.com/@nkloficial`); links `#` de navegacao corrigidos; rodape conectado sem paginas orfas; alts descritivos; `<AuthorBio />` factual (`NKL_oficial`) nos artigos; `display: 'swap'`, `priority` nos 4 primeiros cards da home, cache 5m no `sitemap.xml` e bootstrap WebGL adiado em 1 rAF para INP.
 
 ## Pendencias Somente Manuais do Usuario (Browser / Contas Externas)
-1. **Google Search Console:** enviar `https://nkloficial.com.br/sitemap.xml` e solicitar indexacao de `/programas` e dos 4 novos hubs.
-2. **Afiliados, Cloudflare Email Routing, Amazon KDP e NotebookLM:** checklist completo em `docs/CHECKLIST-OFFLINE-NKL.md`.
+1. **Google Search Console:** testar URLs da lista de Inspecao de URL, reenviar sitemap e remover propriedade nao verificada `sc-domain:nkloficial.com` se desejar.
+2. **Afiliados, Cloudflare Email Routing, Amazon KDP e NotebookLM:** checklist em `docs/CHECKLIST-OFFLINE-NKL.md`.

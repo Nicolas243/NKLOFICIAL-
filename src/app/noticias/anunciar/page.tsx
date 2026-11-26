@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { AnunciarForm } from '@/components/anunciar-form';
+import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Anunciar | Portal NKL',
-  description: 'Publique seu anúncio no mural do Portal NKL.',
+  title: 'Anunciar no Mural de Notícias',
+  description: 'Publique seu anúncio de instrumento, serviços musicais ou evento no mural do Portal NKL.',
+  alternates: { canonical: absoluteSiteUrl('/noticias/anunciar') },
 };
 
 export default function AnunciarPage() {

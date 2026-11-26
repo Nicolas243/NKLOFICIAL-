@@ -10,7 +10,7 @@ import { buildLoginPath } from '@/lib/auth/return-intent';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Anuncie no Portal NKL',
+  title: 'Anuncie em Renda Extra',
   description: 'Conheça os espaços publicitários próprios do Portal NKL.',
   alternates: { canonical: absoluteSiteUrl('/programas/anuncie') },
 };

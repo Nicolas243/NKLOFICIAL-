@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getProfessorsDirectory } from '@/actions/directory';
@@ -16,8 +17,24 @@ import type { ClassPlanModality } from '@/lib/pricing';
 import { DEFAULT_CLASS_PRICE_CENTS, CENTS_PER_UNIT, MONTHLY_PLAN_CLASSES, SEMIANNUAL_PLAN_CLASSES, ANNUAL_PLAN_CLASSES } from '@/lib/pricing';
 import { ReportEntityModal } from '@/components/moderation/report-entity-modal';
 import { JsonLd } from '@/components/seo/json-ld';
+import { absoluteSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
+
+export async function generateMetadata(props: { params: Params }): Promise<Metadata> {
+  const { id } = await props.params;
+  const list = await getProfessorsDirectory().catch(() => []);
+  const professor = list.find((p) => p.id === id);
+  if (!professor) {
+    return { title: 'Professor não encontrado' };
+  }
+  const loc = [professor.city, professor.state].filter(Boolean).join(', ');
+  return {
+    title: `${professor.name} — Professor de ${professor.instrumento || 'Música'}`,
+    description: professor.bio || `Aulas e horários de ${professor.name}${loc ? ` (${loc})` : ''} no Portal NKL.`,
+    alternates: { canonical: absoluteSiteUrl(`/professores/${id}`) },
+  };
+}
 
 export default async function ProfessorDetailsPage(props: { params: Params }) {
   const { id } = await props.params;

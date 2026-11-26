@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getPartnerProgramBySlug, getPartnerPrograms } from '@/actions/partner-programs';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
+import { AuthorBio } from '@/components/seo/author-bio';
 import { ProgramActions } from '@/components/income/program-actions';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -129,6 +130,11 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
         name: program.name,
         description: program.shortDescription,
         url: canonicalUrl,
+        author: {
+          '@type': 'Person',
+          name: 'NKL_oficial',
+          url: absoluteSiteUrl('/contatos'),
+        },
         about: {
           '@type': 'Thing',
           name: program.name,
@@ -304,6 +310,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             </section>
           )}
           <AffiliateDisclaimer />
+          <AuthorBio updatedLabel={verifiedDate ? `Ficha conferida em ${verifiedDate}` : 'Ficha editorial Portal NKL'} />
         </div>
       </article>
       <EditorialSupportOffers />

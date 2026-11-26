@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { absoluteSiteUrl } from '@/lib/site';
 import { createClient } from '@/lib/supabase/server';
 import {
   getFavoriteStrings,
@@ -12,8 +14,10 @@ import {
 } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
 
-export const metadata = {
-  title: 'Meu Setup | Portal NKL',
+export const metadata: Metadata = {
+  title: 'Meu Setup',
+  robots: { index: false, follow: false },
+  alternates: { canonical: absoluteSiteUrl('/meu-setup') },
 };
 
 function buildWhatsAppUrl(whatsapp: string): string {

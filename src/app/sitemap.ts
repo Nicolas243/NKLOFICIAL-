@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { unstable_cache } from 'next/cache';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { PAID_PRODUCT_SLUGS } from '@/config/products';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
@@ -7,9 +8,15 @@ import { PROGRAM_HUBS } from '@/lib/program-hubs';
 
 export const dynamic = 'force-dynamic';
 
+const getCachedSitemapPrograms = unstable_cache(
+  async () => getPartnerPrograms(),
+  ['sitemap-partner-programs'],
+  { revalidate: 300 },
+);
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
-  const programs = await getPartnerPrograms();
+  const programs = await getCachedSitemapPrograms();
 
   const entries: MetadataRoute.Sitemap = [
     { url: absoluteSiteUrl('/'), lastModified, changeFrequency: 'daily', priority: 1.0 },

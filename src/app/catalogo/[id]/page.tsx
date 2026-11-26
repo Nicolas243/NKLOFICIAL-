@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getStringDetails } from '@/actions/strings';
@@ -6,8 +7,24 @@ import { isStringFavorite, toggleFavoriteString } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
 import { AffiliateLinks } from '@/components/affiliate-links';
 import { createClient } from '@/lib/supabase/server';
+import { absoluteSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
+
+export async function generateMetadata(props: { params: Params }): Promise<Metadata> {
+  const { id } = await props.params;
+  const stringData = await getStringDetails(id).catch(() => null);
+  if (!stringData) {
+    return { title: 'Corda não encontrada' };
+  }
+  const title = `${stringData.name} — Corda para Violino`;
+  const description = `Especificações técnicas, projeção, cor do som, durabilidade e avaliações da corda ${stringData.name}.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: absoluteSiteUrl(`/catalogo/${id}`) },
+  };
+}
 
 function formatPrice(value: string | null): string {
   if (!value) return 'Consulte as ofertas';

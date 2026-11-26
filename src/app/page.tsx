@@ -19,7 +19,9 @@ import { PORTAL_AREA_CARDS, getValidPortalAreaCards } from '@/lib/portal-areas';
 import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Portal NKL | Renda Extra, Música, Idiomas e IA',
+  title: {
+    absolute: 'Portal NKL | Renda Extra, Música, Idiomas e IA',
+  },
   description:
     'Renda extra, NKL Cordas e luthieria, estudo de idiomas, IA na Prática e mural de parceiros em um só lugar.',
   alternates: {
@@ -89,7 +91,7 @@ export default function HomePage() {
     {
       value: String(languageTotal),
       label: 'Idiomas no plano',
-      hint: `Inglês ativo + ${soonCount} chegando`,
+      hint: soonCount > 0 ? `Inglês ativo + ${soonCount} chegando` : `Todos os ${languageTotal} idiomas ativos`,
     },
     {
       value: '100%',

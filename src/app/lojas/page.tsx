@@ -1,10 +1,13 @@
+import type { Metadata } from 'next';
 import { getBusinessesDirectory, type DirectoryCard } from '@/actions/directory';
 import { BusinessCard } from '@/components/directory/business-card';
 import { JsonLd } from '@/components/seo/json-ld';
+import { absoluteSiteUrl } from '@/lib/site';
 
-export const metadata = {
-  title: 'Lojas | Portal NKL',
-  description: 'Encontre lojas de instrumentos e acessórios.',
+export const metadata: Metadata = {
+  title: 'Lojas de Cordas e Instrumentos',
+  description: 'Encontre lojas especializadas em violinos, arcos, cordas e acessórios musicais.',
+  alternates: { canonical: absoluteSiteUrl('/lojas') },
 };
 
 const fallbackStores: DirectoryCard[] = [

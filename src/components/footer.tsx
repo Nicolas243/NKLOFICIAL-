@@ -125,7 +125,7 @@ export function Footer() {
       <div className="whatsapp-guide">
         {showWhatsappMessage && <p key={whatsappMessageIndex} className="whatsapp-guide-message" aria-live="polite">{whatsappMessages[whatsappMessageIndex]}</p>}
         <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="whatsapp-float" aria-label={communityLabel}>
-          <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="WhatsApp" width={60} height={60} />
+          <Image src="/NKL/wpplogo.w70-h70-c1.png" alt="Ícone do WhatsApp da comunidade Portal NKL" width={60} height={60} />
         </a>
       </div>
       <footer className={isHomeSurface ? 'site-footer site-footer-home' : 'site-footer'}>
@@ -244,11 +244,21 @@ export function Footer() {
           <nav className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Navegação do rodapé">
             <Link href="/" className="text-sm hover:text-neon hover:underline">Início</Link>
             <Link href={MUSIC_PORTAL_HOME} className="text-sm hover:text-neon hover:underline">NKL Cordas</Link>
-            <Link href="/programas" className="text-sm hover:text-neon hover:underline">Oportunidades</Link>
+            <Link href="/catalogo" className="text-sm hover:text-neon hover:underline">Catálogo</Link>
+            <Link href="/comparar" className="text-sm hover:text-neon hover:underline">Comparar</Link>
+            <Link href="/luthiers" className="text-sm hover:text-neon hover:underline">Luthiers</Link>
+            <Link href="/professores" className="text-sm hover:text-neon hover:underline">Professores</Link>
+            <Link href="/lojas" className="text-sm hover:text-neon hover:underline">Lojas</Link>
+            <Link href="/importacao" className="text-sm hover:text-neon hover:underline">Importação</Link>
+            <Link href="/noticias" className="text-sm hover:text-neon hover:underline">Notícias</Link>
+            <Link href="/programas" className="text-sm hover:text-neon hover:underline">Renda Extra</Link>
             <Link href="/ia" className="text-sm hover:text-neon hover:underline">IA na Prática</Link>
             <Link href="/blog/aprender/ingles" className="text-sm hover:text-neon hover:underline">Idiomas</Link>
             <Link href="/ofertas/bussola-negocios" className="text-sm hover:text-neon hover:underline">Bússola de Negócios</Link>
             <Link href="/mural-de-parceiros" className="text-sm hover:text-neon hover:underline">Mural de Parceiros</Link>
+            <Link href="/programas/anuncie" className="text-sm hover:text-neon hover:underline">Anuncie</Link>
+            <Link href="/instalar" className="text-sm hover:text-neon hover:underline">Instalar App</Link>
+            <Link href="/contatos" className="text-sm hover:text-neon hover:underline">Contatos</Link>
           </nav>
           <h4>Legal / Conformidade</h4>
           <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Links legais">
