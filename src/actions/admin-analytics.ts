@@ -7,6 +7,7 @@ import {
   adCampaigns,
   aiAccessGrants,
   classBookings,
+  guideOfferEvents,
   guidePurchases,
   guideSubscriptions,
   luthierLeads,
@@ -14,6 +15,24 @@ import {
   subscriptions,
   userProfiles,
 } from '@/db/schema';
+
+export type OfferExperimentVariantSummary = {
+  variant: string;
+  impressions: number;
+  clicks: number;
+  checkouts: number;
+  conversions: number;
+  ctrPercent: number;
+  conversionPercent: number;
+};
+
+export type OfferExperimentSummary = {
+  experiment: string;
+  totalImpressions: number;
+  totalConversions: number;
+  winningVariant: string | null;
+  variants: OfferExperimentVariantSummary[];
+};
 
 export type PlatformMetrics = {
   totalUsers: number;
@@ -106,4 +125,83 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     activeAdCampaigns: activeAdsRow[0]?.value ?? 0,
     totalDigitalRevenueCents: guideRevenueCents + marketplaceFeesCents,
   };
+}
+
+export async function getOfferExperimentSummaries(): Promise<OfferExperimentSummary[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.id) {
+    throw new Error('Sessão inválida. Faça login novamente.');
+  }
+
+  const [profile] = await db
+    .select({ role: userProfiles.role })
+    .from(userProfiles)
+    .where(eq(userProfiles.id, user.id))
+    .limit(1);
+
+  if (profile?.role !== 'admin') {
+    throw new Error('Acesso restrito a administradores.');
+  }
+
+  const rows = await db
+    .select({
+      experiment: guideOfferEvents.experiment,
+      variant: guideOfferEvents.variant,
+      eventType: guideOfferEvents.eventType,
+      total: count(),
+    })
+    .from(guideOfferEvents)
+    .groupBy(guideOfferEvents.experiment, guideOfferEvents.variant, guideOfferEvents.eventType);
+
+  const byExperiment = new Map<string, Map<string, OfferExperimentVariantSummary>>();
+
+  for (const row of rows) {
+    let variantsMap = byExperiment.get(row.experiment);
+    if (!variantsMap) {
+      variantsMap = new Map<string, OfferExperimentVariantSummary>();
+      byExperiment.set(row.experiment, variantsMap);
+    }
+    const existing = variantsMap.get(row.variant) ?? {
+      variant: row.variant,
+      impressions: 0,
+      clicks: 0,
+      checkouts: 0,
+      conversions: 0,
+      ctrPercent: 0,
+      conversionPercent: 0,
+    };
+    const total = Number(row.total ?? 0);
+    if (row.eventType === 'impression') existing.impressions += total;
+    if (row.eventType === 'click') existing.clicks += total;
+    if (row.eventType === 'checkout') existing.checkouts += total;
+    if (row.eventType === 'conversion') existing.conversions += total;
+    variantsMap.set(row.variant, existing);
+  }
+
+  return Array.from(byExperiment.entries())
+    .map(([experiment, variantsMap]) => {
+      const variants = Array.from(variantsMap.values())
+        .map((item) => ({
+          ...item,
+          ctrPercent: item.impressions > 0 ? Number(((item.clicks / item.impressions) * 100).toFixed(1)) : 0,
+          conversionPercent: item.impressions > 0 ? Number(((item.conversions / item.impressions) * 100).toFixed(1)) : 0,
+        }))
+        .sort((a, b) => b.conversionPercent - a.conversionPercent || b.ctrPercent - a.ctrPercent || a.variant.localeCompare(b.variant));
+
+      const totalImpressions = variants.reduce((sumVal, item) => sumVal + item.impressions, 0);
+      const totalConversions = variants.reduce((sumVal, item) => sumVal + item.conversions, 0);
+
+      return {
+        experiment,
+        totalImpressions,
+        totalConversions,
+        winningVariant: variants[0]?.variant ?? null,
+        variants,
+      };
+    })
+    .sort((a, b) => b.totalImpressions - a.totalImpressions);
 }

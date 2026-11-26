@@ -121,7 +121,7 @@ export const PORTAL_AREA_CARDS: readonly PortalAreaCard[] = [
     id: 'quiz-negocios',
     title: 'Bússola de Negócios',
     description:
-      'Responda perguntas práticas e descubra o modelo de trabalho ou negócio que combina com seu tempo e bolso.',
+      'Responda perguntas práticas e descubra o negócio dos seus sonhos com ideias reais para construir no seu ritmo.',
     href: '/ofertas/bussola-negocios',
     category: 'income',
     status: 'active',

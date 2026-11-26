@@ -101,11 +101,25 @@ export function AdCampaignForm({
 
   async function submit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+    if (!accepted) {
+      setError('Marque a caixa de aceite do Contrato de Publicidade acima para continuar ao Stripe.');
+      return;
+    }
     setPending(true);
     setError(null);
     const form = event.currentTarget;
     const formData = new FormData(form);
-    formData.set('contractAccepted', accepted ? 'true' : 'false');
+    const rawDest = String(formData.get('destinationUrl') ?? '').trim();
+    if (rawDest && !/^[a-z][a-z0-9+.-]*:/iu.test(rawDest)) {
+      formData.set('destinationUrl', `https://${rawDest.replace(/^\/+/u, '')}`);
+    }
+    const rawSocial = String(formData.get('socialUrl') ?? '').trim();
+    if (rawSocial.startsWith('@') && /^@[a-z0-9._-]+$/iu.test(rawSocial)) {
+      formData.set('socialUrl', `https://instagram.com/${rawSocial.slice(1)}`);
+    } else if (rawSocial && !/^[a-z][a-z0-9+.-]*:/iu.test(rawSocial)) {
+      formData.set('socialUrl', `https://${rawSocial.replace(/^\/+/u, '')}`);
+    }
+    formData.set('contractAccepted', 'true');
 
     if (!effectiveAuthenticated) {
       sessionStorage.setItem(PENDING_AD_STORAGE_KEY, JSON.stringify({
@@ -184,7 +198,7 @@ export function AdCampaignForm({
 
       <label className="block text-sm font-bold">
         Link do anúncio
-        <input name="destinationUrl" type="url" required placeholder="https://seunegocio.com.br" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
+        <input name="destinationUrl" type="text" inputMode="url" required placeholder="https://seunegocio.com.br ou seunegocio.com.br" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
       </label>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -217,7 +231,7 @@ export function AdCampaignForm({
 
       <label className="block text-sm font-bold">
         O que está sendo anunciado?
-        <textarea name="offerDescription" required maxLength={500} rows={3} placeholder="Explique em uma frase o produto, serviço ou oferta." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-3 text-base font-normal outline-none focus:border-neon" />
+        <textarea name="offerDescription" required minLength={10} maxLength={500} rows={3} placeholder="Explique em pelo menos 10 caracteres o produto, serviço ou oferta." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-3 text-base font-normal outline-none focus:border-neon" />
       </label>
 
       <label className="block text-sm font-bold">
@@ -227,12 +241,12 @@ export function AdCampaignForm({
 
       <label className="block text-sm font-bold">
         Perfil ou página institucional <span className="font-normal text-foreground/55">(opcional)</span>
-        <input name="socialUrl" type="url" placeholder="https://instagram.com/sua-marca" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
+        <input name="socialUrl" type="text" inputMode="url" placeholder="https://instagram.com/sua-marca ou @sua-marca" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
       </label>
 
       <label className="block text-sm font-bold">
-        Texto alternativo da imagem
-        <input name="assetAltText" required maxLength={180} placeholder="Descrição curta do anúncio" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
+        Texto alternativo da imagem <span className="font-normal text-foreground/55">(opcional)</span>
+        <input name="assetAltText" maxLength={180} placeholder="Descrição curta do anúncio (padrão automático se vazio)" className="mt-2 min-h-11 w-full rounded-md border border-border bg-background px-3 text-base font-normal outline-none focus:border-neon" />
       </label>
 
       <p className="rounded-md border border-border bg-background/50 px-3 py-3 text-xs leading-relaxed text-foreground/65">
@@ -280,7 +294,7 @@ export function AdCampaignForm({
           <p className="mt-1 font-playfair text-3xl font-bold text-neon">{formatPrice(total)}</p>
           <p className="text-xs text-foreground/55">{slotCount} {slotCount === 1 ? 'cota' : 'cotas'} · {formatPrice(monthlyPriceCents)} por cota</p>
         </div>
-        <button type="submit" disabled={pending || !accepted} className="inline-flex min-h-12 items-center justify-center rounded-md bg-neon px-5 py-3 font-bold text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45">
+        <button type="submit" disabled={pending} className="inline-flex min-h-12 items-center justify-center rounded-md bg-neon px-5 py-3 font-bold text-black transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45">
           {pending
             ? (effectiveAuthenticated ? 'Preparando Stripe…' : 'Abrindo login…')
             : effectiveAuthenticated

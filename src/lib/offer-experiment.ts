@@ -2,6 +2,12 @@ export const PROGRAM_SECONDARY_CTA_EXPERIMENT = 'program-secondary-cta';
 export const PROGRAM_SECONDARY_CTA_VARIANTS = ['0', '1', '2'] as const;
 export const GUIDE_PAGE_CTA_EXPERIMENT = 'guide-page-cta';
 export const GUIDE_PAGE_CTA_VARIANTS = ['0', '1', '2', '3', '4'] as const;
+export const BUSSOLA_CTA_EXPERIMENT = 'bussola-cta';
+export const BUSSOLA_CTA_VARIANTS = ['0', '1', '2'] as const;
+export const LANGUAGES_HUB_CTA_EXPERIMENT = 'languages-hub-cta';
+export const LANGUAGES_HUB_CTA_VARIANTS = ['0', '1', '2'] as const;
+export const IA_OFFER_CTA_EXPERIMENT = 'ia-offer-cta';
+export const IA_OFFER_CTA_VARIANTS = ['0', '1', '2'] as const;
 const EXIT_POPUP_VARIANTS = ['0', '1', '2', '3', '4'] as const;
 const NATIVE_CARD_VARIANTS = ['0', '1', '2', '3', '4', '5'] as const;
 const LANGUAGE_EBOOK_OFFER_VARIANTS = [
@@ -17,7 +23,10 @@ export type OfferExperimentName =
   | 'exit-popup'
   | 'native-card'
   | typeof PROGRAM_SECONDARY_CTA_EXPERIMENT
-  | typeof GUIDE_PAGE_CTA_EXPERIMENT;
+  | typeof GUIDE_PAGE_CTA_EXPERIMENT
+  | typeof BUSSOLA_CTA_EXPERIMENT
+  | typeof LANGUAGES_HUB_CTA_EXPERIMENT
+  | typeof IA_OFFER_CTA_EXPERIMENT;
 
 export type OfferVariantAttribution = {
   experiment: string;
@@ -70,6 +79,16 @@ export function parseValidatedOfferVariant(value: string | null | undefined): st
     && parseGuidePageCtaVariant(attribution.variant) !== null
   ) {
     return `${GUIDE_PAGE_CTA_EXPERIMENT}:${attribution.variant}${tierSuffix}`;
+  }
+  if (
+    (
+      attribution.experiment === BUSSOLA_CTA_EXPERIMENT
+      || attribution.experiment === LANGUAGES_HUB_CTA_EXPERIMENT
+      || attribution.experiment === IA_OFFER_CTA_EXPERIMENT
+    )
+    && ['0', '1', '2'].includes(attribution.variant)
+  ) {
+    return `${attribution.experiment}:${attribution.variant}${tierSuffix}`;
   }
   if (
     attribution.experiment === 'native-card'

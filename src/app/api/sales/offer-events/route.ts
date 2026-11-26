@@ -5,9 +5,15 @@ import { db } from '@/db';
 import { guideOfferEvents } from '@/db/schema';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 import {
+  BUSSOLA_CTA_EXPERIMENT,
+  BUSSOLA_CTA_VARIANTS,
   chooseBalancedVariant,
   GUIDE_PAGE_CTA_EXPERIMENT,
   GUIDE_PAGE_CTA_VARIANTS,
+  IA_OFFER_CTA_EXPERIMENT,
+  IA_OFFER_CTA_VARIANTS,
+  LANGUAGES_HUB_CTA_EXPERIMENT,
+  LANGUAGES_HUB_CTA_VARIANTS,
   PROGRAM_SECONDARY_CTA_EXPERIMENT,
   PROGRAM_SECONDARY_CTA_VARIANTS,
 } from '@/lib/offer-experiment';
@@ -28,6 +34,9 @@ const experimentVariants = {
   [PROGRAM_SECONDARY_CTA_EXPERIMENT]: PROGRAM_SECONDARY_CTA_VARIANTS,
   [GUIDE_PAGE_CTA_EXPERIMENT]: GUIDE_PAGE_CTA_VARIANTS,
   [RIFA_CAMPAIGN_EXPERIMENT]: RIFA_CAMPAIGN_VARIANTS,
+  [BUSSOLA_CTA_EXPERIMENT]: BUSSOLA_CTA_VARIANTS,
+  [LANGUAGES_HUB_CTA_EXPERIMENT]: LANGUAGES_HUB_CTA_VARIANTS,
+  [IA_OFFER_CTA_EXPERIMENT]: IA_OFFER_CTA_VARIANTS,
 } as const;
 
 type ExperimentName = keyof typeof experimentVariants;
@@ -39,6 +48,9 @@ const eventSchema = z.object({
     PROGRAM_SECONDARY_CTA_EXPERIMENT,
     GUIDE_PAGE_CTA_EXPERIMENT,
     RIFA_CAMPAIGN_EXPERIMENT,
+    BUSSOLA_CTA_EXPERIMENT,
+    LANGUAGES_HUB_CTA_EXPERIMENT,
+    IA_OFFER_CTA_EXPERIMENT,
   ]),
   variant: z.string().max(64),
   eventType: z.enum(['impression', 'click', 'checkout', 'conversion']),

@@ -1,13 +1,14 @@
 # Contexto Ativo (Portal NKL)
 
 ## Foco Atual
-- **Feedback Chinês Já, Script Seguro Stripe NKL, Funis 3 Opções & Upgrade Analytics (2026-11-26):**
-  - **"Sugerir site" contextual (`/sugerir`):** `getSuggestionHref(pathname)` (`src/lib/income-portal.ts`) roteia por área (`idiomas`, `ia`, `renda-extra`, `musica`, `geral`) para `/sugerir` (`src/app/sugerir/page.tsx`) usando `submitPartnerSuggestion` com prefixo `[Área | Origem]`.
-  - **Mandarim (`/blog/aprender/chines`):** adicionada ferramenta gratuita em português *Chinês Já — Pinyin com tons e áudio* (`https://www.chinesja.com.br/p/pinyin-com-tons-e-audio-converter.html`) tanto na seção `Pinyin com áudio` quanto como recurso #1.
-  - **Stripe NKL seguro (`scripts/migrate-stripe-account.mjs`):** provisionada a conta Sandbox `acct_1UbswFItNBn1daZu` (`Área restrita de nkloficial`) com produto/preços/cupons/webhook; trava `assertLiveProductionSafety` impediu sobrescrever Produção Live (`acct_1UZsOzQzOKRNmIif`) com chaves `sk_test_`.
-  - **Funis 3 opções (Decoy Pricing):** Renda Extra (`R$ 19` / `R$ 39*` / `R$ 247` 11 arquivos), 6 Idiomas (`R$ 27` / `R$ 47*` / `R$ 297` Passaporte 6 Idiomas + Renda Extra) e IA na Prática (`R$ 39/mês` / `R$ 99*` / `R$ 397` Passe Total 6 SKUs) com entregáveis reais validados no servidor e webhook.
-  - **Analytics & Admin:** `getPortalAnalyticsArea` (8 áreas), UTM super-properties no PostHog/Clarity, `select_pricing_tier`, `begin_checkout`, `purchase` para logados e convidados com valor real (`amountCents / 100`) e KPIs digitais adicionados em `/admin`.
+
+- **Polimento `/programas`, Hub `/idiomas`, Stripe `/anuncie`, Fluido/Bússola, CTAs Adaptativos & Atlas Admin (2026-11-26):**
+  - **Cabeçalho & `/programas`:** logo `44x44` visível (`shrink-0`), links sem aperto (`Início`, `Renda Extra`, `IA`, `Idiomas` -> `/idiomas`, `Bússola`, `Cordas`, `Sugerir`); grade de `/programas` com `PROGRAMS_PER_PAGE = 12` e banner `Anuncie aqui` no índice `6` (múltiplo de 2 e 3, zero linha órfã), cards NKL padronizados ao esqueleto da plataforma, `<SaveProgramButton />` abaixo da nota e `"Acessar plataforma"` completo.
+  - **`/programas/anuncie` & Testes Stripe:** URLs sem esquema e `@arroba` normalizados, `assetAltText` opcional, termos aceitos no submit com erro visível e reconciliação imediata em `/anuncie/sucesso`; suíte `scripts/test-all-payments-stripe.mjs` validou `pm_card_visa` (`pi_3UfvmZItNBn1daZu1MTHxZaL` `succeeded`) + 13 fluxos/entregáveis na conta NKL Sandbox (`acct_1UbswFItNBn1daZu`).
+  - **Fluido no ecossistema, Bússola dos Sonhos, `/idiomas` & Tradução Semântica:** `PortalHomeParallax variant="ecosystem"` no `ParallaxBackground` (música preserva parallax musical), cópia e cards translúcidos na Bússola (`negócio dos sonhos`), página `/idiomas` com os 6 idiomas e cores cor-a-cor alinhadas semanticamente em `/blog/aprender/ingles` + `language-ebook-preview.tsx`.
+  - **CTAs Adaptativos A/B, Atlas Admin & Checklist Mestre:** `AdaptiveCtaLink` (`bussola-cta`, `languages-hub-cta`, `ia-offer-cta`) medido em `/admin`, onde também estão o **Atlas Visual das Áreas**, **Diretório Completo de Entregáveis** e a referência a `docs/CHECKLIST-MESTRE-NKL.md`.
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
+
 1. **Troca definitiva Stripe NKL -> Produção:** quando ativar a conta Live `nkloficial` e tiver `pk_live_...` + `sk_live_...` em `.env.local`, rodar `npm run stripe:provision -- --sync-vercel-prod` e depois `vercel deploy --prod --yes`.
-2. **Plugins Antigravity / Afiliados / Cloudflare / Search Console:** ver `docs/CHECKLIST-OFFLINE-NKL.md`.
+2. **Ações consolidadas:** seguir `docs/CHECKLIST-MESTRE-NKL.md` (Cloudflare Email Routing, plugins Stripe/Cloudflare/Vercel, Google Search Console, afiliados, Amazon KDP, NotebookLM e VAPID opcional).

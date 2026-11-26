@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { adCampaigns } from '@/db/schema';
 import { AdMaterialUploadForm } from '@/components/ads/ad-material-upload-form';
+import { getStripeClient } from '@/lib/stripe/server';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +17,7 @@ export default async function AdCheckoutSuccessPage({ searchParams }: { searchPa
   const sessionId = typeof params.session_id === 'string' ? params.session_id : null;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const [campaign] = user?.id && sessionId
+  let [campaign] = user?.id && sessionId
     ? await db
       .select({
         id: adCampaigns.id,
@@ -24,11 +25,33 @@ export default async function AdCheckoutSuccessPage({ searchParams }: { searchPa
         status: adCampaigns.status,
         billingStatus: adCampaigns.billingStatus,
         assetUrl: adCampaigns.assetUrl,
+        stripeSubscriptionId: adCampaigns.stripeSubscriptionId,
       })
       .from(adCampaigns)
       .where(and(eq(adCampaigns.userId, user.id), eq(adCampaigns.stripeCheckoutSessionId, sessionId)))
       .limit(1)
     : [];
+
+  if (campaign && campaign.billingStatus !== 'active' && sessionId?.startsWith('cs_')) {
+    try {
+      const session = await getStripeClient().checkout.sessions.retrieve(sessionId);
+      const subId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription?.id ?? null;
+      if (session.payment_status === 'paid' || session.status === 'complete') {
+        const nextStatus = campaign.status === 'pending_payment' ? 'pending_review' : campaign.status;
+        await db.update(adCampaigns).set({
+          billingStatus: 'active',
+          status: nextStatus,
+          ...(subId ? { stripeSubscriptionId: subId } : {}),
+          updatedAt: new Date(),
+        }).where(eq(adCampaigns.id, campaign.id));
+        campaign = { ...campaign, billingStatus: 'active', status: nextStatus, stripeSubscriptionId: subId };
+      }
+    } catch (error) {
+      console.error('[AD_SUCCESS] Falha ao reconciliar checkout Stripe:', error instanceof Error ? error.message : 'erro desconhecido');
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 md:py-16">

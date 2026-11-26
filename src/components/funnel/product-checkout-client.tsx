@@ -117,7 +117,7 @@ export function ProductCheckoutClient({
         setRequiresAuthAction(true);
         setStatusMessage(
           payload?.message ??
-            'Entre na sua conta antes de finalizar para vincular o acesso ao seu perfil.',
+          'Entre na sua conta antes de finalizar para vincular o acesso ao seu perfil.',
         );
         router.push(loginHref);
         return;
@@ -126,7 +126,7 @@ export function ProductCheckoutClient({
       if (response.status === 503 || payload?.error === 'ai_checkout_not_configured') {
         setStatusMessage(
           payload?.message ??
-            'Este pagamento ainda está aguardando configuração no Stripe. Nenhuma cobrança foi realizada.',
+          'Este pagamento ainda está aguardando configuração no Stripe. Nenhuma cobrança foi realizada.',
         );
         return;
       }
@@ -138,7 +138,7 @@ export function ProductCheckoutClient({
 
       setErrorMessage(
         payload?.message ??
-          'Não foi possível iniciar o pagamento agora. Tente novamente em instantes.',
+        'Não foi possível iniciar o pagamento agora. Tente novamente em instantes.',
       );
     } catch {
       setErrorMessage(
@@ -165,7 +165,7 @@ export function ProductCheckoutClient({
       const firstIssue = parsed.error.issues[0];
       setErrorMessage(
         firstIssue?.message ??
-          'Revise seu nome, e-mail, CPF e a confirmação antes de continuar.',
+        'Revise seu nome, e-mail, CPF e a confirmação antes de continuar.',
       );
       return;
     }
@@ -202,7 +202,7 @@ export function ProductCheckoutClient({
 
       setErrorMessage(
         payload?.message ??
-          'Não foi possível iniciar o pagamento no momento. Tente novamente.',
+        'Não foi possível iniciar o pagamento no momento. Tente novamente.',
       );
     } catch {
       setErrorMessage(

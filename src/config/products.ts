@@ -42,9 +42,9 @@ export const PAID_PRODUCTS: readonly PaidProduct[] = [
     title: 'Bússola de Negócios',
     shortName: 'Bússola de Negócios',
     badgeLabel: 'Acesso Especial',
-    headline: 'Descubra o modelo de trabalho que cabe no seu tempo e no seu bolso.',
+    headline: 'Descubra o negócio dos seus sonhos — alinhado ao seu perfil, talento e rotina real.',
     aspirationalLead:
-      'Responda perguntas objetivas sobre tempo livre, capital inicial, tecnologia e perfil prático para sair da dúvida com um plano claro de ação.',
+      'Responda 50 critérios sobre vocação, liberdade geográfica, capital inicial, tecnologia e estilo de trabalho para revelar os 3 modelos de negócio mais promissores para construir com gosto e método.',
     offerRoute: '/ofertas/bussola-negocios',
     toolRoute: '/app/bussola-negocios',
     checkoutRoute: '/ofertas/bussola-negocios/checkout',

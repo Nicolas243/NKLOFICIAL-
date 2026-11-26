@@ -12,12 +12,12 @@ export const YOUGLISH_LANGUAGE_SLUGS: Record<LanguageEbookSlug, 'italian' | 'fre
   chines: 'chinese',
 };
 
-const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, string][]; color: string }> = {
-  italiano: { intro: 'Aprenda italiano com um ciclo completo de 100 lições, tradução palavra a palavra e prática contextualizada.', examples: [['Io voglio studiare online.', 'Eu quero estudar on-line.'], ['Posso fare una domanda?', 'Posso fazer uma pergunta?']], color: '#16a34a' },
-  frances: { intro: 'Construa sua base de francês com frases naturais, revisão espaçada e exemplos sempre acompanhados de tradução.', examples: [['Je veux apprendre chaque jour.', 'Eu quero aprender todos os dias.'], ['Pouvez-vous répéter, s’il vous plaît?', 'Você pode repetir, por favor?']], color: '#2563eb' },
-  alemao: { intro: 'Organize o alemão em pequenas vitórias: pronúncia, ordem da frase, vocabulário e conversas profissionais.', examples: [['Ich möchte heute üben.', 'Eu quero praticar hoje.'], ['Können Sie das erklären?', 'Você pode explicar isso?']], color: '#ca8a04' },
-  espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']], color: '#dc2626' },
-  chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']], color: '#b91c1c' },
+const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, string][]; colorClass: string }> = {
+  italiano: { intro: 'Aprenda italiano com um ciclo completo de 100 lições, tradução palavra a palavra e prática contextualizada.', examples: [['Io voglio studiare online.', 'Eu quero estudar on-line.'], ['Posso fare una domanda?', 'Posso fazer uma pergunta?']], colorClass: 'text-emerald-700 dark:text-emerald-300' },
+  frances: { intro: 'Construa sua base de francês com frases naturais, revisão espaçada e exemplos sempre acompanhados de tradução.', examples: [['Je veux apprendre chaque jour.', 'Eu quero aprender todos os dias.'], ['Pouvez-vous répéter, s’il vous plaît?', 'Você pode repetir, por favor?']], colorClass: 'text-blue-700 dark:text-sky-300' },
+  alemao: { intro: 'Organize o alemão em pequenas vitórias: pronúncia, ordem da frase, vocabulário e conversas profissionais.', examples: [['Ich möchte heute üben.', 'Eu quero praticar hoje.'], ['Können Sie das erklären?', 'Você pode explicar isso?']], colorClass: 'text-amber-700 dark:text-amber-300' },
+  espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']], colorClass: 'text-rose-700 dark:text-rose-300' },
+  chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']], colorClass: 'text-red-700 dark:text-red-300' },
 };
 
 export function getLanguageEbookPreviewMetadata(slug: LanguageEbookSlug): Metadata {
@@ -55,7 +55,7 @@ export function LanguageEbookPreview({ slug }: { slug: string }) {
           {details.examples.map(([source, translation], index) => (
             <div key={source} className="rounded-xl border border-border bg-background p-5">
               <p className="text-xs font-bold uppercase text-foreground/50">Lição {index + 1} · exemplo colorido</p>
-              <p className="mt-4 text-xl font-bold" style={{ color: details.color }}>{source}</p>
+              <p className={`mt-4 text-xl font-bold ${details.colorClass}`}>{source}</p>
               <p className="mt-2 text-lg font-semibold text-foreground">{translation}</p>
               <a className="mt-4 inline-flex text-sm font-bold text-orange hover:underline" href={`https://youglish.com/pronounce/${encodeURIComponent(source)}/${youglishSlug}`} target="_blank" rel="noreferrer">Ouvir pronúncia ↗</a>
             </div>

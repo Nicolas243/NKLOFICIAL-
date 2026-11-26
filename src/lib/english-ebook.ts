@@ -22,22 +22,134 @@ export type ExampleToken = {
 const TOKEN_PATTERN = /(\p{L}+(?:['’−-]\p{L}+)?|\d+|[^\p{L}\d\s]+|\s+)/gu;
 const COLOR_COUNT = 6;
 
+export const BILINGUAL_COLOR_CLASSES = [
+  'text-blue-700 dark:text-sky-300',
+  'text-orange-700 dark:text-orange-300',
+  'text-emerald-700 dark:text-emerald-300',
+  'text-purple-700 dark:text-purple-300',
+  'text-amber-700 dark:text-amber-300',
+  'text-rose-700 dark:text-rose-300',
+] as const;
+
+export const BILINGUAL_PRINT_COLORS = [
+  '#1d4ed8',
+  '#c2410c',
+  '#047857',
+  '#7e22ce',
+  '#b45309',
+  '#be123c',
+] as const;
+
 const translationHints: Record<string, string[]> = {
-  i: ['eu'], want: ['quero', 'quer'], study: ['estudar', 'estudo'], online: ['on-line', 'online'],
-  learn: ['aprender', 'aprendo'], english: ['inglês'], find: ['encontrar', 'encontro'], better: ['melhor'],
-  work: ['trabalho', 'trabalhar', 'trabalha'], speak: ['falar', 'fala'], clients: ['clientes'],
-  to: [], am: ['sou', 'estou'], is: ['é', 'está'], are: ['são', 'estão'], my: ['meu', 'minha'],
-  name: ['nome'], live: ['moro', 'vive'], in: ['em', 'no', 'na'], from: ['de'], with: ['com'],
-  you: ['você', 'vocês'], need: ['preciso', 'precisa', 'precisamos'], help: ['ajuda', 'ajudar'],
-  the: ['o', 'a', 'os', 'as'], a: ['um', 'uma'], an: ['um', 'uma'], this: ['este', 'esta', 'isso'],
-  that: ['isso', 'aquilo'], have: ['tenho', 'temos', 'tem'], two: ['dois', 'duas'], three: ['três'],
-  can: ['posso', 'pode', 'podemos', 'consegue'], could: ['poderia', 'poderíamos'], should: ['deveria', 'deveríamos'],
-  she: ['ela'], he: ['ele'], they: ['eles', 'elas'], we: ['nós'], it: ['isso'], ready: ['pronto', 'pronta'],
-  good: ['bom', 'boa'], morning: ['manhã'], afternoon: ['tarde'], evening: ['noite'], how: ['como'],
-  what: ['o que', 'qual'], where: ['onde'], when: ['quando'], why: ['por que'], who: ['quem'],
-  home: ['casa'], day: ['dia'], night: ['noite'], time: ['tempo', 'hora'],
-  today: ['hoje'], tomorrow: ['amanhã'], safe: ['seguro', 'segurança'],
-  safely: ['segurança'], travel: ['viajar'], use: ['usar', 'uso'],
+  i: ['eu'],
+  want: ['quero', 'quer'],
+  study: ['estudar', 'estudo'],
+  studying: ['estudando', 'aprendendo'],
+  online: ['on-line', 'online'],
+  learn: ['aprender', 'aprendo'],
+  learning: ['aprendendo', 'aprender'],
+  english: ['inglês', 'ingles'],
+  find: ['encontrar', 'encontro'],
+  better: ['melhor'],
+  work: ['trabalho', 'trabalhar', 'trabalha'],
+  worked: ['trabalhei', 'trabalhou'],
+  working: ['trabalhando'],
+  speak: ['falar', 'falo', 'fala'],
+  clients: ['clientes'],
+  to: ['a', 'para', 'de'],
+  am: ['sou', 'estou'],
+  is: ['é', 'está', 'esta'],
+  are: ['são', 'estão'],
+  was: ['estava', 'era', 'foi'],
+  my: ['meu', 'minha'],
+  name: ['nome'],
+  live: ['moro', 'vive', 'mora'],
+  in: ['em', 'no', 'na'],
+  from: ['de', 'da', 'do'],
+  with: ['com'],
+  you: ['você', 'vocês'],
+  your: ['seu', 'sua', 'seus', 'suas'],
+  need: ['preciso', 'precisa', 'precisamos'],
+  help: ['ajuda', 'ajudar'],
+  the: ['o', 'a', 'os', 'as'],
+  a: ['um', 'uma'],
+  an: ['um', 'uma'],
+  this: ['este', 'esta', 'isso', 'disto', 'disso'],
+  that: ['isso', 'aquilo', 'que'],
+  have: ['tenho', 'temos', 'tem', 'ter'],
+  has: ['tem'],
+  had: ['tinha', 'teve'],
+  two: ['dois', 'duas'],
+  three: ['três'],
+  can: ['posso', 'pode', 'podemos', 'consegue'],
+  could: ['poderia', 'poderíamos'],
+  should: ['deveria', 'deveríamos'],
+  will: ['vou', 'vai', 'vamos'],
+  did: ['não', 'fez', 'entendi'],
+  do: ['faz', 'fala', 'fazemos', 'voce', 'você'],
+  does: ['significa', 'faz'],
+  not: ['não', 'nao'],
+  sorry: ['desculpe'],
+  understand: ['entendi', 'entender', 'compreender'],
+  slowly: ['devagar', 'lentamente'],
+  mean: ['significa', 'quer', 'dizer'],
+  let: ['deixe', 'deixe-me'],
+  me: ['me', 'mim', 'eu'],
+  try: ['tentar', 'tento'],
+  again: ['novo', 'novamente'],
+  wake: ['acordo', 'acordar'],
+  up: ['cedo', 'acima'],
+  early: ['cedo'],
+  at: ['às', 'as', 'à', 'a', 'em'],
+  night: ['noite'],
+  ten: ['dez'],
+  drink: ['tomo', 'bebo', 'tomar'],
+  coffee: ['café', 'cafe'],
+  sleep: ['durmo', 'dormir'],
+  recife: ['recife'],
+  sales: ['vendas'],
+  file: ['arquivo'],
+  send: ['enviar', 'mando'],
+  it: ['isso', 'ele', 'a', 'o', 'enviar'],
+  check: ['verificar', 'checar'],
+  read: ['leio', 'ler', 'lê'],
+  first: ['primeiro'],
+  then: ['depois', 'então'],
+  because: ['porque'],
+  goal: ['objetivo', 'meta'],
+  tired: ['cansado', 'cansada'],
+  but: ['mas'],
+  practiced: ['pratiquei', 'praticou'],
+  like: ['gosto', 'gosta'],
+  so: ['então', 'entao', 'assim'],
+  however: ['porém', 'porem', 'contudo'],
+  more: ['mais'],
+  she: ['ela'],
+  he: ['ele'],
+  they: ['eles', 'elas'],
+  we: ['nós'],
+  ready: ['pronto', 'pronta'],
+  good: ['bom', 'boa'],
+  morning: ['manhã'],
+  afternoon: ['tarde'],
+  evening: ['noite'],
+  how: ['como'],
+  what: ['o', 'que', 'qual'],
+  where: ['onde'],
+  when: ['quando'],
+  why: ['por', 'porque'],
+  who: ['quem'],
+  home: ['casa'],
+  day: ['dia'],
+  time: ['tempo', 'hora'],
+  today: ['hoje'],
+  tomorrow: ['amanhã'],
+  repeat: ['repetir', 'repita'],
+  start: ['começamos', 'comecamos', 'começar'],
+  safe: ['seguro', 'segurança'],
+  safely: ['segurança'],
+  travel: ['viajar'],
+  use: ['usar', 'uso'],
 };
 
 function normalizeWord(value: string): string {
@@ -51,8 +163,14 @@ function wordTokens(text: string): ExampleToken[] {
 function isLikelyMatch(english: string, portuguese: string): boolean {
   const englishWord = normalizeWord(english);
   const portugueseWord = normalizeWord(portuguese);
+  const hintMatch = translationHints[englishWord]?.some((hint) => {
+    const cleanHint = normalizeWord(hint);
+    return cleanHint === portugueseWord
+      || portugueseWord.startsWith(`${cleanHint}-`)
+      || cleanHint.split(/\s+/u).includes(portugueseWord);
+  });
   return englishWord === portugueseWord
-    || translationHints[englishWord]?.some((hint) => normalizeWord(hint) === portugueseWord)
+    || Boolean(hintMatch)
     || (englishWord.length >= 4 && portugueseWord.length >= 4
       && (englishWord.slice(0, 4) === portugueseWord.slice(0, 4)
         || englishWord.slice(0, 5) === portugueseWord.slice(0, 5)));
@@ -92,13 +210,21 @@ export function tokenizeBilingualExample(english: string, portuguese: string): {
     if (!englishColorByWord.has(englishIndex)) {
       const nextAligned = [...alignments.entries()].find(([index]) => index > englishIndex);
       const previousAligned = [...alignments.entries()].reverse().find(([index]) => index < englishIndex);
-      englishColorByWord.set(englishIndex, nextAligned ? englishColorByWord.get(nextAligned[0])! : englishColorByWord.get(previousAligned?.[0] ?? 0) ?? 0);
+      englishColorByWord.set(
+        englishIndex,
+        nextAligned
+          ? englishColorByWord.get(nextAligned[0])!
+          : previousAligned
+            ? englishColorByWord.get(previousAligned[0])!
+            : englishIndex % COLOR_COUNT,
+      );
     }
   }
 
-  for (let portugueseIndex = 0; portugueseIndex < portugueseWords.length; portugueseIndex += 1) {
-    if (!portugueseColorByWord.has(portugueseIndex)) {
-      portugueseColorByWord.set(portugueseIndex, portugueseIndex > 0 ? portugueseColorByWord.get(portugueseIndex - 1)! : 0);
+  for (let ptIndex = 0; ptIndex < portugueseWords.length; ptIndex += 1) {
+    if (!portugueseColorByWord.has(ptIndex)) {
+      const fallbackColor = ptIndex > 0 ? portugueseColorByWord.get(ptIndex - 1)! : ptIndex % COLOR_COUNT;
+      portugueseColorByWord.set(ptIndex, fallbackColor);
     }
   }
 

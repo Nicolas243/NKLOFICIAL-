@@ -45,6 +45,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     { url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.guide), lastModified, changeFrequency: 'monthly', priority: 0.7 },
+    { url: absoluteSiteUrl('/idiomas'), lastModified, changeFrequency: 'weekly', priority: 0.9 },
+    { url: absoluteSiteUrl('/sugerir'), lastModified, changeFrequency: 'monthly', priority: 0.5 },
     { url: absoluteSiteUrl('/blog/aprender/ingles'), lastModified, changeFrequency: 'weekly', priority: 0.8 },
     ...['italiano', 'frances', 'alemao', 'espanhol', 'chines'].map((language) => ({
       url: absoluteSiteUrl(`/blog/aprender/${language}`),

@@ -20,7 +20,7 @@ import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-se
 import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
 import { getProgramShareUrl } from '@/lib/share-url';
 import { SITE_URL } from '@/lib/site';
-import { INCOME_SUGGESTION_FORM_URL } from '@/lib/income-portal';
+import { PORTAL_AREA_CARDS } from '@/lib/portal-areas';
 import { EDITORIAL_CARDS, EditorialCardView } from '@/components/global-editorial-cards';
 import { AdBannerContent } from '@/components/ads/ad-banner-content';
 import { PAID_PRODUCTS } from '@/config/products';
@@ -53,13 +53,20 @@ const REVIEW_TAG_GROUPS = [
     tags: ['baixa remuneração', 'poucas tarefas disponíveis', 'pagamento atrasado', 'suporte ruim', 'cadastro demorado', 'requisitos confusos', 'tarefas repetitivas'],
   },
 ];
-const PROGRAMS_PER_PAGE = 15;
+const PROGRAMS_PER_PAGE = 12;
 const EMBEDDED_PORTAL_RESOURCE_SLUGS = [
   'bussola-negocios',
   'ferramenta-ia',
   'pacote-renda-extra',
   'pacote-idiomas-ia',
 ] as const;
+
+const EMBEDDED_RESOURCE_MEDIA: Record<string, { areaId: string; priceTag: string; eyebrow: string }> = {
+  'bussola-negocios': { areaId: 'quiz-negocios', priceTag: 'R$ 39 único', eyebrow: 'Ferramenta NKL' },
+  'ferramenta-ia': { areaId: 'ferramenta-ia', priceTag: 'R$ 39/mês', eyebrow: 'Estúdio IA NKL' },
+  'pacote-renda-extra': { areaId: 'guia-renda-extra', priceTag: 'R$ 19 – R$ 247', eyebrow: 'Guias NKL' },
+  'pacote-idiomas-ia': { areaId: 'idiomas', priceTag: 'R$ 27 – R$ 297', eyebrow: 'Idiomas NKL' },
+};
 const DISCOVERY_TAGS = [
   { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift', 'producao-videos-ia', 'edicao-cortes-virais-ia'] },
   { label: 'Ganhar sem fazer nada', slugs: ['honeygain', 'repocket', 'ia-remunerada-curadoria-dados'] },
@@ -282,6 +289,42 @@ export function PartnerProgramsBrowser({
     safeCurrentPage * PROGRAMS_PER_PAGE,
   );
 
+  type GridEntry =
+    | { kind: 'program'; key: string; program: PartnerProgramCard; isFirst: boolean }
+    | { kind: 'resource'; key: string; resource: (typeof embeddedResources)[number] }
+    | { kind: 'editorial'; key: string; card: (typeof EDITORIAL_CARDS)[number] };
+
+  const gridEntries: GridEntry[] = useMemo(() => {
+    const entries: GridEntry[] = [];
+    visiblePrograms.forEach((program, index) => {
+      if (safeCurrentPage === 1 && index === 2) {
+        entries.push({ kind: 'editorial', key: 'editorial-0', card: EDITORIAL_CARDS[0] });
+      }
+      if (safeCurrentPage === 1 && index === 3 && embeddedResources[0]) {
+        entries.push({ kind: 'resource', key: `resource-${embeddedResources[0].slug}`, resource: embeddedResources[0] });
+      }
+      if (safeCurrentPage === 1 && index === 5 && embeddedResources[1]) {
+        entries.push({ kind: 'resource', key: `resource-${embeddedResources[1].slug}`, resource: embeddedResources[1] });
+      }
+      if (safeCurrentPage === 1 && index === 7 && embeddedResources[2]) {
+        entries.push({ kind: 'resource', key: `resource-${embeddedResources[2].slug}`, resource: embeddedResources[2] });
+      }
+      if (safeCurrentPage === 1 && index === 9 && embeddedResources[3]) {
+        entries.push({ kind: 'resource', key: `resource-${embeddedResources[3].slug}`, resource: embeddedResources[3] });
+      }
+      if (safeCurrentPage === 1 && index === 10) {
+        entries.push({ kind: 'editorial', key: 'editorial-1', card: EDITORIAL_CARDS[1] });
+      }
+      entries.push({
+        kind: 'program',
+        key: program.id,
+        program,
+        isFirst: index === 0,
+      });
+    });
+    return entries;
+  }, [embeddedResources, safeCurrentPage, visiblePrograms]);
+
   function updatePage(page: number): void {
     setCurrentPage(Math.min(Math.max(page, 1), Math.max(totalPages, 1)));
   }
@@ -489,64 +532,118 @@ export function PartnerProgramsBrowser({
       <p className="text-sm opacity-60">{filteredPrograms.length} oportunidades encontradas</p>
 
       <section id="programs-grid" className="programs-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {visiblePrograms.map((program, index) => {
+        {gridEntries.map((entry, gridIndex) => {
+          const adBannerAfterSix = gridIndex === 6 ? (
+            <div key="in-feed-ad-banner" className="col-span-full">
+              <AdBannerContent
+                placement="in-feed"
+                slots={adSlots}
+                monthlyPriceCents={adPriceCents}
+                isPromotionActive={adPromotionActive}
+              />
+            </div>
+          ) : null;
+
+          if (entry.kind === 'editorial') {
+            return (
+              <Fragment key={entry.key}>
+                {adBannerAfterSix}
+                <EditorialCardView card={entry.card} />
+              </Fragment>
+            );
+          }
+
+          if (entry.kind === 'resource') {
+            const embeddedResource = entry.resource;
+            const meta = EMBEDDED_RESOURCE_MEDIA[embeddedResource.slug] ?? {
+              areaId: 'renda-extra',
+              priceTag: embeddedResource.badgeLabel,
+              eyebrow: 'Ferramenta NKL',
+            };
+            const thumbSrc =
+              PORTAL_AREA_CARDS.find((card) => card.id === meta.areaId)?.media?.src ??
+              '/images/areas/renda-extra.jpg';
+
+            return (
+              <Fragment key={entry.key}>
+                {adBannerAfterSix}
+                <article className="group relative flex min-h-full flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 md:gap-5 md:p-6">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold uppercase tracking-wide text-neon">{meta.eyebrow}</p>
+                      <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{embeddedResource.title}</h2>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
+                        {meta.priceTag}
+                      </span>
+                      <span className="inline-flex min-h-9 items-center rounded-full border border-neon px-3 py-1.5 text-xs font-bold">
+                        {embeddedResource.badgeLabel}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">Português</span>
+                    <span className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
+                      {embeddedResource.hasStandalonePwa ? 'App Instalável' : 'Acesso Digital'}
+                    </span>
+                  </div>
+                  <p className="line-clamp-2 text-sm leading-relaxed opacity-75">{embeddedResource.aspirationalLead}</p>
+                  <div className="mt-auto flex min-w-0 flex-col gap-2">
+                    <div className="flex min-h-16 items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap content-start items-start gap-1.5">
+                          <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">Portal NKL</span>
+                          {embeddedResource.bonuses.slice(0, 2).map((bonus) => (
+                            <span key={bonus} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">
+                              {bonus}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="mt-1 text-xs opacity-50">Recurso oficial · Entrega imediata</p>
+                      </div>
+                      <Link
+                        href={embeddedResource.offerRoute}
+                        className="inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background p-1 shadow-sm transition-transform hover:scale-105 hover:border-neon"
+                        aria-label={`Ver ${embeddedResource.title}`}
+                      >
+                        <img
+                          src={thumbSrc}
+                          alt={`Capa ${embeddedResource.title}`}
+                          className="h-full w-full rounded-md object-cover"
+                        />
+                      </Link>
+                    </div>
+                    <div className="flex min-w-0 w-full items-center gap-1.5">
+                      <Link
+                        href={embeddedResource.offerRoute}
+                        className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon"
+                      >
+                        Ler mais
+                      </Link>
+                      <Link
+                        href={embeddedResource.checkoutRoute}
+                        className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-sm font-bold leading-none text-black hover:opacity-90"
+                      >
+                        Acessar recurso
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              </Fragment>
+            );
+          }
+
+          const program = entry.program;
+          const index = entry.isFirst ? 0 : 1;
           const rating = program.finalRating;
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
           const isDescriptionExpanded = expandedDescriptionSlugs.includes(program.slug);
-          const embeddedResource =
-            index === 3
-              ? embeddedResources[0]
-              : index === 7
-                ? embeddedResources[1]
-                : index === 10
-                  ? embeddedResources[2]
-                  : index === 13
-                    ? embeddedResources[3]
-                    : undefined;
 
           return (
-            <Fragment key={program.id}>
-            {index === 2 && <EditorialCardView card={EDITORIAL_CARDS[0]} />}
-            {embeddedResource && (
-              <article className="group relative flex flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 transition-colors hover:border-neon/60 md:gap-5 md:p-6">
-                <div className="flex min-w-0 items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-neon">Ferramenta do Portal</p>
-                    <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{embeddedResource.title}</h2>
-                  </div>
-                  <span className="inline-flex shrink-0 items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-                    {embeddedResource.badgeLabel}
-                  </span>
-                </div>
-                <p className="text-sm leading-relaxed opacity-80">{embeddedResource.aspirationalLead}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {embeddedResource.bonuses.slice(0, 2).map((bonus) => (
-                    <span key={bonus} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium opacity-80">
-                      {bonus}
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-auto flex items-center gap-2">
-                  <Link
-                    href={embeddedResource.offerRoute}
-                    className="inline-flex h-11 flex-1 items-center justify-center rounded-md bg-neon px-3 text-sm font-bold text-black hover:opacity-90"
-                  >
-                    Conhecer recurso
-                  </Link>
-                </div>
-              </article>
-            )}
-            {index === 5 && (
-              <div className="col-span-full">
-                <AdBannerContent
-                  placement="in-feed"
-                  slots={adSlots}
-                  monthlyPriceCents={adPriceCents}
-                  isPromotionActive={adPromotionActive}
-                />
-              </div>
-            )}
+            <Fragment key={entry.key}>
+            {adBannerAfterSix}
             <article
               onClick={() => openProgram(program)}
               onKeyDown={(event) => {
@@ -558,20 +655,29 @@ export function PartnerProgramsBrowser({
               role="button"
               tabIndex={0}
               data-tutorial={index === 0 ? 'program-card-0' : undefined}
-              className="group relative flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+              className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs uppercase tracking-wide text-neon font-bold">{program.category}</p>
                   <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
                 </div>
-                <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
                   <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
                     {program.averageEarning}
                   </span>
-                  <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-11 shrink-0 rounded-full border border-neon px-3 py-2 text-sm font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                  <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-9 shrink-0 rounded-full border border-neon px-3 py-1.5 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
+                  <div onClick={(event) => event.stopPropagation()}>
+                    <SaveProgramButton
+                      slug={program.slug}
+                      name={program.name}
+                      compact
+                      nextPath={`/programas/${program.slug}`}
+                      isSaved={savedSlugSet.has(program.slug)}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -630,26 +736,17 @@ export function PartnerProgramsBrowser({
                   )}
                   </div>
                 </div>
-                <div className="flex min-w-0 w-full items-center gap-1.5 overflow-hidden">
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon">Ler mais</button>
+                <div className="flex min-w-0 w-full items-center gap-1.5">
+                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-xs font-bold leading-none hover:border-neon sm:text-sm">Ler mais</button>
                   {program.slug === 'quintoandar-indica-ai' ? (
-                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90">
+                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
                       Quero começar
                     </button>
                   ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md bg-neon px-2 text-sm font-bold leading-none text-black hover:opacity-90 sm:text-base">
+                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
                       Acessar plataforma
                     </OutboundLink>
                   )}
-                  <span onClick={(event) => event.stopPropagation()}>
-                    <SaveProgramButton
-                      slug={program.slug}
-                      name={program.name}
-                      compact
-                      nextPath={`/programas/${program.slug}`}
-                      isSaved={savedSlugSet.has(program.slug)}
-                    />
-                  </span>
                   <button
                     type="button"
                     onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
@@ -671,7 +768,6 @@ export function PartnerProgramsBrowser({
                 </div>
               </div>
             </article>
-            {index === 6 && <EditorialCardView card={EDITORIAL_CARDS[1]} />}
             </Fragment>
           );
         })}
@@ -688,9 +784,9 @@ export function PartnerProgramsBrowser({
             <h2 className="font-playfair text-2xl font-bold mt-1">Sugira uma oportunidade</h2>
             <p className="mt-3 text-sm leading-relaxed opacity-70">Envie o site ou serviço pelo formulário oficial. A equipe analisa cada indicação antes de incluí-la no catálogo.</p>
           </div>
-          <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
+          <Link href="/sugerir?area=renda-extra&origem=%2Fprogramas" className="inline-flex min-h-11 items-center justify-center rounded-md bg-neon px-5 py-3 text-sm font-bold text-black hover:opacity-90">
             Abrir formulário de sugestão
-          </a>
+          </Link>
         </section>
         <div className="rounded-xl border border-border bg-income-surface/90 p-6">
           <p className="text-xs uppercase tracking-wide text-neon font-bold">Como funciona</p>

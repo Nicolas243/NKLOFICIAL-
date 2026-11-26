@@ -13,8 +13,9 @@ import {
   approveNewsSuggestion,
   rejectNewsSuggestion,
 } from '@/actions/news-admin';
-import { getPlatformMetrics } from '@/actions/admin-analytics';
+import { getOfferExperimentSummaries, getPlatformMetrics } from '@/actions/admin-analytics';
 import { dispatchSubAppNotification } from '@/actions/admin-push';
+import { GUIDE_ASSETS } from '@/lib/guide-assets';
 import { AdminPromoteForm } from '@/components/admin-promote-form';
 import { setEntitySuspensionStateAction, updateEntityReportStatusAction } from '@/actions/moderation-and-reviews';
 import { approveAdCampaign, rejectAdCampaign } from '@/actions/ad-campaigns';
@@ -38,7 +39,7 @@ export default async function AdminDashboardPage() {
 
   const isAdmin = profile?.role === 'admin';
   const pushConfig = getServerPushConfiguration();
-  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories, pendingAdCampaigns, pushSubRows] = await Promise.all([
+  const [news, metrics, pendingSuggestions, reports, confidentialReviews, suspendedProfiles, suspendedDirectories, pendingAdCampaigns, pushSubRows, experimentSummaries] = await Promise.all([
     isAdmin ? getNewsFeed() : Promise.resolve([]),
     isAdmin ? getPlatformMetrics() : Promise.resolve(null),
     isAdmin ? getPendingNewsSuggestions() : Promise.resolve([]),
@@ -66,7 +67,22 @@ export default async function AdminDashboardPage() {
       createdAt: adCampaigns.createdAt,
     }).from(adCampaigns).where(eq(adCampaigns.status, 'pending_review')).orderBy(asc(adCampaigns.createdAt)) : Promise.resolve([]),
     isAdmin ? db.select({ appScope: pushSubscriptions.appScope }).from(pushSubscriptions) : Promise.resolve([]),
+    isAdmin ? getOfferExperimentSummaries() : Promise.resolve([]),
   ]);
+
+  const siteAtlasAreas = [
+    { area: 'Portal Principal', route: '/', role: 'Entrada interativa com fluido e trilhas' },
+    { area: 'Renda Extra', route: '/programas', role: '50 programas, recursos e anúncios in-feed' },
+    { area: 'Hub de Idiomas', route: '/idiomas', role: '6 idiomas com guias grátis e e-books IA' },
+    { area: 'Guia de Inglês', route: '/blog/aprender/ingles', role: 'Modelo semântico cor a cor e áudio' },
+    { area: 'Guia de Mandarim', route: '/blog/aprender/chines', role: 'Tons, pinyin com áudio e caracteres' },
+    { area: 'Oferta de IA', route: '/ia/oferta', role: 'Curso IA na Prática com 3 planos e Estúdio' },
+    { area: 'Bússola de Negócios', route: '/ofertas/bussola-negocios', role: 'Quiz adaptativo para o negócio dos sonhos' },
+    { area: 'Naipe de Cordas', route: '/musica/naipe_cordas', role: 'Aulas, luthiers, classificados e estúdio' },
+    { area: 'Anuncie no Portal', route: '/programas/anuncie', role: 'Checkout de cotas e envio de criativos' },
+    { area: 'Mural de Parceiros', route: '/mural-de-parceiros', role: 'Vitrine pública dos anunciantes ativos' },
+    { area: 'Sugerir Recurso', route: '/sugerir', role: 'Formulário para indicar novos sites e links' },
+  ] as const;
 
   const scopeCounts: Record<string, number> = {
     portal: 0,
@@ -151,6 +167,119 @@ export default async function AdminDashboardPage() {
                 ['Assinaturas IA + Guias', `${(metrics?.activeAiGrants ?? 0) + (metrics?.activeGuideSubscriptions ?? 0)}`],
                 ['Anúncios Ativos no Mural', metrics?.activeAdCampaigns ?? 0],
               ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-orange">{value}</strong></div>)}
+            </div>
+          </section>
+
+          <section aria-label="Atlas Visual do Site" className="space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="font-playfair text-xl font-bold">Atlas Visual das Áreas &amp; Páginas do Site</h2>
+                <p className="text-xs opacity-70">Mapa direto das frentes ativas para conferir layout, contraste, fluidez e conversão.</p>
+              </div>
+              <Link href="/minha-conta" className="rounded-lg border border-border px-3 py-1.5 text-xs font-bold text-neon hover:border-neon">
+                Abrir Área do Membro (/minha-conta)
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {siteAtlasAreas.map((item) => (
+                <Link
+                  key={item.route}
+                  href={item.route}
+                  className="group rounded-xl border border-border bg-surface p-4 transition-colors hover:border-neon"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-foreground group-hover:text-neon">{item.area}</span>
+                    <code className="rounded bg-background px-2 py-0.5 text-[11px] text-foreground/70">{item.route}</code>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed opacity-75">{item.role}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section aria-label="Desempenho de CTAs Adaptativos" className="space-y-4">
+            <div>
+              <h2 className="font-playfair text-xl font-bold">Desempenho de CTAs Adaptativos (Experimentos A/B)</h2>
+              <p className="text-xs opacity-70">Comparação em tempo real entre variações de chamada, CTR e conversão por experimento.</p>
+            </div>
+            {experimentSummaries.length === 0 ? (
+              <p className="rounded-xl border border-border bg-surface p-4 text-sm opacity-70">
+                Nenhum evento de experimento registrado ainda nesta base.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {experimentSummaries.map((summary) => (
+                  <article key={summary.experiment} className="rounded-xl border border-border bg-surface p-4 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+                      <div>
+                        <p className="font-bold text-sm">{summary.experiment}</p>
+                        <p className="text-xs opacity-70">
+                          Impressões: {summary.totalImpressions} · Conversões: {summary.totalConversions}
+                        </p>
+                      </div>
+                      <span className="rounded-full border border-neon/40 bg-neon/10 px-2.5 py-0.5 text-[11px] font-bold text-neon">
+                        Vencedora: {summary.winningVariant ?? 'N/D'}
+                      </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="opacity-60">
+                          <tr>
+                            <th className="py-1 pr-2">Var</th>
+                            <th className="py-1 pr-2">Impr.</th>
+                            <th className="py-1 pr-2">Cliques</th>
+                            <th className="py-1 pr-2">Checkouts</th>
+                            <th className="py-1 pr-2">Conv.</th>
+                            <th className="py-1 pr-2">CTR</th>
+                            <th className="py-1">Conv%</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {summary.variants.map((variant) => (
+                            <tr key={variant.variant} className="border-t border-border/60">
+                              <td className="py-1.5 pr-2 font-mono font-bold">{variant.variant}</td>
+                              <td className="py-1.5 pr-2">{variant.impressions}</td>
+                              <td className="py-1.5 pr-2">{variant.clicks}</td>
+                              <td className="py-1.5 pr-2">{variant.checkouts}</td>
+                              <td className="py-1.5 pr-2">{variant.conversions}</td>
+                              <td className="py-1.5 pr-2">{variant.ctrPercent}%</td>
+                              <td className="py-1.5 font-bold text-neon">{variant.conversionPercent}%</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section aria-label="Diretório Completo de Entregáveis" className="space-y-4">
+            <div>
+              <h2 className="font-playfair text-xl font-bold">Diretório Completo de Entregáveis (Onde Ver Cada Material)</h2>
+              <p className="text-xs opacity-70">Mapa oficial de entrega para conferência rápida após compras, assinaturas e envios gratuitos.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-border bg-surface p-4 space-y-2 text-xs">
+                <p className="font-bold text-sm text-neon">Fluxos de Acesso do Usuário</p>
+                <p><strong>Área do Membro:</strong> <code>/minha-conta</code> (e apps dedicados em <code>/app/[slug]</code>)</p>
+                <p><strong>PDFs Gratuitos (Música e Renda):</strong> <code>POST /api/materials</code> + <code>public/guias/guia-renda-extra-nkl.pdf</code></p>
+                <p><strong>Edição Amazon KDP:</strong> <code>private-assets/amazon-book/50-formas-renda-extra-impresso-6x9.html</code> e <code>50-formas-renda-extra-kindle.html</code></p>
+                <p><strong>Checklist Mestre de Ações:</strong> <code>docs/CHECKLIST-MESTRE-NKL.md</code></p>
+              </div>
+              <div className="rounded-xl border border-border bg-surface p-4 space-y-2 text-xs">
+                <p className="font-bold text-sm text-orange">11 Ativos Pagos no Bucket Privado (guide-assets-private)</p>
+                <p className="opacity-70">Entrega autenticada com marca d&apos;água de CPF e limite de 2 downloads por ativo:</p>
+                <ul className="max-h-44 space-y-1 overflow-y-auto pr-1">
+                  {GUIDE_ASSETS.map((asset) => (
+                    <li key={asset.id} className="flex flex-col border-t border-border/50 pt-1">
+                      <span className="font-semibold">{asset.label}</span>
+                      <code className="text-[11px] opacity-70">{asset.storagePath}</code>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </section>
           <section className="space-y-4">

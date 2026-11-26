@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { EnglishEbookPrintControls } from '@/components/english-ebook-print-controls';
 import {
+  BILINGUAL_PRINT_COLORS,
   ENGLISH_EBOOK_SAMPLE_LESSON_COUNT,
   readEnglishEbookPublicSample,
   splitEnglishExample,
@@ -21,7 +22,7 @@ function PageNumber({ number }: { number: number }) {
   return <span className="ebook-page-number" aria-label={`Página ${number}`}>{String(number).padStart(3, '0')}</span>;
 }
 
-const exampleColors = ['#172235', '#2563a8', '#c76538', '#16805b', '#7b4bb7', '#9a5c14'];
+const exampleColors = BILINGUAL_PRINT_COLORS;
 
 const valueHighlights = [
   '100 lições práticas com progressão do básico ao uso profissional',

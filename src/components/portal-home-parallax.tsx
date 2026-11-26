@@ -137,7 +137,11 @@ function readStoredFluidPaused(): boolean {
  * Fundo fluido Navier-Stokes interativo (WebGL2/WebGL1 GPU com fallback Canvas2D)
  * onde cards, tiles e containers operam como corpos submersos que deslocam o liquido no scroll.
  */
-export function PortalHomeParallax() {
+export function PortalHomeParallax({
+  variant = 'home',
+}: {
+  variant?: 'home' | 'ecosystem';
+} = {}) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const motionRef = useRef<ParallaxMotionState>({
@@ -194,6 +198,7 @@ export function PortalHomeParallax() {
       let obstaclesDirty = true;
 
       const collectObstacles = (): HTMLElement[] => {
+        if (variant === 'ecosystem') return [];
         const shell = rootRef.current?.parentElement;
         if (!shell) return [];
         return Array.from(shell.querySelectorAll<HTMLElement>(OBSTACLE_SELECTOR));
@@ -762,12 +767,12 @@ export function PortalHomeParallax() {
       window.cancelAnimationFrame(initRafId);
       teardown?.();
     };
-  }, []);
+  }, [variant]);
 
   return (
     <div
       ref={rootRef}
-      className="portal-parallax"
+      className={variant === 'ecosystem' ? 'portal-parallax opacity-65' : 'portal-parallax'}
       aria-hidden="true"
       data-testid="portal-home-parallax"
       data-fluid-paused="false"

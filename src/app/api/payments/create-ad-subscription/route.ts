@@ -9,6 +9,7 @@ import {
   canReserveAdSlots,
   countReservedAdSlots,
   getAdMonthlyPriceCents,
+  normalizeAdUrlInput,
   safeAdDestinationUrl,
 } from '@/lib/ad-inventory';
 import { AD_CONTRACT_VERSION as CONTRACT_VERSION } from '@/lib/ad-contract';
@@ -25,7 +26,7 @@ const requestSchema = z.object({
   targetAudience: z.string().trim().max(300),
   socialUrl: z.string().trim().max(2048),
   destinationUrl: z.string().trim().max(2048),
-  assetAltText: z.string().trim().min(2).max(180),
+  assetAltText: z.string().trim().max(180),
   slotCount: z.coerce.number().int().min(1).max(10),
   contractAccepted: z.literal('true'),
 });
@@ -54,13 +55,22 @@ export async function POST(request: Request): Promise<NextResponse> {
       targetAudience: formData.get('targetAudience') ?? '',
       socialUrl: formData.get('socialUrl') ?? '',
       destinationUrl: formData.get('destinationUrl'),
-      assetAltText: formData.get('assetAltText'),
+      assetAltText: formData.get('assetAltText') ?? '',
       slotCount: formData.get('slotCount'),
       contractAccepted: formData.get('contractAccepted'),
     });
     if (!parsed.success) {
+      const issueField = String(parsed.error.issues[0]?.path[0] ?? '');
+      const message =
+        issueField === 'contractAccepted'
+          ? 'Aceite o Contrato de Publicidade antes de prosseguir ao Stripe.'
+          : issueField === 'offerDescription'
+            ? 'Descreva o que está sendo anunciado com pelo menos 10 caracteres.'
+            : issueField === 'whatsapp'
+              ? 'Informe um WhatsApp comercial válido com DDD.'
+              : 'Confira os dados obrigatórios do anúncio e aceite o contrato.';
       return NextResponse.json(
-        { error: 'invalid_ad_request', message: 'Confira os dados do anúncio e aceite o contrato.' },
+        { error: 'invalid_ad_request', message },
         { status: 400 },
       );
     }
@@ -68,17 +78,23 @@ export async function POST(request: Request): Promise<NextResponse> {
     const destinationUrl = safeAdDestinationUrl(parsed.data.destinationUrl);
     if (!destinationUrl) {
       return NextResponse.json(
-        { error: 'invalid_destination', message: 'Use um link http:// ou https:// válido.' },
+        { error: 'invalid_destination', message: 'Informe o link do anúncio (ex.: https://seunegocio.com.br).' },
         { status: 400 },
       );
     }
 
-    if (parsed.data.socialUrl && !safeAdDestinationUrl(parsed.data.socialUrl)) {
+    const normalizedSocialUrl = parsed.data.socialUrl
+      ? normalizeAdUrlInput(parsed.data.socialUrl, 'social')
+      : '';
+    if (normalizedSocialUrl && !safeAdDestinationUrl(normalizedSocialUrl)) {
       return NextResponse.json(
-        { error: 'invalid_social_url', message: 'Use um perfil institucional com link http:// ou https:// válido.' },
+        { error: 'invalid_social_url', message: 'Use um perfil institucional válido (ex.: https://instagram.com/sua-marca ou @sua-marca).' },
         { status: 400 },
       );
     }
+    const resolvedAltText = parsed.data.assetAltText.length >= 2
+      ? parsed.data.assetAltText
+      : `Anúncio ${parsed.data.businessName}`.slice(0, 180);
 
     const [profile] = await db
       .select({ email: userProfiles.email })
@@ -107,9 +123,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         offerDescription: parsed.data.offerDescription,
         campaignObjective: parsed.data.campaignObjective,
         targetAudience: parsed.data.targetAudience || null,
-        socialUrl: parsed.data.socialUrl || null,
+        socialUrl: normalizedSocialUrl || null,
         destinationUrl,
-        assetAltText: parsed.data.assetAltText,
+        assetAltText: resolvedAltText,
         slotCount: parsed.data.slotCount,
         monthlyAmountCents: monthlyAmountCents * parsed.data.slotCount,
         status: 'pending_payment',

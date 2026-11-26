@@ -73,10 +73,25 @@ export function isAllowedAdAsset(file: File): boolean {
     && file.size <= AD_ASSET_MAX_BYTES;
 }
 
+export function normalizeAdUrlInput(raw: string, kind: 'website' | 'social' = 'website'): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+  if (kind === 'social' && trimmed.startsWith('@') && /^@[a-z0-9._-]+$/iu.test(trimmed)) {
+    return `https://instagram.com/${trimmed.slice(1)}`;
+  }
+  if (/^[a-z][a-z0-9+.-]*:/iu.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed.replace(/^\/+/u, '')}`;
+}
+
 export function safeAdDestinationUrl(value: string): string | null {
   try {
-    const url = new URL(value);
+    const normalized = normalizeAdUrlInput(value, 'website');
+    if (!normalized) return null;
+    const url = new URL(normalized);
     if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+    if (!url.hostname.includes('.')) return null;
     return url.toString();
   } catch {
     return null;

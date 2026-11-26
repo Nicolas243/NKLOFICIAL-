@@ -26,10 +26,10 @@ export default async function BusinessQuizPage() {
           Bússola de Negócios
         </p>
         <h1 className="mt-3 font-playfair text-4xl font-bold leading-tight md:text-6xl">
-          Encontre um caminho compatível com sua realidade.
+          Descubra o negócio dos seus sonhos a partir de quem você realmente é.
         </h1>
         <p className="mt-5 text-base leading-relaxed opacity-75 md:text-lg">
-          Responda 50 perguntas rápidas sobre capital, tempo, tecnologia, risco e interação. Não é promessa de renda: é um ponto de partida mais organizado.
+          Responda 50 perguntas sobre criatividade, autonomia, relacionamento, tecnologia, tempo e investimento. Ao final, você recebe os 3 caminhos com maior aderência ao seu perfil e um roteiro inicial de 7 dias — sem promessas irreais.
         </p>
       </header>
       <BusinessMatchmaker />

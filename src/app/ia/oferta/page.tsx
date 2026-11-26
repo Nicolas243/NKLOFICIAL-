@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AiOfferCheckout } from '@/components/ai/ai-offer-checkout';
+import { AdaptiveCtaLink } from '@/components/sales/adaptive-cta-link';
 import {
   AI_ONE_TIME_PRICE_CENTS,
   AI_SUBSCRIPTION_PRICE_CENTS,
@@ -95,6 +96,16 @@ export default function AiOfferPage() {
               <Link href="/ia" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-neon px-6 py-3 font-bold text-black transition hover:scale-[1.02]">
                 Montar roteiro inicial grátis
               </Link>
+              <AdaptiveCtaLink
+                experiment="ia-offer-cta"
+                href="#planos"
+                variants={[
+                  { id: '0', label: 'Ver os 3 planos do curso' },
+                  { id: '1', label: 'Comparar curso + ferramentas' },
+                  { id: '2', label: 'Escolher meu acesso agora' },
+                ]}
+                className="inline-flex min-h-12 items-center justify-center rounded-lg border border-neon/40 bg-background/60 px-6 py-3 font-bold text-neon transition hover:border-neon"
+              />
               <a href="#perguntas" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-border px-6 py-3 font-bold transition hover:border-neon hover:text-neon">
                 Ver as perguntas do curso
               </a>

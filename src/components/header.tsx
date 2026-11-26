@@ -20,24 +20,32 @@ import { NotificationBell } from '@/components/notification-bell'
 import { buildLoginPath } from '@/lib/auth/return-intent'
 
 const groups = [
-  { label: 'Cordas', items: [
-    { href: '/catalogo', label: 'Catálogo' },
-    { href: '/comparar', label: 'Comparador' },
-    { href: '/guia-de-cordas', label: 'Gráfico' },
-  ]},
-  { label: 'Luteria', items: [
-    { href: '/clinica', label: 'Clínica de Luteria' },
-    { href: '/fisica-do-som', label: 'Física do Som' },
-  ]},
-  { label: 'Notícias', items: [
-    { href: '/noticias', label: 'Notícias' },
-    { href: '/noticias/anunciar', label: 'Anunciar' },
-  ]},
-  { label: 'Encontre um...', items: [
-    { href: '/luthiers', label: 'Luthier' },
-    { href: '/professores', label: 'Professor(a)' },
-    { href: '/recomendados', label: 'Loja' },
-  ]},
+  {
+    label: 'Cordas', items: [
+      { href: '/catalogo', label: 'Catálogo' },
+      { href: '/comparar', label: 'Comparador' },
+      { href: '/guia-de-cordas', label: 'Gráfico' },
+    ]
+  },
+  {
+    label: 'Luteria', items: [
+      { href: '/clinica', label: 'Clínica de Luteria' },
+      { href: '/fisica-do-som', label: 'Física do Som' },
+    ]
+  },
+  {
+    label: 'Notícias', items: [
+      { href: '/noticias', label: 'Notícias' },
+      { href: '/noticias/anunciar', label: 'Anunciar' },
+    ]
+  },
+  {
+    label: 'Encontre um...', items: [
+      { href: '/luthiers', label: 'Luthier' },
+      { href: '/professores', label: 'Professor(a)' },
+      { href: '/recomendados', label: 'Loja' },
+    ]
+  },
 ]
 
 function Dropdown({ label, items }: { label: string; items: { href: string; label: string }[] }) {
@@ -106,7 +114,7 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
 
 export function Header() {
   const { resolvedTheme } = useTheme()
-  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
+  const mounted = useSyncExternalStore(() => () => { }, () => true, () => false)
   const pathname = usePathname()
   const surface = getPortalSurface(pathname)
   const isIncomeRoute = isIncomePortalPath(pathname)
@@ -135,37 +143,37 @@ export function Header() {
 
   if (surface === 'ecosystem') {
     const ecosystemLinkCls =
-      'inline-flex min-h-11 items-center text-xs font-medium uppercase tracking-wider hover:text-neon transition-colors whitespace-nowrap'
+      'inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-wider hover:text-neon transition-colors whitespace-nowrap shrink-0'
     const portalLinks = (
       <>
-        <Link href="/" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Portal NKL</Link>
-        <Link href={INCOME_PORTAL_ROUTES.catalog} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Explorar</Link>
-        <Link href="/ia" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>IA na Prática</Link>
-        <Link href="/blog/aprender/ingles" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Idiomas</Link>
-        <Link href="/ofertas/bussola-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Bússola de Negócios</Link>
-        <Link href={MUSIC_PORTAL_HOME} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>NKL Cordas</Link>
-        <Link href={getSuggestionHref(pathname)} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Sugerir site</Link>
+        <Link href="/" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Início</Link>
+        <Link href={INCOME_PORTAL_ROUTES.catalog} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Renda Extra</Link>
+        <Link href="/ia" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>IA</Link>
+        <Link href="/idiomas" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Idiomas</Link>
+        <Link href="/ofertas/bussola-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Bússola</Link>
+        <Link href={MUSIC_PORTAL_HOME} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Cordas</Link>
+        <Link href={getSuggestionHref(pathname)} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Sugerir</Link>
       </>
     )
 
     const brandHref = isIncomeRoute ? INCOME_PORTAL_ROUTES.catalog : '/'
     const brandTitle = isIncomeRoute ? 'Renda Extra' : 'Portal NKL'
     const brandSubtitle = isIncomeRoute
-      ? 'Guias e caminhos práticos do Portal NKL'
-      : 'Guias e ferramentas práticas do Portal NKL'
+      ? 'Guias e oportunidades'
+      : 'Guias e ferramentas NKL'
 
     return (
       <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
-        <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-3 bg-white px-4 dark:bg-black">
-          <Link href={brandHref} className="group flex min-w-0 items-center gap-3">
-            <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={38} height={38} className="h-9 w-9 shrink-0 rounded-full object-contain dark:invert" />
+        <div className="mx-auto flex min-h-16 max-w-[1280px] items-center justify-between gap-3 bg-white px-4 py-1.5 dark:bg-black">
+          <Link href={brandHref} className="group flex shrink-0 items-center gap-3">
+            <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full object-contain dark:invert" />
             <span className="min-w-0">
-              <span className="block truncate font-playfair text-xl font-bold tracking-tight">{brandTitle}</span>
-              <span className="hidden text-[10px] uppercase tracking-[0.22em] opacity-60 sm:block">{brandSubtitle}</span>
+              <span className="block whitespace-nowrap font-playfair text-lg font-bold tracking-tight sm:text-xl">{brandTitle}</span>
+              <span className="hidden text-[10px] uppercase tracking-[0.2em] opacity-60 xl:block">{brandSubtitle}</span>
             </span>
           </Link>
-          <nav className="hidden items-center gap-4 xl:gap-5 lg:flex" aria-label="Navegação do Portal NKL">{portalLinks}</nav>
-          <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-3">
+          <nav className="hidden items-center gap-3.5 xl:gap-5 lg:flex" aria-label="Navegação do Portal NKL">{portalLinks}</nav>
+          <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-2.5">
             {authBtn}
             {isLoggedIn && <NotificationBell href="/programas/notificacoes" area="income" />}
             <PwaInstallButton kind="income" />

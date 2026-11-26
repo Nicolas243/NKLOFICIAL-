@@ -2,13 +2,18 @@
 id: decisionsLog
 tags: [adr, decisoes, descartes, historico]
 links: [projectBrief, techContext, systemPatterns, activeContext]
-updated: 2026-11-24
+updated: 2026-11-26
 ---
 
 # Decisions Log - ADRs Concisos
 
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
+
+## ADR-021 (2026-11-26) Alinhamento `/programas`, Hub `/idiomas`, Normalização `/anuncie`, Tradução Semântica, CTAs A/B & Atlas `/admin`
+- Decisao: alinhar `PartnerProgramsBrowser` com `PROGRAMS_PER_PAGE = 12` (banner `Anuncie aqui` no índice `6`), padronizar cards de recursos NKL via `PORTAL_AREA_CARDS`, mover `<SaveProgramButton />` para baixo da nota, criar `/idiomas` como vitrine dos 6 idiomas e normalizar URLs/reconciliar Checkout no `/anuncie`; adaptar `PortalHomeParallax` para `variant="ecosystem"`, reescrever a Bússola para `negócio dos sonhos`, alinhar tradução cor-a-cor por conceito (`tokenizeBilingualExample`), adicionar `<AdaptiveCtaLink />` A/B (`bussola-cta`, `languages-hub-cta`, `ia-offer-cta`) e centralizar o Atlas Visual + Diretório de Entregáveis em `/admin` + `docs/CHECKLIST-MESTRE-NKL.md`.
+- Motivo: eliminar card órfão e cortes no botão `"Acessar plataforma"`, destravar anunciantes antes do Stripe, unificar a identidade fluida sem invadir a área musical, corrigir contraste e sentido das cores no estudo de idiomas e dar visibilidade operacional completa a NKL_OFICIAL.
+- Descartado: manter `/programas` com páginas ímpares e botões apertados, bloquear submit de anúncio por ausência de `https://`, colorir palavras por índice numérico isolado ou duplicar guias manuais espalhados em múltiplos arquivos.
 
 ## ADR-020 (2026-11-26) /sugerir Contextual, Proteção Stripe NKL, Funis 3 Opções e Telemetria Unificada
 - Decisao: substituir o link fixo externo de "Sugerir site" por `/sugerir?area=...&origem=...` conectado a `submitPartnerSuggestion` e incluir o conversor do *Chinês Já* em `/blog/aprender/chines`; criar `scripts/migrate-stripe-account.mjs` com trava `assertLiveProductionSafety` antes de sincronizar produção; implantar 3 faixas de preço com entregáveis reais em Renda Extra, 6 Idiomas e IA na Prática (validados no servidor e webhook) e unificar GA4, PostHog, Clarity (tags/eventos + UTM), Vercel e KPIs digitais em `/admin`.

@@ -10,6 +10,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { OfferCheckoutCta } from '@/components/funnel/offer-checkout-cta';
+import { AdaptiveCtaLink } from '@/components/sales/adaptive-cta-link';
 import {
   PAID_PRODUCT_SLUGS,
   getProductBySlug,
@@ -108,7 +109,7 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
   const editorial = PRODUCT_EDITORIAL_CONTEXT[product.slug];
 
   return (
-    <div className="bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
@@ -120,13 +121,13 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
           </Link>
           <Link
             href="/minha-conta"
-            className="inline-flex min-h-[44px] items-center rounded-xl border border-border px-3.5 py-2 text-xs font-semibold text-foreground/80 transition-colors hover:border-[#c2410c] hover:text-[#c2410c] dark:hover:border-[#f97316] dark:hover:text-[#fb923c]"
+            className="inline-flex min-h-[44px] items-center rounded-xl border border-border bg-surface/85 px-3.5 py-2 text-xs font-semibold text-foreground/80 backdrop-blur-sm transition-colors hover:border-[#c2410c] hover:text-[#c2410c] dark:hover:border-[#f97316] dark:hover:text-[#fb923c]"
           >
             Acessar minha conta
           </Link>
         </div>
 
-        <header className="rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-10">
+        <header className="rounded-3xl border border-border bg-surface/90 p-6 shadow-sm backdrop-blur-md sm:p-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center rounded-full border border-[#c2410c]/30 bg-[#c2410c]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#9a3412] dark:border-[#f97316]/35 dark:bg-[#f97316]/15 dark:text-[#fdba74]">
               {product.badgeLabel}
@@ -158,21 +159,35 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
               </p>
             </div>
 
-            <OfferCheckoutCta
-              href={product.checkoutRoute}
-              label={product.ctaLabel}
-              productSlug={product.slug}
-              trackId={product.trackId}
-              placement="hero"
-              testId="offer-checkout-cta"
-              className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-[#c2410c] px-6 py-3 text-center text-sm font-bold text-white no-underline shadow-sm transition-colors hover:bg-[#9a3412] dark:bg-[#f97316] dark:text-[#090b10] dark:hover:bg-[#fb923c]"
-            />
+            <div className="flex flex-wrap items-center gap-3">
+              {product.slug === 'bussola-negocios' && (
+                <AdaptiveCtaLink
+                  experiment="bussola-cta"
+                  href="/quiz-negocios"
+                  variants={[
+                    { id: '0', label: 'Descobrir meu negócio dos sonhos' },
+                    { id: '1', label: 'Mapear minhas 3 melhores ideias' },
+                    { id: '2', label: 'Começar pela bússola interativa' },
+                  ]}
+                  className="inline-flex min-h-[52px] items-center justify-center rounded-xl border border-[#c2410c]/40 bg-background/80 px-5 py-3 text-center text-sm font-bold text-[#9a3412] no-underline transition-colors hover:border-[#c2410c] dark:border-[#f97316]/45 dark:text-[#fdba74] dark:hover:border-[#fb923c]"
+                />
+              )}
+              <OfferCheckoutCta
+                href={product.checkoutRoute}
+                label={product.ctaLabel}
+                productSlug={product.slug}
+                trackId={product.trackId}
+                placement="hero"
+                testId="offer-checkout-cta"
+                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-[#c2410c] px-6 py-3 text-center text-sm font-bold text-white no-underline shadow-sm transition-colors hover:bg-[#9a3412] dark:bg-[#f97316] dark:text-[#090b10] dark:hover:bg-[#fb923c]"
+              />
+            </div>
           </div>
         </header>
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
           <section
-            className="rounded-3xl border border-border bg-surface p-6 shadow-sm"
+            className="rounded-3xl border border-border bg-surface/90 p-6 shadow-sm backdrop-blur-md"
             aria-labelledby="offer-deliverables-heading"
           >
             <h2
@@ -202,7 +217,7 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
           </section>
 
           <section
-            className="rounded-3xl border border-border bg-surface p-6 shadow-sm"
+            className="rounded-3xl border border-border bg-surface/90 p-6 shadow-sm backdrop-blur-md"
             aria-labelledby="offer-bonuses-heading"
           >
             <div className="flex items-center gap-2">
@@ -241,7 +256,7 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
 
         {product.hasStandalonePwa && product.pwaIcon192 && (
           <section
-            className="mt-8 rounded-3xl border border-[#c2410c]/35 bg-surface p-6 shadow-sm dark:border-[#f97316]/35 sm:p-8"
+            className="mt-8 rounded-3xl border border-[#c2410c]/35 bg-surface/90 p-6 shadow-sm backdrop-blur-md dark:border-[#f97316]/35 sm:p-8"
             aria-labelledby="offer-standalone-pwa-heading"
           >
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -276,7 +291,7 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
         )}
 
         <section
-          className="mt-8 rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8"
+          className="mt-8 rounded-3xl border border-border bg-surface/90 p-6 shadow-sm backdrop-blur-md sm:p-8"
           aria-labelledby="offer-transparency-heading"
         >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">

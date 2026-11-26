@@ -4,7 +4,7 @@ import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { EnglishLearningPractice } from '@/components/english-learning-practice';
 import { AuthorBio } from '@/components/seo/author-bio';
 import { JsonLd } from '@/components/seo/json-ld';
-import { tokenizeExample } from '@/lib/english-ebook';
+import { BILINGUAL_COLOR_CLASSES, tokenizeBilingualExample, type ExampleToken } from '@/lib/english-ebook';
 import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -26,14 +26,12 @@ const foundations = [
   ['Erro é dado, não sentença', 'Anote o erro que mais se repete, corrija uma versão e use a frase novamente. É assim que o cérebro transforma informação em habilidade.'],
 ];
 
-const exampleColors = ['#172235', '#2563a8', '#c76538', '#16805b', '#7b4bb7', '#9a5c14'];
-
-function ColoredPhrase({ text }: { text: string }) {
+function ColoredTokens({ tokens }: { tokens: ExampleToken[] }) {
   return (
     <>
-      {tokenizeExample(text).map((token, index) => (
+      {tokens.map((token, index) => (
         token.isWord
-          ? <span key={`${token.text}-${index}`} style={{ color: exampleColors[token.colorIndex] }}>{token.text}</span>
+          ? <span key={`${token.text}-${index}`} className={BILINGUAL_COLOR_CLASSES[token.colorIndex % BILINGUAL_COLOR_CLASSES.length]}>{token.text}</span>
           : <span key={`${token.text}-${index}`}>{token.text}</span>
       ))}
     </>
@@ -41,10 +39,11 @@ function ColoredPhrase({ text }: { text: string }) {
 }
 
 function BilingualPhrase({ english, portuguese }: { english: string; portuguese: string }) {
+  const colored = tokenizeBilingualExample(english, portuguese);
   return (
     <span className="block">
-      <strong><ColoredPhrase text={english} /></strong>
-      <span className="block text-xs text-foreground/65"><ColoredPhrase text={portuguese} /></span>
+      <strong><ColoredTokens tokens={colored.english} /></strong>
+      <span className="block text-xs"><ColoredTokens tokens={colored.portuguese} /></span>
     </span>
   );
 }

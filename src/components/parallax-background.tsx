@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { PortalHomeParallax } from '@/components/portal-home-parallax';
 import { getPortalSurface } from '@/lib/income-portal';
 
 const PARALLAX_SPEEDS = [-0.08, -0.18, -0.28] as const;
@@ -51,27 +52,7 @@ export function ParallaxBackground() {
   if (surface === 'ecosystem') {
     return (
       <div className="income-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div
-          ref={(layer) => {
-            layers.current[0] = layer;
-          }}
-          className="income-parallax-layer income-parallax-dots"
-        />
-        <div
-          ref={(layer) => {
-            layers.current[1] = layer;
-          }}
-          className="income-parallax-layer income-parallax-glow"
-        >
-          <span className="income-parallax-glow-orange" />
-          <span className="income-parallax-glow-cool" />
-        </div>
-        <div
-          ref={(layer) => {
-            layers.current[2] = layer;
-          }}
-          className="income-parallax-layer income-parallax-particles"
-        />
+        <PortalHomeParallax variant="ecosystem" />
       </div>
     );
   }
