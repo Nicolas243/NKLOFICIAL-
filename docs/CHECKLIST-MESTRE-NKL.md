@@ -13,12 +13,15 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 ## Prioridade 2 — Domínio, E-mail Próprio e Infraestrutura
 
-3. **Cloudflare Email Routing (`@nkloficial.com.br`):**
-   - No Registro.br, aponte os Nameservers de `nkloficial.com.br` para os da sua conta Cloudflare preservando os registros DNS já existentes da Vercel (`A` / `CNAME`) e Resend (`DKIM`/`SPF`).
-   - Ative o *Email Routing* na Cloudflare e direcione o endereço principal `@nkloficial.com.br` para sua caixa pessoal (passo a passo em [GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md](./GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md)).
-4. **Conectar Plugins no Antigravity:**
-   - Adicionar os cartões de plugin do **Stripe** e da **Cloudflare** no chat e concluir o login no `vercel-plugin` já instalado.
-   - Opcional no terminal local: rodar `vercel env pull .env.local` caso queira testar checkouts de IA e convidados localmente.
+3. **Cloudflare Email Routing (`@nkloficial.com.br`) — Quase 100% pronto (aguardando propagação do Registro.br):**
+   - Nameservers já trocados no Registro.br (`cloe.ns.cloudflare.com` e `doug.ns.cloudflare.com`) — em transição (~2h).
+   - Registros DNS já corrigidos automaticamente via API para `DNS only` (`proxied: false`): `A @` (`64.29.17.1`, `216.198.79.1`), `CNAME www` e `CNAME track` (e registros `send`/`resend._domainkey`/`_dmarc` preservados).
+   - Endereço de destino `ni2co3san9@gmail.com` já verificado na Cloudflare (`verified`), e regras ativas já criadas para `contato@nkloficial.com.br` e `suporte@nkloficial.com.br`.
+   - **Falta apenas 1 clique quando a zona virar `Active` na Cloudflare:** abrir **Email > Email Routing** e clicar em **Add records and enable** (ou enviar `"cloudflare ativa"` no chat para o Hermes ativar via API).
+4. **Conectar Plugins no Antigravity (Opcional):**
+   - **Cloudflare MCP:** já autenticado e operacional.
+   - **Stripe MCP:** atualmente conectado na conta Sandbox (`acct_1UbswFItNBn1daZu`); reconexão à conta Live `acct_1UcBBKI4kUNNokuF` no MCP é opcional porque a Vercel e o provisionamento usam `sk_live_...` diretamente.
+   - **Vercel:** CLI autenticado e operando normalmente no deploy de produção.
 
 ---
 
