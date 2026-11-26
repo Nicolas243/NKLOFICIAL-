@@ -27,8 +27,9 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 ## Prioridade 3 — Google Search Console, Analytics e Segurança
 
-5. **Inspeção de URL no Google Search Console (`https://nkloficial.com.br/`):**
-   - Reenviar `https://nkloficial.com.br/sitemap.xml` e usar *Inspeção de URL -> Solicitar indexação* para:
+5. **Inspeção de URL e "Página com redirecionamento" no Google Search Console (`https://nkloficial.com.br/`):**
+   - Auditoria técnica local/ao vivo concluída em 2026-11-26: **115/115 URLs de `sitemap.xml` retornam HTTP 200 com 0 redirecionamentos e 0 erros**, e há **0 links internos em `src/` apontando para rotas com redirect** (os únicos redirecionamentos ativos são os `301` intencionais de legado em `next.config.ts`/`src/proxy.ts` + HTTP->HTTPS `308`).
+   - Falta apenas conectar o Chrome com depuração remota (`chrome://inspect/#remote-debugging`) para o Hermes abrir o Search Console e inspecionar os exemplos exatos de "Página com redirecionamento", conferir `sitemap.xml` e solicitar indexação para:
      - `/`
      - `/programas`
      - `/idiomas`
@@ -50,5 +51,4 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
    - Subir os arquivos gerados em `private-assets/amazon-book/` para **Kindle eBook** e **Paperback 6x9"** conforme [EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md](./EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md).
 9. **Áudios Progressivos no NotebookLM:**
    - Gerar os resumos em áudio das aulas semanais do curso *IA na Prática* e de idiomas usando o NotebookLM conforme [GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md](./GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md).
-10. **Push Nativo de Sistema Operacional (Opcional):**
-    - Cadastrar `NEXT_PUBLIC_VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` na Vercel se desejar Web Push no SO além da central in-app de notificações em `/admin`.
+10. ~~**Push Nativo de Sistema Operacional (VAPID Web Push):**~~ CONCLUÍDO em 2026-11-26 (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT=mailto:contato@nkloficial.com.br` gravadas no `.env.local` e sincronizadas na Vercel Production; `/api/notifications/push/config` verificado ao vivo com `enabled: true` no deploy `dpl_HzGuUdSDG79hCekYdj2eRjFJq81x`).
