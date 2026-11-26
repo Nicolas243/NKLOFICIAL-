@@ -95,6 +95,10 @@ test('resolveGuideProductSlug prioritizes valid metadata.productSlug across all 
   assert.equal(resolveGuideProductSlug('english-ebook-sales-page', 'pacote-idiomas-ia'), 'pacote-idiomas-ia');
   assert.equal(resolveGuideProductSlug('sales-page', 'pacote-renda-extra'), 'pacote-renda-extra');
   assert.equal(resolveGuideProductSlug('english-ebook-sales-page', 'ebook-ingles'), 'ebook-ingles');
+  assert.equal(resolveGuideProductSlug('english-ebook-sales-page:essential'), 'ebook-ingles');
+  assert.equal(resolveGuideProductSlug('english-ebook-sales-page:vip'), 'ebook-ingles');
+  assert.equal(resolveGuideProductSlug('mandarin-ebook-sales-page'), 'pacote-idiomas-ia');
+  assert.equal(resolveGuideProductSlug('spanish-ebook-sales-page:essential'), 'pacote-idiomas-ia');
   assert.equal(resolveGuideProductSlug('sales-page', 'slug-desconhecido'), 'pacote-renda-extra');
 });
 

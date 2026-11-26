@@ -15,6 +15,9 @@ export function PremiumCheckoutButton() {
         const result: CheckoutResult = await startPremiumCheckout();
         setFeedback(result.message);
         setCheckoutUrl(result.checkoutUrl);
+        if (result.checkoutUrl) {
+          window.location.assign(result.checkoutUrl);
+        }
       } catch (error) {
         setFeedback(
           error instanceof Error ? error.message : 'Não foi possível iniciar o checkout.'

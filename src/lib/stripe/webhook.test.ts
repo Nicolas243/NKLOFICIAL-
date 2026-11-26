@@ -30,6 +30,10 @@ test('accepts only known domain references from Stripe metadata and client_refer
     getStripeReference({ product: 'ia-na-pratica', plan: 'subscription', userId: 'user-2' }),
     { type: 'ai_subscription', id: 'user-2' },
   );
+  assert.deepEqual(
+    getStripeReference({ product: 'ia-na-pratica', plan: 'vip', userId: 'user-3' }),
+    { type: 'ai_one_time', id: 'user-3' },
+  );
   assert.equal(getStripeReference({ reference: 'forged:record-id' }), null);
   assert.equal(getStripeReference({}), null);
 });

@@ -443,64 +443,64 @@ export function PartnerProgramsBrowser({
           <p className="max-w-xs text-right text-xs leading-relaxed opacity-55">Pesquise por uma ideia como “gravar vídeos em casa” ou “ganhar indicando”.</p>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr_0.8fr]">
-        <label className="text-sm">
-          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
-          <input
-            id="search-input"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSelectedDiscoveryTag(null);
+          <label className="text-sm">
+            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
+            <input
+              id="search-input"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setSelectedDiscoveryTag(null);
+                setCurrentPage(1);
+              }}
+              placeholder="Nome, categoria ou tag"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:border-neon"
+            />
+          </label>
+          <label className="text-sm">
+            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
+            <select id="category-filters" value={category} onChange={(event) => {
+              setCategory(event.target.value);
               setCurrentPage(1);
-            }}
-            placeholder="Nome, categoria ou tag"
-            className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:border-neon"
-          />
-        </label>
-        <label className="text-sm">
-          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
-          <select id="category-filters" value={category} onChange={(event) => {
-            setCategory(event.target.value);
-            setCurrentPage(1);
-          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-            <option value="todas">Todas</option>
-            {categories.map((item) => <option key={item} value={item}>{item}</option>)}
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Dificuldade</span>
-          <select value={difficulty} onChange={(event) => {
-            setDifficulty(event.target.value);
-            setCurrentPage(1);
-          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-            <option value="todas">Todas</option>
-            <option value="fácil">Fácil</option>
-            <option value="médio">Médio</option>
-            <option value="difícil">Difícil</option>
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Ordenar</span>
-          <select value={sort} onChange={(event) => {
-            setSort(event.target.value);
-            setCurrentPage(1);
-          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-            <option value="relevancia">Relevância</option>
-            <option value="nota">Nota</option>
-            <option value="ganhos">Ganhos</option>
-            <option value="nome">Nome</option>
-          </select>
-        </label>
-        <label className="text-sm">
-          <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Direção</span>
-          <select value={sortDirection} onChange={(event) => {
-            setSortDirection(event.target.value as 'asc' | 'desc');
-            setCurrentPage(1);
-          }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-            <option value="desc">Decrescente</option>
-            <option value="asc">Crescente</option>
-          </select>
-        </label>
+            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
+              <option value="todas">Todas</option>
+              {categories.map((item) => <option key={item} value={item}>{item}</option>)}
+            </select>
+          </label>
+          <label className="text-sm">
+            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Dificuldade</span>
+            <select value={difficulty} onChange={(event) => {
+              setDifficulty(event.target.value);
+              setCurrentPage(1);
+            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
+              <option value="todas">Todas</option>
+              <option value="fácil">Fácil</option>
+              <option value="médio">Médio</option>
+              <option value="difícil">Difícil</option>
+            </select>
+          </label>
+          <label className="text-sm">
+            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Ordenar</span>
+            <select value={sort} onChange={(event) => {
+              setSort(event.target.value);
+              setCurrentPage(1);
+            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
+              <option value="relevancia">Relevância</option>
+              <option value="nota">Nota</option>
+              <option value="ganhos">Ganhos</option>
+              <option value="nome">Nome</option>
+            </select>
+          </label>
+          <label className="text-sm">
+            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Direção</span>
+            <select value={sortDirection} onChange={(event) => {
+              setSortDirection(event.target.value as 'asc' | 'desc');
+              setCurrentPage(1);
+            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
+              <option value="desc">Decrescente</option>
+              <option value="asc">Crescente</option>
+            </select>
+          </label>
         </div>
       </section>
 
@@ -517,11 +517,10 @@ export function PartnerProgramsBrowser({
                 setQuery('');
                 setCurrentPage(1);
               }}
-              className={`inline-flex min-h-9 items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${
-                selectedDiscoveryTag === tag.label
-                  ? 'border-neon bg-neon text-black'
-                  : 'border-border opacity-75 hover:border-neon hover:opacity-100'
-              }`}
+              className={`inline-flex min-h-9 items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
+                ? 'border-neon bg-neon text-black'
+                : 'border-border opacity-75 hover:border-neon hover:opacity-100'
+                }`}
             >
               {tag.label}
             </button>
@@ -643,131 +642,131 @@ export function PartnerProgramsBrowser({
 
           return (
             <Fragment key={entry.key}>
-            {adBannerAfterSix}
-            <article
-              onClick={() => openProgram(program)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  openProgram(program);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              data-tutorial={index === 0 ? 'program-card-0' : undefined}
-              className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
-            >
-              <div className="flex min-w-0 items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wide text-neon font-bold">{program.category}</p>
-                  <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-1.5">
-                  <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-                    {program.averageEarning}
-                  </span>
-                  <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-9 shrink-0 rounded-full border border-neon px-3 py-1.5 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
-                    {rating.toFixed(1)}/10
-                  </button>
-                  <div onClick={(event) => event.stopPropagation()}>
-                    <SaveProgramButton
-                      slug={program.slug}
-                      name={program.name}
-                      compact
-                      nextPath={`/programas/${program.slug}`}
-                      isSaved={savedSlugSet.has(program.slug)}
-                    />
+              {adBannerAfterSix}
+              <article
+                onClick={() => openProgram(program)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openProgram(program);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                data-tutorial={index === 0 ? 'program-card-0' : undefined}
+                className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+              >
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-wide text-neon font-bold">{program.category}</p>
+                    <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
                   </div>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {program.languages.map((language) => (
-                  <span key={language} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
-                    {language}
-                  </span>
-                ))}
-              </div>
-              <p className={`text-sm leading-relaxed opacity-75 ${isDescriptionExpanded ? '' : 'line-clamp-2'}`}>{program.shortDescription}</p>
-              {program.shortDescription.length > 150 && (
-                <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-neon underline decoration-neon/40 underline-offset-2 hover:text-neon-dark">
-                  {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
-                </button>
-              )}
-              {program.slug === 'micro1' && (
-                <Micro1OpportunitiesSection
-                  opportunities={micro1Opportunities}
-                  error={micro1Error}
-                  variant="card"
-                />
-              )}
-              <div className="mt-auto flex min-w-0 flex-col gap-2">
-                <div className="flex min-h-16 items-center justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap content-start items-start gap-1.5">
-                      <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">{program.difficulty}</span>
-                      {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
-                      <SmartTagList tags={visibleTags} />
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
+                      {program.averageEarning}
+                    </span>
+                    <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-9 shrink-0 rounded-full border border-neon px-3 py-1.5 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                      {rating.toFixed(1)}/10
+                    </button>
+                    <div onClick={(event) => event.stopPropagation()}>
+                      <SaveProgramButton
+                        slug={program.slug}
+                        name={program.name}
+                        compact
+                        nextPath={`/programas/${program.slug}`}
+                        isSaved={savedSlugSet.has(program.slug)}
+                      />
                     </div>
-                    <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {program.languages.map((language) => (
+                    <span key={language} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
+                      {language}
+                    </span>
+                  ))}
+                </div>
+                <p className={`text-sm leading-relaxed opacity-75 ${isDescriptionExpanded ? '' : 'line-clamp-2'}`}>{program.shortDescription}</p>
+                {program.shortDescription.length > 150 && (
+                  <button type="button" onClick={(event) => { event.stopPropagation(); toggleDescription(program.slug); }} className="self-start text-xs font-bold text-neon underline decoration-neon/40 underline-offset-2 hover:text-neon-dark">
+                    {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
+                  </button>
+                )}
+                {program.slug === 'micro1' && (
+                  <Micro1OpportunitiesSection
+                    opportunities={micro1Opportunities}
+                    error={micro1Error}
+                    variant="card"
+                  />
+                )}
+                <div className="mt-auto flex min-w-0 flex-col gap-2">
+                  <div className="flex min-h-16 items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap content-start items-start gap-1.5">
+                        <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">{program.difficulty}</span>
+                        {visibleTags.includes('dólar') && <span className="whitespace-nowrap rounded-full border border-neon/60 px-2.5 py-1 text-xs font-bold text-neon">Pode pagar em dólar</span>}
+                        <SmartTagList tags={visibleTags} />
+                      </div>
+                      <p className="mt-1 text-xs opacity-50">{ratingLabel} · Clique na nota para avaliar</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {program.slug === 'quintoandar-indica-ai' ? (
+                        <button
+                          type="button"
+                          onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }}
+                          className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border bg-background p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon"
+                          aria-label={`Indicar imóveis pelo ${program.name}`}
+                          title={`Indicar imóveis pelo ${program.name}`}
+                        >
+                          <ProgramLogo program={program} />
+                        </button>
+                      ) : (
+                        <OutboundLink
+                          href={program.affiliateUrl ?? program.websiteUrl}
+                          trackingId={program.slug}
+                          sponsored={Boolean(program.affiliateUrl)}
+                          onClick={(event) => event.stopPropagation()}
+                          className={`inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon ${['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug) ? 'bg-white' : 'bg-background'}`}
+                          aria-label={`Acessar plataforma ${program.name}`}
+                          title={`Acessar plataforma ${program.name}`}
+                        >
+                          <ProgramLogo program={program} />
+                        </OutboundLink>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex min-w-0 w-full items-center gap-1.5">
+                    <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-xs font-bold leading-none hover:border-neon sm:text-sm">Ler mais</button>
                     {program.slug === 'quintoandar-indica-ai' ? (
+                      <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
+                        Quero começar
+                      </button>
+                    ) : (
+                      <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
+                        Acessar plataforma
+                      </OutboundLink>
+                    )}
                     <button
                       type="button"
-                      onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }}
-                      className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border bg-background p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon"
-                      aria-label={`Indicar imóveis pelo ${program.name}`}
-                      title={`Indicar imóveis pelo ${program.name}`}
+                      onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                      aria-label={`Compartilhar ${program.name}`}
+                      title="Compartilhar oportunidade"
                     >
-                      <ProgramLogo program={program} />
+                      <Share2 size={16} aria-hidden="true" />
                     </button>
-                  ) : (
-                    <OutboundLink
-                      href={program.affiliateUrl ?? program.websiteUrl}
-                      trackingId={program.slug}
-                      sponsored={Boolean(program.affiliateUrl)}
-                      onClick={(event) => event.stopPropagation()}
-                      className={`inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border border-border p-1.5 shadow-sm transition-transform hover:scale-105 hover:border-neon ${['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug) ? 'bg-white' : 'bg-background'}`}
-                      aria-label={`Acessar plataforma ${program.name}`}
-                      title={`Acessar plataforma ${program.name}`}
+                    <button
+                      type="button"
+                      onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                      aria-label={`Criar lembrete para ${program.name}`}
+                      title="Criar lembrete"
                     >
-                      <ProgramLogo program={program} />
-                    </OutboundLink>
-                  )}
+                      <BellPlus size={16} aria-hidden="true" />
+                    </button>
                   </div>
                 </div>
-                <div className="flex min-w-0 w-full items-center gap-1.5">
-                  <button type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-xs font-bold leading-none hover:border-neon sm:text-sm">Ler mais</button>
-                  {program.slug === 'quintoandar-indica-ai' ? (
-                    <button type="button" onClick={(event) => { event.stopPropagation(); setSelectedProgram(program); setShowReferralModal(true); }} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
-                      Quero começar
-                    </button>
-                  ) : (
-                    <OutboundLink href={program.affiliateUrl ?? program.websiteUrl} trackingId={program.slug} sponsored={Boolean(program.affiliateUrl)} onClick={(event) => event.stopPropagation()} className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm">
-                      Acessar plataforma
-                    </OutboundLink>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(event) => { event.stopPropagation(); void shareProgram(program); }}
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
-                    aria-label={`Compartilhar ${program.name}`}
-                    title="Compartilhar oportunidade"
-                  >
-                    <Share2 size={16} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => { event.stopPropagation(); setReminderProgram(program); }}
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
-                    aria-label={`Criar lembrete para ${program.name}`}
-                    title="Criar lembrete"
-                  >
-                    <BellPlus size={16} aria-hidden="true" />
-                  </button>
-                </div>
-              </div>
-            </article>
+              </article>
             </Fragment>
           );
         })}

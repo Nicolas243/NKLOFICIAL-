@@ -1,5 +1,6 @@
 import type Stripe from 'stripe';
 import { isValidProductSlug, type ProductSlug } from '@/config/products';
+import { isLanguageEbookOffer, stripOfferTier } from '@/lib/guide-offer';
 
 export type StripeReference =
   | {
@@ -74,7 +75,7 @@ export function getStripeReference(
   const product = metadata?.product?.trim();
   const plan = metadata?.plan?.trim();
   if ((product === 'ia-na-pratica' || product === 'ai-na-pratica') && userId && !userId.includes(':')) {
-    if (plan === 'one_time') return { type: 'ai_one_time', id: userId };
+    if (plan === 'one_time' || plan === 'vip') return { type: 'ai_one_time', id: userId };
     if (plan === 'subscription') return { type: 'ai_subscription', id: userId };
   }
 
@@ -89,12 +90,15 @@ export function resolveGuideProductSlug(
   if (normalizedMetadataSlug && isValidProductSlug(normalizedMetadataSlug)) {
     return normalizedMetadataSlug;
   }
-  const normalizedVariant = offerVariant?.trim();
-  if (normalizedVariant === 'english-ebook-sales-page') {
+  const baseVariant = stripOfferTier(offerVariant?.trim());
+  if (baseVariant === 'english-ebook-sales-page') {
     return 'ebook-ingles';
   }
-  if (normalizedVariant && isValidProductSlug(normalizedVariant)) {
-    return normalizedVariant;
+  if (isLanguageEbookOffer(baseVariant)) {
+    return 'pacote-idiomas-ia';
+  }
+  if (baseVariant && isValidProductSlug(baseVariant)) {
+    return baseVariant;
   }
   return 'pacote-renda-extra';
 }

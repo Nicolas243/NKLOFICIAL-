@@ -2,11 +2,10 @@
 
 ## Foco Atual
 
-- **Polimento `/programas`, Hub `/idiomas`, Stripe `/anuncie`, Fluido/Bússola, CTAs Adaptativos & Atlas Admin (2026-11-26):**
-  - **Cabeçalho & `/programas`:** logo `44x44` visível (`shrink-0`), links sem aperto (`Início`, `Renda Extra`, `IA`, `Idiomas` -> `/idiomas`, `Bússola`, `Cordas`, `Sugerir`); grade de `/programas` com `PROGRAMS_PER_PAGE = 12` e banner `Anuncie aqui` no índice `6` (múltiplo de 2 e 3, zero linha órfã), cards NKL padronizados ao esqueleto da plataforma, `<SaveProgramButton />` abaixo da nota e `"Acessar plataforma"` completo.
-  - **`/programas/anuncie` & Testes Stripe:** URLs sem esquema e `@arroba` normalizados, `assetAltText` opcional, termos aceitos no submit com erro visível e reconciliação imediata em `/anuncie/sucesso`; suíte `scripts/test-all-payments-stripe.mjs` validou `pm_card_visa` (`pi_3UfvmZItNBn1daZu1MTHxZaL` `succeeded`) + 13 fluxos/entregáveis na conta NKL Sandbox (`acct_1UbswFItNBn1daZu`).
-  - **Fluido no ecossistema, Bússola dos Sonhos, `/idiomas` & Tradução Semântica:** `PortalHomeParallax variant="ecosystem"` no `ParallaxBackground` (música preserva parallax musical), cópia e cards translúcidos na Bússola (`negócio dos sonhos`), página `/idiomas` com os 6 idiomas e cores cor-a-cor alinhadas semanticamente em `/blog/aprender/ingles` + `language-ebook-preview.tsx`.
-  - **CTAs Adaptativos A/B, Atlas Admin & Checklist Mestre:** `AdaptiveCtaLink` (`bussola-cta`, `languages-hub-cta`, `ia-offer-cta`) medido em `/admin`, onde também estão o **Atlas Visual das Áreas**, **Diretório Completo de Entregáveis** e a referência a `docs/CHECKLIST-MESTRE-NKL.md`.
+- **Auditoria Completa de Todos os Gateways Stripe + Paridade DB `0051` (2026-11-26):**
+  - **Descoberta e correção crítica no banco remoto:** aplicada migração aditiva `drizzle/0051_missing_webhook_and_booking_tables.sql` restaurando `stripe_webhook_events` (`0035`), `teacher_availability`, `student_plan_enrollments`, `class_bookings`, `teacher_reviews`, `entity_reports` (`0011`–`0016`) e colunas de moderação de `business_directory` + índices/RLS `(SELECT auth.uid())` + política `deny_direct_client_access`.
+  - **Correções em helpers e checkout:** `resolveGuideProductSlug` agora normaliza sufixos `:essential`/`:vip` e mapeia os 5 idiomas adicionais para `'pacote-idiomas-ia'`; `getStripeReference` aceita `plan === 'vip'` no fallback de IA; `PremiumCheckoutButton` redireciona via `window.location.assign`.
+  - **Bateria E2E real (`scripts/test-all-payments-stripe.mjs`):** validou cartões oficiais Stripe (`pm_card_visa`, `pm_card_mastercard` + 4 códigos de recusa) e todos os 7 gateways (webhooks HMAC/Stripe, guias + downloads PDF/XLSX com marca d'água + 30%/50% idiomas, assinatura de guias, IA 3 planos, anúncios 2 cotas, luthier premium e aulas + Daily.co) em Sandbox `acct_1UbswFItNBn1daZu`.
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 
