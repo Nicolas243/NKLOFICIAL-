@@ -14,6 +14,29 @@ export const INCOME_PORTAL_ROUTES = {
 
 export const INCOME_SUGGESTION_FORM_URL = 'https://forms.gle/2nREXEVdB6JyjtbC8';
 
+export type PortalSuggestionArea = 'idiomas' | 'ia' | 'renda-extra' | 'musica' | 'geral';
+
+export function getSuggestionAreaFromPath(pathname: string): PortalSuggestionArea {
+  if (
+    isRouteOrChild(pathname, '/blog/aprender')
+    || ['/guias/ingles', '/guias/italiano', '/guias/frances', '/guias/alemao', '/guias/espanhol', '/guias/chines']
+      .some((route) => isRouteOrChild(pathname, route))
+  ) {
+    return 'idiomas';
+  }
+  if (isRouteOrChild(pathname, '/ia')) return 'ia';
+  if (isIncomePortalPath(pathname)) return 'renda-extra';
+  if (isMusicPortalPath(pathname)) return 'musica';
+  return 'geral';
+}
+
+export function getSuggestionHref(pathname: string): string {
+  const area = getSuggestionAreaFromPath(pathname);
+  const safeOrigin = pathname.startsWith('/') ? pathname : '/';
+  const params = new URLSearchParams({ area, origem: safeOrigin });
+  return `/sugerir?${params.toString()}`;
+}
+
 function isRouteOrChild(pathname: string, route: string): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
 }

@@ -10,6 +10,11 @@ updated: 2026-11-24
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-020 (2026-11-26) /sugerir Contextual, Proteção Stripe NKL, Funis 3 Opções e Telemetria Unificada
+- Decisao: substituir o link fixo externo de "Sugerir site" por `/sugerir?area=...&origem=...` conectado a `submitPartnerSuggestion` e incluir o conversor do *Chinês Já* em `/blog/aprender/chines`; criar `scripts/migrate-stripe-account.mjs` com trava `assertLiveProductionSafety` antes de sincronizar produção; implantar 3 faixas de preço com entregáveis reais em Renda Extra, 6 Idiomas e IA na Prática (validados no servidor e webhook) e unificar GA4, PostHog, Clarity (tags/eventos + UTM), Vercel e KPIs digitais em `/admin`.
+- Motivo: evitar mistura entre sugestões de idiomas e renda extra, impedir queda acidental do checkout live ao existir chave `sk_test_` (`acct_1UbswFItNBn1daZu`) em `.env.local`, ancorar percepção de valor sem entregas fictícias e medir todo o funil de ponta a ponta incluindo compras de convidados.
+- Descartado: manter Google Form único de renda extra no header, subir chaves sandbox para Vercel Produção, criar bônus falsos no plano âncora ou manter tracking de `purchase` restrito a usuários logados e valores fixos.
+
 ## ADR-019 (2026-11-26) Webhook Stripe `2026-10-28.endive`, Checkout Email & Manifesto Stripe MCP
 - Decisao: adicionar `extractStripeInvoiceSubscriptionId` em `webhook-helpers.ts` lendo `parent.subscription_details.subscription` antes de `invoice.subscription`, preservar e normalizar `email` em `processGuidePurchase`, sincronizar `businessDirectory.planType` em `processPremiumSubscription`, pre-preencher `customerEmail` em `buildGuidePurchaseCheckoutParams`, remover o sufixo duplicado `| E-book Portal NKL` em `language-ebook-preview.tsx` e incluir `"stripe"` (`https://mcp.stripe.com`) em `tools/ide-mcp-manifest.json`.
 - Motivo: eventos da conta Stripe live usam a versao `2026-10-28.endive` (onde o ID de assinatura na fatura fica aninhado em `parent.subscription_details`), e unificar o MCP do Stripe cross-IDE acelera futuras atualizacoes e diagnosticos de pagamentos.

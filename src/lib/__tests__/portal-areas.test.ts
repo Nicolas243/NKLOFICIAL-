@@ -11,7 +11,7 @@ import {
 } from '@/config/app-brand';
 import { PAID_PRODUCTS, getProductBySlug } from '@/config/products';
 import { PORTAL_TRACKS, getTrackById } from '@/config/tracks';
-import { getPortalSurface, isIncomePortalPath } from '@/lib/income-portal';
+import { getPortalSurface, getSuggestionAreaFromPath, getSuggestionHref, isIncomePortalPath } from '@/lib/income-portal';
 import {
   PORTAL_AREA_CARDS,
   getValidPortalAreaCards,
@@ -363,4 +363,18 @@ test('PAID_PRODUCTS defines 6 unique SKUs with clean copy and standalone non-NKL
       assert.ok(fs.existsSync(icon512Path), `${product.slug} icon512 ausente: ${icon512Path}`);
     }
   }
+});
+
+test('getSuggestionAreaFromPath and getSuggestionHref route contextually per portal area', () => {
+  assert.equal(getPortalSurface('/'), 'home');
+  assert.equal(isIncomePortalPath('/programas'), true);
+  assert.equal(getSuggestionAreaFromPath('/blog/aprender/chines'), 'idiomas');
+  assert.equal(getSuggestionAreaFromPath('/guias/ingles'), 'idiomas');
+  assert.equal(getSuggestionAreaFromPath('/programas'), 'renda-extra');
+  assert.equal(getSuggestionAreaFromPath('/ia'), 'ia');
+  assert.equal(getSuggestionAreaFromPath('/musica/naipe_cordas'), 'musica');
+  assert.equal(
+    getSuggestionHref('/blog/aprender/chines'),
+    '/sugerir?area=idiomas&origem=%2Fblog%2Faprender%2Fchines',
+  );
 });

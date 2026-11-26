@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   AI_ONE_TIME_PRICE_CENTS,
   AI_SUBSCRIPTION_PRICE_CENTS,
+  AI_VIP_PRICE_CENTS,
   getAiOfferCheckoutMode,
   getAiOfferClientReferenceId,
   getAiOfferPriceCents,
@@ -19,21 +20,27 @@ import {
 test('keeps AI offer prices server-owned and explicit', () => {
   assert.equal(AI_ONE_TIME_PRICE_CENTS, 9900);
   assert.equal(AI_SUBSCRIPTION_PRICE_CENTS, 3900);
+  assert.equal(AI_VIP_PRICE_CENTS, 39700);
   assert.equal(getAiOfferPriceCents('one_time'), 9900);
   assert.equal(getAiOfferPriceCents('subscription'), 3900);
+  assert.equal(getAiOfferPriceCents('vip'), 39700);
   assert.match(getAiOfferTitle('subscription'), /mensal/i);
+  assert.match(getAiOfferTitle('vip'), /Passe Total/i);
 });
 
 test('rejects unknown AI offer plans', () => {
   assert.equal(isAiOfferPlan('one_time'), true);
   assert.equal(isAiOfferPlan('subscription'), true);
+  assert.equal(isAiOfferPlan('vip'), true);
   assert.equal(isAiOfferPlan('free'), false);
 });
 
 test('maps AI offer plan to Stripe checkout mode, price ID and client_reference_id', () => {
   assert.equal(getAiOfferCheckoutMode('one_time'), 'payment');
+  assert.equal(getAiOfferCheckoutMode('vip'), 'payment');
   assert.equal(getAiOfferCheckoutMode('subscription'), 'subscription');
   assert.equal(getAiOfferClientReferenceId('one_time', 'user-123'), 'ai_one_time:user-123');
+  assert.equal(getAiOfferClientReferenceId('vip', 'user-123'), 'ai_one_time:user-123');
   assert.equal(getAiOfferClientReferenceId('subscription', 'user-123'), 'ai_subscription:user-123');
 
   const envVars = {

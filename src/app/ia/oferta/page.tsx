@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AiOfferCheckout } from '@/components/ai/ai-offer-checkout';
-import { AI_ONE_TIME_PRICE_CENTS, AI_SUBSCRIPTION_PRICE_CENTS } from '@/lib/ai-product';
+import {
+  AI_ONE_TIME_PRICE_CENTS,
+  AI_SUBSCRIPTION_PRICE_CENTS,
+  AI_VIP_PRICE_CENTS,
+} from '@/lib/ai-product';
 import { getAiCourseModules } from '@/lib/ai-course';
 import { absoluteSiteUrl } from '@/lib/site';
 
@@ -190,32 +194,60 @@ export default function AiOfferPage() {
           <h2 className="mt-4 font-playfair text-4xl font-bold md:text-6xl">Uma habilidade que continua valendo depois do primeiro prompt.</h2>
           <p className="mt-5 leading-relaxed opacity-70">Comece com o acesso que faz sentido para você. Sem promessa de dinheiro fácil, sem prova social inventada e sem esconder o que ainda está em configuração.</p>
         </div>
-        <div className="mt-10 grid gap-5 lg:grid-cols-2">
-          <article className="rounded-3xl border border-border bg-surface p-6 md:p-8">
-            <p className="text-sm font-bold opacity-60">Compra avulsa</p>
-            <p className="mt-3 font-playfair text-6xl font-bold">R$ {(AI_ONE_TIME_PRICE_CENTS / 100).toFixed(0)}</p>
-            <p className="mt-3 max-w-md text-sm leading-relaxed opacity-70">Para quem quer aprender a base completa e manter acesso ao conteúdo publicado.</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {includedItems.slice(0, 4).map((item) => <li key={item} className="flex gap-3"><span className="text-neon">✓</span>{item}</li>)}
-            </ul>
-            <AiOfferCheckout
-              plan="one_time"
-              label="Comprar acesso avulso"
-              helperText="Pagamento único com acesso imediato ao curso publicado."
-            />
-          </article>
-          <article className="relative rounded-3xl border-2 border-neon bg-income-surface p-6 shadow-[0_0_40px_rgba(190,255,0,0.08)] md:p-8">
-            <span className="absolute right-6 top-6 rounded-full bg-neon px-3 py-1 text-xs font-bold text-black">Para continuar evoluindo</span>
-            <p className="text-sm font-bold opacity-60">Assinatura mensal</p>
-            <p className="mt-8 font-playfair text-6xl font-bold">R$ {(AI_SUBSCRIPTION_PRICE_CENTS / 100).toFixed(0)}<span className="text-xl">/mês</span></p>
-            <p className="mt-3 max-w-md text-sm leading-relaxed opacity-70">Para quem quer acompanhar novas aulas, prompts e melhorias editoriais enquanto a assinatura estiver ativa.</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {includedItems.map((item) => <li key={item} className="flex gap-3"><span className="text-neon">✓</span>{item}</li>)}
-            </ul>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:items-stretch">
+          <article className="flex flex-col justify-between rounded-3xl border border-border bg-surface p-6 md:p-7">
+            <div>
+              <span className="inline-flex rounded-full border border-border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider opacity-75">Entrada recorrente</span>
+              <p className="mt-4 text-sm font-bold opacity-70">Assinatura Mensal Básica</p>
+              <p className="mt-2 font-playfair text-5xl font-bold">R$ {(AI_SUBSCRIPTION_PRICE_CENTS / 100).toFixed(0)}<span className="text-lg">/mês</span></p>
+              <p className="mt-3 text-sm leading-relaxed opacity-70">Para experimentar as aulas semanais enquanto mantiver a assinatura ativa, sem acesso vitalício nem outros guias do portal.</p>
+              <ul className="mt-6 space-y-3 text-xs leading-relaxed">
+                {includedItems.slice(0, 3).map((item) => <li key={item} className="flex gap-2.5"><span className="text-neon">✓</span>{item}</li>)}
+                <li className="flex gap-2.5 opacity-45 line-through"><span>×</span>Acesso vitalício sem mensalidade</li>
+                <li className="flex gap-2.5 opacity-45 line-through"><span>×</span>Demais produtos pagos do Portal NKL</li>
+              </ul>
+            </div>
             <AiOfferCheckout
               plan="subscription"
-              label="Assinar plano mensal"
-              helperText="Cobrança recorrente mensal via Stripe com cancelamento a qualquer momento."
+              label="Assinar plano mensal (R$ 39/mês)"
+              helperText="Cobrança recorrente mensal via Stripe com cancelamento quando quiser."
+            />
+          </article>
+
+          <article className="relative flex flex-col justify-between rounded-3xl border-2 border-neon bg-income-surface p-6 shadow-[0_0_40px_rgba(190,255,0,0.08)] md:p-7">
+            <div>
+              <span className="inline-flex rounded-full bg-neon px-3 py-1 text-xs font-bold uppercase tracking-wider text-black">Mais escolhido</span>
+              <p className="mt-4 text-sm font-bold opacity-80">Acesso Completo Vitalício</p>
+              <p className="mt-2 font-playfair text-5xl font-bold">R$ {(AI_ONE_TIME_PRICE_CENTS / 100).toFixed(0)}</p>
+              <p className="mt-3 text-sm leading-relaxed opacity-75">Pagamento único sem mensalidade: destrave os 7 módulos, o Laboratório de Prompts e as futuras atualizações editoriais de IA.</p>
+              <ul className="mt-6 space-y-3 text-xs leading-relaxed">
+                {includedItems.map((item) => <li key={item} className="flex gap-2.5"><span className="text-neon">✓</span>{item}</li>)}
+                <li className="flex gap-2.5 font-semibold"><span className="text-neon">✓</span>Acesso vitalício em um único pagamento</li>
+                <li className="flex gap-2.5 opacity-45 line-through"><span>×</span>Bússola de Negócios, Pacote Renda Extra e Idiomas</li>
+              </ul>
+            </div>
+            <AiOfferCheckout
+              plan="one_time"
+              label="Garantir Acesso Vitalício (R$ 99)"
+              helperText="Pagamento único via Stripe. Acesso imediato e permanente."
+            />
+          </article>
+
+          <article className="flex flex-col justify-between rounded-3xl border border-orange/40 bg-surface p-6 md:p-7">
+            <div>
+              <span className="inline-flex rounded-full border border-orange/40 bg-orange/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-orange">Passe Total</span>
+              <p className="mt-4 text-sm font-bold opacity-80">Ecossistema Completo NKL</p>
+              <p className="mt-2 font-playfair text-5xl font-bold">R$ {(AI_VIP_PRICE_CENTS / 100).toFixed(0)}</p>
+              <p className="mt-3 text-sm leading-relaxed opacity-70">Para quem quer destravar de uma só vez tudo do curso de IA e mais todos os 6 produtos pagos do Portal NKL na conta.</p>
+              <ul className="mt-6 space-y-3 text-xs leading-relaxed">
+                {includedItems.map((item) => <li key={item} className="flex gap-2.5"><span className="text-orange">✓</span>{item}</li>)}
+                <li className="flex gap-2.5 font-semibold"><span className="text-orange">✓</span>Todos os 6 produtos pagos liberados na hora (Estúdio IA, Curso IA, Bússola, Renda Extra, Idiomas com IA e E-book Inglês)</li>
+              </ul>
+            </div>
+            <AiOfferCheckout
+              plan="vip"
+              label="Liberar Passe Total (R$ 397)"
+              helperText="Pagamento único via Stripe. Libera todos os SKUs em Minha Conta."
             />
           </article>
         </div>

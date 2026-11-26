@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CONSENT_STORAGE_KEY } from '@/components/privacy-scripts';
-import { trackOfferFunnelEvent, trackPortalFunnelEvent } from '@/lib/analytics';
+import {
+  getPortalAnalyticsArea,
+  trackBeginCheckout,
+  trackOfferFunnelEvent,
+  trackPortalFunnelEvent,
+  trackPricingTierSelected,
+  trackPurchaseCompleted,
+} from '@/lib/analytics';
 import { createPageViewEvent } from '@/lib/analytics-pageview';
 
 test('creates a Google Analytics page_view event for the current route', () => {
@@ -166,4 +173,43 @@ test('emits track_select, install_cta_click, install_prompt_accepted and offer_c
       },
     ],
   );
+});
+
+test('maps every portal route to granular analytics area and tracks pricing/checkout/purchase with Clarity', () => {
+  assert.equal(getPortalAnalyticsArea('/'), 'home');
+  assert.equal(getPortalAnalyticsArea('/blog/aprender/chines'), 'languages');
+  assert.equal(getPortalAnalyticsArea('/guias/ingles'), 'languages');
+  assert.equal(getPortalAnalyticsArea('/ia/oferta'), 'ai');
+  assert.equal(getPortalAnalyticsArea('/guias/renda-extra'), 'income');
+  assert.equal(getPortalAnalyticsArea('/programas/com-ia'), 'income');
+  assert.equal(getPortalAnalyticsArea('/mural-de-parceiros'), 'partners');
+  assert.equal(getPortalAnalyticsArea('/musica/naipe_cordas'), 'music');
+
+  const gtagCalls: Array<{ name: string; params?: Record<string, string | number | boolean> }> = [];
+  const clarityCalls: unknown[][] = [];
+
+  Object.assign(globalThis, {
+    window: {
+      localStorage: {
+        getItem: (key: string) => (key === CONSENT_STORAGE_KEY ? 'accepted' : null),
+      },
+      gtag: (_command: 'event', name: string, params?: Record<string, string | number | boolean>) => {
+        gtagCalls.push({ name, params });
+      },
+      clarity: (...args: unknown[]) => {
+        clarityCalls.push(args);
+      },
+    },
+  });
+
+  trackPricingTierSelected({ funnel: 'language-chines', tier: 'complete', valueBrl: 47, offerVariant: 'mandarin-ebook-sales-page' });
+  trackBeginCheckout({ funnel: 'language-chines', tier: 'complete', valueBrl: 47, offerVariant: 'mandarin-ebook-sales-page' });
+  trackPurchaseCompleted({ transactionId: 'pi_123', valueBrl: 47, offerVariant: 'mandarin-ebook-sales-page', tier: 'complete' });
+
+  assert.deepEqual(
+    gtagCalls.map((call) => call.name),
+    ['select_pricing_tier', 'begin_checkout', 'purchase'],
+  );
+  assert.equal(gtagCalls[2]?.params?.value, 47);
+  assert.equal(clarityCalls.some((call) => call[0] === 'event' && call[1] === 'purchase'), true);
 });

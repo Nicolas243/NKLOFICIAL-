@@ -12,7 +12,9 @@ import {
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 import type { PaidProduct } from '@/config/products';
-import type { AiOfferPlan } from '@/lib/ai-product';
+import { trackBeginCheckout } from '@/lib/analytics';
+import { getAiOfferPriceCents, type AiOfferPlan } from '@/lib/ai-product';
+import { getGuideTierPriceCents } from '@/lib/guide-offer';
 import { isValidCpf, normalizeCpf } from '@/lib/guide-personalization';
 
 type ProductCheckoutClientProps = {
@@ -88,6 +90,12 @@ export function ProductCheckoutClient({
   const [requiresAuthAction, setRequiresAuthAction] = useState(false);
 
   async function handleAiCheckout(): Promise<void> {
+    trackBeginCheckout({
+      funnel: `product-checkout:${product.slug}`,
+      tier: selectedPlan,
+      valueBrl: getAiOfferPriceCents(selectedPlan) / 100,
+      productSlug: product.slug,
+    });
     setIsSubmitting(true);
     setStatusMessage(null);
     setErrorMessage(null);
@@ -163,6 +171,13 @@ export function ProductCheckoutClient({
     }
 
     setIsSubmitting(true);
+    trackBeginCheckout({
+      funnel: `product-checkout:${product.slug}`,
+      tier: 'complete',
+      valueBrl: getGuideTierPriceCents(product.legacyOfferVariant, 'complete', 0).amountCents / 100,
+      offerVariant: product.legacyOfferVariant,
+      productSlug: product.slug,
+    });
 
     try {
       const response = await fetch('/api/payments/create-guide-checkout', {

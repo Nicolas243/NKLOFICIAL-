@@ -89,14 +89,37 @@ export const GUIDE_ASSETS: readonly GuideAsset[] = [
 ];
 
 export function getGuideAssetsForOffer(offerVariant: string | null | undefined): readonly GuideAsset[] {
-  if (offerVariant === 'english-ebook-sales-page') {
+  const isEssentialTier = Boolean(offerVariant?.endsWith(':essential'));
+  const isVipTier = Boolean(offerVariant?.endsWith(':vip'));
+  const baseOffer = offerVariant?.replace(/:(essential|vip)$/u, '');
+
+  if (isVipTier) {
+    if (
+      baseOffer === 'english-ebook-sales-page'
+      || ['italian', 'french', 'german', 'spanish', 'mandarin'].includes(baseOffer?.replace(/-ebook-sales-page$/u, '') ?? '')
+    ) {
+      return GUIDE_ASSETS.filter((asset) =>
+        asset.id === 'ingles-para-ganhar-dinheiro'
+        || asset.id.endsWith('-para-ganhar-possibilidades')
+        || asset.id === 'guia-essencial-renda-extra-2027',
+      );
+    }
+    return GUIDE_ASSETS;
+  }
+
+  if (baseOffer === 'english-ebook-sales-page') {
     return GUIDE_ASSETS.filter((asset) => asset.id === 'ingles-para-ganhar-dinheiro');
   }
-  const languageAsset = offerVariant?.replace(/-ebook-sales-page$/u, '');
+  const languageAsset = baseOffer?.replace(/-ebook-sales-page$/u, '');
   if (languageAsset && ['italian', 'french', 'german', 'spanish', 'mandarin'].includes(languageAsset)) {
     const assetPrefix = languageAsset === 'italian' ? 'italiano' : languageAsset === 'french' ? 'frances' : languageAsset === 'german' ? 'alemao' : languageAsset === 'spanish' ? 'espanhol' : 'mandarim';
     return GUIDE_ASSETS.filter((asset) => asset.id === `${assetPrefix}-para-ganhar-possibilidades`);
   }
+
+  if (isEssentialTier) {
+    return GUIDE_ASSETS.filter((asset) => asset.id === 'guia-essencial-renda-extra-2027');
+  }
+
   return GUIDE_ASSETS.filter((asset) => !asset.id.endsWith('-para-ganhar-possibilidades') && asset.id !== 'ingles-para-ganhar-dinheiro');
 }
 

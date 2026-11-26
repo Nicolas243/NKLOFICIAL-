@@ -1,13 +1,13 @@
 # Contexto Ativo (Portal NKL)
 
 ## Foco Atual
-- **Auditoria Stripe, Tooling (Plugins/CLI/MCP/Extensoes) e Higiene Pos-SEO concluida (2026-11-26):**
-  - Webhook Stripe atualizado em `src/lib/stripe/webhook-helpers.ts` (`extractStripeInvoiceSubscriptionId`) e `src/lib/stripe/webhook.ts` para suportar faturas `2026-10-28.endive` (`invoice.parent.subscription_details.subscription`) e formato legado, preservar/normalizar e-mail no `guide_purchases` e sincronizar `businessDirectory.planType` em `processPremiumSubscription`.
-  - `buildGuidePurchaseCheckoutParams` (`src/lib/stripe/guide.ts` + `create-guide-checkout/route.ts`) agora preenche `customerEmail` automaticamente no Checkout Stripe.
-  - Titulo duplicado `| E-book Portal NKL` corrigido em `src/components/language-ebook-preview.tsx` e arquivo duplicado `googlea9035dd53b94a78b.html` removido da raiz (mantido `public/googlea9035dd53b94a78b.html`).
-  - Servidor oficial `stripe` (`https://mcp.stripe.com`) adicionado em `tools/ide-mcp-manifest.json` e sincronizado via `npm run ide:sync` para VS Code, Cursor, Claude Code e Antigravity.
+- **Feedback Chinês Já, Script Seguro Stripe NKL, Funis 3 Opções & Upgrade Analytics (2026-11-26):**
+  - **"Sugerir site" contextual (`/sugerir`):** `getSuggestionHref(pathname)` (`src/lib/income-portal.ts`) roteia por área (`idiomas`, `ia`, `renda-extra`, `musica`, `geral`) para `/sugerir` (`src/app/sugerir/page.tsx`) usando `submitPartnerSuggestion` com prefixo `[Área | Origem]`.
+  - **Mandarim (`/blog/aprender/chines`):** adicionada ferramenta gratuita em português *Chinês Já — Pinyin com tons e áudio* (`https://www.chinesja.com.br/p/pinyin-com-tons-e-audio-converter.html`) tanto na seção `Pinyin com áudio` quanto como recurso #1.
+  - **Stripe NKL seguro (`scripts/migrate-stripe-account.mjs`):** provisionada a conta Sandbox `acct_1UbswFItNBn1daZu` (`Área restrita de nkloficial`) com produto/preços/cupons/webhook; trava `assertLiveProductionSafety` impediu sobrescrever Produção Live (`acct_1UZsOzQzOKRNmIif`) com chaves `sk_test_`.
+  - **Funis 3 opções (Decoy Pricing):** Renda Extra (`R$ 19` / `R$ 39*` / `R$ 247` 11 arquivos), 6 Idiomas (`R$ 27` / `R$ 47*` / `R$ 297` Passaporte 6 Idiomas + Renda Extra) e IA na Prática (`R$ 39/mês` / `R$ 99*` / `R$ 397` Passe Total 6 SKUs) com entregáveis reais validados no servidor e webhook.
+  - **Analytics & Admin:** `getPortalAnalyticsArea` (8 áreas), UTM super-properties no PostHog/Clarity, `select_pricing_tier`, `begin_checkout`, `purchase` para logados e convidados com valor real (`amountCents / 100`) e KPIs digitais adicionados em `/admin`.
 
-## Pendencias Somente Manuais do Usuario (Plugins / Contas Externas)
-1. **Antigravity Plugins:** adicionar `Stripe` + `Cloudflare` via Marketplace e concluir login no `vercel-plugin`.
-2. **CLI / Local Env:** rodar `vercel env pull .env.local` se quiser testar checkout de IA/convidado localmente e `stripe switch` caso prefira CLI fora do modo sandbox.
-3. **Google Search Console, Afiliados, Cloudflare Email Routing e Amazon KDP:** ver `docs/CHECKLIST-OFFLINE-NKL.md`.
+## Pendencias Somente Manuais do Usuario (Contas Externas)
+1. **Troca definitiva Stripe NKL -> Produção:** quando ativar a conta Live `nkloficial` e tiver `pk_live_...` + `sk_live_...` em `.env.local`, rodar `npm run stripe:provision -- --sync-vercel-prod` e depois `vercel deploy --prod --yes`.
+2. **Plugins Antigravity / Afiliados / Cloudflare / Search Console:** ver `docs/CHECKLIST-OFFLINE-NKL.md`.

@@ -7,8 +7,12 @@ import {
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
   GUIDE_SUBSCRIPTION_TITLE,
   GUIDE_TITLE,
+  INCOME_GUIDE_TIER_PRICES_CENTS,
+  LANGUAGE_EBOOK_TIER_PRICES_CENTS,
+  extractOfferTier,
   getGuideCancelPath,
   getLanguageEbookByOffer,
+  stripOfferTier,
 } from '@/lib/guide-offer';
 import type { CreateCheckoutSessionParams } from './checkout';
 
@@ -34,17 +38,29 @@ export function buildGuidePurchaseCheckoutParams({
 }: GuideCheckoutBase & { purchaseId: string }): CreateCheckoutSessionParams {
   const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
   const successUrl = `${normalizedSiteUrl}/guias/renda-extra/sucesso?session_id={CHECKOUT_SESSION_ID}`;
-  const languageEbook = getLanguageEbookByOffer(offerVariant);
-  const isEnglishEbook = offerVariant === ENGLISH_EBOOK_OFFER_VARIANT;
+  const tier = extractOfferTier(offerVariant);
+  const baseOfferVariant = stripOfferTier(offerVariant);
+  const languageEbook = getLanguageEbookByOffer(baseOfferVariant);
+  const isEnglishEbook = baseOfferVariant === ENGLISH_EBOOK_OFFER_VARIANT;
   const isPaidEbook = isEnglishEbook || Boolean(languageEbook);
   const skuTitle =
     productSlug === 'bussola-negocios' || productSlug === 'pacote-idiomas-ia'
       ? getProductBySlug(productSlug)?.title
       : undefined;
-  const productName =
+  const baseTitle =
     skuTitle ??
     (isEnglishEbook ? ENGLISH_EBOOK_TITLE : languageEbook?.title ?? GUIDE_TITLE);
-  const baseUnitAmount = isPaidEbook ? ENGLISH_EBOOK_PRICE_CENTS : GUIDE_PRICE_CENTS;
+  const productName =
+    tier === 'vip'
+      ? isPaidEbook
+        ? 'Passaporte Poliglota 6 Idiomas + Guia Renda Extra | Portal NKL'
+        : 'Acervo Total NKL (11 Materiais: Renda Extra + 6 Idiomas) | Portal NKL'
+      : tier === 'essential'
+        ? `${baseTitle} (Edição Essencial)`
+        : baseTitle;
+  const baseUnitAmount = isPaidEbook
+    ? LANGUAGE_EBOOK_TIER_PRICES_CENTS[tier] ?? ENGLISH_EBOOK_PRICE_CENTS
+    : INCOME_GUIDE_TIER_PRICES_CENTS[tier] ?? GUIDE_PRICE_CENTS;
   const unitAmount =
     typeof overrideAmountCents === 'number' && Number.isInteger(overrideAmountCents) && overrideAmountCents > 0
       ? overrideAmountCents

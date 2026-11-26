@@ -3,7 +3,17 @@
 import { count, eq, sum } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db } from '@/db';
-import { userProfiles, subscriptions, luthierLeads, studentPlanEnrollments, classBookings } from '@/db/schema';
+import {
+  adCampaigns,
+  aiAccessGrants,
+  classBookings,
+  guidePurchases,
+  guideSubscriptions,
+  luthierLeads,
+  studentPlanEnrollments,
+  subscriptions,
+  userProfiles,
+} from '@/db/schema';
 
 export type PlatformMetrics = {
   totalUsers: number;
@@ -14,6 +24,12 @@ export type PlatformMetrics = {
   activePlans: number;
   marketplaceGmvCents: number;
   marketplaceFeesCents: number;
+  approvedGuidePurchases: number;
+  guideRevenueCents: number;
+  activeGuideSubscriptions: number;
+  activeAiGrants: number;
+  activeAdCampaigns: number;
+  totalDigitalRevenueCents: number;
 };
 
 /** Preço base da assinatura Premium (espelha o portal de planos). */
@@ -43,7 +59,19 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     throw new Error('Acesso restrito a administradores.');
   }
 
-  const [usersRow, premiumRow, leadsRow, connectedTeachersRow, activePlansRow, gmvRow, feesRow] = await Promise.all([
+  const [
+    usersRow,
+    premiumRow,
+    leadsRow,
+    connectedTeachersRow,
+    activePlansRow,
+    gmvRow,
+    feesRow,
+    approvedGuidesRow,
+    activeGuideSubsRow,
+    activeAiRow,
+    activeAdsRow,
+  ] = await Promise.all([
     db.select({ value: count() }).from(userProfiles),
     db.select({ value: count() }).from(subscriptions).where(eq(subscriptions.status, 'active')),
     db.select({ value: count() }).from(luthierLeads),
@@ -51,9 +79,16 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     db.select({ value: count() }).from(studentPlanEnrollments).where(eq(studentPlanEnrollments.status, 'active')),
     db.select({ value: sum(classBookings.priceCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),
     db.select({ value: sum(classBookings.platformFeeCents) }).from(classBookings).where(eq(classBookings.paymentStatus, 'paid')),
+    db.select({ total: count(), revenue: sum(guidePurchases.amountCents) }).from(guidePurchases).where(eq(guidePurchases.status, 'approved')),
+    db.select({ value: count() }).from(guideSubscriptions).where(eq(guideSubscriptions.status, 'active')),
+    db.select({ value: count() }).from(aiAccessGrants).where(eq(aiAccessGrants.status, 'active')),
+    db.select({ value: count() }).from(adCampaigns).where(eq(adCampaigns.status, 'active')),
   ]);
 
   const activePremiumLuthiers = premiumRow[0]?.value ?? 0;
+  const approvedGuidePurchases = approvedGuidesRow[0]?.total ?? 0;
+  const guideRevenueCents = Number(approvedGuidesRow[0]?.revenue ?? 0);
+  const marketplaceFeesCents = Number(feesRow[0]?.value ?? 0);
 
   return {
     totalUsers: usersRow[0]?.value ?? 0,
@@ -63,6 +98,12 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics> {
     connectedTeachers: connectedTeachersRow[0]?.value ?? 0,
     activePlans: activePlansRow[0]?.value ?? 0,
     marketplaceGmvCents: Number(gmvRow[0]?.value ?? 0),
-    marketplaceFeesCents: Number(feesRow[0]?.value ?? 0),
+    marketplaceFeesCents,
+    approvedGuidePurchases,
+    guideRevenueCents,
+    activeGuideSubscriptions: activeGuideSubsRow[0]?.value ?? 0,
+    activeAiGrants: activeAiRow[0]?.value ?? 0,
+    activeAdCampaigns: activeAdsRow[0]?.value ?? 0,
+    totalDigitalRevenueCents: guideRevenueCents + marketplaceFeesCents,
   };
 }

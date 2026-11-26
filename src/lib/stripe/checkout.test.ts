@@ -128,4 +128,25 @@ test('buildGuidePurchaseCheckoutParams applies 30% and 50% progressive language 
     (thirdLang.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
     2350,
   );
+
+  const essentialGuide = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-essential',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'sales-page:essential',
+  });
+  assert.equal(
+    (essentialGuide.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
+    1900,
+  );
+
+  const vipLanguagePassport = buildGuidePurchaseCheckoutParams({
+    purchaseId: 'purchase-vip-lang',
+    siteUrl: 'https://nkloficial.com.br',
+    offerVariant: 'mandarin-ebook-sales-page:vip',
+  });
+  assert.equal(
+    (vipLanguagePassport.lineItems[0] as { price_data?: { unit_amount?: number } })?.price_data?.unit_amount,
+    29700,
+  );
+  assert.equal(vipLanguagePassport.cancelUrl, 'https://nkloficial.com.br/guias/chines');
 });

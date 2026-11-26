@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { GuideCheckoutButton } from '@/components/sales/guide-checkout-button';
 import type { GuideResumeIntent } from '@/lib/auth/return-intent';
+import { INCOME_GUIDE_TIER_PRICES_CENTS, withOfferTier, type OfferTier } from '@/lib/guide-offer';
 
 type Status = 'idle' | 'analyzing' | 'approved' | 'unavailable';
 type DisplayPhase = 'normal' | 'approved' | 'denied';
 type DiscountSimulatorProps = {
   offerVariant?: string;
+  tier?: OfferTier;
   title?: string;
   summary?: string;
   ctaLabel?: string;
@@ -26,8 +28,15 @@ const PHASE_LABELS: Record<DisplayPhase, string> = {
   denied: 'Oferta indisponível',
 };
 
+const TIER_PRICE_COPY: Record<OfferTier, { current: string; compareAt: string | null; note: string }> = {
+  essential: { current: 'R$ 19,00', compareAt: 'R$ 39,00', note: 'só o guia em PDF' },
+  complete: { current: 'R$ 39,00', compareAt: 'R$ 97,00', note: 'pagamento único · 5 arquivos' },
+  vip: { current: 'R$ 247,00', compareAt: 'R$ 379,00', note: 'acervo total · 11 arquivos' },
+};
+
 export function DiscountSimulator({
   offerVariant = 'sales-page',
+  tier = 'complete',
   title = 'Seu guia essencial para começar com clareza',
   summary = 'Estamos confirmando a disponibilidade do checkout enquanto você conhece a oferta. Não usamos dados pessoais nem prometemos renda.',
   ctaLabel = 'Quero liberar meu acesso',
@@ -63,16 +72,22 @@ export function DiscountSimulator({
     return () => window.clearTimeout(timer);
   }, [startAnalysis]);
 
+  const priceCopy = TIER_PRICE_COPY[tier];
+  const priceBrl = INCOME_GUIDE_TIER_PRICES_CENTS[tier] / 100;
+  const resolvedOfferVariant = withOfferTier(offerVariant, tier);
+
   return (
     <section className="rounded-2xl border border-orange/25 bg-income-surface p-6 shadow-sm md:p-8" aria-labelledby="discount-simulator-title">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta de lançamento</p>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Oferta selecionada</p>
       <h2 id="discount-simulator-title" className="mt-2 font-playfair text-3xl font-bold">{title}</h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">{summary}</p>
 
-      <div className="mt-6 flex items-end gap-3" aria-label="Preço promocional">
-        <span className="text-lg font-medium text-foreground/45 line-through">R$ 97,00</span>
-        <span className="font-playfair text-5xl font-bold text-orange">R$ 39,00</span>
-        <span className="pb-2 text-xs font-bold uppercase tracking-wide text-foreground/55">pagamento único</span>
+      <div className="mt-6 flex flex-wrap items-end gap-3" aria-label="Preço promocional">
+        {priceCopy.compareAt && (
+          <span className="text-lg font-medium text-foreground/45 line-through">{priceCopy.compareAt}</span>
+        )}
+        <span className="font-playfair text-5xl font-bold text-orange">{priceCopy.current}</span>
+        <span className="pb-2 text-xs font-bold uppercase tracking-wide text-foreground/55">{priceCopy.note}</span>
       </div>
       <div className={`mt-5 rounded-xl border p-5 transition-colors duration-150 ${PHASE_STYLES[displayPhase]}`} aria-live="polite">
         <p className="text-xs font-bold uppercase tracking-[0.16em]">{PHASE_LABELS[displayPhase]}</p>
@@ -91,7 +106,10 @@ export function DiscountSimulator({
         <GuideCheckoutButton
           label={ctaLabel}
           enabled={status === 'approved'}
-          offerVariant={offerVariant}
+          offerVariant={resolvedOfferVariant}
+          tier={tier}
+          priceBrl={priceBrl}
+          funnelName="renda-extra-guide"
           resumeIntent={resumeIntent}
         />
       </div>

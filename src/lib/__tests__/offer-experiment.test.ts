@@ -22,6 +22,8 @@ test('accepts all Guide page CTA variants and rejects invalid values', () => {
   assert.equal(parseValidatedOfferVariant('guide-page-cta:not-a-number'), null);
 });
 
-test('preserves the existing program secondary CTA attribution contract', () => {
+test('preserves the existing program secondary CTA attribution contract and tier suffixes', () => {
   assert.equal(parseValidatedOfferVariant('program-secondary-cta:2'), 'program-secondary-cta:2');
+  assert.equal(parseValidatedOfferVariant('guide-page-cta:0:essential'), 'guide-page-cta:0:essential');
+  assert.equal(parseValidatedOfferVariant('mandarin-ebook-sales-page:vip'), 'mandarin-ebook-sales-page:vip');
 });

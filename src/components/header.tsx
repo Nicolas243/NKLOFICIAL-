@@ -11,9 +11,9 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
 import {
   INCOME_PORTAL_ROUTES,
-  INCOME_SUGGESTION_FORM_URL,
   MUSIC_PORTAL_HOME,
   getPortalSurface,
+  getSuggestionHref,
   isIncomePortalPath,
 } from '@/lib/income-portal'
 import { NotificationBell } from '@/components/notification-bell'
@@ -144,7 +144,7 @@ export function Header() {
         <Link href="/blog/aprender/ingles" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Idiomas</Link>
         <Link href="/ofertas/bussola-negocios" className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Bússola de Negócios</Link>
         <Link href={MUSIC_PORTAL_HOME} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>NKL Cordas</Link>
-        <a href={INCOME_SUGGESTION_FORM_URL} target="_blank" rel="noopener noreferrer" className={ecosystemLinkCls}>Sugerir site</a>
+        <Link href={getSuggestionHref(pathname)} className={ecosystemLinkCls} onClick={() => setMenuOpen(false)}>Sugerir site</Link>
       </>
     )
 

@@ -58,6 +58,12 @@ test('uses canonical chines-para-ganhar-possibilidades.pdf filename for Mandarin
   const granted = getGuideAssetsForOffer('mandarin-ebook-sales-page');
   assert.equal(granted.length, 1);
   assert.equal(granted[0]?.filename, 'chines-para-ganhar-possibilidades.pdf');
+
+  assert.equal(getGuideAssetsForOffer('sales-page:essential').length, 1);
+  assert.equal(getGuideAssetsForOffer('sales-page:essential')[0]?.id, 'guia-essencial-renda-extra-2027');
+  assert.equal(getGuideAssetsForOffer('sales-page').length, 5);
+  assert.equal(getGuideAssetsForOffer('sales-page:vip').length, 11);
+  assert.equal(getGuideAssetsForOffer('mandarin-ebook-sales-page:vip').length, 7);
 });
 
 test('marks all 6 language ebook offers as active, resolves cancel paths, and applies 30%/50% progressive upsell', () => {

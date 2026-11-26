@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { AiOfferPlan } from '@/lib/ai-product';
+import { trackBeginCheckout } from '@/lib/analytics';
+import { getAiOfferPriceCents, type AiOfferPlan } from '@/lib/ai-product';
 
 type AiOfferCheckoutProps = {
   plan: AiOfferPlan;
@@ -23,6 +24,12 @@ export function AiOfferCheckout({ plan, label, helperText }: AiOfferCheckoutProp
   const [error, setError] = useState<string | null>(null);
 
   async function handleCheckout(): Promise<void> {
+    trackBeginCheckout({
+      funnel: 'ia-na-pratica',
+      tier: plan,
+      valueBrl: getAiOfferPriceCents(plan) / 100,
+      productSlug: 'curso-ia-pratica',
+    });
     setIsLoading(true);
     setNotice(null);
     setError(null);

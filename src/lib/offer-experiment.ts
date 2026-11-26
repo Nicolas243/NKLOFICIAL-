@@ -38,16 +38,24 @@ export function parseGuidePageCtaVariant(value: string | null | undefined): (typ
 
 export function getOfferExperimentFromVariant(value: string | null | undefined): OfferVariantAttribution | null {
   if (!value) return null;
-  const [experiment, variant] = value.split(':');
+  const baseValue = value.replace(/:(essential|vip)$/u, '');
+  const [experiment, variant] = baseValue.split(':');
   if (!experiment || !variant) return null;
   return { experiment, variant };
 }
 
 export function parseValidatedOfferVariant(value: string | null | undefined): string | null {
   if (value === null || value === undefined || value.trim() === '') return null;
-  const normalized = value.trim();
-  if (normalized === 'sales-page' || normalized === 'sales-page:subscription') return normalized;
-  if (LANGUAGE_EBOOK_OFFER_VARIANTS.includes(normalized as (typeof LANGUAGE_EBOOK_OFFER_VARIANTS)[number])) return normalized;
+  const trimmed = value.trim();
+  const tierMatch = /:(essential|vip)$/u.exec(trimmed);
+  const tierSuffix = tierMatch ? `:${tierMatch[1]}` : '';
+  const normalized = tierSuffix ? trimmed.slice(0, -tierSuffix.length) : trimmed;
+
+  if (normalized === 'sales-page') return `${normalized}${tierSuffix}`;
+  if (normalized === 'sales-page:subscription' && !tierSuffix) return normalized;
+  if (LANGUAGE_EBOOK_OFFER_VARIANTS.includes(normalized as (typeof LANGUAGE_EBOOK_OFFER_VARIANTS)[number])) {
+    return `${normalized}${tierSuffix}`;
+  }
 
   const attribution = getOfferExperimentFromVariant(normalized);
   if (!attribution) return null;
@@ -55,25 +63,25 @@ export function parseValidatedOfferVariant(value: string | null | undefined): st
     attribution.experiment === PROGRAM_SECONDARY_CTA_EXPERIMENT
     && parseProgramSecondaryCtaVariant(attribution.variant) !== null
   ) {
-    return `${PROGRAM_SECONDARY_CTA_EXPERIMENT}:${attribution.variant}`;
+    return `${PROGRAM_SECONDARY_CTA_EXPERIMENT}:${attribution.variant}${tierSuffix}`;
   }
   if (
     attribution.experiment === GUIDE_PAGE_CTA_EXPERIMENT
     && parseGuidePageCtaVariant(attribution.variant) !== null
   ) {
-    return `${GUIDE_PAGE_CTA_EXPERIMENT}:${attribution.variant}`;
+    return `${GUIDE_PAGE_CTA_EXPERIMENT}:${attribution.variant}${tierSuffix}`;
   }
   if (
     attribution.experiment === 'native-card'
     && NATIVE_CARD_VARIANTS.includes(attribution.variant as (typeof NATIVE_CARD_VARIANTS)[number])
   ) {
-    return `native-card:${attribution.variant}`;
+    return `native-card:${attribution.variant}${tierSuffix}`;
   }
   if (
     attribution.experiment === 'exit-popup'
     && EXIT_POPUP_VARIANTS.includes(attribution.variant as (typeof EXIT_POPUP_VARIANTS)[number])
   ) {
-    return `exit-popup:${attribution.variant}`;
+    return `exit-popup:${attribution.variant}${tierSuffix}`;
   }
   return null;
 }

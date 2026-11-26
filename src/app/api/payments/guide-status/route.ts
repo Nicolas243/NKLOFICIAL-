@@ -38,6 +38,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       guestAccessTokenExpiresAt: guidePurchases.guestAccessTokenExpiresAt,
       downloadCount: guidePurchases.downloadCount,
       maxDownloads: guidePurchases.maxDownloads,
+      amountCents: guidePurchases.amountCents,
+      offerVariant: guidePurchases.offerVariant,
     }).from(guidePurchases).where(eq(guidePurchases.id, reference.id)).limit(1);
     if (!purchase || !hasMatchingGuestAccessToken(token, purchase.guestAccessTokenHash, purchase.guestAccessTokenExpiresAt)) {
       return invalidAccessResponse();
@@ -46,6 +48,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     const response = NextResponse.json({
       status: resolveGuestGuideStatus('purchase', purchase.status),
       remainingDownloads: GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET,
+      amountCents: purchase.amountCents,
+      offerVariant: purchase.offerVariant,
     });
     response.cookies.set({
       name: GUEST_ACCESS_COOKIE_NAME,
@@ -65,6 +69,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     guestAccessTokenExpiresAt: guideSubscriptions.guestAccessTokenExpiresAt,
     downloadCount: guideSubscriptions.downloadCount,
     maxDownloads: guideSubscriptions.maxDownloads,
+    amountCents: guideSubscriptions.amountCents,
+    offerVariant: guideSubscriptions.offerVariant,
   }).from(guideSubscriptions).where(eq(guideSubscriptions.id, reference.id)).limit(1);
   if (!subscription || !hasMatchingGuestAccessToken(token, subscription.guestAccessTokenHash, subscription.guestAccessTokenExpiresAt)) {
     return invalidAccessResponse();
@@ -73,6 +79,8 @@ export async function GET(request: Request): Promise<NextResponse> {
   const response = NextResponse.json({
     status: resolveGuestGuideStatus('subscription', subscription.status),
     remainingDownloads: GUIDE_DOWNLOAD_ATTEMPTS_PER_ASSET,
+    amountCents: subscription.amountCents,
+    offerVariant: subscription.offerVariant,
   });
   response.cookies.set({
     name: GUEST_ACCESS_COOKIE_NAME,

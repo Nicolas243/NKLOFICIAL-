@@ -142,6 +142,17 @@ export default async function AdminDashboardPage() {
               ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-neon">{value}</strong></div>)}
             </div>
           </section>
+          <section aria-label="Produtos Digitais e Parcerias">
+            <h2 className="mb-4 font-playfair text-xl font-bold">Produtos Digitais, IA e Parcerias</h2>
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {[
+                ['Compras de Guias/E-books', metrics?.approvedGuidePurchases ?? 0],
+                ['Receita Guias/E-books', `R$ ${((metrics?.guideRevenueCents ?? 0) / 100).toFixed(2)}`],
+                ['Assinaturas IA + Guias', `${(metrics?.activeAiGrants ?? 0) + (metrics?.activeGuideSubscriptions ?? 0)}`],
+                ['Anúncios Ativos no Mural', metrics?.activeAdCampaigns ?? 0],
+              ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-border bg-surface p-5"><span className="text-xs uppercase tracking-wide opacity-60">{label}</span><strong className="mt-2 block text-2xl text-orange">{value}</strong></div>)}
+            </div>
+          </section>
           <section className="space-y-4">
             <h2 className="font-playfair text-xl font-bold">Entidades Suspensas Aguardando Análise</h2>
             {[...suspendedProfiles.map((item) => ({ ...item, type: 'user' as const })), ...suspendedDirectories.map((item) => ({ ...item, type: 'directory' as const }))].map((item) => (

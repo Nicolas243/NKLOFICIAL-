@@ -14,7 +14,7 @@ import { getStripeClient } from '@/lib/stripe/server';
 import { createClient } from '@/lib/supabase/server';
 
 const checkoutRequestSchema = z.object({
-  plan: z.enum(['one_time', 'subscription']),
+  plan: z.enum(['one_time', 'subscription', 'vip']),
   productSlug: z.string().trim().max(80).optional(),
 });
 
@@ -56,7 +56,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
     const priceId = getAiOfferStripePriceId(plan, process.env);
 
-    if (!stripeApiKey || !priceId) {
+    if (!stripeApiKey || (plan !== 'vip' && !priceId)) {
       return NextResponse.json(
         {
           error: 'ai_checkout_not_configured',
@@ -70,6 +70,16 @@ export async function POST(request: Request): Promise<NextResponse> {
     const clientReferenceId = getAiOfferClientReferenceId(plan, user.id);
     const priceCents = getAiOfferPriceCents(plan);
     const offerTitle = getAiOfferTitle(plan);
+    const lineItems = priceId
+      ? [{ price: priceId, quantity: 1 }]
+      : [{
+          price_data: {
+            currency: 'brl',
+            product_data: { name: offerTitle },
+            unit_amount: priceCents,
+          },
+          quantity: 1,
+        }];
     const metadata = {
       product: 'ia-na-pratica',
       plan,
@@ -84,7 +94,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const session = await stripe.checkout.sessions.create({
       mode,
       client_reference_id: clientReferenceId,
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: lineItems,
       metadata,
       ...(mode === 'subscription' ? { subscription_data: { metadata } } : {}),
       ...(user.email ? { customer_email: user.email } : {}),

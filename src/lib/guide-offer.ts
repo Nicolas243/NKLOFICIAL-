@@ -3,6 +3,21 @@ import { GUIDE_PAGE_CTA_VARIANTS as GUIDE_PAGE_CTA_IDS } from '@/lib/offer-exper
 export const GUIDE_PRICE_CENTS = 3900;
 export const ENGLISH_EBOOK_PRICE_CENTS = 4700;
 export const GUIDE_COMPARE_AT_CENTS = 9700;
+
+export type OfferTier = 'essential' | 'complete' | 'vip';
+
+export const INCOME_GUIDE_TIER_PRICES_CENTS: Record<OfferTier, number> = {
+  essential: 1900,
+  complete: 3900,
+  vip: 24700,
+} as const;
+
+export const LANGUAGE_EBOOK_TIER_PRICES_CENTS: Record<OfferTier, number> = {
+  essential: 2700,
+  complete: 4700,
+  vip: 29700,
+} as const;
+
 export const GUIDE_TITLE = 'Guia Essencial Renda Extra 2027 | Portal NKL';
 export const ENGLISH_EBOOK_TITLE = 'Inglês para ganhar dinheiro | E-book Portal NKL';
 export const GUIDE_SUBSCRIPTION_PRICE_CENTS = 1900;
@@ -26,10 +41,33 @@ export const ALL_LANGUAGE_OFFER_VARIANTS = [
   'mandarin-ebook-sales-page',
 ] as const;
 
+export const ALL_LANGUAGE_OFFER_VARIANTS_WITH_TIERS = [
+  ...ALL_LANGUAGE_OFFER_VARIANTS,
+  ...ALL_LANGUAGE_OFFER_VARIANTS.map((variant) => `${variant}:essential`),
+  ...ALL_LANGUAGE_OFFER_VARIANTS.map((variant) => `${variant}:vip`),
+] as const;
+
 export const LANGUAGE_UPSELL_TIERS = [
   { ownedCount: 1, label: '2º Idioma', discountPercent: 30 as const, priceCents: 3290 },
   { ownedCount: 2, label: '3º+ Idioma', discountPercent: 50 as const, priceCents: 2350 },
 ] as const;
+
+export function extractOfferTier(offerVariant: string | null | undefined): OfferTier {
+  if (!offerVariant) return 'complete';
+  if (offerVariant.endsWith(':essential')) return 'essential';
+  if (offerVariant.endsWith(':vip')) return 'vip';
+  return 'complete';
+}
+
+export function stripOfferTier(offerVariant: string | null | undefined): string | undefined {
+  if (!offerVariant) return undefined;
+  return offerVariant.replace(/:(essential|vip)$/u, '');
+}
+
+export function withOfferTier(baseVariant: string, tier: OfferTier): string {
+  const cleanBase = stripOfferTier(baseVariant) || 'sales-page';
+  return tier === 'complete' ? cleanBase : `${cleanBase}:${tier}`;
+}
 
 export function calculateLanguageBundleDiscount(ownedLanguageCount: number): 0 | 30 | 50 {
   if (!Number.isFinite(ownedLanguageCount) || ownedLanguageCount <= 0) return 0;
@@ -57,7 +95,8 @@ export type LanguageEbookSlug = keyof typeof LANGUAGE_EBOOKS;
 export type LanguageEbookOfferVariant = (typeof LANGUAGE_EBOOKS)[LanguageEbookSlug]['offerVariant'];
 
 export function getLanguageEbookByOffer(offerVariant: string | null | undefined) {
-  return Object.values(LANGUAGE_EBOOKS).find((offer) => offer.offerVariant === offerVariant);
+  const baseOffer = stripOfferTier(offerVariant);
+  return Object.values(LANGUAGE_EBOOKS).find((offer) => offer.offerVariant === baseOffer);
 }
 
 export function isLanguageEbookOffer(offerVariant: string | null | undefined): boolean {
@@ -70,13 +109,37 @@ export function isComingSoonLanguageOffer(offerVariant: string | null | undefine
 }
 
 export function getGuideCancelPath(offerVariant: string | null | undefined): string {
-  if (offerVariant === ENGLISH_EBOOK_OFFER_VARIANT) return '/guias/ingles';
-  const languageEbook = getLanguageEbookByOffer(offerVariant);
+  const baseOffer = stripOfferTier(offerVariant);
+  if (baseOffer === ENGLISH_EBOOK_OFFER_VARIANT) return '/guias/ingles';
+  const languageEbook = getLanguageEbookByOffer(baseOffer);
   if (languageEbook) return `/guias/${languageEbook.slug}`;
   return '/guias/renda-extra';
 }
 export function isEnglishEbookOffer(offerVariant: string | null | undefined): boolean {
-  return offerVariant === ENGLISH_EBOOK_OFFER_VARIANT;
+  return stripOfferTier(offerVariant) === ENGLISH_EBOOK_OFFER_VARIANT;
+}
+
+export function getGuideTierPriceCents(
+  offerVariant: string | null | undefined,
+  tier: OfferTier,
+  ownedLanguageCount = 0,
+): { amountCents: number; discountPercent: 0 | 30 | 50 } {
+  const isLanguageOffer = isEnglishEbookOffer(offerVariant) || isLanguageEbookOffer(offerVariant);
+  if (isLanguageOffer) {
+    const basePrice = LANGUAGE_EBOOK_TIER_PRICES_CENTS[tier];
+    if (tier === 'vip') {
+      return { amountCents: basePrice, discountPercent: 0 };
+    }
+    const discountPercent = calculateLanguageBundleDiscount(ownedLanguageCount);
+    return {
+      amountCents: getDiscountedLanguagePriceCents(ownedLanguageCount, basePrice),
+      discountPercent,
+    };
+  }
+  return {
+    amountCents: INCOME_GUIDE_TIER_PRICES_CENTS[tier],
+    discountPercent: 0,
+  };
 }
 
 export type GuidePageCtaVariant = (typeof GUIDE_PAGE_CTA_IDS)[number];

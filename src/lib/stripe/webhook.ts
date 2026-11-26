@@ -16,8 +16,9 @@ import {
   userProfiles,
 } from '@/db/schema';
 import { env } from '@/env';
-import { isValidProductSlug, type ProductSlug } from '@/config/products';
+import { PAID_PRODUCT_SLUGS, isValidProductSlug, type ProductSlug } from '@/config/products';
 import { AI_PRODUCT_KEY } from '@/lib/ai-product';
+import { extractOfferTier } from '@/lib/guide-offer';
 import {
   grantEntitlementByOrder,
   isUndefinedTableError,
@@ -100,16 +101,22 @@ async function processGuidePurchase(session: Stripe.Checkout.Session, reference:
     const orderReference = typeof session.payment_intent === 'string'
       ? session.payment_intent
       : session.id;
-    await syncEntitlementSafely(
-      () =>
-        grantEntitlementByOrder({
-          userId: purchase.userId!,
-          productSlug,
-          orderReference,
-          expiresAt: null,
-        }),
-      'guide_purchase',
-    );
+    const isVipGuideBundle = extractOfferTier(purchase.offerVariant) === 'vip';
+    const slugsToGrant: ProductSlug[] = isVipGuideBundle
+      ? Array.from(new Set<ProductSlug>([productSlug, 'pacote-renda-extra', 'pacote-idiomas-ia', 'ebook-ingles']))
+      : [productSlug];
+    for (const slug of slugsToGrant) {
+      await syncEntitlementSafely(
+        () =>
+          grantEntitlementByOrder({
+            userId: purchase.userId!,
+            productSlug: slug,
+            orderReference,
+            expiresAt: null,
+          }),
+        isVipGuideBundle ? `guide_purchase_vip:${slug}` : 'guide_purchase',
+      );
+    }
   }
 
   const experiment = getOfferExperiment(purchase.offerVariant);
@@ -265,16 +272,20 @@ async function processAiOneTimePurchase(
   const orderReference = typeof session.payment_intent === 'string'
     ? session.payment_intent
     : session.id;
-  await syncEntitlementSafely(
-    () =>
-      grantEntitlementByOrder({
-        userId: reference.id,
-        productSlug,
-        orderReference,
-        expiresAt: null,
-      }),
-    'ai_one_time',
-  );
+  const slugsToGrant: readonly ProductSlug[] =
+    session.metadata?.plan === 'vip' ? PAID_PRODUCT_SLUGS : [productSlug];
+  for (const slug of slugsToGrant) {
+    await syncEntitlementSafely(
+      () =>
+        grantEntitlementByOrder({
+          userId: reference.id,
+          productSlug: slug,
+          orderReference,
+          expiresAt: null,
+        }),
+      session.metadata?.plan === 'vip' ? `ai_vip:${slug}` : 'ai_one_time',
+    );
+  }
 }
 
 async function processAiSubscription(

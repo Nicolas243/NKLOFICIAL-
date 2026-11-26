@@ -6,13 +6,14 @@ import { db } from '@/db';
 import { guidePurchases, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import {
-  ALL_LANGUAGE_OFFER_VARIANTS,
+  ALL_LANGUAGE_OFFER_VARIANTS_WITH_TIERS,
   ENGLISH_EBOOK_OFFER_VARIANT,
-  GUIDE_PRICE_CENTS,
-  calculateLanguageBundleDiscount,
-  getDiscountedLanguagePriceCents,
+  extractOfferTier,
+  getGuideTierPriceCents,
   isComingSoonLanguageOffer,
   isLanguageEbookOffer,
+  stripOfferTier,
+  withOfferTier,
 } from '@/lib/guide-offer';
 import {
   createGuestAccessToken,
@@ -26,6 +27,7 @@ import { createClient } from '@/lib/supabase/server';
 const checkoutSchema = z.object({
   productSlug: z.string().trim().max(80).optional(),
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
+  tier: z.enum(['essential', 'complete', 'vip']).optional(),
   fullName: z.string().trim().max(160).optional(),
   email: z.string().trim().max(320).optional(),
   cpf: z.string().trim().min(11).max(18),
@@ -64,12 +66,20 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Informe nome, e-mail, CPF e consentimento para continuar.' }, { status: 400 });
     }
-    const offerVariant = parsedBody.data.offerVariant
+    const rawOfferVariant = parsedBody.data.offerVariant
       ? parseValidatedOfferVariant(parsedBody.data.offerVariant)
       : undefined;
-    if (parsedBody.data.offerVariant && !offerVariant) {
+    if (parsedBody.data.offerVariant && !rawOfferVariant) {
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
     }
+    const tier = parsedBody.data.tier ?? extractOfferTier(rawOfferVariant);
+    const offerVariant = rawOfferVariant
+      ? withOfferTier(rawOfferVariant, tier)
+      : tier !== 'complete'
+        ? withOfferTier('sales-page', tier)
+        : undefined;
+    const baseOfferVariant = stripOfferTier(offerVariant);
+
     const rawProductSlug = parsedBody.data.productSlug;
     if (rawProductSlug !== undefined && !isValidProductSlug(rawProductSlug)) {
       return NextResponse.json({ error: 'invalid_checkout_request', message: 'Não foi possível preparar esta oferta.' }, { status: 400 });
@@ -87,11 +97,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       && profile.email.toLowerCase() === guestData.email,
     );
     const isLanguageOffer =
-      offerVariant === ENGLISH_EBOOK_OFFER_VARIANT || isLanguageEbookOffer(offerVariant);
+      baseOfferVariant === ENGLISH_EBOOK_OFFER_VARIANT || isLanguageEbookOffer(baseOfferVariant);
 
-    let discountPercent: 0 | 30 | 50 = 0;
-    let amountCents = GUIDE_PRICE_CENTS;
-    if (isLanguageOffer) {
+    let ownedLanguageCount = 0;
+    if (isLanguageOffer && tier !== 'vip') {
       const ownerCondition = usesAuthenticatedProfile && user?.id
         ? or(eq(guidePurchases.userId, user.id), eq(guidePurchases.email, guestData.email))
         : eq(guidePurchases.email, guestData.email);
@@ -101,18 +110,19 @@ export async function POST(request: Request): Promise<NextResponse> {
         .where(
           and(
             eq(guidePurchases.status, 'approved'),
-            inArray(guidePurchases.offerVariant, [...ALL_LANGUAGE_OFFER_VARIANTS]),
+            inArray(guidePurchases.offerVariant, [...ALL_LANGUAGE_OFFER_VARIANTS_WITH_TIERS]),
             ownerCondition,
           ),
         );
       const distinctOwnedOthers = new Set(
         ownedRows
-          .map((row) => row.offerVariant)
-          .filter((variant): variant is string => Boolean(variant) && variant !== offerVariant),
+          .map((row) => stripOfferTier(row.offerVariant))
+          .filter((variant): variant is string => Boolean(variant) && variant !== baseOfferVariant),
       );
-      discountPercent = calculateLanguageBundleDiscount(distinctOwnedOthers.size);
-      amountCents = getDiscountedLanguagePriceCents(distinctOwnedOthers.size);
+      ownedLanguageCount = distinctOwnedOthers.size;
     }
+
+    const { amountCents, discountPercent } = getGuideTierPriceCents(offerVariant, tier, ownedLanguageCount);
 
     const [purchase] = await db.insert(guidePurchases).values({
       userId: usesAuthenticatedProfile ? user?.id ?? null : null,

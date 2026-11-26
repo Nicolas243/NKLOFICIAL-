@@ -5,6 +5,8 @@ import { JsonLd } from '@/components/seo/json-ld';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Resource = [name: string, description: string, href: string];
+type FoundationLink = { label: string; href: string };
+type FoundationItem = [title: string, description: string, link?: FoundationLink];
 type LanguageContent = {
   slug: string;
   name: string;
@@ -12,7 +14,7 @@ type LanguageContent = {
   title: string;
   description: string;
   promise: string;
-  foundations: [string, string][];
+  foundations: FoundationItem[];
   lessons: [string, string][];
   plan: [string, string][];
   examples: [string, string][];
@@ -104,11 +106,23 @@ const languages: LanguageContent[] = [
     title: 'Comece mandarim do zero com uma trilha prática para começar hoje',
     description: 'Uma introdução gratuita a tons, pinyin, frases, caracteres, prática, recursos e um plano realista de 90 dias.',
     promise: 'Aprenda os sons primeiro, conecte pinyin a frases e só depois aumente a quantidade de caracteres.',
-    foundations: [['Tons antes da velocidade', 'Treine pares mínimos e grave sua voz. Um tom incorreto pode mudar o significado, então a escuta vem cedo.'], ['Pinyin com áudio', 'Use pinyin como apoio de pronúncia, não como substituto de ouvir falantes reais.'], ['Caracteres em contexto', 'Aprenda caracteres dentro de palavras e frases, observando componentes e ordem dos traços.'], ['Revisão curta', 'Cinco minutos todos os dias vencem uma sessão longa que você não repete.']],
+    foundations: [
+      ['Tons antes da velocidade', 'Treine pares mínimos e grave sua voz. Um tom incorreto pode mudar o significado, então a escuta vem cedo.'],
+      ['Pinyin com áudio', 'Use pinyin como apoio de pronúncia, não como substituto de ouvir falantes reais. Você pode testar frases em mandarim no conversor em português do Chinês Já, que marca os tons em cada sílaba e reproduz o áudio.', { label: 'Abrir conversor de Pinyin com tons e áudio (Chinês Já)', href: 'https://www.chinesja.com.br/p/pinyin-com-tons-e-audio-converter.html' }],
+      ['Caracteres em contexto', 'Aprenda caracteres dentro de palavras e frases, observando componentes e ordem dos traços.'],
+      ['Revisão curta', 'Cinco minutos todos os dias vencem uma sessão longa que você não repete.'],
+    ],
     lessons: [['Sons e tons', 'Comece pelos quatro tons, tom neutro e combinações frequentes. Ouça, imite e compare.'], ['Frases essenciais', 'Pratique 我是…, 我有…, 我喜欢… e perguntas simples com exemplos verdadeiros.'], ['Vocabulário', 'Aprenda números, horários, família, trabalho e necessidades com áudio e pinyin.'], ['Interação', 'Treine “请再说一遍”, “我不明白” e “怎么说…？” para pedir ajuda sem desistir.']],
     plan: [['Dias 1–7 · ouvir', 'Treine tons, saudações e apresentação gravando e comparando sua voz.'], ['Dias 8–30 · construir', 'Use pinyin, frases curtas, números e perguntas em situações concretas.'], ['Dias 31–60 · reconhecer', 'Pratique diálogos lentos, caracteres frequentes e mensagens curtas.'], ['Dias 61–90 · usar', 'Simule compras ou viagem, grave um áudio final e revise seus tons difíceis.']],
     examples: [['我叫 Ana。', 'Meu nome é Ana.'], ['请给我一杯咖啡。', 'Por favor, me dê um café.'], ['请再说一遍。', 'Por favor, diga novamente.'], ['我在家工作。', 'Eu trabalho em casa.']],
-    resources: [['HelloChinese', 'Curso estruturado com tons, pinyin, frases e exercícios curtos.', 'https://www.hellochinese.cc/'], ['ChinesePod', 'Lições de áudio e diálogos para diferentes níveis.', 'https://chinesepod.com/'], ['Yoyo Chinese', 'Vídeos claros para pronúncia e construção de frases.', 'https://yoyochinese.com/'], ['Pleco', 'Dicionário móvel para consultar caracteres, áudio e exemplos.', 'https://www.pleco.com/'], ['HSKReading', 'Leituras graduadas para reconhecer palavras em contexto.', 'https://hskreading.com/']],
+    resources: [
+      ['Chinês Já — Pinyin com tons e áudio', 'Ferramenta gratuita em português indicada por Rafael (Chinês Já): cole uma frase em chinês, confira os tons marcados nas sílabas e ouça a leitura em mandarim.', 'https://www.chinesja.com.br/p/pinyin-com-tons-e-audio-converter.html'],
+      ['HelloChinese', 'Curso estruturado com tons, pinyin, frases e exercícios curtos.', 'https://www.hellochinese.cc/'],
+      ['ChinesePod', 'Lições de áudio e diálogos para diferentes níveis.', 'https://chinesepod.com/'],
+      ['Yoyo Chinese', 'Vídeos claros para pronúncia e construção de frases.', 'https://yoyochinese.com/'],
+      ['Pleco', 'Dicionário móvel para consultar caracteres, áudio e exemplos.', 'https://www.pleco.com/'],
+      ['HSKReading', 'Leituras graduadas para reconhecer palavras em contexto.', 'https://hskreading.com/'],
+    ],
     questions: [{ prompt: 'Qual frase significa “Meu nome é Ana”?', options: ['我叫 Ana。', '我有 Ana。', '我喜欢 Ana。'], answer: '我叫 Ana。', explanation: '我叫 (wǒ jiào) é usado para dizer “eu me chamo”.' }, { prompt: 'Como pedir para repetir?', options: ['请再说一遍。', '我在家。', '谢谢你。'], answer: '请再说一遍。', explanation: '请再说一遍 (qǐng zài shuō yí biàn) significa “por favor, diga novamente”.' }, { prompt: 'Complete: “我 ___ 咖啡。”', options: ['喜欢', '叫', '是'], answer: '喜欢', explanation: '喜欢 (xǐhuan) significa gostar.' }],
   },
 ];
@@ -117,8 +131,46 @@ export function getLanguageContent(slug: string): LanguageContent {
   return languages.find((language) => language.slug === slug) ?? languages[0]!;
 }
 
-function ResourceList({ title, eyebrow, items }: { title: string; eyebrow: string; items: Resource[] }) {
-  return <section className="mt-14 scroll-mt-24"><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">{eyebrow}</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">{title}</h2><div className="mt-6 grid gap-3 md:grid-cols-2">{items.map(([name, description, href], index) => <a key={name} href={href} target="_blank" rel="noreferrer" className="group rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-orange hover:shadow-[var(--card-shadow)]"><div className="flex items-start gap-4"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-orange/10 font-playfair text-xl font-bold text-orange">{String(index + 1).padStart(2, '0')}</span><div><h3 className="font-bold group-hover:text-orange">{name}</h3><p className="mt-1 text-sm leading-relaxed text-foreground/70">{description}</p><span className="mt-3 inline-block text-xs font-bold uppercase tracking-wider text-neon">Abrir recurso ↗</span></div></div></a>)}</div></section>;
+function ResourceList({
+  title,
+  eyebrow,
+  items,
+  suggestionHref,
+}: {
+  title: string;
+  eyebrow: string;
+  items: Resource[];
+  suggestionHref?: string;
+}) {
+  return (
+    <section className="mt-14 scroll-mt-24">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">{eyebrow}</p>
+          <h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">{title}</h2>
+        </div>
+        {suggestionHref && (
+          <Link href={suggestionHref} className="inline-flex min-h-11 items-center rounded-lg border border-border px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-orange hover:text-orange">
+            Sugerir ferramenta para este idioma
+          </Link>
+        )}
+      </div>
+      <div className="mt-6 grid gap-3 md:grid-cols-2">
+        {items.map(([name, description, href], index) => (
+          <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="group rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-orange hover:shadow-[var(--card-shadow)]">
+            <div className="flex items-start gap-4">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-orange/10 font-playfair text-xl font-bold text-orange">{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 className="font-bold group-hover:text-orange">{name}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-foreground/70">{description}</p>
+                <span className="mt-3 inline-block text-xs font-bold uppercase tracking-wider text-neon">Abrir recurso ↗</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function LanguageLearningPage({ slug }: { slug: string }) {
@@ -145,11 +197,11 @@ export function LanguageLearningPage({ slug }: { slug: string }) {
     <header className="relative overflow-hidden rounded-[2rem] border border-orange/30 bg-income-surface px-5 py-10 md:px-12 md:py-16"><div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-orange/15 blur-3xl" /><div className="relative max-w-4xl"><p className="text-xs font-bold uppercase tracking-[0.24em] text-orange">Aprender · guia gratuito · faça junto · {content.nativeName}</p><h1 className="mt-4 max-w-4xl font-playfair text-4xl font-bold leading-[1.03] md:text-7xl">{content.title}</h1><p className="mt-6 max-w-3xl text-lg leading-relaxed text-foreground/75 md:text-xl">{content.description} {content.promise}</p><div className="mt-7 flex flex-wrap gap-3"><a href="#agora" className="rounded-md bg-orange px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-dark">Começar agora</a><a href="#plano" className="rounded-md border border-border px-5 py-3 text-sm font-bold transition hover:border-orange hover:text-orange">Ver plano de 90 dias</a><Link href={`/guias/${content.slug}`} className="rounded-md border border-orange/40 bg-orange/10 px-5 py-3 text-sm font-bold text-orange transition hover:bg-orange hover:text-white">Ver e-book de {content.name}</Link></div></div></header>
     <nav aria-label="Idiomas e seções" className="mt-6 rounded-2xl border border-border bg-surface p-4"><p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/55">Escolha seu próximo passo</p><div className="mt-3 flex flex-wrap gap-2"><Link href="/blog/aprender/ingles" className="rounded-full border border-border px-3 py-2 text-sm font-semibold hover:border-orange hover:text-orange">English</Link>{languages.map((language) => <Link key={language.slug} href={`/blog/aprender/${language.slug}`} className={`rounded-full border px-3 py-2 text-sm font-semibold ${language.slug === slug ? 'border-orange text-orange' : 'border-border hover:border-orange hover:text-orange'}`}>{language.nativeName}</Link>)} </div><div className="mt-3 flex flex-wrap gap-2">{nav.map(([id, label]) => <a key={id} href={`#${id}`} className="rounded-full border border-border px-3 py-2 text-sm font-semibold transition hover:border-orange hover:text-orange">{label}</a>)}</div></nav>
     <section id="agora" className="mt-10 scroll-mt-24 rounded-2xl border border-neon/25 bg-neon/5 p-5 md:p-8"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Faça enquanto lê</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">O exercício de 90 segundos</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/75">Grave sua voz dizendo: <strong>{content.examples[0][0]} · {content.examples[1][0]} · {content.examples[2][0]} · {content.examples[3][0]}</strong> Depois ouça uma vez, anote uma melhoria e repita amanhã.</p><div className="mt-5 grid gap-3 sm:grid-cols-3">{['Grave sem buscar perfeição', 'Ouça e anote uma melhoria', 'Repita amanhã por 90 segundos'].map((step, index) => <div key={step} className="rounded-xl border border-border bg-surface p-4"><span className="font-playfair text-3xl font-bold text-orange">0{index + 1}</span><p className="mt-2 text-sm font-semibold">{step}</p></div>)}</div></section>
-    <section id="fundamentos" className="mt-14 scroll-mt-24"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">1 · O método</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">Aprender fica leve quando você sabe o que fazer com cada palavra.</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/70">A meta não é parecer nativo. É compreender um pouco mais, comunicar uma ideia e voltar amanhã com menos medo.</p><div className="mt-6 grid gap-4 sm:grid-cols-2">{content.foundations.map(([title, text]) => <article key={title} className="rounded-2xl border border-border bg-surface p-5"><h3 className="font-playfair text-2xl font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p></article>)}</div></section>
+    <section id="fundamentos" className="mt-14 scroll-mt-24"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">1 · O método</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">Aprender fica leve quando você sabe o que fazer com cada palavra.</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/70">A meta não é parecer nativo. É compreender um pouco mais, comunicar uma ideia e voltar amanhã com menos medo.</p><div className="mt-6 grid gap-4 sm:grid-cols-2">{content.foundations.map(([title, text, link]) => <article key={title} className="rounded-2xl border border-border bg-surface p-5"><h3 className="font-playfair text-2xl font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p>{link && <a href={link.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-10 items-center rounded-lg border border-orange/40 bg-orange/10 px-3.5 py-2 text-xs font-bold text-orange transition hover:bg-orange hover:text-white">{link.label} ↗</a>}</article>)}</div></section>
     <section id="licoes" className="mt-14 scroll-mt-24"><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">2 · Lições que viram fala</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">Uma habilidade por vez, sempre com exemplo.</h2><div className="mt-6 grid gap-3 md:grid-cols-2">{content.lessons.map(([title, text], index) => <article key={title} className="rounded-xl border border-border bg-surface p-5"><span className="font-playfair text-3xl font-bold text-orange">0{index + 1}</span><h3 className="mt-2 font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p><div className="mt-4 space-y-1 border-t border-border pt-3 text-sm">{content.examples.map(([target, translation]) => <p key={target}><strong>{target}</strong> <span className="text-foreground/60">— {translation}</span></p>)}</div></article>)}</div></section>
     <section id="plano" className="mt-14 scroll-mt-24 rounded-2xl border border-border bg-income-surface p-5 md:p-8"><p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">3 · Um plano possível</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">90 dias para sair do “um dia eu começo”.</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/70">Faça 20 minutos, cinco dias por semana: revise, escute ou leia e produza uma frase. Perdeu um dia? Retome no próximo.</p><div className="mt-7 grid gap-3 md:grid-cols-2">{content.plan.map(([title, text]) => <article key={title} className="rounded-xl border border-border bg-surface/75 p-4"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p></article>)}</div></section>
     <EnglishLearningPractice questions={content.questions} labels={{ eyebrow: 'Pratique agora', title: 'Um diagnóstico rápido, sem nota e sem vergonha', description: 'Responda, leia a explicação e volte amanhã. O objetivo é identificar o próximo passo, não provar que você já sabe.', score: 'Acertos nesta visita', correct: 'Correto!', retry: 'Ainda não.' }} />
-    <ResourceList eyebrow="4 · Pratique sem pagar" title="Cinco recursos para começar hoje" items={content.resources} />
+    <ResourceList eyebrow="4 · Pratique sem pagar" title="Recursos gratuitos para começar hoje" items={content.resources} suggestionHref={`/sugerir?area=idiomas&origem=${encodeURIComponent(`/blog/aprender/${content.slug}`)}`} />
     <section id="recursos" className="mt-14 scroll-mt-24 rounded-2xl border border-neon/25 bg-neon/5 p-5 md:p-8"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">5 · Uma escolha inteligente</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">Não baixe tudo. Escolha um recurso por habilidade.</h2><div className="mt-6 grid gap-3 sm:grid-cols-2">{['Ouvir: um áudio curto', 'Falar: o gravador do celular', 'Ler: um texto graduado', 'Escrever: cinco frases verdadeiras'].map((item) => <p key={item} className="rounded-xl border border-border bg-surface p-4 text-sm font-semibold"><span className="mr-2 text-orange">✓</span>{item}</p>)}</div><p className="mt-5 text-sm leading-relaxed text-foreground/70"><strong>Faça agora:</strong> escolha apenas um recurso, marque 20 minutos e termine uma tarefa pequena.</p></section>
     <ResourceList eyebrow="6 · Para quem quer avançar" title="Aulas e materiais para acelerar com orientação" items={content.resources.slice(0, 3).map(([name, description, href]) => [`${name} · material de referência`, description, href])} />
     <p id="investir" className="mt-4 text-xs leading-relaxed text-foreground/55">Materiais e aulas podem oferecer estrutura e feedback, mas não garantem fluência ou renda. Antes de comprar, confira preço, renovação, suporte e reembolso.</p>

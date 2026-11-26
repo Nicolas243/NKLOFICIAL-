@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { trackOfferFunnelEvent } from '@/lib/analytics';
+import { trackBeginCheckout, trackOfferFunnelEvent } from '@/lib/analytics';
 import type { GuideResumeIntent } from '@/lib/auth/return-intent';
+import type { OfferTier } from '@/lib/guide-offer';
 
 type CheckoutResponse = {
   error?: string;
@@ -14,6 +15,9 @@ type GuideCheckoutButtonProps = {
   label?: string;
   enabled?: boolean;
   offerVariant?: string;
+  tier?: OfferTier;
+  priceBrl?: number;
+  funnelName?: string;
   resumeIntent?: GuideResumeIntent | null;
 };
 
@@ -21,6 +25,9 @@ export function GuideCheckoutButton({
   label = 'Liberar meu acesso',
   enabled = true,
   offerVariant = 'sales-page',
+  tier,
+  priceBrl,
+  funnelName = 'guide-checkout',
   resumeIntent = null,
 }: GuideCheckoutButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
@@ -39,6 +46,12 @@ export function GuideCheckoutButton({
 
   async function createCheckout(): Promise<void> {
     trackOfferFunnelEvent(offerVariant, 'checkout');
+    trackBeginCheckout({
+      funnel: funnelName,
+      tier: tier ?? 'complete',
+      valueBrl: typeof priceBrl === 'number' ? priceBrl : 39,
+      offerVariant,
+    });
     setIsLoading(true);
     setMessage(null);
     try {
@@ -47,6 +60,7 @@ export function GuideCheckoutButton({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           offerVariant,
+          ...(tier ? { tier } : {}),
           fullName,
           email,
           cpf,

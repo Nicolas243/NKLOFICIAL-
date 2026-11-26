@@ -94,6 +94,7 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
       id: guidePurchases.id,
       status: guidePurchases.status,
       offerVariant: guidePurchases.offerVariant,
+      amountCents: guidePurchases.amountCents,
       paymentId: guidePurchases.paymentId,
       downloadCount: guidePurchases.downloadCount,
       maxDownloads: guidePurchases.maxDownloads,
@@ -132,6 +133,12 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
   const purchaseDownloadsRemaining = purchase ? Math.max(purchase.maxDownloads - purchase.downloadCount, 0) : 0;
   const subscriptionDownloadsRemaining = subscription ? Math.max(subscription.maxDownloads - subscription.downloadCount, 0) : 0;
 
+  const purchaseValueBrl = purchase?.amountCents
+    ? purchase.amountCents / 100
+    : isPaidEbook
+      ? 47
+      : 39;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       {isApproved ? (
@@ -139,7 +146,7 @@ export default async function GuidePurchaseSuccessPage({ searchParams }: Success
           {paymentId && (
             <GuidePurchaseAnalytics
               transactionId={paymentId}
-              value={isPaidEbook ? 47 : 39}
+              value={purchaseValueBrl}
               offerVariant={purchase?.offerVariant}
             />
           )}

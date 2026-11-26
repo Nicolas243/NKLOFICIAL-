@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/next';
-import { isIncomePortalPath } from '@/lib/income-portal';
+import { getPortalAnalyticsArea } from '@/lib/analytics';
 import { createPageViewEvent } from '@/lib/analytics-pageview';
 
 export const CONSENT_STORAGE_KEY = 'nkl_privacy_consent';
@@ -13,6 +13,8 @@ export const CONSENT_EVENT = 'nkl:privacy-consent';
 const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com';
+const UTM_STORAGE_KEY = 'nkl_utm_attribution_v1';
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
 type Consent = 'accepted' | 'rejected';
 
 type PostHogClient = typeof import('posthog-js').default;
@@ -24,8 +26,35 @@ export function getPostHogClient(): PostHogClient | null {
   return posthogClient;
 }
 
-function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null; isIncomePortal: boolean }) {
+function readOrCaptureUtmParams(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const search = new URLSearchParams(window.location.search);
+    const fresh: Record<string, string> = {};
+    for (const key of UTM_KEYS) {
+      const value = search.get(key)?.trim();
+      if (value) fresh[key] = value.slice(0, 120);
+    }
+    if (Object.keys(fresh).length > 0) {
+      window.sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+    const stored = window.sessionStorage.getItem(UTM_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Record<string, unknown>;
+      return Object.fromEntries(
+        Object.entries(parsed).filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
+      );
+    }
+  } catch {
+    // Ignore storage errors in restricted contexts.
+  }
+  return {};
+}
+
+function ConsentAnalytics({ consent, portalArea }: { consent: Consent | null; portalArea: string }) {
   const pathname = usePathname();
+  const lastTrackedPathRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (consent !== 'accepted') {
@@ -35,7 +64,14 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
         posthogClient = null;
         posthogInitialized = false;
       }
+      lastTrackedPathRef.current = null;
       return;
+    }
+
+    const utms = readOrCaptureUtmParams();
+    window.clarity?.('set', 'portal_area', portalArea);
+    for (const [utmKey, utmValue] of Object.entries(utms)) {
+      window.clarity?.('set', utmKey, utmValue);
     }
 
     if (!POSTHOG_KEY) return;
@@ -45,7 +81,6 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
       .then(({ default: posthog }) => {
         if (cancelled) return;
 
-        const shouldCaptureInitialPageview = !posthogInitialized;
         if (!posthogInitialized) {
           posthog.init(POSTHOG_KEY, {
             api_host: POSTHOG_HOST,
@@ -58,9 +93,10 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
         }
 
         posthogClient = posthog;
-        posthog.register({ portal_area: isIncomePortal ? 'income' : 'music' });
-        if (shouldCaptureInitialPageview) {
-          posthog.capture('$pageview', { $current_url: window.location.href });
+        posthog.register({ portal_area: portalArea, ...utms });
+        if (lastTrackedPathRef.current !== pathname) {
+          lastTrackedPathRef.current = pathname;
+          posthog.capture('$pageview', { $current_url: window.location.href, portal_area: portalArea });
         }
       })
       .catch((error: unknown) => {
@@ -70,7 +106,7 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
     return () => {
       cancelled = true;
     };
-  }, [consent, isIncomePortal]);
+  }, [consent, pathname, portalArea]);
 
   useEffect(() => {
     if (consent !== 'accepted') return;
@@ -82,9 +118,13 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
         window.dataLayer?.push([command, eventName, params]);
       };
     }
-    window.gtag?.('event', pageView.eventName, pageView.params);
-    getPostHogClient()?.capture('$pageview', { $current_url: window.location.href });
-  }, [consent, pathname]);
+    window.gtag?.('event', pageView.eventName, { ...pageView.params, portal_area: portalArea });
+    window.clarity?.('set', 'portal_area', portalArea);
+    if (posthogInitialized && lastTrackedPathRef.current !== pathname) {
+      lastTrackedPathRef.current = pathname;
+      getPostHogClient()?.capture('$pageview', { $current_url: window.location.href, portal_area: portalArea });
+    }
+  }, [consent, pathname, portalArea]);
 
   if (consent !== 'accepted') return null;
 
@@ -109,7 +149,7 @@ function ConsentAnalytics({ consent, isIncomePortal }: { consent: Consent | null
 export function PrivacyScripts() {
   const pathname = usePathname();
   const [consent, setConsent] = useState<Consent | null>(null);
-  const isIncomePortal = isIncomePortalPath(pathname);
+  const portalArea = getPortalAnalyticsArea(pathname);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(CONSENT_STORAGE_KEY);
@@ -127,7 +167,7 @@ export function PrivacyScripts() {
 
   return (
     <>
-      <ConsentAnalytics consent={consent} isIncomePortal={isIncomePortal} />
+      <ConsentAnalytics consent={consent} portalArea={portalArea} />
       {consent === 'accepted' && (
         <>
           <Script
