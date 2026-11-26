@@ -2,12 +2,11 @@
 
 ## Foco Atual
 
-- **Estratégia 3 Preços Universal + Catálogo Completo 12 Produtos Stripe (2026-11-26):**
-  - **3 preços em todas as frentes:** `ProductCheckoutClient` agora oferece 3 opções em IA (`R$ 39/mês`, `R$ 99`*, `R$ 397` Passe Total) e em todos os guias/Bússola/Idiomas (`R$ 19/39/247` ou `R$ 27/47/297`); `/programas/anuncie` ganhou presets (`1` / `3`* / `10` cotas); e `/dashboard/luthier/planos` exibe Gratuito (`R$ 0`), Premium Mensal (`R$ 49,90/mês`*) e Mestre Luthier Anual (`R$ 479/ano`, 20% OFF).
-  - **Catálogo Stripe 12 produtos / 33 preços (`scripts/migrate-stripe-account.mjs`):** provisionamento duplo idempotente validado no Sandbox `acct_1UbswFItNBn1daZu` (`12` produtos, `33` preços, cupons `30%`/`50%` e webhook 13 eventos).
-  - **Pendência para virar para `nkloficial` Live:** `.env.local` ainda aponta `STRIPE_SECRET_KEY` para `Buymeacoffee` (`acct_1UZsOzQzOKRNmIif`); aguardando NKL_OFICIAL colar `pk_live_` / `sk_live_` da `nkloficial` em `.env.local` para rodar `npm run stripe:provision -- --sync-vercel-prod` e `vercel deploy --prod --yes`.
+- **Virada Definitiva Stripe Live `nkloficial` (`acct_1UcBBKI4kUNNokuF`) & Organização `.env.local` (2026-11-26):**
+  - **`.env.local` higienizado:** 53 chaves ativas sem duplicidade, 35 variáveis legadas (`Buymeacoffee`, `MERCADOPAGO_*`, duplicatas minúsculas) preservadas comentadas em `# 9. Arquivo Legado`, chaves Live `nkloficial` ativas e Sandbox `TEST_BACKUP_*` isolado para testes.
+  - **Catálogo, Webhook e Vercel Production Live:** removidos 3 preços órfãos copiados do sandbox e provisionados na conta Live `acct_1UcBBKI4kUNNokuF` (`nkloficial`) todos os **12 produtos / 33 preços**, cupons `nkl_idioma_30`/`nkl_idioma_50` e webhook `we_1UgAYZI4kUNNokuFEco8FYwc` (`https://nkloficial.com.br/api/payments/stripe-webhook`, 13 eventos), com `--write-env-local` e sincronização das 6 variáveis para Vercel Production.
+  - **Próximas ações externas:** ver `docs/CHECKLIST-MESTRE-NKL.md` (Cloudflare Email Routing, Google Search Console, afiliados, Amazon KDP e NotebookLM; Prioridade 1 Stripe Live concluída).
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 
-1. **Troca definitiva Stripe NKL -> Produção:** quando ativar a conta Live `nkloficial` e tiver `pk_live_...` + `sk_live_...` em `.env.local`, rodar `npm run stripe:provision -- --sync-vercel-prod` e depois `vercel deploy --prod --yes`.
-2. **Ações consolidadas:** seguir `docs/CHECKLIST-MESTRE-NKL.md` (Cloudflare Email Routing, plugins Stripe/Cloudflare/Vercel, Google Search Console, afiliados, Amazon KDP, NotebookLM e VAPID opcional).
+1. **Cloudflare / Search Console / Afiliados / KDP / NotebookLM:** seguir prioridades 2–4 em `docs/CHECKLIST-MESTRE-NKL.md`.

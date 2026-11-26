@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import Stripe from 'stripe';
@@ -141,6 +141,42 @@ function getArgValue(args, flag, fallback) {
     return args[idx + 1];
   }
   return fallback;
+}
+
+export function upsertEnvLines(rawText, updates) {
+  const remaining = new Map(Object.entries(updates));
+  const lines = rawText.split(/\r?\n/u);
+  const out = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+      const key = trimmed.slice(0, trimmed.indexOf('=')).trim();
+      if (remaining.has(key)) {
+        out.push(`${key}=${remaining.get(key)}`);
+        remaining.delete(key);
+        continue;
+      }
+    }
+    if (trimmed.startsWith('# 4. Stripe') && remaining.size > 0) {
+      for (const [key, val] of remaining.entries()) {
+        out.push(`${key}=${val}`);
+      }
+      remaining.clear();
+      out.push('');
+    }
+    out.push(line);
+  }
+
+  for (const [key, val] of remaining.entries()) {
+    out.push(`${key}=${val}`);
+  }
+  return out.join('\n');
+}
+
+function upsertEnvLocalVars(envLocalPath, updates) {
+  const raw = existsSync(envLocalPath) ? readFileSync(envLocalPath, 'utf8') : '';
+  writeFileSync(envLocalPath, upsertEnvLines(raw, updates), 'utf8');
 }
 
 function upsertVercelProductionEnv(name, value) {
@@ -287,6 +323,7 @@ export async function main() {
   const keyEnv = getArgValue(args, '--key-env', 'STRIPE_SECRET_KEY');
   const pubEnv = getArgValue(args, '--pub-env', 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY');
   const syncVercelProd = args.includes('--sync-vercel-prod');
+  const writeEnvLocal = args.includes('--write-env-local');
   const allowTestInProd = args.includes('--allow-test-in-prod');
   const skipWebhook = args.includes('--skip-webhook');
 
@@ -352,6 +389,17 @@ export async function main() {
       createdPrices: c.prices.filter((p) => p.created).length,
     })),
   }, null, 2));
+
+  if (writeEnvLocal) {
+    const localUpdates = {
+      AI_SUBSCRIPTION_STRIPE_PRICE_ID: catalog.envPriceMap.AI_SUBSCRIPTION_STRIPE_PRICE_ID.id,
+      AI_ONE_TIME_STRIPE_PRICE_ID: catalog.envPriceMap.AI_ONE_TIME_STRIPE_PRICE_ID.id,
+      AI_VIP_STRIPE_PRICE_ID: catalog.envPriceMap.AI_VIP_STRIPE_PRICE_ID.id,
+      ...(webhook.secret ? { STRIPE_WEBHOOK_SECRET: webhook.secret } : {}),
+    };
+    upsertEnvLocalVars(envLocalPath, localUpdates);
+    console.log(`[ENV.LOCAL] persisted ${Object.keys(localUpdates).join(', ')}`);
+  }
 
   if (syncVercelProd) {
     const varsToSync = [

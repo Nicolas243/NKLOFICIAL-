@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { STRIPE_CATALOG_SPEC, assertLiveProductionSafety, parseEnvFile } from './migrate-stripe-account.mjs';
+import { STRIPE_CATALOG_SPEC, assertLiveProductionSafety, parseEnvFile, upsertEnvLines } from './migrate-stripe-account.mjs';
 
 test('assertLiveProductionSafety blocks test keys and inactive accounts when syncing prod', () => {
   assert.throws(
@@ -45,6 +45,16 @@ test('parseEnvFile parses quotes and ignores comments safely', () => {
   const parsed = parseEnvFile('# comment\nSTRIPE_SECRET_KEY="sk_test_abc"\nOTHER=\'val\'\n');
   assert.equal(parsed.STRIPE_SECRET_KEY, 'sk_test_abc');
   assert.equal(parsed.OTHER, 'val');
+});
+
+test('upsertEnvLines replaces existing keys in place and inserts new keys cleanly', () => {
+  const updated = upsertEnvLines(
+    'STRIPE_SECRET_KEY=sk_live_1\n# 4. Stripe — Sandbox\nTEST=1',
+    { STRIPE_SECRET_KEY: 'sk_live_2', STRIPE_WEBHOOK_SECRET: 'whsec_test' },
+  );
+  assert.ok(updated.includes('STRIPE_SECRET_KEY=sk_live_2'));
+  assert.ok(!updated.includes('sk_live_1'));
+  assert.ok(updated.includes('STRIPE_WEBHOOK_SECRET=whsec_test'));
 });
 
 test('STRIPE_CATALOG_SPEC defines all 12 Portal NKL products and 33 integer BRL prices', () => {

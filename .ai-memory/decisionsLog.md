@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-024 (2026-11-26) Cutover Live Stripe `nkloficial` (`acct_1UcBBKI4kUNNokuF`) & Organização `.env.local`
+- Decisao: consolidar `.env.local` em 9 seções com zero duplicidades ativas (preservando entradas antigas como `# LEGACY:`), adicionar `--write-env-local` ao `migrate-stripe-account.mjs`, desativar os 3 preços órfãos copiados sem `nickname` em `acct_1UcBBKI4kUNNokuF` e provisionar todos os 12 produtos / 33 preços, cupons e webhook oficial direto na conta Live `nkloficial` + Vercel Production.
+- Motivo: chaves duplicadas no `.env.local` (como `CLINE_API_KEY` vazia e credenciais `Buymeacoffee`) causavam sobrescrita silenciosa, e o webhook secret Live recém-criado só é retornado pelo Stripe no momento da criação.
+- Descartado: manter variáveis repetidas no `.env.local`, copiar `STRIPE_WEBHOOK_SECRET` antigo do `Buymeacoffee` ou deixar preços órfãos misturados no catálogo Live.
+
 ## ADR-023 (2026-11-26) 3 Faixas de Preço Universais + Provisionamento Idempotente de 12 Produtos / 33 Preços no Stripe
 - Decisao: adicionar seleção completa de 3 opções em `ProductCheckoutClient` (IA `R$ 39/99/397`, Renda/Bússola `R$ 19/39/247`, Idiomas `R$ 27/47/297`), presets de 1/3/10 cotas em `AdCampaignForm` e plano anual `R$ 479/ano` em `/dashboard/luthier/planos` + `buildPremiumCheckoutParams`, além de expandir `scripts/migrate-stripe-account.mjs` para provisionar e verificar os 12 produtos e 33 preços BRL via `metadata.portal_catalog_key` e `metadata.portal_price_key`.
 - Motivo: garantir que toda superfície comercial do portal aplique Decoy Pricing com checkout real funcionando em todas as faixas e que a virada da conta Live `nkloficial` crie o catálogo inteiro de forma reproduzível em 1 comando sem tocar em `Buymeacoffee` (`acct_1UZsOzQzOKRNmIif`).

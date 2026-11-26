@@ -4,14 +4,10 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 ---
 
-## Prioridade 1 — Pagamentos e Conta Própria no Stripe (NKL)
+## Prioridade 1 — Pagamentos e Conta Própria no Stripe (NKL) [CONCLUÍDO em 2026-11-26]
 
-1. **Ativar a conta `nkloficial` no modo Live (Produção):**
-   - No painel do Stripe da organização **NKL**, saia do modo *Ambiente de teste* (atual `acct_1UbswFItNBn1daZu`) e conclua o cadastro/CNPJ/conta bancária no modo **Produção (Live)**.
-2. **Migrar chaves no `.env.local` e sincronizar Vercel com 1 comando:**
-   - Cole a `pk_live_...` em `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` e a `sk_live_...` em `STRIPE_SECRET_KEY` no seu `.env.local`.
-   - Rode `npm run stripe:provision -- --sync-vercel-prod` e depois `vercel deploy --prod --yes`.
-   - O script cria automaticamente produto, 3 preços (R$ 39/mês, R$ 99, R$ 397), cupons de 30%/50% de idiomas, webhook oficial de 13 eventos e atualiza a Vercel sem expor segredos.
+1. ~~**Ativar a conta `nkloficial` no modo Live (Produção):**~~ CONCLUÍDO (`acct_1UcBBKI4kUNNokuF`, `charges_enabled=true`, `payouts_enabled=true`).
+2. ~~**Migrar chaves no `.env.local` e sincronizar Vercel:**~~ CONCLUÍDO (`.env.local` limpo com 53 chaves ativas, 12 produtos e 33 preços provisionados, cupons `nkl_idioma_30`/`50`, webhook `we_1UgAYZI4kUNNokuFEco8FYwc` com 13 eventos e 6 variáveis sincronizadas na Vercel Production).
 
 ---
 
