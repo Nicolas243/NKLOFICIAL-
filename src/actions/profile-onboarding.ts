@@ -19,13 +19,16 @@ function formString(formData: FormData, name: string): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-const MUSIC_ROLES = new Set(['Musico', 'Lojista', 'Luthier', 'Professor', 'Aluno']);
+const MUSIC_ROLES = new Set(['Musico', 'Músico', 'Lojista', 'Luthier', 'Professor', 'Aluno']);
 
 function selectedRoles(formData: FormData): string[] {
   return formData
     .getAll('papel')
     .filter((value): value is string => typeof value === 'string')
-    .map((value) => value.trim())
+    .map((value) => {
+      const trimmed = value.trim();
+      return trimmed === 'Musico' ? 'Músico' : trimmed;
+    })
     .filter((value, index, values) => MUSIC_ROLES.has(value) && values.indexOf(value) === index);
 }
 
@@ -96,6 +99,9 @@ export async function completeProfileOnboarding(
         : existingProfile?.role ?? 'user';
     const profileId = existingProfile?.id ?? user.id;
 
+    const musicProfileEnabled = includesMusic(context);
+    const incomeProfileEnabled = context === 'income' || context === 'both';
+
     if (existingProfile) {
       await db
         .update(userProfiles)
@@ -103,7 +109,9 @@ export async function completeProfileOnboarding(
           email: user.email,
           role: profileRole,
           fullName,
-          ...(includesMusic(context)
+          musicProfileEnabled,
+          incomeProfileEnabled,
+          ...(musicProfileEnabled
             ? {
                 papel,
                 instrumento,
@@ -118,9 +126,11 @@ export async function completeProfileOnboarding(
         email: user.email,
         role: profileRole,
         fullName,
-        papel: includesMusic(context) ? papel : null,
-        instrumento: includesMusic(context) ? instrumento : null,
-        anosExperiencia: includesMusic(context) ? anosExperiencia : 0,
+        musicProfileEnabled,
+        incomeProfileEnabled,
+        papel: musicProfileEnabled ? papel : null,
+        instrumento: musicProfileEnabled ? instrumento : null,
+        anosExperiencia: musicProfileEnabled ? anosExperiencia : 0,
       });
     }
   } catch (error) {

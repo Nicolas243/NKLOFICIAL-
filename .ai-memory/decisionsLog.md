@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-025 (2026-11-26) Cloudflare Email Routing Live, Perfil Modular (`0052`), Bússola/Stripe Cancel URL & Alinhamento Não Monotônico em 6 Idiomas
+- Decisao: ativar Cloudflare Email Routing (`MX`/`SPF`/DKIM) preservando Resend, aplicar `drizzle/0052_profile_modes.sql` (`music_profile_enabled`/`income_profile_enabled` + `birth_date`) com auto-ativação em ações musicais, isolar fallback Upstash em `/api/materials`, calcular `cancel_url` dinâmico via `resolveSafeCheckoutCancelUrl`, adotar `.ics` no Planner, inserir cards de venda a cada 4 oportunidades em `/programas` e refatorar `tokenizeBilingualExample` com `CJK_LEXICON` e seleção de spans disjuntos.
+- Motivo: eliminar 502 em `/api/materials` e redirecionamento errado pós-cancelamento Stripe (`/ofertas/bussola-negocios/checkout` voltando para `/guias/renda-extra`), evitar ruído musical para contas de renda extra, remover travas de impressão HTML e corrigir desalinhamentos de cor em ordens sintáticas cruzadas nos 6 idiomas.
+- Descartado: manter `/sugerir` sujeito a rate-limit Upstash indisponível, exigir modo musical fixo em `/perfil`, manter `(R$ 47)`/`R$ 39` antes do checkout ou parear palavras bilíngues estritamente da esquerda para a direita.
+
 ## ADR-024 (2026-11-26) Cutover Live Stripe `nkloficial` (`acct_1UcBBKI4kUNNokuF`) & Organização `.env.local`
 - Decisao: consolidar `.env.local` em 9 seções com zero duplicidades ativas (preservando entradas antigas como `# LEGACY:`), adicionar `--write-env-local` ao `migrate-stripe-account.mjs`, desativar os 3 preços órfãos copiados sem `nickname` em `acct_1UcBBKI4kUNNokuF` e provisionar todos os 12 produtos / 33 preços, cupons e webhook oficial direto na conta Live `nkloficial` + Vercel Production.
 - Motivo: chaves duplicadas no `.env.local` (como `CLINE_API_KEY` vazia e credenciais `Buymeacoffee`) causavam sobrescrita silenciosa, e o webhook secret Live recém-criado só é retornado pelo Stripe no momento da criação.

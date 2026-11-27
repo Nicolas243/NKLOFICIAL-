@@ -8,7 +8,8 @@ import {
   getAiOfferStripePriceId,
   getAiOfferTitle,
 } from '@/lib/ai-product';
-import { absoluteSiteUrl } from '@/lib/site';
+import { SITE_URL, absoluteSiteUrl } from '@/lib/site';
+import { resolveSafeCheckoutCancelUrl } from '@/lib/stripe/checkout';
 import { getStripeApiKey } from '@/lib/stripe/config';
 import { getStripeClient } from '@/lib/stripe/server';
 import { createClient } from '@/lib/supabase/server';
@@ -16,6 +17,7 @@ import { createClient } from '@/lib/supabase/server';
 const checkoutRequestSchema = z.object({
   plan: z.enum(['one_time', 'subscription', 'vip']),
   productSlug: z.string().trim().max(80).optional(),
+  cancelPath: z.string().trim().max(300).optional(),
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -41,7 +43,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const { plan, productSlug: rawProductSlug } = parsed.data;
+    const { plan, productSlug: rawProductSlug, cancelPath } = parsed.data;
     if (rawProductSlug !== undefined && !isValidProductSlug(rawProductSlug)) {
       return NextResponse.json(
         { error: 'invalid_ai_checkout_request', message: 'Produto de checkout inválido.' },
@@ -103,11 +105,13 @@ export async function POST(request: Request): Promise<NextResponse> {
           ? `/app/${resolvedProductSlug}?checkout=success`
           : '/ia/curso?checkout=success',
       ),
-      cancel_url: absoluteSiteUrl(
-        resolvedProductSlug
-          ? `/ofertas/${resolvedProductSlug}?checkout=cancelled`
-          : '/ia/oferta?checkout=cancelled',
-      ),
+      cancel_url: resolveSafeCheckoutCancelUrl({
+        siteUrl: SITE_URL,
+        cancelPath,
+        productSlug: resolvedProductSlug,
+        referer: request.headers.get('referer'),
+        fallbackPath: '/ia/oferta?checkout=cancelled',
+      }),
     });
 
     if (!session.url) {

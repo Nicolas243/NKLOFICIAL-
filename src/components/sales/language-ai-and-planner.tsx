@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { Check, Copy, Printer, Sparkles } from 'lucide-react';
+import { CalendarPlus, Check, Copy, Sparkles } from 'lucide-react';
 import { LANGUAGE_UPSELL_TIERS, formatBrlFromCents } from '@/lib/guide-offer';
 
 export type LanguagePlannerSlug =
@@ -100,6 +100,87 @@ const OTHER_LANGUAGE_LINKS: ReadonlyArray<{ slug: LanguagePlannerSlug; label: st
   { slug: 'chines', label: 'Mandarim', href: '/guias/chines' },
 ];
 
+function formatIcsLocalDateTime(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+}
+
+function formatIcsUtcStamp(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+}
+
+function escapeIcsText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/\r?\n/g, '\\n')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,');
+}
+
+function buildLanguagePlannerIcs({
+  language,
+  slug,
+  ageGuide,
+}: {
+  language: string;
+  slug: LanguagePlannerSlug;
+  ageGuide: AgeGroupGuide;
+}): string {
+  const now = new Date();
+  const dtStamp = formatIcsUtcStamp(now);
+
+  const dailyStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+  const dailyEnd = new Date(dailyStart.getTime() + 15 * 60 * 1000);
+
+  const lines: string[] = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Portal NKL//Planner de Idiomas 90 Dias//PT-BR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    `X-WR-CALNAME:${escapeIcsText(`Planner 90 Dias - ${language} (Portal NKL)`)}`,
+    'BEGIN:VEVENT',
+    `UID:nkl-${slug}-${ageGuide.id}-daily-${dailyStart.getTime()}@nkloficial.com.br`,
+    `DTSTAMP:${dtStamp}`,
+    `DTSTART:${formatIcsLocalDateTime(dailyStart)}`,
+    `DTEND:${formatIcsLocalDateTime(dailyEnd)}`,
+    'RRULE:FREQ=DAILY;COUNT=90',
+    `SUMMARY:${escapeIcsText(`Estudo diário de ${language} (${ageGuide.label})`)}`,
+    `DESCRIPTION:${escapeIcsText(`Ritmo: ${ageGuide.routineMinutes}. Estratégia: ${ageGuide.strategy} Dica de fala: ${ageGuide.voiceTip}`)}`,
+    'END:VEVENT',
+  ];
+
+  for (const item of NINETY_DAY_WEEKS) {
+    const weekStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1 + (item.week - 1) * 7,
+      9,
+      0,
+      0,
+    );
+    const weekEnd = new Date(weekStart.getTime() + 20 * 60 * 1000);
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:nkl-${slug}-week-${item.week}-${weekStart.getTime()}@nkloficial.com.br`,
+      `DTSTAMP:${dtStamp}`,
+      `DTSTART:${formatIcsLocalDateTime(weekStart)}`,
+      `DTEND:${formatIcsLocalDateTime(weekEnd)}`,
+      `SUMMARY:${escapeIcsText(`Semana ${String(item.week).padStart(2, '0')} (${item.phase}) - ${language}`)}`,
+      `DESCRIPTION:${escapeIcsText(`Meta da semana: ${item.focus}`)}`,
+      'END:VEVENT',
+    );
+  }
+
+  lines.push('END:VCALENDAR');
+  return `${lines.join('\r\n')}\r\n`;
+}
+
 export function LanguageAiAndPlanner({
   language,
   slug,
@@ -111,6 +192,7 @@ export function LanguageAiAndPlanner({
   const [completedWeeks, setCompletedWeeks] = useState<number[]>([]);
   const [streakDays, setStreakDays] = useState<number>(0);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [calendarDownloaded, setCalendarDownloaded] = useState(false);
 
   const storageKey = `nkl_language_planner_v1_${slug}`;
 
@@ -177,6 +259,25 @@ export function LanguageAiAndPlanner({
     } catch {
       setCopiedPrompt(false);
     }
+  }
+
+  function handleDownloadCalendar(): void {
+    const icsContent = buildLanguagePlannerIcs({
+      language,
+      slug,
+      ageGuide: activeAgeGuide,
+    });
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `planner-${slug}-90-dias.ics`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setCalendarDownloaded(true);
+    window.setTimeout(() => setCalendarDownloaded(false), 4000);
   }
 
   return (
@@ -295,19 +396,28 @@ export function LanguageAiAndPlanner({
               Acompanhe suas 12 semanas sem perder o ritmo
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/75">
-              Seu progresso fica salvo automaticamente neste navegador. Você também pode imprimir ou
-              salvar em PDF para estudar longe da tela.
+              Seu progresso fica salvo automaticamente neste navegador. Baixe os blocos recorrentes
+              de estudo para a agenda do seu celular ou computador em formato .ics.
+            </p>
+            <p className="mt-1.5 max-w-2xl text-xs font-medium text-foreground/65">
+              Integração automática completa de calendário e lembretes sincronizados está incluída
+              no plano pago.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 print:hidden">
+          <div className="flex flex-col items-start gap-1.5 sm:items-end print:hidden">
             <button
               type="button"
-              onClick={() => window.print()}
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-bold hover:border-neon"
+              onClick={handleDownloadCalendar}
+              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-bold transition hover:border-neon"
             >
-              <Printer size={16} aria-hidden="true" />
-              <span>Imprimir / Salvar Planner PDF</span>
+              <CalendarPlus size={16} aria-hidden="true" />
+              <span>Adicionar ao Calendário (.ics)</span>
             </button>
+            {calendarDownloaded && (
+              <span role="status" className="text-xs font-semibold text-neon">
+                Arquivo .ics baixado — abra para importar os blocos na sua agenda.
+              </span>
+            )}
           </div>
         </div>
 

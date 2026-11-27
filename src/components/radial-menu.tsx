@@ -149,7 +149,8 @@ function polarPoint(cx: number, cy: number, radius: number, angle: number): { x:
 function centerLineFontSize(line: string): number {
   const availableWidth = 224
   const estimatedCharacterWidth = 0.62
-  return Math.min(52, Math.max(28, availableWidth / (line.length * estimatedCharacterWidth)))
+  const baseSize = Math.min(52, Math.max(28, availableWidth / (line.length * estimatedCharacterWidth)))
+  return Math.round(baseSize * 0.85 * 100) / 100
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -350,7 +351,7 @@ export function RadialMenu() {
                       y={symbolY}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fontSize={isHovered ? 32 : 28}
+                      fontSize={isHovered ? 27.2 : 23.8}
                       fill="currentColor"
                       opacity={opacity}
                       transform={symbolTransform}
@@ -390,7 +391,7 @@ export function RadialMenu() {
                     <text
                       key={`${line}-${lineIndex}`}
                       x={labelX}
-                      y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 23 : 22)}
+                      y={labelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 19.5 : 18.7)}
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
@@ -407,7 +408,7 @@ export function RadialMenu() {
                     <text
                       key={`mobile-${line}-${lineIndex}`}
                       x={mobileLabelX}
-                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 26 : 25)}
+                      y={mobileLabelY + (lineIndex - (lines.length - 1) / 2) * (isHovered ? 22.1 : 21.25)}
                       textAnchor="middle"
                       dominantBaseline="central"
                       className={`${isHovered
@@ -430,7 +431,7 @@ export function RadialMenu() {
             <text
               key={line}
               x={cx}
-              y={cy + (lineIndex - (lines.length - 1) / 2) * 44}
+              y={cy + (lineIndex - (lines.length - 1) / 2) * 37.4}
               textAnchor="middle"
               dominantBaseline="central"
               fontSize={centerLineFontSize(line)}

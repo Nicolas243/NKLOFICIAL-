@@ -202,7 +202,6 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
           <div>
             <section>
               <h2 className="font-playfair text-3xl font-bold">Como funciona e qual é o passo a passo?</h2>
-              <ProgramSecondaryOffer programSlug={program.slug} currentPage={1} />
               {program.slug === 'micro1' && (
                 <div className="mt-5">
                   <Micro1OpportunitiesSection
@@ -221,13 +220,14 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
                     sponsored
                     className="mt-3 inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90"
                   >
-                    Convidar no Buy Me a Coffee
+                    Convidar no Pague um Café
                   </OutboundLink>
                 </section>
               )}
               <ProgramFirstWithdrawal slug={program.slug} programName={program.name} description={program.longDescription} paymentMethods={program.paymentMethods} defaultOpen />
               <ProgramStrategies slug={program.slug} category={program.category} tags={program.tags} />
               <SocialEmbed youtubeId={program.youtubeVideoId} tiktokId={program.tiktokVideoId} programName={program.name} />
+              <ProgramSecondaryOffer programSlug={program.slug} currentPage={1} />
             </section>
             <div className="mt-8">
               {(program.pros.length > 0 || program.cons.length > 0) && (

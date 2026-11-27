@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SiteSuggestionForm } from '@/components/site-suggestion-form';
+import { ExternalLink } from 'lucide-react';
 import type { PortalSuggestionArea } from '@/lib/income-portal';
 import { absoluteSiteUrl } from '@/lib/site';
+
+const SUGGEST_GOOGLE_FORM_URL = 'https://forms.gle/ng6VM1gsSwWpJ2pw5';
+const SUGGEST_GOOGLE_FORM_EMBED_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSd5lHlvB0PfFbsbItfvIBs1osWbH4ZzAlcexLlZGl4dlF2Q_A/viewform?embedded=true';
 
 export const metadata: Metadata = {
   title: 'Sugerir site ou ferramenta',
@@ -120,13 +124,34 @@ export default async function SuggestSitePage({ searchParams }: SuggestPageProps
           </p>
         )}
 
-        <SiteSuggestionForm
-          area={area}
-          areaLabel={copy.badge.replace('Sugestão · ', '')}
-          originPath={originPath}
-          urlPlaceholder={copy.urlPlaceholder}
-          reasonPlaceholder={copy.reasonPlaceholder}
-        />
+        <div className="mt-6 rounded-2xl border border-orange/35 bg-orange/5 p-5">
+          <p className="text-sm leading-relaxed text-foreground/85">
+            Envie sua indicação pelo formulário oficial do Portal NKL no Google Forms. Assim garantimos entrega rápida e análise editorial sem falhas.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <a
+              href={SUGGEST_GOOGLE_FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-orange px-6 py-3 text-sm font-bold text-white transition hover:bg-orange-dark"
+            >
+              <span>Abrir formulário de sugestão</span>
+              <ExternalLink size={16} aria-hidden="true" />
+            </a>
+            <span className="text-xs text-foreground/60">
+              Abre em nova guia ({copy.badge.replace('Sugestão · ', '')})
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-background">
+          <iframe
+            src={SUGGEST_GOOGLE_FORM_EMBED_URL}
+            title={`Formulário oficial de sugestão — ${copy.badge.replace('Sugestão · ', '')}`}
+            className="h-[680px] w-full border-0"
+            loading="lazy"
+          />
+        </div>
 
         {area === 'renda-extra' && (
           <p className="mt-6 text-xs leading-relaxed text-foreground/60">

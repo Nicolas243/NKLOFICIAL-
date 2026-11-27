@@ -19,8 +19,43 @@ export type ExampleToken = {
   isWord: boolean;
 };
 
-const TOKEN_PATTERN = /(\p{L}+(?:['’−-]\p{L}+)?|\d+|[^\p{L}\d\s]+|\s+)/gu;
+const NON_HAN_WORD_PATTERN = /^[\p{L}\d]/u;
+const HAN_CHAR_PATTERN = /\p{Script=Han}/u;
+const SEGMENT_PATTERN = /(\p{Script=Han}+|[^\p{Script=Han}\s]+(?:\s+|$)|\s+)/gu;
+const LATIN_TOKEN_PATTERN = /([^\p{Script=Han}\p{L}\d\s]+|\p{L}+(?:['’−-]\p{L}+)?|\d+|\s+)/gu;
 const COLOR_COUNT = 6;
+
+const CJK_LEXICON = new Set([
+  '我叫',
+  '给我',
+  '一杯',
+  '咖啡',
+  '再说',
+  '一遍',
+  '好吗',
+  '在家',
+  '工作',
+  '每天',
+  '学习',
+  '我是',
+  '我有',
+  '喜欢',
+  '明白',
+  '不明白',
+  '怎么',
+  '谢谢',
+  '再见',
+  '你好',
+  '请问',
+  '什么',
+  '哪里',
+  '现在',
+  '今天',
+  '明天',
+  '可以',
+  '不能',
+  '对不起',
+]);
 
 export const BILINGUAL_COLOR_CLASSES = [
   'text-blue-700 dark:text-sky-300',
@@ -40,11 +75,76 @@ export const BILINGUAL_PRINT_COLORS = [
   '#be123c',
 ] as const;
 
+const PHRASE_ALIGNMENTS: ReadonlyArray<readonly [string, readonly string[]]> = [
+  // Inglês
+  ['wake up', ['acordo', 'acordar']],
+  ['did not', ['nao']],
+  ['do not', ['nao']],
+  ['does not', ['nao']],
+  ['let me', ['deixe-me', 'deixe']],
+  ['going to', ['vou', 'vai', 'vamos']],
+  ['a lot', ['muito']],
+  ['next to', ['ao lado']],
+  ['carry-on', ['de mao']],
+  ['in writing', ['por escrito']],
+  ['safely', ['com seguranca']],
+  ['need', ['preciso de', 'precisa de', 'precisamos de', 'preciso', 'precisa', 'precisamos']],
+  ['what', ['do que', 'o que', 'que', 'qual']],
+  ['mean', ['quer dizer', 'significa']],
+  ['again', ['de novo', 'novamente', 'novo']],
+  ['welcome', ['bem-vindo', 'bem-vinda']],
+  ['everyone', ['pessoal', 'todos']],
+  ['nearby', ['perto']],
+  // Italiano
+  ['mi chiamo', ['meu nome e']],
+  ['vorrei', ['eu gostaria de', 'eu gostaria']],
+  ['per favore', ['por favor']],
+  ['puoi', ['voce pode', 'pode']],
+  ['lavoro', ['eu trabalho', 'trabalho']],
+  // Francês
+  ["je m'appelle", ['meu nome e']],
+  ["s'il vous plait", ['por favor']],
+  ['voudrais', ['gostaria de', 'gostaria']],
+  ['pouvez-vous', ['voce pode', 'pode']],
+  ['a la', ['em', 'a']],
+  ['chaque jour', ['todos os dias']],
+  // Alemão
+  ['ich heisse', ['meu nome e']],
+  ['ich heiße', ['meu nome e']],
+  ['mochte', ['gostaria de', 'gostaria', 'quero']],
+  ['von zu', ['de']],
+  ['bitte', ['por favor']],
+  // Espanhol
+  ['me llamo', ['meu nome e']],
+  ['quisiera', ['eu gostaria de', 'eu gostaria']],
+  ['por favor', ['por favor']],
+  ['puedes', ['voce pode', 'pode']],
+  ['trabajo', ['eu trabalho', 'trabalho']],
+  ['quiero', ['eu quero', 'quero']],
+  // Chinês
+  ['我叫', ['meu nome e']],
+  ['请', ['por favor']],
+  ['给我', ['me de']],
+  ['一杯', ['um', 'uma']],
+  ['咖啡', ['cafe']],
+  ['再说', ['diga', 'falar']],
+  ['一遍', ['novamente']],
+  ['好吗', ['pode']],
+  ['我', ['eu']],
+  ['在家', ['em casa']],
+  ['工作', ['trabalho']],
+  ['想', ['quero']],
+  ['每天', ['todos os dias']],
+  ['学习', ['estudar']],
+];
+
 const translationHints: Record<string, string[]> = {
+  // Inglês
   i: ['eu'],
   want: ['quero', 'quer'],
   study: ['estudar', 'estudo'],
   studying: ['estudando', 'aprendendo'],
+  studies: ['estuda'],
   online: ['on-line', 'online'],
   learn: ['aprender', 'aprendo'],
   learning: ['aprendendo', 'aprender'],
@@ -52,18 +152,19 @@ const translationHints: Record<string, string[]> = {
   find: ['encontrar', 'encontro'],
   better: ['melhor'],
   work: ['trabalho', 'trabalhar', 'trabalha'],
+  works: ['trabalha'],
   worked: ['trabalhei', 'trabalhou'],
   working: ['trabalhando'],
   speak: ['falar', 'falo', 'fala'],
   clients: ['clientes'],
-  to: ['a', 'para', 'de'],
+  to: ['a', 'para', 'em'],
   am: ['sou', 'estou'],
   is: ['é', 'está', 'esta'],
-  are: ['são', 'estão'],
+  are: ['são', 'estão', 'é', 'está'],
   was: ['estava', 'era', 'foi'],
-  my: ['meu', 'minha'],
+  my: ['meu', 'minha', 'meus', 'minhas'],
   name: ['nome'],
-  live: ['moro', 'vive', 'mora'],
+  live: ['moro', 'moram', 'vive', 'mora'],
   in: ['em', 'no', 'na'],
   from: ['de', 'da', 'do'],
   with: ['com'],
@@ -75,6 +176,8 @@ const translationHints: Record<string, string[]> = {
   a: ['um', 'uma'],
   an: ['um', 'uma'],
   this: ['este', 'esta', 'isso', 'disto', 'disso'],
+  these: ['estes', 'estas'],
+  those: ['aqueles', 'aquelas'],
   that: ['isso', 'aquilo', 'que'],
   have: ['tenho', 'temos', 'tem', 'ter'],
   has: ['tem'],
@@ -85,39 +188,37 @@ const translationHints: Record<string, string[]> = {
   could: ['poderia', 'poderíamos'],
   should: ['deveria', 'deveríamos'],
   will: ['vou', 'vai', 'vamos'],
-  did: ['não', 'fez', 'entendi'],
-  do: ['faz', 'fala', 'fazemos', 'voce', 'você'],
-  does: ['significa', 'faz'],
   not: ['não', 'nao'],
   sorry: ['desculpe'],
-  understand: ['entendi', 'entender', 'compreender'],
+  understand: ['entendi', 'entender', 'compreender', 'entende', 'entendo'],
   slowly: ['devagar', 'lentamente'],
-  mean: ['significa', 'quer', 'dizer'],
-  let: ['deixe', 'deixe-me'],
+  mean: ['significa'],
+  let: ['deixe'],
   me: ['me', 'mim', 'eu'],
   try: ['tentar', 'tento'],
-  again: ['novo', 'novamente'],
+  again: ['novamente', 'novo'],
   wake: ['acordo', 'acordar'],
-  up: ['cedo', 'acima'],
   early: ['cedo'],
   at: ['às', 'as', 'à', 'a', 'em'],
   night: ['noite'],
   ten: ['dez'],
+  seven: ['sete'],
   drink: ['tomo', 'bebo', 'tomar'],
   coffee: ['café', 'cafe'],
   sleep: ['durmo', 'dormir'],
   recife: ['recife'],
   sales: ['vendas'],
   file: ['arquivo'],
+  files: ['arquivos'],
   send: ['enviar', 'mando'],
-  it: ['isso', 'ele', 'a', 'o', 'enviar'],
+  it: ['isso', 'disso', 'ele', 'a', 'o'],
   check: ['verificar', 'checar'],
   read: ['leio', 'ler', 'lê'],
   first: ['primeiro'],
   then: ['depois', 'então'],
   because: ['porque'],
   goal: ['objetivo', 'meta'],
-  tired: ['cansado', 'cansada'],
+  tired: ['cansado', 'cansada', 'cansados', 'cansadas'],
   but: ['mas'],
   practiced: ['pratiquei', 'praticou'],
   like: ['gosto', 'gosta'],
@@ -128,13 +229,34 @@ const translationHints: Record<string, string[]> = {
   he: ['ele'],
   they: ['eles', 'elas'],
   we: ['nós'],
-  ready: ['pronto', 'pronta'],
+  ready: ['pronto', 'pronta', 'prontos', 'prontas'],
   good: ['bom', 'boa'],
   morning: ['manhã'],
   afternoon: ['tarde'],
   evening: ['noite'],
+  hello: ['olá', 'ola'],
+  hi: ['oi'],
+  nice: ['prazer'],
+  meet: ['conhecer'],
+  kind: ['gentil'],
+  here: ['aqui'],
+  daily: ['diariamente'],
+  pen: ['caneta'],
+  idea: ['ideia'],
+  door: ['porta'],
+  open: ['aberta', 'aberto'],
+  bought: ['comprou'],
+  ticket: ['passagem'],
+  email: ['e-mail', 'email'],
+  arrived: ['chegou'],
+  books: ['livros'],
+  boxes: ['caixas'],
+  useful: ['úteis', 'uteis', 'útil', 'util'],
+  children: ['crianças', 'criancas'],
+  happy: ['felizes', 'feliz'],
+  feet: ['pés', 'pes'],
   how: ['como'],
-  what: ['o', 'que', 'qual'],
+  what: ['que', 'qual'],
   where: ['onde'],
   when: ['quando'],
   why: ['por', 'porque'],
@@ -147,86 +269,238 @@ const translationHints: Record<string, string[]> = {
   repeat: ['repetir', 'repita'],
   start: ['começamos', 'comecamos', 'começar'],
   safe: ['seguro', 'segurança'],
-  safely: ['segurança'],
   travel: ['viajar'],
   use: ['usar', 'uso'],
+  // Italiano
+  io: ['eu'],
+  voglio: ['quero'],
+  studiare: ['estudar'],
+  posso: ['posso'],
+  fare: ['fazer'],
+  una: ['uma'],
+  un: ['um'],
+  domanda: ['pergunta'],
+  caffe: ['café', 'cafe'],
+  ripetere: ['repetir'],
+  lentamente: ['devagar'],
+  da: ['em', 'de'],
+  casa: ['casa'],
+  // Francês
+  je: ['eu'],
+  veux: ['quero'],
+  apprendre: ['aprender'],
+  cafe: ['café', 'cafe'],
+  repeter: ['repetir'],
+  lentement: ['devagar'],
+  travaille: ['trabalho'],
+  maison: ['casa'],
+  // Alemão
+  ich: ['eu'],
+  mochte: ['quero'],
+  heute: ['hoje'],
+  uben: ['praticar'],
+  konnen: ['pode'],
+  sie: ['você', 'voce'],
+  das: ['isso'],
+  erklaren: ['explicar'],
+  einen: ['um'],
+  kaffee: ['café', 'cafe'],
+  langsam: ['devagar'],
+  wiederholen: ['repetir'],
+  arbeite: ['trabalho'],
+  hause: ['casa'],
+  // Espanhol
+  quiero: ['quero'],
+  practicar: ['praticar'],
+  todos: ['todos'],
+  los: ['os'],
+  dias: ['dias'],
+  repetir: ['repetir'],
+  despacio: ['devagar'],
+  desde: ['de'],
 };
 
 function normalizeWord(value: string): string {
-  return value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/\p{M}/gu, '');
+  return value
+    .toLocaleLowerCase('pt-BR')
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/’/gu, "'")
+    .replace(/ß/gu, 'ss');
 }
 
-function wordTokens(text: string): ExampleToken[] {
-  return tokenizeExample(text).filter((token) => token.isWord);
+function segmentHanRun(run: string): string[] {
+  const chunks: string[] = [];
+  let cursor = 0;
+  while (cursor < run.length) {
+    let matched = '';
+    for (let len = Math.min(4, run.length - cursor); len >= 2; len -= 1) {
+      const candidate = run.slice(cursor, cursor + len);
+      if (CJK_LEXICON.has(candidate)) {
+        matched = candidate;
+        break;
+      }
+    }
+    if (matched) {
+      chunks.push(matched);
+      cursor += matched.length;
+    } else {
+      chunks.push(run[cursor]!);
+      cursor += 1;
+    }
+  }
+  return chunks;
 }
 
-function isLikelyMatch(english: string, portuguese: string): boolean {
-  const englishWord = normalizeWord(english);
-  const portugueseWord = normalizeWord(portuguese);
-  const hintMatch = translationHints[englishWord]?.some((hint) => {
+type WordSpan = {
+  srcStart: number;
+  srcLen: number;
+  ptStart: number;
+  ptLen: number;
+  score: number;
+};
+
+function isWordHintMatch(sourceWord: string, portugueseWord: string): number {
+  if (sourceWord === portugueseWord) return 80;
+  const hintMatch = translationHints[sourceWord]?.some((hint) => {
     const cleanHint = normalizeWord(hint);
-    return cleanHint === portugueseWord
-      || portugueseWord.startsWith(`${cleanHint}-`)
-      || cleanHint.split(/\s+/u).includes(portugueseWord);
+    return cleanHint === portugueseWord || portugueseWord.startsWith(`${cleanHint}-`);
   });
-  return englishWord === portugueseWord
-    || Boolean(hintMatch)
-    || (englishWord.length >= 4 && portugueseWord.length >= 4
-      && (englishWord.slice(0, 4) === portugueseWord.slice(0, 4)
-        || englishWord.slice(0, 5) === portugueseWord.slice(0, 5)));
+  if (hintMatch) return 70;
+  if (
+    sourceWord.length >= 5
+    && portugueseWord.length >= 5
+    && sourceWord.slice(0, 4) === portugueseWord.slice(0, 4)
+  ) {
+    return 50;
+  }
+  return 0;
+}
+
+function collectCandidateSpans(
+  sourceNorm: string[],
+  portugueseNorm: string[],
+): WordSpan[] {
+  const candidates: WordSpan[] = [];
+  const srcCount = Math.max(sourceNorm.length, 1);
+  const ptCount = Math.max(portugueseNorm.length, 1);
+
+  for (const [rawSrcPhrase, rawTargets] of PHRASE_ALIGNMENTS) {
+    const srcParts = normalizeWord(rawSrcPhrase).split(/\s+/u).filter(Boolean);
+    for (let i = 0; i <= sourceNorm.length - srcParts.length; i += 1) {
+      const srcSliceMatches = srcParts.every((part, offset) => sourceNorm[i + offset] === part);
+      if (!srcSliceMatches) continue;
+      for (const rawTarget of rawTargets) {
+        const ptParts = normalizeWord(rawTarget).split(/\s+/u).filter(Boolean);
+        for (let j = 0; j <= portugueseNorm.length - ptParts.length; j += 1) {
+          const ptSliceMatches = ptParts.every((part, offset) => portugueseNorm[j + offset] === part);
+          if (!ptSliceMatches) continue;
+          const distPenalty = Math.abs(i / srcCount - j / ptCount);
+          candidates.push({
+            srcStart: i,
+            srcLen: srcParts.length,
+            ptStart: j,
+            ptLen: ptParts.length,
+            score: 100 + srcParts.length * 10 + ptParts.length * 10 - distPenalty,
+          });
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < sourceNorm.length; i += 1) {
+    for (let j = 0; j < portugueseNorm.length; j += 1) {
+      const baseScore = isWordHintMatch(sourceNorm[i]!, portugueseNorm[j]!);
+      if (baseScore > 0) {
+        const distPenalty = Math.abs(i / srcCount - j / ptCount);
+        candidates.push({
+          srcStart: i,
+          srcLen: 1,
+          ptStart: j,
+          ptLen: 1,
+          score: baseScore - distPenalty,
+        });
+      }
+    }
+  }
+
+  return candidates.sort((a, b) => (
+    b.score - a.score
+    || a.srcStart - b.srcStart
+    || a.ptStart - b.ptStart
+  ));
+}
+
+function selectDisjointSpans(candidates: WordSpan[]): WordSpan[] {
+  const usedSrc = new Set<number>();
+  const usedPt = new Set<number>();
+  const accepted: WordSpan[] = [];
+
+  for (const span of candidates) {
+    let conflict = false;
+    for (let s = span.srcStart; s < span.srcStart + span.srcLen; s += 1) {
+      if (usedSrc.has(s)) {
+        conflict = true;
+        break;
+      }
+    }
+    if (conflict) continue;
+    for (let p = span.ptStart; p < span.ptStart + span.ptLen; p += 1) {
+      if (usedPt.has(p)) {
+        conflict = true;
+        break;
+      }
+    }
+    if (conflict) continue;
+
+    for (let s = span.srcStart; s < span.srcStart + span.srcLen; s += 1) usedSrc.add(s);
+    for (let p = span.ptStart; p < span.ptStart + span.ptLen; p += 1) usedPt.add(p);
+    accepted.push(span);
+  }
+
+  return accepted.sort((a, b) => a.srcStart - b.srcStart || a.ptStart - b.ptStart);
+}
+
+function fillUnmatchedColors(
+  wordCount: number,
+  colorByWord: Map<number, number>,
+  preferPrevious: boolean,
+): void {
+  const alignedEntries = [...colorByWord.entries()].sort((a, b) => a[0] - b[0]);
+  for (let index = 0; index < wordCount; index += 1) {
+    if (colorByWord.has(index)) continue;
+    const prev = [...alignedEntries].reverse().find(([idx]) => idx < index);
+    const next = alignedEntries.find(([idx]) => idx > index);
+    const fallback = preferPrevious
+      ? (prev ? prev[1] : next ? next[1] : index % COLOR_COUNT)
+      : (next ? next[1] : prev ? prev[1] : index % COLOR_COUNT);
+    colorByWord.set(index, fallback);
+  }
 }
 
 export function tokenizeBilingualExample(english: string, portuguese: string): { english: ExampleToken[]; portuguese: ExampleToken[] } {
   const englishTokens = tokenizeExample(english);
   const portugueseTokens = tokenizeExample(portuguese);
-  const englishWords = wordTokens(english);
-  const portugueseWords = wordTokens(portuguese);
-  const alignments = new Map<number, number>();
-  let portugueseIndex = 0;
+  const englishNorm = englishTokens.filter((t) => t.isWord).map((t) => normalizeWord(t.text));
+  const portugueseNorm = portugueseTokens.filter((t) => t.isWord).map((t) => normalizeWord(t.text));
 
-  for (let englishIndex = 0; englishIndex < englishWords.length; englishIndex += 1) {
-    const englishWord = englishWords[englishIndex]!.text;
-    const directMatch = portugueseWords.findIndex((candidate, index) => index >= portugueseIndex && isLikelyMatch(englishWord, candidate.text));
-    if (directMatch >= 0) {
-      alignments.set(englishIndex, directMatch);
-      portugueseIndex = directMatch + 1;
-    }
-  }
+  const accepted = selectDisjointSpans(collectCandidateSpans(englishNorm, portugueseNorm));
 
-  let colorGroup = 0;
   const englishColorByWord = new Map<number, number>();
   const portugueseColorByWord = new Map<number, number>();
-  for (let englishIndex = 0; englishIndex < englishWords.length; englishIndex += 1) {
-    const alignedPortugueseIndex = alignments.get(englishIndex);
-    if (alignedPortugueseIndex !== undefined) {
-      const color = colorGroup % COLOR_COUNT;
-      englishColorByWord.set(englishIndex, color);
-      portugueseColorByWord.set(alignedPortugueseIndex, color);
-      colorGroup += 1;
-    }
-  }
 
-  for (let englishIndex = 0; englishIndex < englishWords.length; englishIndex += 1) {
-    if (!englishColorByWord.has(englishIndex)) {
-      const nextAligned = [...alignments.entries()].find(([index]) => index > englishIndex);
-      const previousAligned = [...alignments.entries()].reverse().find(([index]) => index < englishIndex);
-      englishColorByWord.set(
-        englishIndex,
-        nextAligned
-          ? englishColorByWord.get(nextAligned[0])!
-          : previousAligned
-            ? englishColorByWord.get(previousAligned[0])!
-            : englishIndex % COLOR_COUNT,
-      );
+  accepted.forEach((span, groupIndex) => {
+    const color = groupIndex % COLOR_COUNT;
+    for (let s = span.srcStart; s < span.srcStart + span.srcLen; s += 1) {
+      englishColorByWord.set(s, color);
     }
-  }
+    for (let p = span.ptStart; p < span.ptStart + span.ptLen; p += 1) {
+      portugueseColorByWord.set(p, color);
+    }
+  });
 
-  for (let ptIndex = 0; ptIndex < portugueseWords.length; ptIndex += 1) {
-    if (!portugueseColorByWord.has(ptIndex)) {
-      const fallbackColor = ptIndex > 0 ? portugueseColorByWord.get(ptIndex - 1)! : ptIndex % COLOR_COUNT;
-      portugueseColorByWord.set(ptIndex, fallbackColor);
-    }
-  }
+  fillUnmatchedColors(englishNorm.length, englishColorByWord, false);
+  fillUnmatchedColors(portugueseNorm.length, portugueseColorByWord, true);
 
   const addColors = (tokens: ExampleToken[], colors: Map<number, number>): ExampleToken[] => {
     let index = 0;
@@ -245,10 +519,24 @@ export function tokenizeBilingualExample(english: string, portuguese: string): {
 }
 
 export function tokenizeExample(text: string): ExampleToken[] {
+  const rawParts: string[] = [];
+  if (HAN_CHAR_PATTERN.test(text)) {
+    const segments = text.match(SEGMENT_PATTERN) ?? [text];
+    for (const seg of segments) {
+      if (HAN_CHAR_PATTERN.test(seg)) {
+        rawParts.push(...segmentHanRun(seg));
+      } else {
+        rawParts.push(...(seg.match(LATIN_TOKEN_PATTERN) ?? [seg]));
+      }
+    }
+  } else {
+    rawParts.push(...(text.match(LATIN_TOKEN_PATTERN) ?? [text]));
+  }
+
   let wordIndex = 0;
-  return (text.match(TOKEN_PATTERN) ?? [text]).map((part) => {
-    const isWord = /[\p{L}\d]/u.test(part);
-    const token = { text: part, colorIndex: isWord ? wordIndex % COLOR_COUNT : wordIndex % COLOR_COUNT, isWord };
+  return rawParts.map((part) => {
+    const isWord = NON_HAN_WORD_PATTERN.test(part);
+    const token = { text: part, colorIndex: wordIndex % COLOR_COUNT, isWord };
     if (isWord) wordIndex += 1;
     return token;
   });

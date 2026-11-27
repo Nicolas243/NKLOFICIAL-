@@ -1,5 +1,96 @@
 import type Stripe from 'stripe';
+import { isValidProductSlug } from '@/config/products';
 import { getStripeClient } from './server';
+
+const ALLOWED_CANCEL_PATH_PREFIXES = [
+  '/ofertas/',
+  '/guias/',
+  '/ia/oferta',
+  '/programas/anuncie',
+  '/checkout/',
+  '/dashboard/luthier/planos',
+] as const;
+
+export function sanitizeInternalCancelPath(
+  rawPath: string | null | undefined,
+): string | null {
+  if (typeof rawPath !== 'string') return null;
+  const trimmed = rawPath.trim();
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) {
+    return null;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed, 'https://portal-nkl.invalid');
+  } catch {
+    return null;
+  }
+
+  if (parsed.origin !== 'https://portal-nkl.invalid') {
+    return null;
+  }
+
+  const isAllowed = ALLOWED_CANCEL_PATH_PREFIXES.some((prefix) =>
+    prefix.endsWith('/')
+      ? parsed.pathname.startsWith(prefix)
+      : parsed.pathname === prefix,
+  );
+  if (!isAllowed) {
+    return null;
+  }
+
+  return `${parsed.pathname}${parsed.search}`;
+}
+
+export function extractSameOriginCancelPath(
+  referer: string | null | undefined,
+  siteUrl: string,
+): string | null {
+  if (typeof referer !== 'string' || !referer.trim()) return null;
+  try {
+    const refererUrl = new URL(referer);
+    const siteOrigin = new URL(siteUrl).origin;
+    if (refererUrl.origin !== siteOrigin) {
+      return null;
+    }
+    return sanitizeInternalCancelPath(`${refererUrl.pathname}${refererUrl.search}`);
+  } catch {
+    return null;
+  }
+}
+
+export function resolveSafeCheckoutCancelUrl({
+  siteUrl,
+  cancelPath,
+  productSlug,
+  referer,
+  fallbackPath,
+}: {
+  siteUrl: string;
+  cancelPath?: string | null;
+  productSlug?: string | null;
+  referer?: string | null;
+  fallbackPath: string;
+}): string {
+  const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
+  const explicitPath = sanitizeInternalCancelPath(cancelPath);
+  if (explicitPath) {
+    return `${normalizedSiteUrl}${explicitPath}`;
+  }
+
+  if (productSlug && isValidProductSlug(productSlug)) {
+    return `${normalizedSiteUrl}/ofertas/${productSlug}/checkout`;
+  }
+
+  const refererPath = extractSameOriginCancelPath(referer, normalizedSiteUrl);
+  if (refererPath) {
+    return `${normalizedSiteUrl}${refererPath}`;
+  }
+
+  const safeFallback = sanitizeInternalCancelPath(fallbackPath) ?? '/';
+  return `${normalizedSiteUrl}${safeFallback}`;
+}
 
 export type CreateCheckoutSessionParams = {
   mode: Stripe.Checkout.SessionCreateParams.Mode;

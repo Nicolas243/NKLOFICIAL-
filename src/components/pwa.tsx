@@ -7,14 +7,20 @@ import { APP_BRAND_NAME } from '@/config/app-brand';
 import { isIncomePortalPath, isMusicPortalPath } from '@/lib/income-portal';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import {
+  PWA_INSTALLED_EVENT,
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
   hasInstallIntent,
+  hasPersistedPwaInstall,
+  isStandaloneDisplayMode,
   markInstallIntent,
+  persistPwaInstall,
+  resolvePwaInstalledState,
   shouldClearInstallPrompt,
   type InstallAppKind,
   type InstallPlatform,
+  type StandaloneNavigator,
 } from '@/lib/pwa/install-state';
 
 type BeforeInstallPromptEvent = Event & {
@@ -38,8 +44,7 @@ type InstallState = {
 };
 
 function isStandalone(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches
-    || ('standalone' in navigator && Boolean((navigator as Navigator & { standalone?: boolean }).standalone));
+  return isStandaloneDisplayMode(window, navigator as StandaloneNavigator);
 }
 
 function isFunnelRoute(pathname: string): boolean {
@@ -98,34 +103,71 @@ function useInstallState(scope: AppScope): InstallState {
   const [platform, setPlatform] = useState<InstallPlatform>('other');
 
   useEffect(() => {
-    const installedStorageKey = `nkl-pwa-installed-${scope}`;
+    let cancelled = false;
     const displayModeQuery = window.matchMedia('(display-mode: standalone)');
-    const markInstalled = (): void => {
+
+    const syncInstalled = (emitEvent = false): void => {
+      if (cancelled) return;
       setInstalled(true);
       setPrompt(null);
-      window.localStorage.setItem(installedStorageKey, 'true');
+      persistPwaInstall(window.localStorage, scope);
+      if (emitEvent) {
+        window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
+      }
     };
+
+    const handleAppInstalled = (): void => syncInstalled(true);
+    const handleGlobalInstalled = (): void => syncInstalled(false);
+
     const handleBeforeInstallPrompt = (event: Event): void => {
-      if (window.localStorage.getItem(installedStorageKey) === 'true' || hasScopeInstallIntent(scope)) return;
+      if (
+        isStandalone()
+        || hasPersistedPwaInstall(window.localStorage, scope)
+        || hasScopeInstallIntent(scope)
+      ) {
+        if (isStandalone() || hasPersistedPwaInstall(window.localStorage, scope)) {
+          syncInstalled(false);
+        }
+        return;
+      }
       event.preventDefault();
       setPrompt(event as BeforeInstallPromptEvent);
     };
+
     const updateDisplayMode = (): void => {
-      if (isStandalone()) markInstalled();
+      if (isStandalone() || hasPersistedPwaInstall(window.localStorage, scope)) {
+        syncInstalled(false);
+      }
     };
 
     const initialStateTimer = window.setTimeout(() => {
-      setInstalled(isStandalone() || window.localStorage.getItem(installedStorageKey) === 'true');
-      setPlatform(detectInstallPlatform(navigator.userAgent, isStandalone()));
+      if (cancelled) return;
+      const standalone = isStandalone();
+      const persisted = hasPersistedPwaInstall(window.localStorage, scope);
+      setInstalled(standalone || persisted);
+      setPlatform(detectInstallPlatform(navigator.userAgent, standalone));
+
+      void resolvePwaInstalledState({
+        scope,
+        win: window,
+        nav: navigator as StandaloneNavigator,
+        storage: window.localStorage,
+      }).then((isInstalled) => {
+        if (isInstalled) syncInstalled(false);
+      });
     }, INITIAL_STATE_DELAY_MS);
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', markInstalled);
+    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
     document.addEventListener('visibilitychange', updateDisplayMode);
     displayModeQuery.addEventListener('change', updateDisplayMode);
     return () => {
+      cancelled = true;
       window.clearTimeout(initialStateTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', markInstalled);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
       document.removeEventListener('visibilitychange', updateDisplayMode);
       displayModeQuery.removeEventListener('change', updateDisplayMode);
     };
@@ -205,6 +247,11 @@ export function PwaInstallButton({ kind }: InstallButtonProps) {
     await activePrompt.prompt();
     const choice = await activePrompt.userChoice;
     trackInstallEvent(`pwa_install_${choice.outcome}`);
+    if (choice.outcome === 'accepted') {
+      persistPwaInstall(window.localStorage, appScope);
+      window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
+      return;
+    }
     if (shouldClearInstallPrompt(choice.outcome)) return;
   }
 
@@ -292,7 +339,14 @@ export function PwaInstallReminder() {
 
     const timer = window.setTimeout(() => {
       const dismissedAt = Number(window.localStorage.getItem(`nkl-pwa-reminder-${appScope}`) ?? 0);
-      if (!isStandalone() && !hasScopeInstallIntent(appScope) && Date.now() - dismissedAt > INSTALL_REMINDER_COOLDOWN_MS) setVisible(true);
+      if (
+        !isStandalone()
+        && !hasPersistedPwaInstall(window.localStorage, appScope)
+        && !hasScopeInstallIntent(appScope)
+        && Date.now() - dismissedAt > INSTALL_REMINDER_COOLDOWN_MS
+      ) {
+        setVisible(true);
+      }
     }, INSTALL_REMINDER_DELAY_MS);
     return () => {
       window.clearTimeout(timer);
@@ -333,7 +387,11 @@ export function PwaInstallReminder() {
     await activePrompt.prompt();
     const choice = await activePrompt.userChoice;
     trackInstallEvent(`pwa_install_${choice.outcome}`);
-    if (choice.outcome === 'accepted') setVisible(false);
+    if (choice.outcome === 'accepted') {
+      persistPwaInstall(window.localStorage, appScope);
+      window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
+      setVisible(false);
+    }
     if (choice.outcome === 'dismissed') setVisible(false);
   }
 

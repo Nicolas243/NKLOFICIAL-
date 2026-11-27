@@ -2,9 +2,10 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, CalendarPlus, Share2 } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, Share2 } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
@@ -61,11 +62,34 @@ const EMBEDDED_PORTAL_RESOURCE_SLUGS = [
   'pacote-idiomas-ia',
 ] as const;
 
-const EMBEDDED_RESOURCE_MEDIA: Record<string, { areaId: string; priceTag: string; eyebrow: string }> = {
-  'bussola-negocios': { areaId: 'quiz-negocios', priceTag: 'R$ 39 único', eyebrow: 'Ferramenta NKL' },
-  'ferramenta-ia': { areaId: 'ferramenta-ia', priceTag: 'R$ 39/mês', eyebrow: 'Estúdio IA NKL' },
-  'pacote-renda-extra': { areaId: 'guia-renda-extra', priceTag: 'R$ 19 – R$ 247', eyebrow: 'Guias NKL' },
-  'pacote-idiomas-ia': { areaId: 'idiomas', priceTag: 'R$ 27 – R$ 297', eyebrow: 'Idiomas NKL' },
+const EMBEDDED_RESOURCE_MEDIA: Record<
+  string,
+  { areaId: string; priceTag: string; incomePotential: string; eyebrow: string }
+> = {
+  'bussola-negocios': {
+    areaId: 'quiz-negocios',
+    priceTag: 'R$ 39 único',
+    incomePotential: 'R$ 500 a R$ 4.000/mês',
+    eyebrow: 'Ferramenta NKL',
+  },
+  'ferramenta-ia': {
+    areaId: 'ferramenta-ia',
+    priceTag: 'R$ 39/mês',
+    incomePotential: 'R$ 600 a R$ 3.500/mês',
+    eyebrow: 'Estúdio IA NKL',
+  },
+  'pacote-renda-extra': {
+    areaId: 'guia-renda-extra',
+    priceTag: 'R$ 19 – R$ 247',
+    incomePotential: 'R$ 400 a R$ 3.000/mês',
+    eyebrow: 'Guias NKL',
+  },
+  'pacote-idiomas-ia': {
+    areaId: 'idiomas',
+    priceTag: 'R$ 27 – R$ 297',
+    incomePotential: 'R$ 500 a R$ 3.500/mês',
+    eyebrow: 'Idiomas NKL',
+  },
 };
 const DISCOVERY_TAGS = [
   { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift', 'producao-videos-ia', 'edicao-cortes-virais-ia'] },
@@ -168,6 +192,7 @@ export function PartnerProgramsBrowser({
   initialCurrency,
   initialEnglish,
 }: Props) {
+  const router = useRouter();
   const [reviewState, reviewAction] = useActionState(submitReviewAction, INITIAL_FORM_STATE);
   const { savedSlugs } = useSavedProgramSlugs();
   const savedSlugSet = useMemo(() => new Set(savedSlugs), [savedSlugs]);
@@ -295,32 +320,45 @@ export function PartnerProgramsBrowser({
     | { kind: 'editorial'; key: string; card: (typeof EDITORIAL_CARDS)[number] };
 
   const gridEntries: GridEntry[] = useMemo(() => {
+    const salesDeck: Array<
+      | { kind: 'resource'; resource: (typeof embeddedResources)[number] }
+      | { kind: 'editorial'; card: (typeof EDITORIAL_CARDS)[number] }
+    > = [
+      ...(embeddedResources[0] ? [{ kind: 'resource' as const, resource: embeddedResources[0] }] : []),
+      { kind: 'editorial' as const, card: EDITORIAL_CARDS[0] },
+      ...(embeddedResources[1] ? [{ kind: 'resource' as const, resource: embeddedResources[1] }] : []),
+      ...(embeddedResources[2] ? [{ kind: 'resource' as const, resource: embeddedResources[2] }] : []),
+      { kind: 'editorial' as const, card: EDITORIAL_CARDS[1] },
+      ...(embeddedResources[3] ? [{ kind: 'resource' as const, resource: embeddedResources[3] }] : []),
+    ];
+
     const entries: GridEntry[] = [];
     visiblePrograms.forEach((program, index) => {
-      if (safeCurrentPage === 1 && index === 2) {
-        entries.push({ kind: 'editorial', key: 'editorial-0', card: EDITORIAL_CARDS[0] });
-      }
-      if (safeCurrentPage === 1 && index === 3 && embeddedResources[0]) {
-        entries.push({ kind: 'resource', key: `resource-${embeddedResources[0].slug}`, resource: embeddedResources[0] });
-      }
-      if (safeCurrentPage === 1 && index === 5 && embeddedResources[1]) {
-        entries.push({ kind: 'resource', key: `resource-${embeddedResources[1].slug}`, resource: embeddedResources[1] });
-      }
-      if (safeCurrentPage === 1 && index === 7 && embeddedResources[2]) {
-        entries.push({ kind: 'resource', key: `resource-${embeddedResources[2].slug}`, resource: embeddedResources[2] });
-      }
-      if (safeCurrentPage === 1 && index === 9 && embeddedResources[3]) {
-        entries.push({ kind: 'resource', key: `resource-${embeddedResources[3].slug}`, resource: embeddedResources[3] });
-      }
-      if (safeCurrentPage === 1 && index === 10) {
-        entries.push({ kind: 'editorial', key: 'editorial-1', card: EDITORIAL_CARDS[1] });
-      }
       entries.push({
         kind: 'program',
         key: program.id,
         program,
         isFirst: index === 0,
       });
+
+      if ((index + 1) % 4 === 0 && salesDeck.length > 0) {
+        const slotIndex = Math.floor(index / 4);
+        const salesIndex = ((safeCurrentPage - 1) * 3 + slotIndex) % salesDeck.length;
+        const selectedOffer = salesDeck[salesIndex];
+        if (selectedOffer.kind === 'editorial') {
+          entries.push({
+            kind: 'editorial',
+            key: `editorial-p${safeCurrentPage}-${slotIndex}`,
+            card: selectedOffer.card,
+          });
+        } else {
+          entries.push({
+            kind: 'resource',
+            key: `resource-${selectedOffer.resource.slug}-p${safeCurrentPage}-${slotIndex}`,
+            resource: selectedOffer.resource,
+          });
+        }
+      }
     });
     return entries;
   }, [embeddedResources, safeCurrentPage, visiblePrograms]);
@@ -357,6 +395,30 @@ export function PartnerProgramsBrowser({
 
       await navigator.clipboard.writeText(`${shareData.text}\n${url}`);
       setShareMessage('Mensagem e link copiados para compartilhar.');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setShareMessage('Não foi possível compartilhar agora.');
+    }
+
+    window.setTimeout(() => setShareMessage(null), 2600);
+  }
+
+  async function shareResourceOffer(resource: (typeof embeddedResources)[number]): Promise<void> {
+    const url = new URL(resource.offerRoute, window.location.origin).toString();
+    const shareData = {
+      title: `${resource.title} · Portal NKL`,
+      text: `Conheça ${resource.title} no Portal NKL.`,
+      url,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(`${shareData.text}\n${url}`);
+      setShareMessage('Link copiado para compartilhar.');
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
       setShareMessage('Não foi possível compartilhar agora.');
@@ -557,6 +619,7 @@ export function PartnerProgramsBrowser({
             const meta = EMBEDDED_RESOURCE_MEDIA[embeddedResource.slug] ?? {
               areaId: 'renda-extra',
               priceTag: embeddedResource.badgeLabel,
+              incomePotential: 'R$ 500 a R$ 3.000/mês',
               eyebrow: 'Ferramenta NKL',
             };
             const thumbSrc =
@@ -566,18 +629,40 @@ export function PartnerProgramsBrowser({
             return (
               <Fragment key={entry.key}>
                 {adBannerAfterSix}
-                <article className="group relative flex min-h-full flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 md:gap-5 md:p-6">
-                  <div className="flex min-w-0 items-start justify-between gap-3">
+                <article
+                  onClick={() => router.push(embeddedResource.offerRoute)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      router.push(embeddedResource.offerRoute);
+                    }
+                  }}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Abrir ${embeddedResource.title}`}
+                  className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+                >
+                  <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4" onClick={(event) => event.stopPropagation()}>
+                    <Link
+                      href={embeddedResource.offerRoute}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-income-card/90 font-bold shadow-sm backdrop-blur-sm transition-colors hover:border-neon hover:text-neon"
+                      aria-label={`Abrir ${embeddedResource.title}`}
+                      title={`Abrir ${embeddedResource.title}`}
+                    >
+                      <Bookmark size={16} aria-hidden="true" />
+                    </Link>
+                  </div>
+                  <div className="flex min-w-0 items-start justify-between gap-3 pr-14">
                     <div className="min-w-0">
                       <p className="text-xs font-bold uppercase tracking-wide text-neon">{meta.eyebrow}</p>
                       <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{embeddedResource.title}</h2>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1.5">
-                      <span className="inline-flex items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-                        {meta.priceTag}
+                      <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
+                        {meta.incomePotential}
                       </span>
-                      <span className="inline-flex min-h-9 items-center rounded-full border border-neon px-3 py-1.5 text-xs font-bold">
-                        {embeddedResource.badgeLabel}
+                      <span className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-neon px-3 py-1.5 text-xs font-bold">
+                        10.0/10
                       </span>
                     </div>
                   </div>
@@ -592,17 +677,18 @@ export function PartnerProgramsBrowser({
                     <div className="flex min-h-16 items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap content-start items-start gap-1.5">
-                          <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">Portal NKL</span>
+                          <span className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-neon">Começar imediato</span>
                           {embeddedResource.bonuses.slice(0, 2).map((bonus) => (
                             <span key={bonus} className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-full border border-border px-2.5 py-1 text-xs opacity-75">
                               {bonus}
                             </span>
                           ))}
                         </div>
-                        <p className="mt-1 text-xs opacity-50">Recurso oficial · Entrega imediata</p>
+                        <p className="mt-1 text-xs opacity-50">Nota máxima NKL · {meta.priceTag}</p>
                       </div>
                       <Link
                         href={embeddedResource.offerRoute}
+                        onClick={(event) => event.stopPropagation()}
                         className="inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background p-1 shadow-sm transition-transform hover:scale-105 hover:border-neon"
                         aria-label={`Ver ${embeddedResource.title}`}
                       >
@@ -616,16 +702,30 @@ export function PartnerProgramsBrowser({
                     <div className="flex min-w-0 w-full items-center gap-1.5">
                       <Link
                         href={embeddedResource.offerRoute}
-                        className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-sm font-bold leading-none hover:border-neon"
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3 text-xs font-bold leading-none hover:border-neon sm:text-sm"
                       >
                         Ler mais
                       </Link>
                       <Link
-                        href={embeddedResource.checkoutRoute}
-                        className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-sm font-bold leading-none text-black hover:opacity-90"
+                        href={embeddedResource.offerRoute}
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md bg-neon px-3 text-xs font-bold leading-none text-black hover:opacity-90 sm:text-sm"
                       >
-                        Acessar recurso
+                        Conhecer oferta
                       </Link>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          void shareResourceOffer(embeddedResource);
+                        }}
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border text-neon transition-colors hover:border-neon hover:bg-neon/10"
+                        aria-label={`Compartilhar ${embeddedResource.title}`}
+                        title="Compartilhar"
+                      >
+                        <Share2 size={16} aria-hidden="true" />
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -656,7 +756,17 @@ export function PartnerProgramsBrowser({
                 data-tutorial={index === 0 ? 'program-card-0' : undefined}
                 className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
               >
-                <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4" onClick={(event) => event.stopPropagation()}>
+                  <SaveProgramButton
+                    slug={program.slug}
+                    name={program.name}
+                    compact
+                    overlay
+                    nextPath={`/programas/${program.slug}`}
+                    isSaved={savedSlugSet.has(program.slug)}
+                  />
+                </div>
+                <div className="flex min-w-0 items-start justify-between gap-3 pr-14">
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-wide text-neon font-bold">{program.category}</p>
                     <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
@@ -668,15 +778,6 @@ export function PartnerProgramsBrowser({
                     <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-9 shrink-0 rounded-full border border-neon px-3 py-1.5 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                       {rating.toFixed(1)}/10
                     </button>
-                    <div onClick={(event) => event.stopPropagation()}>
-                      <SaveProgramButton
-                        slug={program.slug}
-                        name={program.name}
-                        compact
-                        nextPath={`/programas/${program.slug}`}
-                        isSaved={savedSlugSet.has(program.slug)}
-                      />
-                    </div>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -836,19 +937,31 @@ export function PartnerProgramsBrowser({
               </div>
               <button type="button" onClick={() => setSelectedProgram(null)} className="text-2xl opacity-60 hover:opacity-100" aria-label="Fechar">×</button>
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-orange-500/30 bg-orange-500/5 p-3">
-                <p className="text-xs font-bold uppercase tracking-wide text-orange-500 dark:text-orange-400">Nota editorial</p>
-                <p className="mt-1 text-2xl font-bold">{selectedProgram.editorialRating.toFixed(1)}/10</p>
-              </div>
-              <div className="rounded-lg border border-border bg-background p-3">
-                <p className="text-xs font-bold uppercase tracking-wide opacity-60">Potencial de ganho</p>
-                <p className="mt-1 text-lg font-bold">{selectedProgram.earningPotential ?? selectedProgram.averageEarning}</p>
-              </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1 font-bold text-orange-500 dark:text-orange-400">
+                Nota {selectedProgram.editorialRating.toFixed(1)}/10
+              </span>
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 font-bold">
+                Potencial: {selectedProgram.earningPotential ?? selectedProgram.averageEarning}
+              </span>
+              <span className="inline-flex items-center rounded-full border border-neon/40 px-3 py-1 font-medium capitalize text-neon">
+                {selectedProgram.difficulty}
+              </span>
             </div>
-            <ProgramSecondaryOffer programSlug={selectedProgram.slug} currentPage={safeCurrentPage} />
+            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed opacity-85">
+              {selectedProgram.longDescription || selectedProgram.shortDescription}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {selectedProgram.slug === 'quintoandar-indica-ai' ? (
+                <button type="button" onClick={() => setShowReferralModal(true)} className="inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Quero começar</button>
+              ) : (
+                <OutboundLink href={selectedProgram.affiliateUrl ?? selectedProgram.websiteUrl} trackingId={selectedProgram.slug} sponsored={Boolean(selectedProgram.affiliateUrl)} className="inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
+              )}
+            </div>
+            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} paymentMethods={selectedProgram.paymentMethods} defaultOpen />
+            <ProgramStrategies slug={selectedProgram.slug} category={selectedProgram.category} tags={selectedProgram.tags} />
             {selectedProgram.slug === BUY_ME_A_COFFEE_SLUG && (
-              <section className="mt-4 rounded-lg border border-neon/25 bg-neon/5 p-4">
+              <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm leading-relaxed">Convide outras pessoas para conhecer esta oportunidade.</p>
                 <OutboundLink
                   href={BUY_ME_A_COFFEE_INVITE_URL}
@@ -856,30 +969,10 @@ export function PartnerProgramsBrowser({
                   sponsored
                   className="mt-3 inline-flex min-h-11 items-center rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90"
                 >
-                  Convidar no Buy Me a Coffee
+                  Convidar no Pague um Café
                 </OutboundLink>
               </section>
             )}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link href={`/programas/${selectedProgram.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
-                Abrir página completa
-              </Link>
-              <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
-                {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
-              </button>
-              <SaveProgramButton
-                slug={selectedProgram.slug}
-                name={selectedProgram.name}
-                nextPath={`/programas/${selectedProgram.slug}`}
-                isSaved={savedSlugSet.has(selectedProgram.slug)}
-              />
-              <SocialEmbed
-                youtubeId={selectedProgram.youtubeVideoId}
-                tiktokId={selectedProgram.tiktokVideoId}
-                programName={selectedProgram.name}
-                triggerLabel="Ver vídeo"
-              />
-            </div>
             {selectedProgram.slug === 'claru-ia' && (
               <section className="mt-5 rounded-lg border border-neon/25 bg-neon/5 p-4">
                 <p className="text-sm font-bold">Você tem uma empresa e quer divulgá-la?</p>
@@ -919,21 +1012,8 @@ export function PartnerProgramsBrowser({
                 />
               </div>
             )}
-            <div className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-neon/25 bg-neon/5 p-3">
-              <p className="text-sm leading-relaxed">
-                Lembrou de alguém que combina com esta oportunidade? Compartilhe com essa pessoa.
-              </p>
-              <button
-                type="button"
-                onClick={() => void shareProgram(selectedProgram)}
-                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md border border-neon px-3 text-sm font-bold text-neon transition-colors hover:bg-neon hover:text-black"
-              >
-                <Share2 size={16} aria-hidden="true" />
-                <span className="hidden sm:inline">Compartilhar</span>
-              </button>
-            </div>
             {selectedProgram.slug === 'marketplaces-afiliados' && (
-              <section className="mt-6 rounded-lg border border-border bg-background p-4">
+              <section className="mt-5 rounded-lg border border-border bg-background p-4">
                 <h3 className="font-bold">Onde se cadastrar como afiliado</h3>
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {MARKETPLACE_AFFILIATE_LINKS.map((marketplace) => (
@@ -951,20 +1031,40 @@ export function PartnerProgramsBrowser({
                 </ul>
               </section>
             )}
-            <ProgramFirstWithdrawal slug={selectedProgram.slug} programName={selectedProgram.name} description={selectedProgram.longDescription} paymentMethods={selectedProgram.paymentMethods} defaultOpen />
-            <ProgramStrategies slug={selectedProgram.slug} category={selectedProgram.category} tags={selectedProgram.tags} />
             <div className="mt-4 flex flex-wrap gap-2">
               {selectedProgram.languages.map((language) => <span key={`language-${language}`} className="rounded-full border border-neon/50 px-2.5 py-1 text-xs font-medium text-neon">{language}</span>)}
               {(selectedProgram.communityTags.length >= 1 ? selectedProgram.communityTags : selectedProgram.tags).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs">{tag}</span>)}
             </div>
-            <div className="mt-6 flex flex-wrap gap-3 border-t border-border pt-6">
-              {selectedProgram.slug === 'quintoandar-indica-ai' ? (
-                <button type="button" onClick={() => setShowReferralModal(true)} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Quero começar</button>
-              ) : (
-                <OutboundLink href={selectedProgram.affiliateUrl ?? selectedProgram.websiteUrl} trackingId={selectedProgram.slug} sponsored={Boolean(selectedProgram.affiliateUrl)} className="rounded-md bg-neon px-4 py-2 text-sm font-bold text-black hover:opacity-90">Acessar plataforma</OutboundLink>
-              )}
-            </div>
-            {showReviewForm && <form action={reviewAction} className="mt-8 space-y-4 border-t border-border pt-6">
+            <div className="mt-6 space-y-4 border-t border-border pt-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link href={`/programas/${selectedProgram.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
+                  Abrir página completa
+                </Link>
+                <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
+                  {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
+                </button>
+                <SaveProgramButton
+                  slug={selectedProgram.slug}
+                  name={selectedProgram.name}
+                  nextPath={`/programas/${selectedProgram.slug}`}
+                  isSaved={savedSlugSet.has(selectedProgram.slug)}
+                />
+                <SocialEmbed
+                  youtubeId={selectedProgram.youtubeVideoId}
+                  tiktokId={selectedProgram.tiktokVideoId}
+                  programName={selectedProgram.name}
+                  triggerLabel="Ver vídeo"
+                />
+                <button
+                  type="button"
+                  onClick={() => void shareProgram(selectedProgram)}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-md border border-neon px-4 py-2 text-sm font-bold text-neon transition-colors hover:bg-neon hover:text-black"
+                >
+                  <Share2 size={16} aria-hidden="true" />
+                  <span>Compartilhar</span>
+                </button>
+              </div>
+              {showReviewForm && <form action={reviewAction} className="mt-4 space-y-4 border-t border-border pt-5">
               <input type="hidden" name="programId" value={selectedProgram.id} />
               <h3 className="font-playfair text-xl font-bold">Avalie esta oportunidade</h3>
               <label className="block text-sm font-bold">Nota de 0 a 10
@@ -1006,6 +1106,8 @@ export function PartnerProgramsBrowser({
               {reviewState.success && <p role="status" className="text-sm text-neon">Avaliação publicada com sucesso.</p>}
               <SubmitButton idleLabel="Publicar avaliação" pendingLabel="Processando..." />
             </form>}
+              <ProgramSecondaryOffer programSlug={selectedProgram.slug} currentPage={safeCurrentPage} />
+            </div>
           </div>
         </div>
       )}

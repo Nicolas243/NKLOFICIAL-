@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getAiLearningAccess } from '@/actions/ai-learning';
-import { getAiCourseModules } from '@/lib/ai-course';
+import { AI_NOTEBOOKLM_BONUS_BANNER, getAiCourseModules } from '@/lib/ai-course';
 import { hasProductEntitlement } from '@/lib/entitlements';
 
 export const metadata = { title: 'Curso de IA | Portal NKL' };
@@ -31,6 +31,15 @@ export default async function AiCoursePage() {
           </Link>
         </div>
       </div>
+
+      <section className="mb-8 rounded-2xl border border-orange/40 bg-orange/10 p-5" aria-label="Bônus futuro para alunos">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange">Bônus exclusivo de alunos</p>
+        <p className="mt-1.5 text-base font-bold">{AI_NOTEBOOKLM_BONUS_BANNER}</p>
+        <p className="mt-1 text-sm opacity-80">
+          Os episódios semanais em áudio serão liberados gratuitamente aqui dentro do curso para reforçar o conteúdo no celular.
+        </p>
+      </section>
+
       <div className="grid gap-4 md:grid-cols-2">
         {modules.map((module, index) => {
           const completed = module.lessons.filter((lesson) => access.completedLessonIds.includes(lesson.id)).length;
@@ -43,6 +52,9 @@ export default async function AiCoursePage() {
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-neon">Módulo {index + 1}</p>
               <h2 className="mt-2 text-xl font-bold">{module.title}</h2>
               <p className="mt-2 text-sm opacity-75">{module.summary}</p>
+              <p className="mt-3 inline-block rounded-full border border-orange/35 bg-orange/10 px-3 py-1 text-xs font-semibold text-orange">
+                {module.notebookLmFormat}
+              </p>
               <p className="mt-4 text-xs font-semibold opacity-60">{completed}/{module.lessons.length} lições concluídas</p>
             </Link>
           );

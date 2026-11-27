@@ -43,6 +43,7 @@ export function Footer() {
   const [whatsappMessageIndex, setWhatsappMessageIndex] = useState(0);
   const [showWhatsappMessage, setShowWhatsappMessage] = useState(false);
   const [captureStatus, setCaptureStatus] = useState<string | null>(null);
+  const [captureSubmitting, setCaptureSubmitting] = useState(false);
 
   useEffect(() => {
     if (window.sessionStorage.getItem(COMMUNITY_NOTIFICATION_KEY)) return;
@@ -80,20 +81,22 @@ export function Footer() {
 
   const copyEmail = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText('contato.nikoluthieria@gmail.com');
+      await navigator.clipboard.writeText('contato@nkloficial.com.br');
       setToast('Email copiado');
       setTimeout(() => setToast(null), 2000);
     } catch {
-      setToast('contato.nikoluthieria@gmail.com');
+      setToast('contato@nkloficial.com.br');
       setTimeout(() => setToast(null), 3000);
     }
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (captureSubmitting) return;
     const form = e.currentTarget;
     const data = new FormData(form);
     setCaptureStatus(null);
+    setCaptureSubmitting(true);
     try {
       const response = await fetch('/api/materials', {
         method: 'POST',
@@ -114,6 +117,8 @@ export function Footer() {
       setCaptureStatus('Obrigado! O PDF foi enviado para o seu e-mail.');
     } catch {
       setCaptureStatus('Não foi possível enviar agora. Tente novamente em instantes.');
+    } finally {
+      setCaptureSubmitting(false);
     }
   };
 
@@ -148,7 +153,9 @@ export function Footer() {
                   Consulte a <Link href="/privacidade" className="font-bold text-neon hover:underline">Política de Privacidade</Link>.
                 </span>
               </label>
-              <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
+              <button type="submit" disabled={captureSubmitting} className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background disabled:opacity-60">
+                {captureSubmitting ? 'Enviando...' : 'Confirmar'}
+              </button>
               {captureStatus && <p className="text-sm opacity-80" role="status">{captureStatus}</p>}
             </form>
           </div>
@@ -167,7 +174,9 @@ export function Footer() {
                   Consulte a <Link href="/privacidade" className="font-bold text-neon hover:underline">Política de Privacidade</Link>.
                 </span>
               </label>
-              <button type="submit" className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background">Confirmar</button>
+              <button type="submit" disabled={captureSubmitting} className="btn-outline font-bold transition-colors duration-200 hover:!bg-foreground hover:!text-background disabled:opacity-60">
+                {captureSubmitting ? 'Enviando...' : 'Confirmar'}
+              </button>
               {captureStatus && <p className="text-sm opacity-80" role="status">{captureStatus}</p>}
             </form>
           </div>
@@ -181,7 +190,7 @@ export function Footer() {
           <div className="footer-box">
             <h4>Contato Direto</h4>
             <p>Duvidas, parcerias ou projetos pessoais? Mande-nos um e-mail.</p>
-            <button type="button" onClick={copyEmail} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200 w-full text-left">contato.nikoluthieria@gmail.com</button>
+            <button type="button" onClick={copyEmail} className="btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200 w-full text-left">contato@nkloficial.com.br</button>
           </div>
           <div className="footer-box">
             <h4>Apoie o Projeto</h4>
@@ -220,9 +229,10 @@ export function Footer() {
                     href="https://www.buymeacoffee.com/ni2co3san9c"
                     target="_blank"
                     rel="noopener noreferrer"
+                    title="Apoiar com um café"
                     className="portal-support-btn"
                   >
-                    Buy Me a Coffee
+                    Apoiar com um café
                   </a>
                 </div>
               </>
@@ -233,7 +243,7 @@ export function Footer() {
                 <div className="flex w-full flex-wrap gap-2">
                   <a href="https://link.mercadopago.com.br/apoienkloficial" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar NKL</a>
                   <button type="button" onClick={() => setPixOpen(true)} className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar por Pix</button>
-                  <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Buy Me a Coffee</a>
+                  <a href="https://www.buymeacoffee.com/ni2co3san9c" target="_blank" rel="noopener noreferrer" title="Apoiar com um café" className={`${getSupportLinkClassName()} btn-outline hover:!bg-foreground hover:!text-background transition-colors duration-200`}>Apoiar com um café</a>
                 </div>
               </>
             )}

@@ -129,9 +129,10 @@ export default function LanguagesHubPage() {
 
       <section aria-label="Grade de idiomas disponíveis" className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {LANGUAGE_CARDS.map((card) => (
-          <article
+          <Link
             key={card.slug}
-            className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface/90 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-orange/60"
+            href={`/blog/aprender/${card.slug}`}
+            className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface/90 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-orange/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
           >
             <div className="relative aspect-video w-full overflow-hidden border-b border-border bg-background">
               <Image
@@ -139,7 +140,7 @@ export default function LanguagesHubPage() {
                 alt={card.alt}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover"
+                className="object-cover transition duration-300 group-hover:scale-[1.02]"
               />
             </div>
 
@@ -153,28 +154,19 @@ export default function LanguagesHubPage() {
                 </span>
               </div>
 
-              <h2 className="mt-2 font-playfair text-3xl font-bold">{card.name}</h2>
+              <h2 className="mt-2 font-playfair text-3xl font-bold text-foreground">{card.name}</h2>
               <p className="mt-2 text-sm leading-relaxed text-foreground/75">{card.summary}</p>
               <p className="mt-3 rounded-xl border border-border bg-background/60 px-3 py-2 text-xs font-medium text-foreground/75">
                 {card.highlight}
               </p>
 
-              <div className="mt-auto grid grid-cols-2 gap-2.5 pt-5">
-                <Link
-                  href={`/blog/aprender/${card.slug}`}
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-3 py-2 text-center text-xs font-bold transition hover:border-orange hover:text-orange sm:text-sm"
-                >
-                  Guia gratuito
-                </Link>
-                <Link
-                  href={`/guias/${card.slug}`}
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-orange px-3 py-2 text-center text-xs font-bold text-white transition hover:bg-orange-dark sm:text-sm"
-                >
-                  E-book + IA
-                </Link>
+              <div className="mt-auto pt-5">
+                <span className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-orange px-4 py-2 text-center text-sm font-bold text-white transition group-hover:bg-orange-dark">
+                  Acessar guia gratuito de {card.name}
+                </span>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </section>
     </main>

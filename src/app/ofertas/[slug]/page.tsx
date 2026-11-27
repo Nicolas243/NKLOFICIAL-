@@ -150,20 +150,22 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
           </p>
 
           <div className="mt-7 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xl font-bold text-foreground sm:text-2xl">
-                {product.priceLabel}
-              </p>
-              <p className="mt-1 text-sm text-foreground/70">
-                {product.billingNote}
-              </p>
-            </div>
+            {!product.hidePriceOnOfferPage && (
+              <div>
+                <p className="text-xl font-bold text-foreground sm:text-2xl">
+                  {product.priceLabel}
+                </p>
+                <p className="mt-1 text-sm text-foreground/70">
+                  {product.billingNote}
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center gap-3">
               {product.slug === 'bussola-negocios' && (
                 <AdaptiveCtaLink
                   experiment="bussola-cta"
-                  href="/quiz-negocios"
+                  href={product.checkoutRoute}
                   variants={[
                     { id: '0', label: 'Descobrir meu negócio dos sonhos' },
                     { id: '1', label: 'Mapear minhas 3 melhores ideias' },

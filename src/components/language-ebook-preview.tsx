@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BILINGUAL_COLOR_CLASSES, tokenizeBilingualExample, type ExampleToken } from '@/lib/english-ebook';
 import { LANGUAGE_EBOOKS, type LanguageEbookSlug } from '@/lib/guide-offer';
 import { absoluteSiteUrl } from '@/lib/site';
 
@@ -12,13 +13,25 @@ export const YOUGLISH_LANGUAGE_SLUGS: Record<LanguageEbookSlug, 'italian' | 'fre
   chines: 'chinese',
 };
 
-const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, string][]; colorClass: string }> = {
-  italiano: { intro: 'Aprenda italiano com um ciclo completo de 100 lições, tradução palavra a palavra e prática contextualizada.', examples: [['Io voglio studiare online.', 'Eu quero estudar on-line.'], ['Posso fare una domanda?', 'Posso fazer uma pergunta?']], colorClass: 'text-emerald-700 dark:text-emerald-300' },
-  frances: { intro: 'Construa sua base de francês com frases naturais, revisão espaçada e exemplos sempre acompanhados de tradução.', examples: [['Je veux apprendre chaque jour.', 'Eu quero aprender todos os dias.'], ['Pouvez-vous répéter, s’il vous plaît?', 'Você pode repetir, por favor?']], colorClass: 'text-blue-700 dark:text-sky-300' },
-  alemao: { intro: 'Organize o alemão em pequenas vitórias: pronúncia, ordem da frase, vocabulário e conversas profissionais.', examples: [['Ich möchte heute üben.', 'Eu quero praticar hoje.'], ['Können Sie das erklären?', 'Você pode explicar isso?']], colorClass: 'text-amber-700 dark:text-amber-300' },
-  espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']], colorClass: 'text-rose-700 dark:text-rose-300' },
-  chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']], colorClass: 'text-red-700 dark:text-red-300' },
+const DETAILS: Record<LanguageEbookSlug, { intro: string; examples: [string, string][] }> = {
+  italiano: { intro: 'Aprenda italiano com um ciclo completo de 100 lições, tradução palavra a palavra e prática contextualizada.', examples: [['Io voglio studiare online.', 'Eu quero estudar on-line.'], ['Posso fare una domanda?', 'Posso fazer uma pergunta?']] },
+  frances: { intro: 'Construa sua base de francês com frases naturais, revisão espaçada e exemplos sempre acompanhados de tradução.', examples: [['Je veux apprendre chaque jour.', 'Eu quero aprender todos os dias.'], ['Pouvez-vous répéter, s’il vous plaît?', 'Você pode repetir, por favor?']] },
+  alemao: { intro: 'Organize o alemão em pequenas vitórias: pronúncia, ordem da frase, vocabulário e conversas profissionais.', examples: [['Ich möchte heute üben.', 'Eu quero praticar hoje.'], ['Können Sie das erklären?', 'Você pode explicar isso?']] },
+  espanhol: { intro: 'Aprenda espanhol observando padrões, diferenças do português e frases que você realmente usará.', examples: [['Quiero practicar todos los días.', 'Eu quero praticar todos os dias.'], ['¿Puedes repetir, por favor?', 'Você pode repetir, por favor?']] },
+  chines: { intro: 'Comece no mandarim com tons, pinyin, caracteres e diálogos que podem ser repetidos em poucos minutos.', examples: [['我想每天学习。', 'Eu quero estudar todos os dias.'], ['请再说一遍，好吗？', 'Pode falar novamente, por favor?']] },
 };
+
+function ColoredTokens({ tokens }: { tokens: ExampleToken[] }) {
+  return (
+    <>
+      {tokens.map((token, index) => (
+        token.isWord
+          ? <span key={`${token.text}-${index}`} className={BILINGUAL_COLOR_CLASSES[token.colorIndex % BILINGUAL_COLOR_CLASSES.length]}>{token.text}</span>
+          : <span key={`${token.text}-${index}`}>{token.text}</span>
+      ))}
+    </>
+  );
+}
 
 export function getLanguageEbookPreviewMetadata(slug: LanguageEbookSlug): Metadata {
   const offer = LANGUAGE_EBOOKS[slug];
@@ -52,14 +65,17 @@ export function LanguageEbookPreview({ slug }: { slug: string }) {
         <h1 className="mt-4 font-playfair text-4xl font-bold md:text-6xl">{offer.title}</h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/75">{details.intro}</p>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {details.examples.map(([source, translation], index) => (
-            <div key={source} className="rounded-xl border border-border bg-background p-5">
-              <p className="text-xs font-bold uppercase text-foreground/50">Lição {index + 1} · exemplo colorido</p>
-              <p className={`mt-4 text-xl font-bold ${details.colorClass}`}>{source}</p>
-              <p className="mt-2 text-lg font-semibold text-foreground">{translation}</p>
-              <a className="mt-4 inline-flex text-sm font-bold text-orange hover:underline" href={`https://youglish.com/pronounce/${encodeURIComponent(source)}/${youglishSlug}`} target="_blank" rel="noreferrer">Ouvir pronúncia ↗</a>
-            </div>
-          ))}
+          {details.examples.map(([source, translation], index) => {
+            const colored = tokenizeBilingualExample(source, translation);
+            return (
+              <div key={source} className="rounded-xl border border-border bg-background p-5">
+                <p className="text-xs font-bold uppercase text-foreground/50">Lição {index + 1} · exemplo colorido</p>
+                <p className="mt-4 font-mono text-xl font-bold leading-relaxed"><ColoredTokens tokens={colored.english} /></p>
+                <p className="mt-2 font-mono text-base font-semibold leading-relaxed"><ColoredTokens tokens={colored.portuguese} /></p>
+                <a className="mt-4 inline-flex text-sm font-bold text-orange hover:underline" href={`https://pt.youglish.com/pronounce/${encodeURIComponent(source)}/${youglishSlug}`} target="_blank" rel="noreferrer">Ouvir pronúncia ↗</a>
+              </div>
+            );
+          })}
         </div>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           <div className="rounded-lg border border-border p-4"><strong>100</strong><span className="ml-2 text-sm">lições</span></div>

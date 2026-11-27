@@ -182,6 +182,7 @@ export function ProductCheckoutClient({
         body: JSON.stringify({
           plan: selectedPlan,
           productSlug: product.slug,
+          cancelPath: product.checkoutRoute,
         }),
       });
 
@@ -260,6 +261,7 @@ export function ProductCheckoutClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           productSlug: product.slug,
+          cancelPath: product.checkoutRoute,
           offerVariant: resolvedOfferVariant,
           tier: selectedTier,
           fullName: parsed.data.fullName,

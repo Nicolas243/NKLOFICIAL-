@@ -28,7 +28,7 @@ const valueHighlights = [
   '100 lições práticas com progressão do básico ao uso profissional',
   '500 exemplos coloridos com tradução alinhada palavra por palavra',
   'Diálogos profissionais, templates de e-mail/proposta e links de pronúncia',
-  'Acesso imediato em PDF A5 personalizado por CPF após pagamento (R$ 47)',
+  'Acesso imediato em PDF A5 personalizado por CPF após pagamento',
 ];
 
 function ColoredExample({ tokens }: { tokens: ReturnType<typeof tokenizeBilingualExample>['english'] }) {
@@ -135,8 +135,22 @@ export default async function EnglishEbookPage() {
       <section className="ebook-page ebook-intro">
         <p className="ebook-kicker">Templates profissionais</p>
         <h2>Copie, preencha e revise.</h2>
-        <div className="ebook-template"><strong>E-mail</strong><span>Subject: Follow-up on [project]</span><span>Hello [name],</span><span>Thank you for your message. I can [action] by [date]. Please let me know if you have any questions.</span><span>Best regards,<br />[your name]</span></div>
-        <div className="ebook-template"><strong>Proposta curta</strong><span>Goal: [what the client needs]</span><span>Deliverables: [what you will deliver]</span><span>Timeline: [dates]</span><span>Price: [amount]</span></div>
+        <div className="ebook-template">
+          <strong>E-mail</strong>
+          <span>Subject: Follow-up on [project]</span>
+          <span>Hello [name],</span>
+          <span>Thank you for your message. I can [action] by [date]. Please let me know if you have any questions.</span>
+          <span>Best regards,<br />[your name]</span>
+          <p className="ebook-muted">Tradução: Assunto: Acompanhamento sobre [projeto] / Olá [nome], / Obrigado pela sua mensagem. Posso [ação] até [data]. Por favor, avise-me se tiver alguma dúvida. / Atenciosamente, [seu nome].</p>
+        </div>
+        <div className="ebook-template">
+          <strong>Proposta curta</strong>
+          <span>Goal: [what the client needs]</span>
+          <span>Deliverables: [what you will deliver]</span>
+          <span>Timeline: [dates]</span>
+          <span>Price: [amount]</span>
+          <p className="ebook-muted">Tradução: Objetivo: [o que o cliente precisa] / Entregas: [o que você vai entregar] / Prazo: [datas] / Valor: [quantia].</p>
+        </div>
         <PageNumber number={7} />
       </section>
 
@@ -157,7 +171,7 @@ export default async function EnglishEbookPage() {
             {lesson.bullets[0] && (
               <a
                 className="ebook-audio-link"
-                href={`https://youglish.com/pronounce/${encodeURIComponent(splitEnglishExample(lesson.bullets[0]).english)}/english`}
+                href={`https://pt.youglish.com/pronounce/${encodeURIComponent(splitEnglishExample(lesson.bullets[0]).english)}/english`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -207,7 +221,7 @@ export default async function EnglishEbookPage() {
         </header>
 
         <div className="ebook-callout" style={{ marginBottom: '1.5rem' }}>
-          <strong>O que você recebe ao liberar a edição completa (R$ 47)</strong>
+          <strong>O que você recebe ao liberar a edição completa</strong>
           <ul className="ebook-steps" style={{ marginTop: '0.5rem' }}>
             {valueHighlights.map((item) => (
               <li key={item} style={{ fontSize: '12.5pt' }}>{item}</li>
@@ -215,7 +229,7 @@ export default async function EnglishEbookPage() {
           </ul>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.85rem' }}>
             <Link href="/guias/ingles#checkout" className="ebook-control-button" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-              Comprar edição completa por R$ 47
+              Ir para o checkout da edição completa
             </Link>
             <Link href="/guias/ingles" className="ebook-control-link" style={{ display: 'inline-flex', alignItems: 'center' }}>
               Ver página completa da oferta
@@ -239,7 +253,7 @@ export default async function EnglishEbookPage() {
           </span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.75rem' }}>
             <Link href="/guias/ingles#checkout" className="ebook-control-button" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-              Desbloquear as 100 lições agora (R$ 47)
+              Desbloquear as 100 lições agora
             </Link>
             <Link href="/guias/ingles" className="ebook-control-link" style={{ display: 'inline-flex', alignItems: 'center' }}>
               Voltar para /guias/ingles

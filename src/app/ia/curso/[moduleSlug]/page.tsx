@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { getAiLearningAccess } from '@/actions/ai-learning';
-import { getAiCourseModules } from '@/lib/ai-course';
+import { AI_NOTEBOOKLM_BONUS_BANNER, getAiCourseModules } from '@/lib/ai-course';
 import { AiLessonCompletion } from '@/components/ai/ai-lesson-completion';
 
 export const metadata = { title: 'Lição | IA na Prática NKL' };
@@ -20,6 +20,10 @@ export default async function AiModulePage({ params }: { params: Promise<{ modul
       <p className="mt-8 text-xs font-bold uppercase tracking-[0.16em] text-neon">Módulo</p>
       <h1 className="mt-2 font-playfair text-4xl font-bold">{courseModule.title}</h1>
       <p className="mt-3 text-sm leading-relaxed opacity-75">{courseModule.summary}</p>
+      <div className="mt-5 rounded-xl border border-orange/35 bg-orange/10 p-4 text-sm">
+        <p className="font-bold text-orange">{AI_NOTEBOOKLM_BONUS_BANNER}</p>
+        <p className="mt-1 opacity-80">{courseModule.notebookLmFormat}</p>
+      </div>
       <div className="mt-8 space-y-6">
         {courseModule.lessons.map((lesson) => (
           <article key={lesson.id} className="rounded-2xl border border-border bg-surface/70 p-5 sm:p-7">

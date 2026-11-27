@@ -16,7 +16,7 @@ test.describe('prévia do inventário publicitário', () => {
 
     await expect(page.getByRole('heading', { name: 'Anuncie no Portal NKL' })).toBeVisible();
     const banner = page.getByRole('region', { name: 'Anúncio do Portal NKL' });
-    await expect(banner).toContainText('ANUNCIE AQUI PARA 4000 VIZ AINDA EM NOVEMBRO');
+    await expect(banner).toContainText('ANUNCIE SUA MARCA NO PORTAL NKL');
     await expect(banner).not.toContainText('Espaço disponível');
     await expect(banner).not.toContainText('R$ 19,90');
     const bannerMetrics = await banner.evaluate((element) => ({

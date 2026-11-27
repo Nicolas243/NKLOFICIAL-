@@ -2,6 +2,8 @@ import { AI_PRODUCT_KEY } from '@/lib/ai-product';
 
 export { AI_PRODUCT_KEY };
 export const AI_COURSE_PRODUCT_KEY = AI_PRODUCT_KEY;
+export const AI_NOTEBOOKLM_BONUS_BANNER =
+  'Prêmio em breve — Áudios Progressivos no NotebookLM chegando para alunos';
 
 export type AiCourseLesson = {
   id: string;
@@ -36,7 +38,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Como pensar com IA',
     summary: 'Entenda capacidades, limites, contexto, incerteza e revisão humana.',
     unlockAfterDays: 0,
-    notebookLmFormat: 'Resumo em áudio (NotebookLM) + Guia interativo',
+    notebookLmFormat: 'Prêmio em breve — Resumo em áudio no NotebookLM + Guia interativo',
     lessons: [
       {
         id: 'pensar-com-ia-contexto',
@@ -67,7 +69,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Prompting que funciona',
     summary: 'Monte pedidos claros, reutilizáveis e fáceis de revisar.',
     unlockAfterDays: 0,
-    notebookLmFormat: 'Resumo em áudio (NotebookLM) + Banco de prompts',
+    notebookLmFormat: 'Prêmio em breve — Resumo em áudio no NotebookLM + Banco de prompts',
     lessons: [
       {
         id: 'prompting-estrutura',
@@ -98,7 +100,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Pesquisa e verificação',
     summary: 'Use IA para explorar sem confundir hipótese com fato.',
     unlockAfterDays: 7,
-    notebookLmFormat: 'Episódio de áudio NotebookLM (Semana 2) + Checklist de fontes',
+    notebookLmFormat: 'Prêmio em breve — Episódio de áudio no NotebookLM (Semana 2) + Checklist de fontes',
     lessons: [
       {
         id: 'pesquisa-verificacao-fontes',
@@ -129,7 +131,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Texto, imagem e voz',
     summary: 'Crie briefs melhores e revise o resultado antes de publicar.',
     unlockAfterDays: 14,
-    notebookLmFormat: 'Episódio de áudio NotebookLM (Semana 3) + Guia de briefings',
+    notebookLmFormat: 'Prêmio em breve — Episódio de áudio no NotebookLM (Semana 3) + Guia de briefings',
     lessons: [
       {
         id: 'texto-imagem-voz-brief',
@@ -160,7 +162,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Produtividade pessoal',
     summary: 'Converta tarefas grandes em próximos passos pequenos.',
     unlockAfterDays: 21,
-    notebookLmFormat: 'Episódio de áudio NotebookLM (Semana 4) + Rotina de 25 min',
+    notebookLmFormat: 'Prêmio em breve — Episódio de áudio no NotebookLM (Semana 4) + Rotina de 25 min',
     lessons: [
       {
         id: 'produtividade-plano',
@@ -191,7 +193,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Conteúdo e negócios',
     summary: 'Use IA para testar ideias sem substituir estratégia ou responsabilidade.',
     unlockAfterDays: 28,
-    notebookLmFormat: 'Episódio de áudio NotebookLM (Semana 5) + Playbook comercial',
+    notebookLmFormat: 'Prêmio em breve — Episódio de áudio no NotebookLM (Semana 5) + Playbook comercial',
     lessons: [
       {
         id: 'conteudo-negocios-oferta',
@@ -222,7 +224,7 @@ export const AI_COURSE_MODULES: readonly AiCourseModule[] = [
     title: 'Código, automações e segurança',
     summary: 'Trabalhe com agentes sem entregar segredos, autoridade excessiva ou confiança cega.',
     unlockAfterDays: 35,
-    notebookLmFormat: 'Episódio de áudio NotebookLM (Semana 6) + Contrato de agente',
+    notebookLmFormat: 'Prêmio em breve — Episódio de áudio no NotebookLM (Semana 6) + Contrato de agente',
     lessons: [
       {
         id: 'codigo-seguranca-limites',

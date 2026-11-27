@@ -29,10 +29,16 @@ import type { PaidProduct } from '@/config/products';
 import type { PortalTrack } from '@/config/tracks';
 import { trackPortalFunnelEvent } from '@/lib/analytics';
 import {
+  PWA_INSTALLED_EVENT,
   detectInstallPlatform,
   getInstallInstructions,
+  hasPersistedPwaInstall,
+  isStandaloneDisplayMode,
+  persistPwaInstall,
+  resolvePwaInstalledState,
   shouldClearInstallPrompt,
   type InstallPlatform,
+  type StandaloneNavigator,
 } from '@/lib/pwa/install-state';
 
 type BeforeInstallPromptEvent = Event & {
@@ -61,11 +67,7 @@ const IOS_INSTALL_STEPS = [
 
 function detectIsStandalone(): boolean {
   if (typeof window === 'undefined') return false;
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    ('standalone' in navigator &&
-      Boolean((navigator as Navigator & { standalone?: boolean }).standalone))
-  );
+  return isStandaloneDisplayMode(window, navigator as StandaloneNavigator);
 }
 
 export function InstallFunnelClient({
@@ -109,13 +111,33 @@ export function InstallFunnelClient({
   }, [activeTrack.id]);
 
   useEffect(() => {
+    let cancelled = false;
+    const displayModeQuery = window.matchMedia('(display-mode: standalone)');
+
     const updateEnvironment = (): void => {
+      if (cancelled) return;
       const standalone = detectIsStandalone();
-      setInstalled(standalone);
+      const persisted = hasPersistedPwaInstall(window.localStorage);
+      setInstalled(standalone || persisted);
       setPlatform(detectInstallPlatform(navigator.userAgent, standalone));
+
+      void resolvePwaInstalledState({
+        win: window,
+        nav: navigator as StandaloneNavigator,
+        storage: window.localStorage,
+      }).then((resolved) => {
+        if (!cancelled && resolved) {
+          setInstalled(true);
+          setNativePrompt(null);
+        }
+      });
     };
 
     const handleBeforeInstallPrompt = (event: Event): void => {
+      if (detectIsStandalone() || hasPersistedPwaInstall(window.localStorage)) {
+        setInstalled(true);
+        return;
+      }
       event.preventDefault();
       setNativePrompt(event as BeforeInstallPromptEvent);
     };
@@ -123,6 +145,8 @@ export function InstallFunnelClient({
     const handleAppInstalled = (): void => {
       setInstalled(true);
       setNativePrompt(null);
+      persistPwaInstall(window.localStorage);
+      window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
       if (!installAcceptedTrackedRef.current) {
         installAcceptedTrackedRef.current = true;
         trackPortalFunnelEvent('install_prompt_accepted', {
@@ -136,14 +160,26 @@ export function InstallFunnelClient({
       }
     };
 
+    const handleGlobalInstalled = (): void => {
+      setInstalled(true);
+      setNativePrompt(null);
+    };
+
     const timer = window.setTimeout(updateEnvironment, 0);
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
+    document.addEventListener('visibilitychange', updateEnvironment);
+    displayModeQuery.addEventListener('change', updateEnvironment);
 
     return () => {
+      cancelled = true;
       window.clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
+      document.removeEventListener('visibilitychange', updateEnvironment);
+      displayModeQuery.removeEventListener('change', updateEnvironment);
     };
   }, [router]);
 
@@ -179,6 +215,8 @@ export function InstallFunnelClient({
       }
       if (choice.outcome === 'accepted') {
         setInstalled(true);
+        persistPwaInstall(window.localStorage);
+        window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
         if (!installAcceptedTrackedRef.current) {
           installAcceptedTrackedRef.current = true;
           trackPortalFunnelEvent('install_prompt_accepted', {

@@ -7,10 +7,16 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { ProductSlug } from '@/config/products';
 import {
+  PWA_INSTALLED_EVENT,
   detectInstallPlatform,
   getInstallInstructions,
+  hasPersistedPwaInstall,
+  isStandaloneDisplayMode,
+  persistPwaInstall,
+  resolvePwaInstalledState,
   shouldClearInstallPrompt,
   type InstallPlatform,
+  type StandaloneNavigator,
 } from '@/lib/pwa/install-state';
 
 type BeforeInstallPromptEvent = Event & {
@@ -26,11 +32,7 @@ export type StandalonePwaInstallButtonProps = {
 
 function isStandaloneDisplay(): boolean {
   if (typeof window === 'undefined') return false;
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    ('standalone' in navigator &&
-      Boolean((navigator as Navigator & { standalone?: boolean }).standalone))
-  );
+  return isStandaloneDisplayMode(window, navigator as StandaloneNavigator);
 }
 
 export function StandalonePwaInstallButton({
@@ -43,38 +45,98 @@ export function StandalonePwaInstallButton({
   const [platform, setPlatform] = useState<InstallPlatform>('other');
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [installedNow, setInstalledNow] = useState(false);
+  const [installed, setInstalled] = useState(false);
   const [runningStandalone, setRunningStandalone] = useState(false);
 
   const toolPath = `/app/${productSlug}`;
   const isOnToolRoute = pathname === toolPath;
+  const scope = `standalone-${productSlug}`;
 
   useEffect(() => {
+    let cancelled = false;
+    const displayModeQuery = window.matchMedia('(display-mode: standalone)');
+    const legacyStorageKey = `standalone-pwa-installed-${productSlug}`;
+
+    const markInstalled = (emitEvent = false): void => {
+      if (cancelled) return;
+      setPrompt(null);
+      setInstalled(true);
+      persistPwaInstall(window.localStorage, scope);
+      try {
+        window.localStorage.setItem(legacyStorageKey, 'true');
+      } catch {
+        // Ignore storage restrictions.
+      }
+      if (emitEvent) {
+        window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
+      }
+    };
+
     const syncPlatformTimer = window.setTimeout(() => {
+      if (cancelled) return;
       const standalone = isStandaloneDisplay();
+      const legacyInstalled = window.localStorage.getItem(legacyStorageKey) === 'true';
+      const persisted = legacyInstalled || hasPersistedPwaInstall(window.localStorage, scope);
       setRunningStandalone(standalone);
+      setInstalled(standalone || persisted);
       setPlatform(detectInstallPlatform(navigator.userAgent, standalone));
+
+      void resolvePwaInstalledState({
+        scope,
+        win: window,
+        nav: navigator as StandaloneNavigator,
+        storage: window.localStorage,
+      }).then((resolved) => {
+        if (resolved) markInstalled(false);
+      });
     }, 0);
 
     const handleBeforeInstallPrompt = (event: Event): void => {
+      if (
+        isStandaloneDisplay()
+        || window.localStorage.getItem(legacyStorageKey) === 'true'
+        || hasPersistedPwaInstall(window.localStorage, scope)
+      ) {
+        markInstalled(false);
+        return;
+      }
       event.preventDefault();
       setPrompt(event as BeforeInstallPromptEvent);
     };
 
     const handleAppInstalled = (): void => {
-      setPrompt(null);
       setInstalledNow(true);
-      window.localStorage.setItem(`standalone-pwa-installed-${productSlug}`, 'true');
+      markInstalled(true);
+    };
+
+    const handleGlobalInstalled = (): void => {
+      markInstalled(false);
+    };
+
+    const handleDisplayChange = (): void => {
+      const standalone = isStandaloneDisplay();
+      if (standalone) {
+        setRunningStandalone(true);
+        markInstalled(false);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
+    document.addEventListener('visibilitychange', handleDisplayChange);
+    displayModeQuery.addEventListener('change', handleDisplayChange);
 
     return () => {
+      cancelled = true;
       window.clearTimeout(syncPlatformTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(PWA_INSTALLED_EVENT, handleGlobalInstalled);
+      document.removeEventListener('visibilitychange', handleDisplayChange);
+      displayModeQuery.removeEventListener('change', handleDisplayChange);
     };
-  }, [productSlug]);
+  }, [productSlug, scope]);
 
   useEffect(() => {
     if (!instructionsOpen) return;
@@ -95,24 +157,21 @@ export function StandalonePwaInstallButton({
   }, [instructionsOpen]);
 
   async function handleInstallClick(): Promise<void> {
-    if (prompt && isOnToolRoute) {
+    if (prompt) {
       const activePrompt = prompt;
       setPrompt(null);
       await activePrompt.prompt();
       const choice = await activePrompt.userChoice;
       if (shouldClearInstallPrompt(choice.outcome) && choice.outcome === 'accepted') {
         setInstalledNow(true);
-      }
-      return;
-    }
-
-    if (prompt && !isOnToolRoute) {
-      const activePrompt = prompt;
-      setPrompt(null);
-      await activePrompt.prompt();
-      const choice = await activePrompt.userChoice;
-      if (shouldClearInstallPrompt(choice.outcome) && choice.outcome === 'accepted') {
-        setInstalledNow(true);
+        setInstalled(true);
+        persistPwaInstall(window.localStorage, scope);
+        try {
+          window.localStorage.setItem(`standalone-pwa-installed-${productSlug}`, 'true');
+        } catch {
+          // Ignore storage restrictions.
+        }
+        window.dispatchEvent(new Event(PWA_INSTALLED_EVENT));
       }
       return;
     }
@@ -126,6 +185,15 @@ export function StandalonePwaInstallButton({
         <Smartphone size={15} aria-hidden="true" />
         App {appName} aberto no modo dedicado
       </span>
+    );
+  }
+
+  if (installed) {
+    if (!installedNow) return null;
+    return (
+      <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300" role="status">
+        Atalho de {appName} adicionado com sucesso.
+      </p>
     );
   }
 

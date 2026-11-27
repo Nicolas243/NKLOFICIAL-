@@ -30,8 +30,8 @@ export default function PrivacidadePage() {
           <p className="mt-2 opacity-85">
             O Portal NKL, operado pelo responsável pelo site, atua como controlador dos dados
             tratados dentro da plataforma. O canal para solicitações de privacidade é{' '}
-            <a href="mailto:contato.nikoluthieria@gmail.com" className="text-neon font-bold hover:underline">
-              contato.nikoluthieria@gmail.com
+            <a href="mailto:contato@nkloficial.com.br" className="text-neon font-bold hover:underline">
+              contato@nkloficial.com.br
             </a>
             . Esse canal também recebe pedidos destinados ao encarregado pelo tratamento de dados.
           </p>

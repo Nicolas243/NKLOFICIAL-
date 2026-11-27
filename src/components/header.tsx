@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useSessionUser } from '@/components/use-session-user'
-import { useTheme } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PwaInstallButton } from '@/components/pwa'
 import {
@@ -113,7 +112,6 @@ function DropdownCompact({ label, items }: { label: string; items: { href: strin
 }
 
 export function Header() {
-  const { resolvedTheme } = useTheme()
   const mounted = useSyncExternalStore(() => () => { }, () => true, () => false)
   const pathname = usePathname()
   const surface = getPortalSurface(pathname)
@@ -163,15 +161,17 @@ export function Header() {
       : 'Guias e ferramentas NKL'
 
     return (
-      <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-white text-black shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:bg-black dark:text-white">
-        <div className="mx-auto flex min-h-16 max-w-[1280px] items-center justify-between gap-3 bg-white px-4 py-1.5 dark:bg-black">
-          <Link href={brandHref} className="group flex shrink-0 items-center gap-3">
-            <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full object-contain dark:invert" />
-            <span className="min-w-0">
+      <header className="relative z-[100] lg:fixed top-0 w-full border-b border-border bg-[var(--header-bg)] text-foreground backdrop-blur-md shadow-[0_8px_30px_rgba(11,22,40,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+        <div className="mx-auto flex min-h-16 max-w-[1280px] items-center justify-between gap-3 px-4 py-1.5">
+          <div className="flex shrink-0 items-center gap-3">
+            <Link href="/" aria-label="Ir para o início do Portal NKL" className="shrink-0">
+              <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full object-contain dark:invert" />
+            </Link>
+            <Link href={brandHref} className="group min-w-0">
               <span className="block whitespace-nowrap font-playfair text-lg font-bold tracking-tight sm:text-xl">{brandTitle}</span>
               <span className="hidden text-[10px] uppercase tracking-[0.2em] opacity-60 xl:block">{brandSubtitle}</span>
-            </span>
-          </Link>
+            </Link>
+          </div>
           <nav className="hidden items-center gap-3.5 xl:gap-5 lg:flex" aria-label="Navegação do Portal NKL">{portalLinks}</nav>
           <div className="relative z-[99999] flex shrink-0 items-center gap-2 sm:gap-2.5">
             {authBtn}
@@ -190,7 +190,7 @@ export function Header() {
           </div>
         </div>
         {menuOpen && (
-          <nav id="partner-mobile-navigation" className="flex flex-col gap-1 border-t border-border bg-white px-4 py-4 text-black dark:bg-black dark:text-white lg:hidden">
+          <nav id="partner-mobile-navigation" className="flex flex-col gap-1 border-t border-border bg-surface px-4 py-4 text-foreground lg:hidden">
             {portalLinks}
           </nav>
         )}
@@ -218,15 +218,14 @@ export function Header() {
     </>
   )
 
-  const rawBgColor = resolvedTheme === 'dark' ? '#000000' : '#ffffff'
-  const bgColor = mounted ? rawBgColor : undefined
-
   return (
-    <header suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className={`relative z-[100] lg:fixed top-0 w-full bg-white dark:bg-black border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
+    <header suppressHydrationWarning className={`relative z-[100] lg:fixed top-0 w-full bg-[var(--header-bg)] text-foreground backdrop-blur-md border-b border-border transition-transform duration-300 ${scrolled && mounted ? 'lg:-translate-y-full' : 'lg:translate-y-0'}`}>
       {/* Row 1 */}
-      <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between min-w-0 bg-white dark:bg-black">
+      <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center justify-between min-w-0">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
+          <Link href="/" aria-label="Ir para o início do Portal NKL" className="shrink-0">
+            <Image src="/NKL/NKL.png" alt="Logo do Portal NKL" width={30} height={30} className="w-[30px] h-[30px] object-contain dark:invert shrink-0" />
+          </Link>
           <Link href={MUSIC_PORTAL_HOME} className="font-playfair font-bold text-lg tracking-tight truncate">NKL Cordas</Link>
           <Link href="/" className="hidden sm:inline-flex items-center rounded border border-border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider opacity-75 hover:border-neon hover:text-neon transition-colors">
             Portal NKL
@@ -256,7 +255,7 @@ export function Header() {
 
       {/* Row 2 — mesma altura da row1, empurra o corpo pra baixo */}
       {menuOpen && (
-        <div id="mobile-navigation" suppressHydrationWarning style={bgColor ? { backgroundColor: bgColor } : undefined} className="relative z-[105] lg:hidden bg-white dark:bg-black border-t border-border">
+        <div id="mobile-navigation" suppressHydrationWarning className="relative z-[105] lg:hidden bg-surface text-foreground border-t border-border">
           <nav aria-label="Navegação secundária" className="flex w-full h-14 items-center justify-between px-[15px] gap-[15px] max-[600px]:gap-[clamp(3px,1.5vw,9px)] overflow-visible">
             {navLinksCompact}
           </nav>

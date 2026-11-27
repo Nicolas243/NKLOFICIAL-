@@ -59,6 +59,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     await enforcePublicRateLimit('material-email', email);
+  } catch (rateError) {
+    const rateMessage = rateError instanceof Error ? rateError.message : 'erro desconhecido';
+    if (rateMessage.includes('Muitas tentativas')) {
+      return NextResponse.json({ error: rateMessage }, { status: 429 });
+    }
+    console.warn('[MATERIALS] Rate limit indisponível, mantendo cooldown por cookie:', rateMessage);
+  }
+
+  try {
     const attachment = await loadFreeMaterial(parsed.data.area);
     await sendWithRetry({
       recipientEmail: email,

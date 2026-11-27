@@ -1,6 +1,6 @@
 'use client';
 
-import { Moon, Sun } from 'lucide-react';
+import Image from 'next/image';
 import { useSyncExternalStore } from 'react';
 import { useTheme } from '@/components/theme-provider';
 
@@ -25,7 +25,14 @@ export function PortalThemeToggle() {
         aria-pressed={false}
         disabled
       >
-        <Moon size={18} aria-hidden="true" />
+        <Image
+          src="/NKL/moonsun-portal.png"
+          alt=""
+          width={26}
+          height={26}
+          className="portal-theme-icon"
+          aria-hidden="true"
+        />
       </button>
     );
   }
@@ -42,7 +49,14 @@ export function PortalThemeToggle() {
       aria-pressed={isDark}
       title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
     >
-      {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+      <Image
+        src="/NKL/moonsun-portal.png"
+        alt=""
+        width={26}
+        height={26}
+        className="portal-theme-icon"
+        aria-hidden="true"
+      />
     </button>
   );
 }

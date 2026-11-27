@@ -28,6 +28,7 @@ export type PaidProduct = {
   pwaIcon512?: string;
   priceLabel: string;
   billingNote: string;
+  hidePriceOnOfferPage?: boolean;
   deliverables: readonly string[];
   bonuses: readonly string[];
   ctaLabel: string;
@@ -58,6 +59,7 @@ export const PAID_PRODUCTS: readonly PaidProduct[] = [
     pwaIcon512: APP_ICONS.bussola[512],
     priceLabel: 'R$ 39 em pagamento único',
     billingNote: 'Liberação individual e imediata desta ferramenta após confirmação.',
+    hidePriceOnOfferPage: true,
     deliverables: [
       'Acesso completo à ferramenta interativa Bússola de Negócios (50 critérios reais)',
       'Comparação personalizada de modelos por tempo, capital e rotina',

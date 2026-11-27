@@ -3,41 +3,41 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f1f5fb;
-  --foreground: #101828;
-  --surface: #ffffff;
-  --income-background: #ece9e3;
-  --income-surface: #f3f0ea;
-  --income-card: #eeebe5;
-  --text: #101828;
-  --border: #c8d0dc;
+  --background: #dce5f0;
+  --foreground: #0b1526;
+  --surface: #eef3f9;
+  --income-background: #dce5f0;
+  --income-surface: #e8eef6;
+  --income-card: #eef3f9;
+  --text: #0b1526;
+  --border: #a6bad4;
   --neon: #2a63ae;
   --neon-dark: #254d85;
   --orange: #c76538;
   --orange-dark: #9f4f2e;
-  --header-bg: rgba(255, 255, 255, 0.95);
+  --header-bg: rgba(226, 234, 244, 0.94);
   --accent: rgba(57, 91, 128, 0.08);
-  --surface-shadow: 0 8px 24px rgba(30, 62, 100, 0.1);
-  --card-shadow: 0 8px 25px rgba(30, 62, 100, 0.14);
+  --surface-shadow: 0 8px 24px rgba(11, 22, 40, 0.1);
+  --card-shadow: 0 8px 25px rgba(11, 22, 40, 0.14);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --surface: #121212;
-  --income-background: #1b1b1a;
-  --income-surface: #242422;
-  --income-card: #2b2b29;
-  --text: #ffffff;
-  --border: #2a2a2a;
-  --neon: #4b78ad;
-  --neon-dark: #7294bd;
-  --orange: #d2855d;
-  --orange-dark: #bb704d;
-  --header-bg: rgba(10, 10, 10, 0.95);
-  --accent: rgba(77, 102, 130, 0.12);
-  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0);
-  --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --background: #090b10;
+  --foreground: #f8fafc;
+  --surface: #0f1a2c;
+  --income-background: #0b1220;
+  --income-surface: #111e33;
+  --income-card: #162640;
+  --text: #f8fafc;
+  --border: rgba(72, 128, 204, 0.28);
+  --neon: #38bdf8;
+  --neon-dark: #7dd3fc;
+  --orange: #f97316;
+  --orange-dark: #fb923c;
+  --header-bg: rgba(15, 26, 44, 0.92);
+  --accent: rgba(56, 114, 196, 0.14);
+  --surface-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
 }
 
 .radial-menu-mobile-copy {
@@ -120,11 +120,11 @@
 }
 
 .radial-menu-label {
-  font-size: clamp(22px, 2.2vw, 27px);
+  font-size: clamp(18.7px, 1.87vw, 22.95px);
 }
 
 .radial-menu-description {
-  font-size: clamp(18px, 1.9vw, 23px);
+  font-size: clamp(15.3px, 1.615vw, 19.55px);
 }
 
 .radial-menu-center-line {
@@ -149,11 +149,11 @@
   }
 
   .radial-menu-label {
-    font-size: clamp(34px, 8vw, 44px);
+    font-size: clamp(28.9px, 6.8vw, 37.4px);
   }
 
   .radial-menu-description {
-    font-size: clamp(28px, 6.5vw, 38px);
+    font-size: clamp(23.8px, 5.525vw, 32.3px);
   }
 
 }
@@ -1450,16 +1450,16 @@ body.dark-theme .home-photo-img {
 .site-footer {
   position: relative;
   z-index: 20;
-  background: #ffffff !important;
-  color: #101828;
+  background: var(--surface) !important;
+  color: var(--foreground);
   padding: 3rem 0 2rem 0;
   border-top: 2px solid color-mix(in srgb, var(--orange) 35%, var(--border));
   margin-top: 2rem;
 }
 
 .dark .site-footer {
-  background: #000000 !important;
-  color: #ffffff;
+  background: #090b10 !important;
+  color: #f8fafc;
 }
 
 .footer-header {
@@ -4001,6 +4001,17 @@ body.dark-theme .image-placeholder {
 .portal-theme-btn:focus-visible {
   outline: 2px solid var(--portal-focus);
   outline-offset: 2px;
+}
+
+.portal-theme-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  transition: transform 0.35s ease;
+}
+
+.portal-theme-btn:hover .portal-theme-icon {
+  transform: scale(1.06);
 }
 
 .portal-utility-link {

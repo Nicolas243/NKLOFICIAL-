@@ -63,7 +63,7 @@ export function AdBannerContent({
     slotNumber: index + 1,
   });
   const hasActiveCampaign = normalizedSlots.some((slot) => slot.campaignId);
-  const marqueeText = 'ANUNCIE AQUI PARA 4000 VIZ AINDA EM NOVEMBRO';
+  const marqueeText = 'ANUNCIE SUA MARCA NO PORTAL NKL';
 
   return (
     <section

@@ -200,12 +200,21 @@ export default function EnglishLearningPage() {
           <p className="text-sm leading-relaxed text-foreground/75"><strong>Quer seguir sem montar o plano sozinho?</strong> O e-book completo organiza 100 lições prontas para executar, e você pode começar pelas 5 primeiras gratuitamente.</p>
           <div className="flex flex-wrap gap-2">
             <Link href="/guias/ingles/ebook" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md border border-orange px-4 py-2 text-sm font-bold text-orange hover:bg-orange hover:text-white">Ler amostra gratuita (5 lições)</Link>
-            <Link href="/guias/ingles" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md bg-orange px-4 py-2 text-sm font-bold text-white hover:bg-orange-dark">Ver e-book completo (R$ 47)</Link>
+            <Link href="/guias/ingles" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md bg-orange px-4 py-2 text-sm font-bold text-white hover:bg-orange-dark">Ver e-book completo</Link>
           </div>
         </div>
       </section>
 
-      <EnglishLearningPractice />
+      <EnglishLearningPractice
+        labels={{
+          eyebrow: 'Pratique agora',
+          title: 'Um treino rápido, sem nota e sem vergonha',
+          description: 'Responda, leia a explicação e volte amanhã. O objetivo é identificar o próximo passo, não provar que você já sabe.',
+          score: 'Acertos nesta visita',
+          correct: 'Correto!',
+          retry: 'Ainda não.',
+        }}
+      />
 
       <ResourceList eyebrow="4 · Pratique sem pagar" title="Cinco apps gratuitos para começar hoje" items={apps} />
       <ResourceList eyebrow="5 · Estude com contexto" title="Cinco sites para sair da tradução palavra por palavra" items={sites} />
@@ -235,7 +244,7 @@ export default function EnglishLearningPage() {
           <p className="mt-3 text-sm leading-relaxed text-foreground/75">O <strong>Inglês para ganhar dinheiro</strong> reúne 100 lições, 500 exemplos coloridos, diálogos e pronúncia. Experimente as 5 primeiras lições gratuitamente ou adquira a edição completa em PDF A5 personalizado.</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link href="/guias/ingles/ebook" className="inline-flex min-h-11 items-center rounded-md border border-orange px-4 py-3 text-sm font-bold text-orange hover:bg-orange hover:text-white">Ler amostra gratuita (5 lições)</Link>
-            <Link href="/guias/ingles" className="inline-flex min-h-11 items-center rounded-md bg-orange px-5 py-3 text-sm font-bold text-white hover:bg-orange-dark">Adquirir e-book completo (R$ 47)</Link>
+            <Link href="/guias/ingles" className="inline-flex min-h-11 items-center rounded-md bg-orange px-5 py-3 text-sm font-bold text-white hover:bg-orange-dark">Adquirir e-book completo</Link>
           </div>
         </aside>
       </section>

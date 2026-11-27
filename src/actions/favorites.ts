@@ -14,6 +14,7 @@ import {
   businessDirectory,
 } from '@/db/schema';
 import { isUuid } from '@/lib/uuid';
+import { enableMusicProfileForUser } from '@/lib/auth/profile';
 
 /**
  * Inversão: um usuário autenticado pode ainda não ter linha em `user_profiles`
@@ -35,7 +36,7 @@ async function ensureProfile(userId: string, email: string | undefined): Promise
 
   await db
     .insert(userProfiles)
-    .values({ id: userId, email, role: 'user' })
+    .values({ id: userId, email, role: 'user', musicProfileEnabled: true })
     .onConflictDoNothing();
 }
 
@@ -75,6 +76,7 @@ export async function toggleFavoriteString(stringId: string): Promise<void> {
       );
   } else {
     await ensureProfile(userId, email);
+    await enableMusicProfileForUser(userId);
     await db
       .insert(favoriteStrings)
       .values({ userId, stringId })
@@ -83,6 +85,7 @@ export async function toggleFavoriteString(stringId: string): Promise<void> {
 
   revalidatePath(`/catalogo/${stringId}`);
   revalidatePath('/meu-setup');
+  revalidatePath('/perfil');
 }
 
 export async function toggleFavoriteLuthier(luthierId: string): Promise<void> {
@@ -108,6 +111,7 @@ export async function toggleFavoriteLuthier(luthierId: string): Promise<void> {
       );
   } else {
     await ensureProfile(userId, email);
+    await enableMusicProfileForUser(userId);
     await db
       .insert(favoriteLuthiers)
       .values({ userId, luthierId })
@@ -116,6 +120,7 @@ export async function toggleFavoriteLuthier(luthierId: string): Promise<void> {
 
   revalidatePath(`/luthiers/${luthierId}`);
   revalidatePath('/meu-setup');
+  revalidatePath('/perfil');
 }
 
 export async function toggleFavoriteBusiness(businessId: string): Promise<void> {
@@ -141,6 +146,7 @@ export async function toggleFavoriteBusiness(businessId: string): Promise<void> 
       );
   } else {
     await ensureProfile(userId, email);
+    await enableMusicProfileForUser(userId);
     await db
       .insert(favoriteBusinesses)
       .values({ userId, businessId })
@@ -149,6 +155,7 @@ export async function toggleFavoriteBusiness(businessId: string): Promise<void> 
 
   revalidatePath('/lojas');
   revalidatePath('/meu-setup');
+  revalidatePath('/perfil');
 }
 
 export async function toggleFavoriteProfessor(professorId: string): Promise<void> {
@@ -174,6 +181,7 @@ export async function toggleFavoriteProfessor(professorId: string): Promise<void
       );
   } else {
     await ensureProfile(userId, email);
+    await enableMusicProfileForUser(userId);
     await db
       .insert(favoriteProfessors)
       .values({ userId, professorId })
@@ -182,6 +190,7 @@ export async function toggleFavoriteProfessor(professorId: string): Promise<void
 
   revalidatePath('/professores');
   revalidatePath('/meu-setup');
+  revalidatePath('/perfil');
 }
 
 export async function isStringFavorite(

@@ -14,15 +14,15 @@ export const RIFA_CAMPAIGN_INTERACTED_KEY = 'nkl_rifa_campaign_interacted';
 export const RIFA_CAMPAIGN_COPY = {
   banner: {
     title: 'O Portal NKL já te ajudou em alguma decisão?',
-    description: 'Ajude a manter a curadoria independente participando de uma ação cujo prêmio são 3 livros físicos sobre finanças e empreendedorismo.',
+    description: 'Ajude a manter a curadoria independente participando de uma ação em que quem ganhar escolhe entre 3 livros físicos ou digitais sobre finanças e empreendedorismo ou R$ 50 no Pix.',
   },
   card: {
     title: 'Uma forma de apoiar o Portal',
-    description: 'Apoie o Portal NKL e concorra a 3 livros físicos sobre finanças e empreendedorismo. Consulte os prêmios, regras, data do sorteio e condições antes de participar.',
+    description: 'Apoie o Portal NKL e, se ganhar, escolha entre 3 livros físicos ou digitais sobre finanças e empreendedorismo ou R$ 50 no Pix. Consulte prêmios, regras, data do sorteio e condições antes de participar.',
   },
   exitPopup: {
     title: 'Antes de você sair',
-    description: 'Se o Portal NKL já foi útil para você, considere apoiar o projeto participando da ação que oferece 3 livros físicos como prêmio.',
+    description: 'Se o Portal NKL já foi útil para você, considere apoiar o projeto participando da ação em que quem ganhar escolhe entre 3 livros físicos ou digitais ou R$ 50 no Pix.',
   },
   disclosure: 'Consulte o regulamento antes de participar.',
 } as const;

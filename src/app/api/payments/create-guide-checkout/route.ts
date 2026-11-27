@@ -9,6 +9,7 @@ import {
   ALL_LANGUAGE_OFFER_VARIANTS_WITH_TIERS,
   ENGLISH_EBOOK_OFFER_VARIANT,
   extractOfferTier,
+  getGuideCancelPath,
   getGuideTierPriceCents,
   isComingSoonLanguageOffer,
   isLanguageEbookOffer,
@@ -21,11 +22,15 @@ import {
   normalizeGuestCheckoutInput,
 } from '@/lib/guest-checkout';
 import { parseValidatedOfferVariant } from '@/lib/offer-experiment';
-import { createCheckoutSession } from '@/lib/stripe/checkout';
+import {
+  createCheckoutSession,
+  resolveSafeCheckoutCancelUrl,
+} from '@/lib/stripe/checkout';
 import { buildGuidePurchaseCheckoutParams } from '@/lib/stripe/guide';
 import { createClient } from '@/lib/supabase/server';
 const checkoutSchema = z.object({
   productSlug: z.string().trim().max(80).optional(),
+  cancelPath: z.string().trim().max(300).optional(),
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
   tier: z.enum(['essential', 'complete', 'vip']).optional(),
   fullName: z.string().trim().max(160).optional(),
@@ -143,7 +148,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'purchase_creation_failed', message: 'Não foi possível registrar a intenção de compra.' }, { status: 502 });
     }
 
-    const session = await createCheckoutSession(buildGuidePurchaseCheckoutParams({
+    const checkoutParams = buildGuidePurchaseCheckoutParams({
       purchaseId: purchase.id,
       siteUrl: env.NEXT_PUBLIC_SITE_URL,
       offerVariant: offerVariant ?? undefined,
@@ -152,7 +157,18 @@ export async function POST(request: Request): Promise<NextResponse> {
       discountPercent,
       overrideAmountCents: amountCents,
       customerEmail: guestData.email,
-    }));
+    });
+    const cancelUrl = resolveSafeCheckoutCancelUrl({
+      siteUrl: env.NEXT_PUBLIC_SITE_URL,
+      cancelPath: parsedBody.data.cancelPath,
+      productSlug: validatedProductSlug,
+      referer: request.headers.get('referer'),
+      fallbackPath: getGuideCancelPath(offerVariant),
+    });
+    const session = await createCheckoutSession({
+      ...checkoutParams,
+      cancelUrl,
+    });
 
     if (!session.url) {
       return NextResponse.json({ error: 'checkout_url_missing', message: 'O Stripe não retornou um endereço de checkout válido.' }, { status: 502 });

@@ -1,14 +1,32 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  PWA_INSTALLED_STORAGE_KEY,
   detectInstallPlatform,
   getInstallAction,
   getInstallInstructions,
   getInstallIntentStorageKey,
+  getScopedInstalledStorageKey,
   hasInstallIntent,
+  hasInstalledRelatedApp,
+  hasPersistedPwaInstall,
+  isStandaloneDisplayMode,
   markInstallIntent,
+  persistPwaInstall,
+  resolvePwaInstalledState,
   shouldClearInstallPrompt,
 } from '../install-state';
+
+function createMemoryStorage() {
+  const values = new Map<string, string>();
+  return {
+    values,
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+  };
+}
 
 test('detects iOS Safari instructions when the native prompt is unavailable', () => {
   const platform = detectInstallPlatform(
@@ -68,16 +86,59 @@ test('clears a native prompt after either user choice', () => {
 });
 
 test('shares the header install intent with the reminder', () => {
-  const values = new Map<string, string>();
-  const storage = {
-    getItem: (key: string) => values.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      values.set(key, value);
-    },
-  };
+  const storage = createMemoryStorage();
 
   assert.equal(hasInstallIntent(storage, 'income'), false);
   markInstallIntent(storage, 'income');
-  assert.equal(values.get(getInstallIntentStorageKey('income')), 'true');
+  assert.equal(storage.values.get(getInstallIntentStorageKey('income')), 'true');
   assert.equal(hasInstallIntent(storage, 'income'), true);
+});
+
+test('persists and detects global nkl_pwa_installed and scoped install flags', () => {
+  const storage = createMemoryStorage();
+
+  assert.equal(hasPersistedPwaInstall(storage, 'portal'), false);
+  persistPwaInstall(storage, 'portal');
+  assert.equal(storage.values.get(PWA_INSTALLED_STORAGE_KEY), 'true');
+  assert.equal(storage.values.get(getScopedInstalledStorageKey('portal')), 'true');
+  assert.equal(hasPersistedPwaInstall(storage, 'portal'), true);
+  assert.equal(hasPersistedPwaInstall(storage, 'income'), true);
+});
+
+test('detects standalone display mode and iOS navigator.standalone', () => {
+  assert.equal(
+    isStandaloneDisplayMode({ matchMedia: () => ({ matches: true }) as MediaQueryList }, null),
+    true,
+  );
+  assert.equal(
+    isStandaloneDisplayMode({ matchMedia: () => ({ matches: false }) as MediaQueryList }, { standalone: true }),
+    true,
+  );
+  assert.equal(
+    isStandaloneDisplayMode({ matchMedia: () => ({ matches: false }) as MediaQueryList }, { standalone: false }),
+    false,
+  );
+});
+
+test('detects installed related apps and persists nkl_pwa_installed', async () => {
+  const storage = createMemoryStorage();
+  assert.equal(await hasInstalledRelatedApp({ getInstalledRelatedApps: async () => [] }), false);
+  assert.equal(await hasInstalledRelatedApp({ getInstalledRelatedApps: async () => [{ id: 'nkl' }] }), true);
+
+  const resolved = await resolvePwaInstalledState({
+    scope: 'music',
+    win: { matchMedia: () => ({ matches: false }) as MediaQueryList },
+    nav: {
+      standalone: false,
+      getInstalledRelatedApps: async () => [{ id: 'nkl' }],
+    },
+    storage,
+  });
+
+  assert.equal(resolved, true);
+  assert.equal(storage.values.get(PWA_INSTALLED_STORAGE_KEY), 'true');
+  assert.equal(
+    getInstallAction({ installed: resolved, nativePromptAvailable: true, platform: 'chromium' }),
+    'hidden',
+  );
 });

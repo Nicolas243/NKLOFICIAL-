@@ -2,11 +2,13 @@ import crypto from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { isValidProductSlug, type ProductSlug } from '@/config/products';
 import { db } from '@/db';
 import { guideSubscriptions, userProfiles } from '@/db/schema';
 import { env } from '@/env';
 import {
   GUIDE_SUBSCRIPTION_PRICE_CENTS,
+  getGuideCancelPath,
 } from '@/lib/guide-offer';
 import {
   createGuestAccessToken,
@@ -14,12 +16,17 @@ import {
   normalizeGuestCheckoutInput,
 } from '@/lib/guest-checkout';
 import { parseValidatedOfferVariant } from '@/lib/offer-experiment';
-import { createCheckoutSession } from '@/lib/stripe/checkout';
+import {
+  createCheckoutSession,
+  resolveSafeCheckoutCancelUrl,
+} from '@/lib/stripe/checkout';
 import { buildGuideSubscriptionCheckoutParams } from '@/lib/stripe/guide';
 import { createClient } from '@/lib/supabase/server';
 const SUBSCRIPTION_REFERENCE_PREFIX = 'guide_subscription:';
 
 const requestSchema = z.object({
+  productSlug: z.string().trim().max(80).optional(),
+  cancelPath: z.string().trim().max(300).optional(),
   offerVariant: z.string().trim().max(64).regex(/^[a-z0-9:-]+$/i).optional(),
   fullName: z.string().trim().max(160).optional(),
   email: z.string().trim().max(320).optional(),
@@ -66,6 +73,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'invalid_subscription_request', message: 'Não foi possível preparar a assinatura.' }, { status: 400 });
     }
 
+    const rawProductSlug = parsedBody.data.productSlug;
+    if (rawProductSlug !== undefined && !isValidProductSlug(rawProductSlug)) {
+      return NextResponse.json({ error: 'invalid_subscription_request', message: 'Não foi possível preparar a assinatura.' }, { status: 400 });
+    }
+    const validatedProductSlug: ProductSlug | undefined = rawProductSlug;
+
     const subscriptionId = crypto.randomUUID();
     const externalReference = `${SUBSCRIPTION_REFERENCE_PREFIX}${subscriptionId}`;
     const access = createGuestAccessToken();
@@ -95,13 +108,24 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'subscription_creation_failed', message: 'Não foi possível registrar a assinatura.' }, { status: 502 });
     }
 
-    const session = await createCheckoutSession(buildGuideSubscriptionCheckoutParams({
+    const subscriptionParams = buildGuideSubscriptionCheckoutParams({
       subscriptionId: subscription.id,
       siteUrl: env.NEXT_PUBLIC_SITE_URL,
       payerEmail: guestData.email,
       offerVariant: offerVariant ?? undefined,
       guestAccessToken: access.token,
-    }));
+    });
+    const cancelUrl = resolveSafeCheckoutCancelUrl({
+      siteUrl: env.NEXT_PUBLIC_SITE_URL,
+      cancelPath: parsedBody.data.cancelPath,
+      productSlug: validatedProductSlug,
+      referer: request.headers.get('referer'),
+      fallbackPath: getGuideCancelPath(offerVariant),
+    });
+    const session = await createCheckoutSession({
+      ...subscriptionParams,
+      cancelUrl,
+    });
 
     if (!session.url) {
       return NextResponse.json({ error: 'subscription_checkout_failed', message: 'O Stripe não retornou um checkout válido.' }, { status: 502 });

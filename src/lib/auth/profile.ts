@@ -2,6 +2,7 @@ import type { User } from '@supabase/supabase-js';
 import { eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { userProfiles } from '@/db/schema';
+import { includesMusic, parseOnboardingContext } from '@/lib/auth/onboarding';
 
 function isUniqueViolation(error: unknown): boolean {
   return typeof error === 'object'
@@ -16,6 +17,13 @@ function getProviderName(user: User): string | null {
   return typeof name === 'string' && name.trim() ? name.trim() : null;
 }
 
+export async function enableMusicProfileForUser(userId: string): Promise<void> {
+  await db
+    .update(userProfiles)
+    .set({ musicProfileEnabled: true })
+    .where(eq(userProfiles.id, userId));
+}
+
 export async function upsertAuthenticatedProfile(
   user: User,
   options: { role?: string } = {}
@@ -26,10 +34,18 @@ export async function upsertAuthenticatedProfile(
   }
 
   const fullName = getProviderName(user);
+  const role = options.role ?? 'user';
+  const context = parseOnboardingContext(user.user_metadata?.nkl_context);
+  const musicProfileEnabled = role === 'luthier' || role === 'professor'
+    || (context ? includesMusic(context) : false);
+  const incomeProfileEnabled = context ? context !== 'music' : true;
+
   const values = {
     id: user.id,
     email,
-    role: options.role ?? 'user',
+    role,
+    musicProfileEnabled,
+    incomeProfileEnabled,
     ...(fullName ? { fullName } : {}),
   };
 

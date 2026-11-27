@@ -120,11 +120,16 @@ export default async function PerfilPage({
   }
 
   const context = parseOnboardingContext(user.user_metadata?.nkl_context);
-  const hasIncomeContext = context === 'income' || context === 'both';
-  const hasMusicContext = context ? includesMusic(context) : Boolean(
-    profile?.papel || profile?.instrumento || profile?.role === 'luthier' || profile?.role === 'professor',
-  );
-  const profileRoles = profile?.papel?.split(',').map((role) => role.trim()).filter(Boolean) ?? [];
+  const hasIncomeContext = profile
+    ? profile.incomeProfileEnabled
+    : (context ? (context === 'income' || context === 'both') : true);
+  const hasMusicContext = profile
+    ? profile.musicProfileEnabled
+    : (context ? includesMusic(context) : false);
+  const profileRoles = profile?.papel
+    ?.split(',')
+    .map((role) => (role.trim() === 'Musico' ? 'Músico' : role.trim()))
+    .filter(Boolean) ?? [];
   const isLuthier = profile?.role === 'luthier' || profileRoles.includes('Luthier');
   const guideAccessPromise = readUserGuideAccessAndAssets(user.id);
   const [profileData, { assets: unlockedAssets }] = await Promise.all([
@@ -166,21 +171,17 @@ export default async function PerfilPage({
 
   // Tarefa 11 — UX que incentiva o preenchimento completo do perfil.
   const missingFields: string[] = [];
-  if (isLuthier && !profile?.fullName) missingFields.push('Nome completo');
-  if (isLuthier && !profile?.bio) missingFields.push('Biografia (About me)');
-  if (isLuthier && (!profile?.city || !profile?.state)) missingFields.push('Cidade e Estado');
-  const isProfileIncomplete = isLuthier && missingFields.length > 0;
-  const profileTitle = profile?.role === 'admin'
-    ? 'Perfil de administrador'
-    : hasIncomeContext && !hasMusicContext
-      ? 'Meu perfil de Renda Extra'
-    : hasMusicContext
-      ? 'Meu perfil musical'
-      : 'Meu perfil';
+  if (hasMusicContext && isLuthier && !profile?.fullName) missingFields.push('Nome completo');
+  if (hasMusicContext && isLuthier && !profile?.bio) missingFields.push('Biografia (About me)');
+  if (hasMusicContext && isLuthier && (!profile?.city || !profile?.state)) missingFields.push('Cidade e Estado');
+  const isProfileIncomplete = hasMusicContext && isLuthier && missingFields.length > 0;
+  const profileTitle = profile?.role === 'admin' ? 'Perfil de administrador' : 'Meu Perfil';
   const profileDescription = profile?.role === 'admin'
     ? 'Gerencie sua conta e os recursos administrativos do Portal NKL.'
-    : hasIncomeContext && !hasMusicContext
-      ? 'Acompanhe suas oportunidades, materiais e próximos passos em um só lugar.'
+    : hasIncomeContext && hasMusicContext
+      ? 'Gerencie seus dados, suas oportunidades de renda extra e sua área musical em um só lugar.'
+    : hasIncomeContext
+      ? 'Acompanhe suas oportunidades, materiais e preferências em um só lugar.'
     : hasMusicContext
       ? 'Gerencie suas preferências e sua presença na comunidade musical.'
       : 'Gerencie sua conta, materiais e preferências do Portal NKL.';
@@ -201,10 +202,9 @@ export default async function PerfilPage({
 
       <div className="mb-8 flex flex-wrap gap-2 text-xs">
         {profile?.role === 'admin' && <span className="rounded-full border border-orange/50 bg-orange/10 px-3 py-1 font-bold text-orange">Administrador</span>}
-        {context === 'income' && <span className="rounded-full border border-border px-3 py-1">Blog e Renda Extra</span>}
-        {context === 'music' && <span className="rounded-full border border-border px-3 py-1">Área musical</span>}
-        {context === 'both' && <span className="rounded-full border border-border px-3 py-1">Blog + Área musical</span>}
-        {profileRoles.map((role) => <span key={role} className="rounded-full border border-border px-3 py-1">{role}</span>)}
+        {hasIncomeContext && <span className="rounded-full border border-border px-3 py-1">Renda Extra</span>}
+        {hasMusicContext && <span className="rounded-full border border-border px-3 py-1">Área musical</span>}
+        {hasMusicContext && profileRoles.map((role) => <span key={role} className="rounded-full border border-border px-3 py-1">{role}</span>)}
       </div>
 
       {isProfileIncomplete && (
@@ -370,55 +370,169 @@ export default async function PerfilPage({
         )}
       </div>
 
-      {hasMusicContext && <form
+      <form
         action={upsertLuthierProfile}
-        className="flex flex-col gap-4 bg-surface border border-border rounded-xl p-6 shadow-sm"
+        className="flex flex-col gap-5 bg-surface border border-border rounded-xl p-6 shadow-sm"
       >
-        <input type="hidden" name="profileRole" value={isLuthier ? 'luthier' : 'user'} />
-        <input
-          type="text"
-          name="fullName"
-          defaultValue={profile?.fullName ?? ''}
-          placeholder="Nome completo"
-          className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-        />
-        {isLuthier && <input
+        <input type="hidden" name="profileRole" value={hasMusicContext && isLuthier ? 'luthier' : 'user'} />
+
+        <div className="space-y-1">
+          <h2 className="font-playfair text-xl font-bold">Dados da conta</h2>
+          <p className="text-sm opacity-70">Atualize suas informações básicas e escolha quais áreas deseja exibir no seu perfil.</p>
+        </div>
+
+        <label className="flex flex-col gap-1.5 text-sm font-medium">
+          <span>Nome completo</span>
+          <input
             type="text"
-            name="businessName"
-            defaultValue={profile?.businessName ?? ''}
-            placeholder="Nome do ateliê / loja"
+            name="fullName"
+            defaultValue={profile?.fullName ?? ''}
+            placeholder="Nome completo"
             className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-          />}
-        <input
-          type="text"
-          name="city"
-          defaultValue={profile?.city ?? ''}
-          placeholder="Cidade"
-          className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-        />
-        <input
-          type="text"
-          name="state"
-          defaultValue={profile?.state ?? ''}
-          placeholder="Estado (ex.: SP)"
-          maxLength={2}
-          className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
-        />
+          />
+        </label>
+
+        <label className="flex flex-col gap-1.5 text-sm font-medium">
+          <span>Data de nascimento</span>
+          <input
+            type="date"
+            name="birthDate"
+            defaultValue={profile?.birthDate ?? ''}
+            className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+          />
+          <span className="text-xs font-normal opacity-65">
+            Usada para mensagens de aniversário e personalização no Portal NKL.
+          </span>
+        </label>
+
+        <fieldset className="rounded-xl border border-border bg-background/60 p-4 space-y-3">
+          <legend className="px-1 text-xs font-bold uppercase tracking-[0.14em] text-neon">
+            Áreas do meu perfil
+          </legend>
+          <label className="flex items-start gap-3 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              name="musicProfileEnabled"
+              defaultChecked={hasMusicContext}
+              className="mt-0.5 h-4 w-4 accent-neon"
+            />
+            <span>
+              <strong className="block">Ativar lado musical do meu perfil</strong>
+              <span className="text-xs opacity-70">
+                Exibe instrumento, papel musical, cordas salvas, avaliações e dados de luthier ou professor.
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              name="incomeProfileEnabled"
+              defaultChecked={hasIncomeContext}
+              className="mt-0.5 h-4 w-4 accent-neon"
+            />
+            <span>
+              <strong className="block">Ativar lado renda extra do meu perfil</strong>
+              <span className="text-xs opacity-70">
+                Exibe suas oportunidades salvas, guias e acompanhamento de renda extra.
+              </span>
+            </span>
+          </label>
+        </fieldset>
+
+        {hasMusicContext && (
+          <div className="space-y-4 rounded-xl border border-border bg-background/50 p-4">
+            <h3 className="font-playfair text-lg font-bold">Preferências musicais</h3>
+            <fieldset>
+              <legend className="text-sm font-medium mb-2">Papel na comunidade</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {(['Músico', 'Luthier', 'Professor', 'Lojista', 'Aluno'] as const).map((roleOption) => (
+                  <label
+                    key={roleOption}
+                    className="flex items-center gap-2.5 rounded-lg border border-border bg-background px-3 py-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      name="papel"
+                      value={roleOption}
+                      defaultChecked={profileRoles.includes(roleOption)}
+                      className="h-4 w-4 accent-neon"
+                    />
+                    <span>{roleOption}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-1.5 text-sm font-medium">
+                <span>Instrumento principal</span>
+                <input
+                  type="text"
+                  name="instrumento"
+                  defaultValue={profile?.instrumento ?? ''}
+                  placeholder="Ex.: Violino"
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-medium">
+                <span>Anos de experiência</span>
+                <input
+                  type="number"
+                  name="anosExperiencia"
+                  min={0}
+                  max={80}
+                  defaultValue={profile?.anosExperiencia ?? 0}
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+                />
+              </label>
+            </div>
+
+            {isLuthier && (
+              <label className="flex flex-col gap-1.5 text-sm font-medium">
+                <span>Nome do ateliê / loja</span>
+                <input
+                  type="text"
+                  name="businessName"
+                  defaultValue={profile?.businessName ?? ''}
+                  placeholder="Nome do ateliê / loja"
+                  className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+                />
+              </label>
+            )}
+          </div>
+        )}
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <input
+            type="text"
+            name="city"
+            defaultValue={profile?.city ?? ''}
+            placeholder="Cidade"
+            className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+          />
+          <input
+            type="text"
+            name="state"
+            defaultValue={profile?.state ?? ''}
+            placeholder="Estado (ex.: SP)"
+            maxLength={2}
+            className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none"
+          />
+        </div>
         <textarea
           name="bio"
           defaultValue={profile?.bio ?? ''}
-          placeholder="Conte um pouco sobre seu trabalho (biografia pública)"
+          placeholder={hasMusicContext ? 'Conte um pouco sobre seu trabalho (biografia pública)' : 'Conte um pouco sobre você e seus objetivos (opcional)'}
           rows={4}
           className="p-3 bg-background border border-border rounded-md focus:border-neon outline-none resize-none"
         />
         <button
           type="submit"
-          className="py-3 bg-text text-bg rounded-md font-bold transition-all hover:opacity-90"
+          className="py-3 bg-foreground text-background rounded-md font-bold transition-all hover:opacity-90"
         >
-          {isLuthier ? 'Salvar perfil de luthier' : 'Salvar dados do perfil'}
+          {hasMusicContext && isLuthier ? 'Salvar perfil de luthier' : 'Salvar dados do perfil'}
         </button>
       </form>
-      }
     </div>
   );
 }

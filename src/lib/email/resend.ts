@@ -76,6 +76,36 @@ function resendHeaders(apiKey: string, key: string): HeadersInit {
   };
 }
 
+function resolveReplyTo(): string {
+  return process.env.EMAIL_REPLY_TO?.trim() || 'contato@nkloficial.com.br';
+}
+
+function resolveAdminEmail(): string {
+  return process.env.MATERIAL_ADMIN_EMAIL?.trim() || 'contato@nkloficial.com.br';
+}
+
+async function assertResendOk(response: Response, context: string, fallbackMessage: string): Promise<void> {
+  if (response.ok) return;
+  let errorCode = 'unknown';
+  let errorDetail = '';
+  try {
+    const raw = await response.text();
+    if (raw) {
+      const parsed = JSON.parse(raw) as { name?: string; message?: string };
+      errorCode = parsed.name ?? errorCode;
+      errorDetail = parsed.message ?? raw.slice(0, 160);
+    }
+  } catch {
+    errorDetail = response.statusText;
+  }
+  console.error(`[RESEND] Falha em ${context}:`, {
+    status: response.status,
+    code: errorCode,
+    detail: errorDetail,
+  });
+  throw new EmailDeliveryError(fallbackMessage);
+}
+
 export async function sendGuestAccessRecoveryEmail(
   input: GuestAccessRecoveryEmailInput,
   fetchImpl: typeof fetch = fetch,
@@ -84,7 +114,7 @@ export async function sendGuestAccessRecoveryEmail(
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const replyTo = process.env.EMAIL_REPLY_TO?.trim();
+  const replyTo = resolveReplyTo();
   if (!apiKey || !from) {
     throw new MissingEmailDeliveryConfigurationError(
       'EMAIL_DELIVERY_MODE=resend requer RESEND_API_KEY e EMAIL_FROM.',
@@ -108,7 +138,7 @@ export async function sendGuestAccessRecoveryEmail(
     }),
   });
 
-  if (!response.ok) throw new EmailDeliveryError();
+  await assertResendOk(response, 'sendGuestAccessRecoveryEmail', 'Não foi possível enviar o e-mail de recuperação.');
   return 'sent';
 }
 
@@ -120,7 +150,7 @@ export async function sendWelcomeEmail(
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const replyTo = process.env.EMAIL_REPLY_TO?.trim();
+  const replyTo = resolveReplyTo();
   if (!apiKey || !from) {
     throw new MissingEmailDeliveryConfigurationError(
       'EMAIL_DELIVERY_MODE=resend requer RESEND_API_KEY e EMAIL_FROM.',
@@ -215,7 +245,7 @@ export async function sendWelcomeEmail(
     }),
   });
 
-  if (!response.ok) throw new EmailDeliveryError('Não foi possível enviar o e-mail de boas-vindas.');
+  await assertResendOk(response, 'sendWelcomeEmail', 'Não foi possível enviar o e-mail de boas-vindas.');
   return 'sent';
 }
 
@@ -227,7 +257,7 @@ export async function sendMaterialEmail(
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const replyTo = process.env.EMAIL_REPLY_TO?.trim();
+  const replyTo = resolveReplyTo();
   if (!apiKey || !from) {
     throw new MissingEmailDeliveryConfigurationError(
       'EMAIL_DELIVERY_MODE=resend requer RESEND_API_KEY e EMAIL_FROM.',
@@ -258,9 +288,7 @@ export async function sendMaterialEmail(
     }),
   });
 
-  if (!response.ok) {
-    throw new EmailDeliveryError('Não foi possível enviar o material.');
-  }
+  await assertResendOk(response, 'sendMaterialEmail', 'Não foi possível enviar o material.');
   return 'sent';
 }
 
@@ -272,7 +300,7 @@ export async function sendMaterialDeliveryFailureAlert(
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const adminEmail = process.env.MATERIAL_ADMIN_EMAIL?.trim();
+  const adminEmail = resolveAdminEmail();
   if (!apiKey || !from || !adminEmail) {
     throw new MissingEmailDeliveryConfigurationError(
       'O alerta de falha requer RESEND_API_KEY, EMAIL_FROM e MATERIAL_ADMIN_EMAIL.',
@@ -298,6 +326,6 @@ export async function sendMaterialDeliveryFailureAlert(
     }),
   });
 
-  if (!response.ok) throw new EmailDeliveryError('Não foi possível enviar o alerta administrativo.');
+  await assertResendOk(response, 'sendMaterialDeliveryFailureAlert', 'Não foi possível enviar o alerta administrativo.');
   return 'sent';
 }

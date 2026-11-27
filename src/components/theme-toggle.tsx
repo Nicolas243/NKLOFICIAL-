@@ -9,23 +9,36 @@ export function ThemeToggle() {
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false)
 
   if (!mounted) {
-    return <button className="relative z-[99999] flex h-11 w-11 shrink-0 items-center justify-center rounded-md" aria-label="Alternar tema"><span className="block h-[27px] w-[27px]" /></button>
+    return (
+      <button
+        type="button"
+        className="relative z-[99999] flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface/90"
+        aria-label="Alternar tema"
+        disabled
+      >
+        <span className="block h-[26px] w-[26px]" />
+      </button>
+    )
   }
 
   const isDark = theme === 'dark'
 
   return (
     <button
+      type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="relative z-[99999] flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-transparent transition-all duration-300 hover:bg-accent"
+      className="relative z-[99999] flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface text-foreground transition-colors duration-200 hover:bg-accent hover:border-neon"
       aria-label="Alternar tema"
-      style={{ backgroundColor: isDark ? '#000' : '#fff' }}
+      aria-pressed={isDark}
+      title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
     >
       <Image
-        src="/NKL/moonsun.png"
-        alt="Alternar tema"
-        width={27} height={27}
-        className="w-[27px] h-[27px] object-contain transition-transform duration-500"
+        src="/NKL/moonsun-portal.png"
+        alt=""
+        width={26}
+        height={26}
+        className="portal-theme-icon"
+        aria-hidden="true"
       />
     </button>
   )

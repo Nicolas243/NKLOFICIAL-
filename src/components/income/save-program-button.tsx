@@ -13,6 +13,7 @@ type Props = {
   slug: string;
   name: string;
   compact?: boolean;
+  overlay?: boolean;
   nextPath?: string;
   isSaved?: boolean;
   onSavedChange?: (slug: string, nextSaved: boolean) => void;
@@ -183,6 +184,7 @@ export function SaveProgramButton({
   slug,
   name,
   compact = false,
+  overlay = false,
   isSaved,
   onSavedChange,
 }: Props) {
@@ -272,7 +274,7 @@ export function SaveProgramButton({
         aria-pressed={saved}
         aria-label={`${saved ? 'Remover' : 'Salvar'} ${name}`}
         title={saved ? 'Remover dos salvos' : 'Salvar oportunidade'}
-        className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-border font-bold transition-colors hover:border-neon hover:text-neon disabled:cursor-not-allowed disabled:opacity-50 ${compact ? 'h-11 w-11 px-2' : 'px-3 py-2 text-sm'}`}
+        className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-border font-bold transition-colors hover:border-neon hover:text-neon disabled:cursor-not-allowed disabled:opacity-50 ${overlay ? 'bg-income-card/90 backdrop-blur-sm shadow-sm' : ''} ${compact ? 'h-11 w-11 px-2' : 'px-3 py-2 text-sm'}`}
       >
         {saved ? <BookmarkCheck size={16} aria-hidden="true" /> : <Bookmark size={16} aria-hidden="true" />}
         {!compact && <span>{saved ? 'Salvo' : 'Salvar'}</span>}

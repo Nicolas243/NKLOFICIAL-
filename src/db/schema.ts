@@ -396,6 +396,8 @@ export const userProfiles = pgTable('user_profiles', {
   anosExperiencia: integer('anos_experiencia'),       // anos de experiência
   newsletterOptIn: boolean('newsletter_opt_in').default(false),
   birthDate: varchar('birth_date', { length: 10 }),
+  musicProfileEnabled: boolean('music_profile_enabled').notNull().default(false),
+  incomeProfileEnabled: boolean('income_profile_enabled').notNull().default(true),
   hourlyRateCents: integer('hourly_rate_cents').notNull().default(15000),
   singleClassPriceCents: integer('single_class_price_cents').notNull().default(15000),
   monthlyPlanPriceCents: integer('monthly_plan_price_cents').notNull().default(54000),

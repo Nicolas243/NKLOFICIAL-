@@ -11,6 +11,7 @@ import {
   userProfiles,
   businessDirectory,
 } from '@/db/schema';
+import { enableMusicProfileForUser } from '@/lib/auth/profile';
 
 export type UserActivityItem = {
   id: string;
@@ -86,6 +87,10 @@ export async function getUserReviews(): Promise<UserActivityItem[]> {
     comment: row.comment,
     createdAt: row.createdAt,
   }));
+
+  if (stringItems.length > 0 || luthierItems.length > 0) {
+    await enableMusicProfileForUser(userId);
+  }
 
   // Ordena a união pelo mais recente.
   return [...stringItems, ...luthierItems].sort(
