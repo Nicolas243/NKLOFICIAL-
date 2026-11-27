@@ -11,6 +11,8 @@ import { db } from '@/db';
 import { partnerProgramReviews, partnerPrograms, partnerReferralLeads, partnerSuggestions, userProfiles } from '@/db/schema';
 import { enforcePublicRateLimit } from '@/lib/upstash/ratelimit';
 import { editorialProgramRating, editorialProgramTags } from '@/lib/partner-program-editorial';
+import { submitIndexNowUrls } from '@/lib/seo/indexnow';
+import { absoluteSiteUrl } from '@/lib/site';
 
 const REVIEWER_COOKIE = 'nkl_partner_reviewer';
 const MIN_REASON_WORDS = 20;
@@ -571,16 +573,24 @@ export async function updatePartnerProgram(formData: FormData): Promise<void> {
     throw new Error('Dados administrativos inválidos.');
   }
 
-  await db.update(partnerPrograms).set({
+  const [updated] = await db.update(partnerPrograms).set({
     affiliateUrl: affiliateUrl || null,
     editorialRating,
     status,
     updatedAt: new Date(),
-  }).where(eq(partnerPrograms.id, id));
+  }).where(eq(partnerPrograms.id, id)).returning({ slug: partnerPrograms.slug });
 
   revalidatePath('/programas');
   revalidatePath(INCOME_PORTAL_ROUTES.legacyCatalog);
   revalidatePath('/programas/admin');
+
+  if (updated?.slug && status === 'published') {
+    void submitIndexNowUrls([
+      absoluteSiteUrl(`/programas/${updated.slug}`),
+      absoluteSiteUrl('/programas'),
+      absoluteSiteUrl('/sitemap.xml'),
+    ]);
+  }
 }
 
 export async function markPartnerProgramVerified(formData: FormData): Promise<void> {
@@ -591,13 +601,21 @@ export async function markPartnerProgramVerified(formData: FormData): Promise<vo
     throw new Error('Programa inválido.');
   }
 
-  await db.update(partnerPrograms).set({
+  const [updated] = await db.update(partnerPrograms).set({
     lastVerifiedAt: new Date(),
     updatedAt: new Date(),
-  }).where(eq(partnerPrograms.id, id));
+  }).where(eq(partnerPrograms.id, id)).returning({ slug: partnerPrograms.slug });
 
   revalidatePath('/programas');
   revalidatePath('/programas/admin');
+
+  if (updated?.slug) {
+    void submitIndexNowUrls([
+      absoluteSiteUrl(`/programas/${updated.slug}`),
+      absoluteSiteUrl('/programas'),
+      absoluteSiteUrl('/sitemap.xml'),
+    ]);
+  }
 }
 
 export async function approvePartnerSuggestion(formData: FormData): Promise<void> {

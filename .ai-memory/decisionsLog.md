@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-028 (2026-11-27) Arquitetura GEO + SEO Técnico, IndexNow, `/llms.txt`, Comparativos Curados & Topical Authority Original
+- Decisao: implantar IndexNow (`public/a7f4c92e1b8d40539e6c1a2f8b4d7e03.txt` + `seo:indexnow`), `/llms.txt` e `/llms-full.txt` (`revalidate = 3600`), allowlist explícita de bots de IA em `robots.ts`, `lastmod` real no `sitemap.ts`, Schema.org `@graph` conectado por `@id` (`Dataset`/`Person`/`Product`), `/metodologia`, `<BlufSummary />`, `<CatalogStatsBox />`, tabelas HTML semânticas SSR e 22 comparativos programáticos (`/programas/comparar/*` e `/comparar/*`), além de mapear lacunas tópicas internamente em `docs/SEO-TOPICAL-MAP.md` com respostas originais nas páginas pilares.
+- Motivo: maximizar legibilidade e citações em Google AI Overviews, ChatGPT Search, Perplexity, Claude e Gemini com fatos verificáveis no PostgreSQL, mantendo conformidade estrita com as Spam Policies do Google contra conteúdo raspado/duplicado.
+- Descartado: copiar resultados ou textos do Google para um arquivo público na raiz do site (risco alto de penalização por Scraped Content / direitos autorais) e manter `new Date()` dinâmico no `sitemap.ts`.
+
 ## ADR-027 (2026-11-27) ISR + Payload Enxuto em `/programas`, Scripts/WebGL em Idle, Auto-Scroll de Tags & `cancelPath` Universal na Stripe
 - Decisao: converter `/programas` para ISR (`revalidate = 300`) enxugando os props de `IncomeWizard`/`ProgramCompare`, adiar `PortalHomeParallax` (`ssr: false` + `requestIdleCallback`) e terceiros em `PrivacyScripts` (`lazyOnload` + `requestIdleCallback`), rolar suavemente para `#programs-grid` ao selecionar tags de descoberta e enviar `window.location.pathname` como `cancelPath` em `AiOfferCheckout`, `GuideCheckoutButton` e `GuideSubscriptionButton`.
 - Motivo: reduzir FCP/LCP/INP eliminando tripla serialização de 57 registros (606 KB) e trabalho síncrono de WebGL/terceiros na hidratação, eliminar rage clicks causados por tags que filtravam fora do viewport e assegurar 100% de retorno exato ao cancelar qualquer checkout Stripe.

@@ -25,7 +25,8 @@
     "ide:sync": "node scripts/sync-ide-configs.mjs sync",
     "ide:doctor": "node scripts/sync-ide-configs.mjs doctor",
     "ide:extensions": "node scripts/sync-ide-configs.mjs install-extensions",
-    "test:ide-sync": "node --test scripts/sync-ide-configs.test.mjs"
+    "test:ide-sync": "node --test scripts/sync-ide-configs.test.mjs",
+    "seo:indexnow": "node scripts/ping-indexnow.mjs"
   },
   "dependencies": {
     "@cline/sdk": "^0.2.0",

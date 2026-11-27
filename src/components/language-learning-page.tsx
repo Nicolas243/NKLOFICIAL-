@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { EnglishLearningPractice, type LearningPracticeQuestion } from '@/components/english-learning-practice';
 import { AuthorBio } from '@/components/seo/author-bio';
+import { BlufSummary } from '@/components/seo/bluf-summary';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BILINGUAL_COLOR_CLASSES, tokenizeBilingualExample, type ExampleToken } from '@/lib/english-ebook';
+import { SCHEMA_IDS, SITE_CONTENT_LAST_MODIFIED } from '@/lib/seo/schema-graph';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Resource = [name: string, description: string, href: string];
@@ -198,26 +200,48 @@ function BilingualPhrase({ source, translation }: { source: string; translation:
 
 export function LanguageLearningPage({ slug }: { slug: string }) {
   const content = getLanguageContent(slug);
+  const pageUrl = absoluteSiteUrl(`/blog/aprender/${content.slug}`);
   const nav = [['agora', 'Pratique agora'], ['fundamentos', 'O método'], ['licoes', 'Lições úteis'], ['plano', 'Plano de 90 dias'], ['recursos', 'Recursos'], ['investir', 'Cursos e aulas']];
+  const blufSummary = `Este guia gratuito de ${content.name} (${content.nativeName}) organiza uma rotina prática de 90 dias com 20 minutos diários, cinco dias por semana: revisão ativa de frases completas, escuta com transcrição e gravação curta de voz. Você destrava saudações e rotina na primeira semana e conclui o ciclo aplicando o idioma em situações reais.`;
+
   return <article className="mx-auto max-w-6xl px-4 pb-16 pt-6 md:pt-12">
     <JsonLd data={{
       '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: content.title,
-      description: content.description,
-      mainEntityOfPage: absoluteSiteUrl(`/blog/aprender/${content.slug}`),
-      author: {
-        '@type': 'Person',
-        name: 'NKL_oficial',
-        url: absoluteSiteUrl('/contatos'),
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Portal NKL',
-        url: absoluteSiteUrl('/'),
-      },
+      '@graph': [
+        {
+          '@type': 'Article',
+          '@id': `${pageUrl}#article`,
+          headline: content.title,
+          description: content.description,
+          url: pageUrl,
+          mainEntityOfPage: pageUrl,
+          inLanguage: 'pt-BR',
+          dateModified: SITE_CONTENT_LAST_MODIFIED,
+          author: { '@id': SCHEMA_IDS.author },
+          publisher: { '@id': SCHEMA_IDS.organization },
+          isPartOf: { '@id': SCHEMA_IDS.website },
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: absoluteSiteUrl('/') },
+            { '@type': 'ListItem', position: 2, name: `Aprender ${content.name}`, item: pageUrl },
+          ],
+        },
+      ],
     }} />
     <header className="relative overflow-hidden rounded-[2rem] border border-orange/30 bg-income-surface px-5 py-10 md:px-12 md:py-16"><div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-orange/15 blur-3xl" /><div className="relative max-w-4xl"><p className="text-xs font-bold uppercase tracking-[0.24em] text-orange">Aprender · guia gratuito · faça junto · {content.nativeName}</p><h1 className="mt-4 max-w-4xl font-playfair text-4xl font-bold leading-[1.03] md:text-7xl">{content.title}</h1><p className="mt-6 max-w-3xl text-lg leading-relaxed text-foreground/75 md:text-xl">{content.description} {content.promise}</p><div className="mt-7 flex flex-wrap gap-3"><a href="#agora" className="rounded-md bg-orange px-5 py-3 text-sm font-bold text-white transition hover:bg-orange-dark">Começar agora</a><a href="#plano" className="rounded-md border border-border px-5 py-3 text-sm font-bold transition hover:border-orange hover:text-orange">Ver plano de 90 dias</a><Link href={`/guias/${content.slug}`} className="rounded-md border border-orange/40 bg-orange/10 px-5 py-3 text-sm font-bold text-orange transition hover:bg-orange hover:text-white">Ver e-book de {content.name}</Link></div></div></header>
+    <div className="mt-6">
+      <BlufSummary
+        summary={blufSummary}
+        facts={[
+          { label: 'Carga diária', value: '20 min · 5 dias/semana' },
+          { label: 'Duração total', value: '90 dias em 4 fases' },
+          { label: 'Prática central', value: 'Frases úteis e áudio curto' },
+        ]}
+        methodologyHref="/metodologia"
+      />
+    </div>
     <nav aria-label="Idiomas e seções" className="mt-6 rounded-2xl border border-border bg-surface p-4"><p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/55">Escolha seu próximo passo</p><div className="mt-3 flex flex-wrap gap-2"><Link href="/blog/aprender/ingles" className="rounded-full border border-border px-3 py-2 text-sm font-semibold hover:border-orange hover:text-orange">English</Link>{languages.map((language) => <Link key={language.slug} href={`/blog/aprender/${language.slug}`} className={`rounded-full border px-3 py-2 text-sm font-semibold ${language.slug === slug ? 'border-orange text-orange' : 'border-border hover:border-orange hover:text-orange'}`}>{language.nativeName}</Link>)} </div><div className="mt-3 flex flex-wrap gap-2">{nav.map(([id, label]) => <a key={id} href={`#${id}`} className="rounded-full border border-border px-3 py-2 text-sm font-semibold transition hover:border-orange hover:text-orange">{label}</a>)}</div></nav>
     <section id="agora" className="mt-10 scroll-mt-24 rounded-2xl border border-neon/25 bg-neon/5 p-5 md:p-8"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Faça enquanto lê</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">O exercício de 90 segundos</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/75">Grave sua voz dizendo: <strong>{content.examples[0][0]} · {content.examples[1][0]} · {content.examples[2][0]} · {content.examples[3][0]}</strong> Depois ouça uma vez, anote uma melhoria e repita amanhã.</p><div className="mt-5 grid gap-3 sm:grid-cols-3">{['Grave sem buscar perfeição', 'Ouça e anote uma melhoria', 'Repita amanhã por 90 segundos'].map((step, index) => <div key={step} className="rounded-xl border border-border bg-surface p-4"><span className="font-playfair text-3xl font-bold text-orange">0{index + 1}</span><p className="mt-2 text-sm font-semibold">{step}</p></div>)}</div></section>
     <section id="fundamentos" className="mt-14 scroll-mt-24"><p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">1 · O método</p><h2 className="mt-2 font-playfair text-3xl font-bold md:text-5xl">Aprender fica leve quando você sabe o que fazer com cada palavra.</h2><p className="mt-3 max-w-3xl leading-relaxed text-foreground/70">A meta não é parecer nativo. É compreender um pouco mais, comunicar uma ideia e voltar amanhã com menos medo.</p><div className="mt-6 grid gap-4 sm:grid-cols-2">{content.foundations.map(([title, text, link]) => <article key={title} className="rounded-2xl border border-border bg-surface p-5"><h3 className="font-playfair text-2xl font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">{text}</p>{link && <a href={link.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-10 items-center rounded-lg border border-orange/40 bg-orange/10 px-3.5 py-2 text-xs font-bold text-orange transition hover:bg-orange hover:text-white">{link.label} ↗</a>}</article>)}</div></section>

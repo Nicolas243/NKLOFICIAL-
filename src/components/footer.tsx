@@ -268,6 +268,7 @@ export function Footer() {
             <Link href="/mural-de-parceiros" className="text-sm hover:text-neon hover:underline">Mural de Parceiros</Link>
             <Link href="/programas/anuncie" className="text-sm hover:text-neon hover:underline">Anuncie</Link>
             <Link href="/instalar" className="text-sm hover:text-neon hover:underline">Instalar App</Link>
+            <Link href="/metodologia" className="text-sm hover:text-neon hover:underline">Metodologia</Link>
             <Link href="/contatos" className="text-sm hover:text-neon hover:underline">Contatos</Link>
           </nav>
           <h4>Legal / Conformidade</h4>

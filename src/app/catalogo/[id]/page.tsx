@@ -6,7 +6,15 @@ import { getReviewsByStringId, submitReview } from '@/actions/reviews';
 import { isStringFavorite, toggleFavoriteString } from '@/actions/favorites';
 import { FavoriteButton } from '@/components/favorite-button';
 import { AffiliateLinks } from '@/components/affiliate-links';
+import { BlufSummary } from '@/components/seo/bluf-summary';
+import { JsonLd } from '@/components/seo/json-ld';
 import { createClient } from '@/lib/supabase/server';
+import {
+  buildStringProductNode,
+  SCHEMA_IDS,
+  SITE_CONTENT_LAST_MODIFIED,
+} from '@/lib/seo/schema-graph';
+import { getStringComparisonsForName } from '@/lib/seo/string-comparisons';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Params = Promise<{ id: string }>;
@@ -64,6 +72,23 @@ export default async function StringDetailsPage(props: { params: Params }) {
   const reviews = await getReviewsByStringId(id);
   const isFavorite = user?.id ? await isStringFavorite(user.id, id) : false;
 
+  const canonicalUrl = absoluteSiteUrl(`/catalogo/${id}`);
+  const hasValidUpdatedAt =
+    stringData.updatedAt instanceof Date && !Number.isNaN(stringData.updatedAt.getTime());
+  const dateModified = hasValidUpdatedAt
+    ? stringData.updatedAt.toISOString()
+    : SITE_CONTENT_LAST_MODIFIED;
+  const verifiedAtLabel = hasValidUpdatedAt
+    ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(stringData.updatedAt)
+    : null;
+  const averagePriceLabel = formatAveragePrice(
+    stringData.realPrice,
+    stringData.priceMin,
+    stringData.priceMax,
+  );
+  const comparisons = getStringComparisonsForName(stringData.name);
+  const acousticSummary = `${stringData.name} é um encordoamento de violino nível ${stringData.qualityLevel} com núcleo ${stringData.coreMaterial}, cor sonora ${stringData.soundColor} e projeção ${stringData.projection}. Entrega resposta ${stringData.responseSpeed ?? 'equilibrada'}, durabilidade ${stringData.durability ?? 'consistente'} e sensibilidade climática ${stringData.climateSensitivity ?? 'moderada'}, com preço médio de ${averagePriceLabel}.`;
+
   const specs: { label: string; value: string | null }[] = [
     { label: 'Material do Núcleo', value: stringData.coreMaterial },
     { label: 'Velocidade de Resposta', value: stringData.responseSpeed },
@@ -78,7 +103,35 @@ export default async function StringDetailsPage(props: { params: Params }) {
   ];
 
   return (
-    <div className="max-w-5xl w-full mx-auto px-4 pt-8">
+    <div className="max-w-5xl w-full mx-auto px-4 pt-8 pb-16">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            buildStringProductNode(stringData, reviews.length),
+            {
+              '@type': 'WebPage',
+              '@id': `${canonicalUrl}#webpage`,
+              url: canonicalUrl,
+              name: `${stringData.name} — Corda para Violino`,
+              description: `Especificações técnicas, projeção, cor do som, durabilidade e avaliações da corda ${stringData.name}.`,
+              inLanguage: 'pt-BR',
+              dateModified,
+              isPartOf: { '@id': SCHEMA_IDS.website },
+              publisher: { '@id': SCHEMA_IDS.organization },
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: absoluteSiteUrl('/') },
+                { '@type': 'ListItem', position: 2, name: 'Catálogo de Cordas', item: absoluteSiteUrl('/catalogo') },
+                { '@type': 'ListItem', position: 3, name: stringData.name, item: canonicalUrl },
+              ],
+            },
+          ],
+        }}
+      />
+
       <Link
         href="/catalogo"
         className="inline-flex items-center gap-2 text-sm font-medium text-neon hover:underline mb-6"
@@ -87,7 +140,7 @@ export default async function StringDetailsPage(props: { params: Params }) {
       </Link>
 
       {/* Cabeçalho */}
-      <div className="bg-surface border border-border rounded-xl p-8 shadow-sm mb-8">
+      <div className="bg-surface border border-border rounded-xl p-8 shadow-sm mb-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="font-playfair text-3xl font-bold mb-2">{stringData.name}</h1>
@@ -97,6 +150,41 @@ export default async function StringDetailsPage(props: { params: Params }) {
             Nível {stringData.qualityLevel}
           </span>
         </div>
+      </div>
+
+      <div className="mb-8 space-y-4">
+        <BlufSummary
+          summary={acousticSummary}
+          facts={[
+            { label: 'Núcleo', value: stringData.coreMaterial },
+            { label: 'Cor do som', value: stringData.soundColor },
+            { label: 'Projeção', value: stringData.projection },
+            { label: 'Preço médio', value: averagePriceLabel },
+          ]}
+          verifiedAt={verifiedAtLabel}
+          verificationNotes="Especificações acústicas, sensibilidade climática e faixa de preço conferidas no catálogo do Portal NKL."
+        />
+
+        {comparisons.length > 0 && (
+          <section
+            aria-label={`Comparativos diretos com ${stringData.name}`}
+            className="rounded-2xl border border-border bg-surface p-5"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Comparativos diretos</p>
+            <h2 className="mt-1 font-playfair text-xl font-bold">Compare {stringData.name} lado a lado</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {comparisons.map((pair) => (
+                <Link
+                  key={pair.slug}
+                  href={`/comparar/${pair.slug}`}
+                  className="rounded-full border border-border bg-background px-4 py-2 text-xs font-bold transition-colors hover:border-neon hover:text-neon"
+                >
+                  {pair.title}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

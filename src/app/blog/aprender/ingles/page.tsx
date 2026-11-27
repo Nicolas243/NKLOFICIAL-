@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { EnglishLearningPractice } from '@/components/english-learning-practice';
 import { AuthorBio } from '@/components/seo/author-bio';
+import { BlufSummary } from '@/components/seo/bluf-summary';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BILINGUAL_COLOR_CLASSES, tokenizeBilingualExample, type ExampleToken } from '@/lib/english-ebook';
+import { SCHEMA_IDS, SITE_CONTENT_LAST_MODIFIED } from '@/lib/seo/schema-graph';
 import { absoluteSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -126,24 +128,34 @@ function ResourceList({ title, eyebrow, items }: { title: string; eyebrow: strin
 }
 
 export default function EnglishLearningPage() {
+  const pageUrl = absoluteSiteUrl('/blog/aprender/ingles');
+
   return (
     <article className="mx-auto max-w-6xl px-4 pb-16 pt-6 md:pt-12">
       <JsonLd data={{
         '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: 'Aprender inglês do zero: um plano iluminador para começar hoje',
-        description: metadata.description,
-        mainEntityOfPage: absoluteSiteUrl('/blog/aprender/ingles'),
-        author: {
-          '@type': 'Person',
-          name: 'NKL_oficial',
-          url: absoluteSiteUrl('/contatos'),
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Portal NKL',
-          url: absoluteSiteUrl('/'),
-        },
+        '@graph': [
+          {
+            '@type': 'Article',
+            '@id': `${pageUrl}#article`,
+            headline: 'Aprender inglês do zero: um plano iluminador para começar hoje',
+            description: metadata.description,
+            url: pageUrl,
+            mainEntityOfPage: pageUrl,
+            inLanguage: 'pt-BR',
+            dateModified: SITE_CONTENT_LAST_MODIFIED,
+            author: { '@id': SCHEMA_IDS.author },
+            publisher: { '@id': SCHEMA_IDS.organization },
+            isPartOf: { '@id': SCHEMA_IDS.website },
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: absoluteSiteUrl('/') },
+              { '@type': 'ListItem', position: 2, name: 'Aprender inglês', item: pageUrl },
+            ],
+          },
+        ],
       }} />
 
       <header className="relative overflow-hidden rounded-[2rem] border border-orange/30 bg-income-surface px-5 py-10 md:px-12 md:py-16">
@@ -158,6 +170,18 @@ export default function EnglishLearningPage() {
           </div>
         </div>
       </header>
+
+      <div className="mt-6">
+        <BlufSummary
+          summary="Este plano gratuito de 90 dias organiza o estudo de inglês em sessões de 20 minutos, cinco dias por semana: cinco minutos revisando frases reais, dez de escuta e leitura em contexto e cinco falando ou escrevendo. Nos primeiros sete dias você destrava com 20 frases da sua rotina e fecha o ciclo com um projeto prático."
+          facts={[
+            { label: 'Carga diária', value: '20 min · 5 dias/semana' },
+            { label: 'Duração total', value: '90 dias em 7 etapas' },
+            { label: 'Prática central', value: 'Frases reais e gravação de voz' },
+          ]}
+          methodologyHref="/metodologia"
+        />
+      </div>
 
       <nav aria-label="Nesta página" className="mt-6 rounded-2xl border border-border bg-surface p-4">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground/55">Escolha seu próximo passo</p>

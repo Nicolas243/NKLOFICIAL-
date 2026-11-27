@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { getPartnerProgramBySlug, getPartnerPrograms } from '@/actions/partner-programs';
 import { AffiliateDisclaimer } from '@/components/affiliate-disclaimer';
 import { AuthorBio } from '@/components/seo/author-bio';
+import { BlufSummary } from '@/components/seo/bluf-summary';
 import { ProgramActions } from '@/components/income/program-actions';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -18,6 +19,8 @@ import { PwaInstallButton } from '@/components/pwa';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
 import { getMatchingProgramHubs } from '@/lib/program-hubs';
+import { getProgramComparisonsForSlug } from '@/lib/seo/program-comparisons';
+import { SCHEMA_IDS, SITE_CONTENT_LAST_MODIFIED } from '@/lib/seo/schema-graph';
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site';
 
 type Params = Promise<{ slug: string }>;
@@ -82,6 +85,18 @@ function formatVerifiedDate(value: string | null): string | null {
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(new Date(value));
 }
 
+function buildProgramBlufSummary(program: NonNullable<Awaited<ReturnType<typeof getPartnerProgramBySlug>>>): string {
+  const languagesText = program.languages.length > 0 ? program.languages.join(', ') : 'Português e Inglês';
+  const investmentText = program.zeroInvestmentRequired
+    ? 'não exige investimento inicial'
+    : 'pode exigir investimento ou custo operacional';
+  const paymentsText = program.paymentMethods.length > 0
+    ? program.paymentMethods.join(', ')
+    : 'meios definidos na plataforma';
+
+  return `${program.name} atua na categoria ${program.category}, com referência de ganho de ${program.averageEarning}, nível de dificuldade ${program.difficulty} e operação em ${languagesText}. O acesso ${investmentText} e os repasses ocorrem via ${paymentsText}. Confira elegibilidade no Brasil e saque mínimo antes do cadastro.`;
+}
+
 export default async function PartnerProgramDetailsPage(props: { params: Params }) {
   const { slug } = await props.params;
   const [program, allPrograms] = await Promise.all([
@@ -92,6 +107,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
   if (!program) notFound();
 
   const matchingHubs = getMatchingProgramHubs(program);
+  const comparisons = getProgramComparisonsForSlug(program.slug);
   const tagSet = new Set(program.tags.map((tag) => tag.toLowerCase()));
   const relatedPrograms = allPrograms
     .filter((item) => item.slug !== program.slug)
@@ -110,6 +126,18 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
   const verifiedDate = formatVerifiedDate(program.lastVerifiedAt);
   const siteUrl = SITE_URL;
   const canonicalUrl = absoluteSiteUrl(`/programas/${program.slug}`);
+  const dateModified = program.lastVerifiedAt ?? SITE_CONTENT_LAST_MODIFIED;
+  const aggregateRatingNode = program.communityRating !== null && program.communityReviewCount > 0
+    ? {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: program.communityRating,
+        bestRating: 10,
+        worstRating: 0,
+        ratingCount: program.communityReviewCount,
+      },
+    }
+    : {};
   const micro1Result = program.slug === 'micro1'
     ? await getMicro1Opportunities()
       .then((opportunities) => ({ opportunities, error: null as string | null }))
@@ -126,38 +154,35 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
     <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
       <JsonLd data={{
         '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: program.name,
-        description: program.shortDescription,
-        url: canonicalUrl,
-        author: {
-          '@type': 'Person',
-          name: 'NKL_oficial',
-          url: absoluteSiteUrl('/contatos'),
-        },
-        about: {
-          '@type': 'Thing',
-          name: program.name,
-          description: program.longDescription,
-        },
-        breadcrumb: {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Programas', item: `${siteUrl}/programas` },
-            { '@type': 'ListItem', position: 2, name: program.name, item: canonicalUrl },
-          ],
-        },
-        ...(program.communityRating !== null && program.communityReviewCount > 0
-          ? {
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: program.communityRating,
-              bestRating: 10,
-              worstRating: 0,
-              ratingCount: program.communityReviewCount,
+        '@graph': [
+          {
+            '@type': 'WebPage',
+            '@id': `${canonicalUrl}#webpage`,
+            name: program.name,
+            description: program.shortDescription,
+            url: canonicalUrl,
+            inLanguage: 'pt-BR',
+            dateModified,
+            isPartOf: { '@id': SCHEMA_IDS.website },
+            author: { '@id': SCHEMA_IDS.author },
+            publisher: { '@id': SCHEMA_IDS.organization },
+            about: {
+              '@type': 'Thing',
+              name: program.name,
+              description: program.longDescription,
+              ...aggregateRatingNode,
             },
-          }
-          : {}),
+            ...aggregateRatingNode,
+          },
+          {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Portal NKL', item: siteUrl },
+              { '@type': 'ListItem', position: 2, name: 'Programas', item: `${siteUrl}/programas` },
+              { '@type': 'ListItem', position: 3, name: program.name, item: canonicalUrl },
+            ],
+          },
+        ],
       }} />
 
       <Link
@@ -197,6 +222,26 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
           </div>
           {verifiedDate && <p className="mt-4 text-xs opacity-55">Informações verificadas em {verifiedDate}.</p>}
         </header>
+
+        <div className="border-b border-border px-6 py-6 md:px-10">
+          <BlufSummary
+            summary={buildProgramBlufSummary(program)}
+            facts={[
+              { label: 'Categoria', value: program.category },
+              { label: 'Ganho de referência', value: program.averageEarning },
+              {
+                label: 'Investimento inicial',
+                value: program.zeroInvestmentRequired ? 'Sem investimento inicial' : 'Pode exigir investimento',
+              },
+              {
+                label: 'Formas de saque',
+                value: program.paymentMethods.length > 0 ? program.paymentMethods.join(', ') : 'Conforme plataforma',
+              },
+            ]}
+            verifiedAt={verifiedDate}
+            verificationNotes="Requisitos, elegibilidade e formas de saque conferidos na curadoria editorial do Portal NKL."
+          />
+        </div>
 
         <div className="grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_0.8fr]">
           <div>
@@ -267,6 +312,24 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
           </aside>
         </div>
         <div className="border-t border-border p-6 md:p-10 space-y-6">
+          {comparisons.length > 0 && (
+            <section aria-label={`Comparativos diretos com ${program.name}`}>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Comparativos diretos</p>
+              <h2 className="mt-1 font-playfair text-2xl font-bold">Compare {program.name} lado a lado</h2>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {comparisons.map((item) => (
+                  <Link
+                    key={item.slug}
+                    href={`/programas/comparar/${item.slug}`}
+                    className="rounded-xl border border-border bg-income-card/80 p-4 transition-colors hover:border-neon"
+                  >
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-neon">{item.focusKeyword}</p>
+                    <p className="mt-1 font-bold">{item.title}</p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
           {(matchingHubs.length > 0 || program.averageEarning.includes('US$')) && (
             <section aria-label="Categorias e guias relacionados">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Guias desta trilha</p>

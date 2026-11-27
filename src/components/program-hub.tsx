@@ -2,8 +2,11 @@ import Link from 'next/link';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { JsonLd } from '@/components/seo/json-ld';
+import { BlufSummary } from '@/components/seo/bluf-summary';
+import { CatalogStatsBox } from '@/components/seo/catalog-stats-box';
 import type { ProgramHubDefinition } from '@/lib/program-hubs';
 import { EditorialSupportOffers } from '@/components/income/editorial-support-offers';
+import { SCHEMA_IDS, SITE_CONTENT_LAST_MODIFIED } from '@/lib/seo/schema-graph';
 import { absoluteSiteUrl } from '@/lib/site';
 
 type Props = {
@@ -16,8 +19,35 @@ type Props = {
   relatedHubs?: ProgramHubDefinition[];
 };
 
+function buildHubSummary(title: string, programs: PartnerProgramCard[]): {
+  summary: string;
+  zeroInvestmentPct: number;
+  languagesLabel: string;
+} {
+  const total = programs.length;
+  const zeroInvestmentCount = programs.filter((program) => program.zeroInvestmentRequired).length;
+  const zeroInvestmentPct = total > 0 ? Math.round((zeroInvestmentCount / total) * 100) : 0;
+  const languages = Array.from(new Set(programs.flatMap((program) => program.languages)));
+  const languagesLabel = languages.length > 0 ? languages.join(', ') : 'Português e Inglês';
+
+  if (total === 0) {
+    return {
+      summary: `Este guia para ${title.toLocaleLowerCase('pt-BR')} não possui oportunidades ativas listadas no momento. Consulte o catálogo completo para comparar alternativas atualizadas e seus requisitos antes de começar.`,
+      zeroInvestmentPct,
+      languagesLabel,
+    };
+  }
+
+  return {
+    summary: `Este guia reúne ${total} oportunidades verificadas para ${title.toLocaleLowerCase('pt-BR')}. Do total listado, ${zeroInvestmentPct}% dispensam investimento inicial, com opções disponíveis em ${languagesLabel}. Compare na tabela abaixo remuneração estimada, idioma, dificuldade e nota editorial antes de se cadastrar.`,
+    zeroInvestmentPct,
+    languagesLabel,
+  };
+}
+
 export function ProgramHub({ slug, title, description, programs, intro, criteria = [], relatedHubs = [] }: Props) {
   const pageUrl = absoluteSiteUrl(slug ? `/programas/${slug}` : '/programas');
+  const { summary, zeroInvestmentPct, languagesLabel } = buildHubSummary(title, programs);
 
   return (
     <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
@@ -26,10 +56,14 @@ export function ProgramHub({ slug, title, description, programs, intro, criteria
         '@graph': [
           {
             '@type': 'CollectionPage',
+            '@id': `${pageUrl}#webpage`,
             name: title,
             description,
             url: pageUrl,
             inLanguage: 'pt-BR',
+            dateModified: SITE_CONTENT_LAST_MODIFIED,
+            isPartOf: { '@id': SCHEMA_IDS.website },
+            publisher: { '@id': SCHEMA_IDS.organization },
           },
           {
             '@type': 'BreadcrumbList',
@@ -58,6 +92,19 @@ export function ProgramHub({ slug, title, description, programs, intro, criteria
         <h1 className="mt-3 font-playfair text-4xl font-bold leading-tight md:text-6xl">{title}</h1>
         <p className="mt-5 text-lg leading-relaxed opacity-75">{description}</p>
       </header>
+      <div className="mt-8 space-y-6">
+        <BlufSummary
+          title={`Resumo do guia: ${title}`}
+          summary={summary}
+          facts={[
+            { label: 'Oportunidades no guia', value: String(programs.length) },
+            { label: 'Sem investimento inicial', value: `${zeroInvestmentPct}%` },
+            { label: 'Idiomas presentes', value: languagesLabel },
+          ]}
+          methodologyHref="/metodologia"
+        />
+        <CatalogStatsBox programs={programs} compact />
+      </div>
       {intro && (
         <section className="mt-8 max-w-4xl rounded-2xl border border-border bg-income-surface/70 p-6 md:p-8">
           <h2 className="font-playfair text-2xl font-bold">Como interpretar este guia</h2>
@@ -95,6 +142,50 @@ export function ProgramHub({ slug, title, description, programs, intro, criteria
           </article>
         ))}
       </section>
+      {programs.length > 0 && (
+        <section className="mt-10" aria-labelledby="tabela-comparativa-hub">
+          <h2 id="tabela-comparativa-hub" className="font-playfair text-2xl font-bold">
+            Tabela comparativa das oportunidades
+          </h2>
+          <p className="mt-2 text-sm opacity-75">
+            Visão direta de categoria, faixa de ganho, idiomas, exigência de capital inicial, dificuldade e nota editorial.
+          </p>
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-border bg-surface">
+            <table className="w-full min-w-[680px] border-collapse text-left text-sm">
+              <thead className="border-b border-border bg-income-surface/70 text-xs uppercase tracking-wider text-foreground/75">
+                <tr>
+                  <th scope="col" className="px-4 py-3 font-bold">Plataforma</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Categoria</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Ganho estimado</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Idiomas</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Investimento inicial</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Dificuldade</th>
+                  <th scope="col" className="px-4 py-3 font-bold">Nota</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/70">
+                {programs.map((program) => (
+                  <tr key={program.id} className="hover:bg-income-surface/40">
+                    <td className="px-4 py-3 font-bold">
+                      <Link href={`/programas/${program.slug}`} className="text-neon hover:underline">
+                        {program.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">{program.category}</td>
+                    <td className="px-4 py-3">{program.averageEarning}</td>
+                    <td className="px-4 py-3">{program.languages.join(' · ')}</td>
+                    <td className="px-4 py-3">
+                      {program.zeroInvestmentRequired ? 'Sem investimento inicial' : 'Pode exigir investimento'}
+                    </td>
+                    <td className="px-4 py-3 capitalize">{program.difficulty}</td>
+                    <td className="px-4 py-3 font-bold">{program.finalRating.toFixed(1)}/10</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
       <p className="mt-8 max-w-4xl text-sm leading-relaxed opacity-65">
         O catálogo é editorial e pode mudar conforme disponibilidade, elegibilidade, regras e demanda de cada plataforma. Links de parceria, quando existirem, são identificados antes da saída do Portal NKL.
       </p>

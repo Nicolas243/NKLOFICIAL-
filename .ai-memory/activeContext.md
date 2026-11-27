@@ -2,13 +2,13 @@
 
 ## Foco Atual
 
-- **Otimização CWV (LCP/FCP/INP), Auto-Scroll de Tags & Auditoria 100% `cancel_url` Stripe (2026-11-27):**
-  - `/programas`: trocado de `force-dynamic` para ISR (`revalidate = 300`), eliminada tripla serialização RSC enxugando props de `IncomeWizard` (`WizardProgram`) e `ProgramCompare` (`CompareProgram`) com parsing de query params no cliente.
-  - `ParallaxBackground` e `PrivacyScripts`: `PortalHomeParallax` via `next/dynamic(..., { ssr: false })` + `requestIdleCallback`; AdSense, GA4 e Clarity em `strategy="lazyOnload"` + `posthog-js` em `requestIdleCallback`.
-  - Anti rage-click em `/programas`: seleção de tags `DISCOVERY_TAGS`, Categoria ou Dificuldade rola suavemente até `#programs-grid` (`cardsResultsRef`), exibe badge `Filtro ativo` + `Limpar filtros`, e pills informativas usam `pointer-events-none select-none`.
-  - Stripe `cancel_url`: 100% dos fluxos (`ai-offer-checkout`, `guide-checkout-button`, `guide-subscription-button`, `ProductCheckoutClient`, `/programas/anuncie`, `/dashboard/luthier/planos`, `/checkout/[bookingId]`) retornam exatamente à página de origem via `cancelPath`.
-- **Livro KDP Digital + Físico (`npm run amazon:book`, 2026-11-27):** EPUB (`46.110` palavras), Paperback 6x9" PDF (`174` pág., `48.263` palavras) e capas prontas em `private-assets/amazon-book/`.
+- **Arquitetura GEO (Generative Engine Optimization) + SEO Técnico Completa (2026-11-27):**
+  - **IndexNow & Sitemap Honesto:** chave estática `public/a7f4c92e1b8d40539e6c1a2f8b4d7e03.txt`, `src/lib/seo/indexnow.ts` (disparo não bloqueante em mutações de `/programas/admin`), `scripts/ping-indexnow.mjs` (`npm run seo:indexnow`) e `src/app/sitemap.ts` usando timestamps reais do banco (`lastVerifiedAt` / `updatedAt`) + constante `SITE_CONTENT_LAST_MODIFIED` nas rotas estáticas (incluindo `/metodologia`, `/catalogo/[id]` e 22 comparativos).
+  - **Camada IA & Crawlers:** `/llms.txt` e `/llms-full.txt` dinâmicos (`revalidate = 3600`, Markdown direto do PostgreSQL) e `src/app/robots.ts` liberando `OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `Claude-SearchBot`, `ClaudeBot`, `Applebot` e `Google-Extended`.
+  - **Grafo Semântico & Autoridade:** `src/lib/seo/schema-graph.ts` unificado via `@id` (`#organization`, `#website`, `#author`, `#programsDataset`, `#stringsDataset`, `Product`/`AggregateRating`), página `/metodologia` (`revalidate = 3600`), `<CatalogStatsBox />` com métricas citáveis ao vivo, `<BlufSummary />` + histórico de verificação e tabelas HTML semânticas SSR em hubs, `/catalogo` e `/comparar`.
+  - **Comparativos Programáticos "X vs Y":** 12 comparativos em `/programas/comparar/[comparison]` + 10 comparativos acústicos de cordas em `/comparar/[comparison]` (`revalidate = 3600`).
+  - **Topical Authority Legítima:** gaps de busca PT-BR documentados internamente em `docs/SEO-TOPICAL-MAP.md` com respostas originais nas páginas pilares e `/llms-full.txt` (zero scraping de concorrentes).
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 
-1. **Checklist Consolidado:** ver `docs/CHECKLIST-MESTRE-NKL.md` (Search Console Item 5 e publicação dos arquivos KDP em `private-assets/amazon-book/`).
+1. **Checklist Consolidado:** ver `docs/CHECKLIST-MESTRE-NKL.md` (Bing Webmaster Tools import 1-clique do GSC, inspeção no GSC, off-page Itens 8 & 10 e publicação KDP em `private-assets/amazon-book/`).

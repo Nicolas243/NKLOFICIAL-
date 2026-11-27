@@ -21,21 +21,25 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 ---
 
-## Prioridade 3 — Google Search Console, Analytics e Segurança
+## Prioridade 3 — Google Search Console, Bing Webmaster Tools, GEO & Segurança
 
 5. **Inspeção de URL e "Página com redirecionamento" no Google Search Console (`https://nkloficial.com.br/`):**
    - Auditoria técnica local/ao vivo concluída em 2026-11-26: **115/115 URLs de `sitemap.xml` retornam HTTP 200 com 0 redirecionamentos e 0 erros**, e há **0 links internos em `src/` apontando para rotas com redirect** (os únicos redirecionamentos ativos são os `301` intencionais de legado em `next.config.ts`/`src/proxy.ts` + HTTP->HTTPS `308`).
-   - Falta apenas conectar o Chrome com depuração remota (`chrome://inspect/#remote-debugging`) para o Hermes abrir o Search Console e inspecionar os exemplos exatos de "Página com redirecionamento", conferir `sitemap.xml` e solicitar indexação para:
-     - `/`
-     - `/programas`
-     - `/idiomas`
-     - `/blog/aprender/ingles`
-     - `/blog/aprender/chines`
-     - `/ofertas/bussola-negocios`
-     - `/ia/oferta`
-     - `/guias/renda-extra`
+   - Arquitetura GEO + IndexNow implantada em 2026-11-27: chave `public/a7f4c92e1b8d40539e6c1a2f8b4d7e03.txt` + `npm run seo:indexnow`, `/llms.txt`, `/llms-full.txt`, `robots.ts` liberando crawlers de IA (`OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `Claude-SearchBot`, `ClaudeBot`, `Applebot`, `Google-Extended`), `/metodologia`, BLUF, tabelas SSR, Schema `@graph` (`@id`), `lastmod` honesto no `sitemap.xml` e 22 páginas de comparativos (`/programas/comparar/*` + `/comparar/*`).
+   - Faltam apenas estas ações externas no navegador:
+     - **Bing Webmaster Tools (1 clique -> alimenta ChatGPT Search e Copilot):** acessar `https://www.bing.com/webmasters`, clicar em **Import from Google Search Console** e confirmar o `sitemap.xml` + status do IndexNow.
+     - **Google Search Console:** inspecionar os exemplos de "Página com redirecionamento", conferir `sitemap.xml` atualizado e solicitar indexação das rotas principais (`/`, `/programas`, `/metodologia`, `/idiomas`, `/blog/aprender/ingles`, `/blog/aprender/chines`, `/ofertas/bussola-negocios`, `/ia/oferta`, `/guias/renda-extra`, `/catalogo`, `/comparar`).
 6. **Leaked Password Protection no Supabase (Opcional ao fazer upgrade para Pro):**
    - O único `WARN` restante no Supabase Security Advisor (`auth_leaked_password_protection`) exige plano Pro em Authentication -> Attack Protection.
+
+---
+
+## Prioridade 3B — Estratégia Off-Page GEO & Navboost (Itens 8 e 10)
+
+- **Coocorrência e citações fora do site (Item 8):**
+  - Publicar links e menções contextuais do Portal NKL (ex.: citando `/metodologia`, `/catalogo` e `/programas`) em comunidades e perfis pertinentes: comentários/respostas construtivas no Reddit (`r/violinist`, `r/brasil`, `r/investimentos`), fóruns de violino/luteria (Maestronet, Orquestra Brasil), descrição de vídeos no YouTube (`@nkloficial`), bio/fixados no TikTok e Instagram, além do próprio livro publicado na Amazon KDP.
+- **Sinais de busca pela marca — Navboost (Item 10):**
+  - Nos vídeos de YouTube, TikTok e Reels, usar chamada direta incentivando busca exata no Google em vez de só "link na bio": *"Pesquise `Portal NKL cordas` ou `Portal NKL renda extra` no Google"*. Buscas explícitas com o nome da marca seguidas de clique fortalecem o sinal de relevância no buscador.
 
 ---
 

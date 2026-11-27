@@ -12,6 +12,11 @@ import { SiteGuidance } from '@/components/site-guidance'
 import { SpotlightTutorial } from '@/components/ui/spotlight-tutorial'
 import { RifaCampaignShell } from '@/components/rifa-campaign/rifa-campaign-shell'
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site'
+import {
+  buildAuthorPersonNode,
+  buildOrganizationNode,
+  buildWebsiteNode,
+} from '@/lib/seo/schema-graph'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
@@ -74,37 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@graph': [
-            {
-              '@type': 'Organization',
-              name: 'Portal NKL',
-              url: SITE_URL,
-              logo: absoluteSiteUrl('/NKL.png'),
-              sameAs: [
-                'https://www.instagram.com/nkloficial/',
-                'https://www.tiktok.com/@nkloficial',
-                'https://www.youtube.com/@nkloficial',
-              ],
-              contactPoint: {
-                '@type': 'ContactPoint',
-                contactType: 'customer support',
-                email: 'contato@nkloficial.com.br',
-                availableLanguage: ['Portuguese'],
-              },
-            },
-            {
-              '@type': 'WebSite',
-              name: 'Portal NKL',
-              url: SITE_URL,
-              inLanguage: 'pt-BR',
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: {
-                  '@type': 'EntryPoint',
-                  urlTemplate: `${SITE_URL}/programas?q={search_term_string}`,
-                },
-                'query-input': 'required name=search_term_string',
-              },
-            },
+            buildOrganizationNode(),
+            buildWebsiteNode(),
+            buildAuthorPersonNode(),
           ],
         }} />
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>

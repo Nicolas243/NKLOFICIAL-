@@ -3,11 +3,18 @@ import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { getPartnerPrograms } from '@/actions/partner-programs';
 import { PartnerProgramsBrowser } from '@/components/partner-programs-browser';
+import { CatalogStatsBox } from '@/components/seo/catalog-stats-box';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ProgramCompare } from '@/components/program-compare';
 import { IncomeWizard } from '@/components/income/income-wizard';
 import { EditorialSupportOffers } from '@/components/income/editorial-support-offers';
 import { INCOME_PORTAL_ROUTES } from '@/lib/income-portal';
+import { PROGRAM_COMPARISONS } from '@/lib/seo/program-comparisons';
+import {
+  buildProgramsDatasetNode,
+  SCHEMA_IDS,
+  SITE_CONTENT_LAST_MODIFIED,
+} from '@/lib/seo/schema-graph';
 import { absoluteSiteUrl } from '@/lib/site';
 import { PROGRAM_HUBS } from '@/lib/program-hubs';
 import { getActiveAdSlots, getAdPricing, type ActiveAdSlot } from '@/lib/ad-inventory';
@@ -37,6 +44,18 @@ const RENDA_EXTRA_FAQS = [
   {
     question: 'Como saber se uma plataforma de renda extra é confiável e evitar golpes?',
     answer: 'Plataformas legítimas nunca cobram taxa para liberar cadastro, tarefa ou saque. Confira métodos de pagamento transparentes, regras claras de elegibilidade, suporte real e histórico editorial antes de enviar documentos ou investir tempo.',
+  },
+  {
+    question: 'Preciso abrir MEI ou CNPJ para declarar renda extra online no Brasil?',
+    answer: 'Para ganhos esporádicos no início, os recebimentos podem ser declarados como Pessoa Física via Carnê-Leão quando aplicável, inclusive para valores vindos do exterior. Quando a atividade se torna recorrente ou exige nota fiscal para clientes e plataformas, a formalização via MEI ou outro regime de CNPJ costuma organizar os tributos e o recolhimento mensal. Como faixas de isenção, alíquotas e atividades permitidas no MEI mudam periodicamente, confirme os limites vigentes com um contador.',
+  },
+  {
+    question: 'Qual a diferença prática entre freelance, afiliados, UGC e treinamento de IA?',
+    answer: 'No freelance você vende uma entrega sob demanda para um cliente específico (design, texto, código ou automação). Em afiliados, recebe comissão por vendas geradas pelos seus links sem prestar serviço direto. No UGC, grava vídeos curtos ou fotos para marcas usarem em campanhas sem precisar de audiência própria. Já no treinamento de IA, avalia respostas, grava áudios ou revisa tarefas técnicas por hora ou por tarefa aprovada.',
+  },
+  {
+    question: 'Como verificar em 3 minutos se uma plataforma de renda extra é confiável?',
+    answer: 'Faça três checagens rápidas antes de criar conta: primeiro, confira se o domínio oficial bate com a marca e tem termos de uso públicos e canal de suporte; segundo, confirme a regra de depósito zero — nunca pague taxa adiantada para liberar tarefas ou desbloquear saque; terceiro, verifique o valor mínimo de saque e os métodos aceitos no Brasil (Pix, PayPal, Wise ou Payoneer).',
   },
 ] as const;
 
@@ -138,6 +157,11 @@ export default async function PartnerProgramsPage() {
   }));
   const categoryCount = new Set(programs.map((program) => program.category)).size;
   const catalogUrl = absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog);
+  const latestVerifiedIso = programs.reduce<string>((latest, program) => {
+    if (!program.lastVerifiedAt) return latest;
+    return program.lastVerifiedAt > latest ? program.lastVerifiedAt : latest;
+  }, SITE_CONTENT_LAST_MODIFIED);
+  const topComparisons = PROGRAM_COMPARISONS.slice(0, 6);
 
   return (
     <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-0 md:pb-20">
@@ -146,11 +170,17 @@ export default async function PartnerProgramsPage() {
         '@graph': [
           {
             '@type': 'CollectionPage',
+            '@id': `${catalogUrl}#webpage`,
             name: 'Renda Extra 2026: 55+ Formas Reais e Plataformas Verificadas',
             description: 'Catálogo editorial com mais de 55 formas reais de gerar renda extra online, pelo celular, em dólar, como afiliado ou usando Inteligência Artificial.',
             url: catalogUrl,
             inLanguage: 'pt-BR',
+            dateModified: latestVerifiedIso,
+            isPartOf: { '@id': SCHEMA_IDS.website },
+            publisher: { '@id': SCHEMA_IDS.organization },
+            mainEntity: { '@id': SCHEMA_IDS.programsDataset },
           },
+          buildProgramsDatasetNode(programs.length, latestVerifiedIso),
           {
             '@type': 'BreadcrumbList',
             itemListElement: [
@@ -222,6 +252,10 @@ export default async function PartnerProgramsPage() {
           </div>
         </div>
       </header>
+
+      <div className="mb-5 md:mb-8">
+        <CatalogStatsBox programs={programs} />
+      </div>
 
       <section className="mb-5 grid gap-4 rounded-2xl border border-orange/30 bg-orange/5 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="guide-cta-title">
         <div>
@@ -306,6 +340,31 @@ export default async function PartnerProgramsPage() {
       <div className="mt-8 md:mt-12">
         <ProgramCompare programs={comparePrograms} />
       </div>
+      <section className="mt-8 rounded-2xl border border-border bg-income-surface/85 p-5 md:mt-10 md:p-6" aria-labelledby="comparativos-diretos-title">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Comparação editorial</p>
+            <h2 id="comparativos-diretos-title" className="mt-1 font-playfair text-2xl font-bold">
+              Comparativos diretos mais buscados
+            </h2>
+          </div>
+          <Link href="/metodologia" className="text-sm font-bold text-neon hover:underline">
+            Ver critérios de verificação →
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {topComparisons.map((pair) => (
+            <Link
+              key={pair.slug}
+              href={`/programas/comparar/${pair.slug}`}
+              className="rounded-xl border border-border bg-income-card/80 p-4 transition-colors hover:border-neon"
+            >
+              <p className="text-[11px] font-bold uppercase tracking-wider text-neon">{pair.focusKeyword}</p>
+              <p className="mt-1 font-bold">{pair.title}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
       <EditorialSupportOffers />
 
       <section id="perguntas-frequentes" className="mt-10 rounded-2xl border border-border bg-income-surface/90 p-5 md:mt-14 md:p-8" aria-labelledby="faq-renda-extra-title">
