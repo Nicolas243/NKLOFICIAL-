@@ -23,6 +23,8 @@ export type AiCourseModule = {
   summary: string;
   unlockAfterDays: number;
   notebookLmFormat: string;
+  videoEmbedUrl?: string;
+  audioUrl?: string;
   lessons: readonly AiCourseLesson[];
 };
 

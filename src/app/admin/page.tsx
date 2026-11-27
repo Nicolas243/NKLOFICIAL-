@@ -115,7 +115,13 @@ export default async function AdminDashboardPage() {
           <h1 className="font-playfair text-3xl font-bold">Painel de Administração</h1>
           <p className="text-sm opacity-70">Gerenciamento central do ecossistema.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/publicador"
+            className="rounded-lg border border-neon/50 bg-neon/10 px-3 py-1.5 text-xs font-bold text-neon hover:bg-neon/20"
+          >
+            Publicador Multiplataforma (/admin/publicador)
+          </Link>
           <span className="text-xs px-3 py-1 bg-surface border border-border rounded-full">
             Perfil: <strong className="text-neon">{profile?.role ?? 'user'}</strong>
           </span>

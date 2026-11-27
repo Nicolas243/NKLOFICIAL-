@@ -26,7 +26,12 @@
     "ide:doctor": "node scripts/sync-ide-configs.mjs doctor",
     "ide:extensions": "node scripts/sync-ide-configs.mjs install-extensions",
     "test:ide-sync": "node --test scripts/sync-ide-configs.test.mjs",
-    "seo:indexnow": "node scripts/ping-indexnow.mjs"
+    "seo:indexnow": "node scripts/ping-indexnow.mjs",
+    "nlm:sources": "tsx scripts/notebooklm/build-notebooklm-sources.ts",
+    "nlm:render": "tsx scripts/notebooklm/render-deliverable-video.ts",
+    "social:publish": "tsx tools/social-publisher/cli.ts",
+    "test:social-publisher": "tsx --test tools/social-publisher/social-publisher.test.ts",
+    "book:multiplatform": "tsx scripts/build-book-multiplatform.ts"
   },
   "dependencies": {
     "@cline/sdk": "^0.2.0",

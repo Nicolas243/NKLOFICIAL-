@@ -47,11 +47,12 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 7. **Afiliados das Oportunidades de Renda Extra (validar após conclusão do site):**
    - Etapa pós-lançamento: após concluir a publicação e revisão final do site, validar cadastros nos programas listados em [MAPA-AFILIADOS-50-OPORTUNIDADES.md](./MAPA-AFILIADOS-50-OPORTUNIDADES.md) e colar cada link em `/programas/admin` (ou tabela `partner_programs`).
-8. **Publicação na Amazon KDP (arquivos finais gerados e validados — pronto para upload quando quiser):**
-   - Edição completa gerada em `private-assets/amazon-book/` (14 capítulos/partes, 46.110 palavras no Kindle / 48.263 palavras e 174 páginas no Paperback 6x9", 57 dossiês, 18 modelos Bússola, 25 prompts de IA):
-     - Digital: `57-formas-renda-extra-kindle.epub` + capa `capa-kindle-1600x2560.jpg`
-     - Físico: `57-formas-renda-extra-paperback-6x9.pdf` + capa completa `capa-paperback-6x9-completa.pdf`
-     - Metadados e passo a passo: `private-assets/amazon-book/KDP-METADADOS-E-PUBLICACAO.md` ([EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md](./EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md)).
-9. **Áudios Progressivos no NotebookLM (configurado no site como prêmio/bônus futuro em breve):**
-   - Configurado em `/ia/curso` como prêmio/bônus futuro em breve para alunos ("Prêmio em breve — Áudios Progressivos no NotebookLM chegando para alunos"). Quando for produzir os episódios, gerar os resumos em áudio das aulas semanais do curso *IA na Prática* e de idiomas usando o NotebookLM conforme [GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md](./GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md).
+8. **Publicação do Livro (Amazon KDP + 5 Kits Multiplataforma Prontos):**
+   - **Amazon KDP (`private-assets/amazon-book/`):** Kindle EPUB + capa `1600x2560`, Paperback 6x9" (174 pág.) + capa wrap + metadados em `KDP-METADADOS-E-PUBLICACAO.md`.
+   - **Outras Plataformas (`private-assets/book-multiplatform/`, gerar com `npm run book:multiplatform`):**
+     - `01-uiclap-fisico/` + `02-clube-de-autores/`: PDF `16x23 cm` (186 pág.) + capa wrap sem caixa ISBN KDP (`lombada 11.89 mm`) -> **pode subir já no físico** (não há exclusividade de impresso no KDP Select).
+     - `03-google-play-livros/`, `04-draft2digital-apple-kobo-global/` e `05-venda-direta-hotmart-portal-nkl/`: EPUB edição ampla + PDF tela (`231` pág.) -> subir somente se o e-book NÃO estiver inscrito no KDP Select (exclusividade digital de 90 dias). Ver [DISTRIBUICAO-LIVRO-MULTIPLATAFORMA.md](./DISTRIBUICAO-LIVRO-MULTIPLATAFORMA.md).
+9. **Vídeos NotebookLM & Publicador Multiplataforma (Prontos para Render & Tokens):**
+   - **15 Pacotes NotebookLM (`private-assets/notebooklm-packs/`, gerar com `npm run nlm:sources`):** textos-fonte, prompts, manifestos, `30` capas `16:9` e `9:16`, `captions.srt` e `metadata-upload.json`. Suba no NotebookLM (ou use `run-notebooklm-batch.ps1` com `notebooklm login`), baixe `audio.mp3`/`audio.m4a`, instale `winget install Gyan.FFmpeg` e rode `npm run nlm:render -- --all` (`npm run nlm:render`). Depois vincule os links em `src/lib/ai-course.ts` (`videoEmbedUrl` / `audioUrl`). Ver [NOTEBOOKLM-PIPELINE-ENTREGAVEIS.md](./NOTEBOOKLM-PIPELINE-ENTREGAVEIS.md).
+   - **Publicador Social (`/admin/publicador` e `npm run social:publish`):** adaptadores oficiais para Bluesky, Threads, Mastodon, X, YouTube, TikTok, Instagram, Facebook, Bilibili + Postiz/Webhook (Kwai, Pinterest, LinkedIn, Reddit, Telegram). Preencha as credenciais OAuth/App Password no `.env.local` conforme [PUBLICADOR-MULTIPLATAFORMA-VIDEOS.md](./PUBLICADOR-MULTIPLATAFORMA-VIDEOS.md).
 10. ~~**Push Nativo de Sistema Operacional (VAPID Web Push):**~~ CONCLUÍDO em 2026-11-26 (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT=mailto:contato@nkloficial.com.br` gravadas no `.env.local` e sincronizadas na Vercel Production; `/api/notifications/push/config` verificado ao vivo com `enabled: true` no deploy `dpl_HzGuUdSDG79hCekYdj2eRjFJq81x`).

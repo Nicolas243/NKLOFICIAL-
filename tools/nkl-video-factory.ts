@@ -11,6 +11,7 @@ import { join, resolve } from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
+import { SOCIAL_CHANNELS, type SocialChannel } from "./social-publisher/types.js";
 
 export const videoRunStatuses = [
   "draft",
@@ -43,7 +44,7 @@ export const videoManifestSchema = z.object({
   prohibitedClaims: z.array(z.string()).default([]),
   callToAction: z.string().trim().max(300).optional(),
   rightsConfirmed: z.boolean(),
-  channels: z.array(z.enum(["youtube", "facebook", "bilibili"])).default([]),
+  channels: z.array(z.enum(SOCIAL_CHANNELS)).default([]),
   scheduledAt: z.string().datetime().optional(),
 });
 
@@ -76,7 +77,7 @@ export interface VideoRun {
     reviewedAt: string;
   };
   publications: Array<{
-    channel: "youtube" | "facebook" | "bilibili";
+    channel: SocialChannel;
     idempotencyKey: string;
     state: "planned" | "published" | "failed";
     externalId?: string;
@@ -229,7 +230,7 @@ export function approveRun(
 
 export function planPublication(
   run: VideoRun,
-  channel: "youtube" | "facebook" | "bilibili",
+  channel: SocialChannel,
   clipId: string,
   cwd = process.cwd(),
 ): VideoRun {
@@ -325,7 +326,7 @@ function usage(): string {
     "  doctor",
     "  status [run-id]",
     "  approve --run <run-id> --by <name>",
-    "  publish --run <run-id> --channel <youtube|facebook|bilibili> [--clip <id>] [--dry-run]",
+    `  publish --run <run-id> --channel <${SOCIAL_CHANNELS.join("|")}> [--clip <id>] [--dry-run]`,
   ].join("\n");
 }
 
@@ -372,7 +373,7 @@ export async function main(argv = process.argv.slice(2), cwd = process.cwd(), en
     const channel = readOption(argv, "--channel");
     const clipId = readOption(argv, "--clip") ?? "main";
     if (!runId || !channel) throw new Error("Missing --run <run-id> and/or --channel <channel>");
-    if (!["youtube", "facebook", "bilibili"].includes(channel)) {
+    if (!(SOCIAL_CHANNELS as readonly string[]).includes(channel)) {
       throw new Error("Invalid channel");
     }
     if (!argv.includes("--dry-run")) {
@@ -380,7 +381,7 @@ export async function main(argv = process.argv.slice(2), cwd = process.cwd(), en
     }
     const run = planPublication(
       readRun(runId, cwd),
-      channel as "youtube" | "facebook" | "bilibili",
+      channel as SocialChannel,
       clipId,
       cwd,
     );

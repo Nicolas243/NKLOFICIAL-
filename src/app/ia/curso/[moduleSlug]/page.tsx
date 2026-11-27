@@ -20,10 +20,35 @@ export default async function AiModulePage({ params }: { params: Promise<{ modul
       <p className="mt-8 text-xs font-bold uppercase tracking-[0.16em] text-neon">Módulo</p>
       <h1 className="mt-2 font-playfair text-4xl font-bold">{courseModule.title}</h1>
       <p className="mt-3 text-sm leading-relaxed opacity-75">{courseModule.summary}</p>
-      <div className="mt-5 rounded-xl border border-orange/35 bg-orange/10 p-4 text-sm">
-        <p className="font-bold text-orange">{AI_NOTEBOOKLM_BONUS_BANNER}</p>
-        <p className="mt-1 opacity-80">{courseModule.notebookLmFormat}</p>
-      </div>
+      {courseModule.videoEmbedUrl ? (
+        <div className="mt-5 overflow-hidden rounded-xl border border-border bg-surface/70">
+          <div className="aspect-video w-full">
+            <iframe
+              src={courseModule.videoEmbedUrl}
+              title={`Resumo em vídeo: ${courseModule.title}`}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className="border-t border-border px-4 py-2.5 text-xs opacity-75">
+            {courseModule.notebookLmFormat}
+          </p>
+        </div>
+      ) : courseModule.audioUrl ? (
+        <div className="mt-5 rounded-xl border border-border bg-surface/70 p-4 text-sm">
+          <p className="font-semibold text-neon">Resumo em áudio — {courseModule.title}</p>
+          <audio controls preload="metadata" src={courseModule.audioUrl} className="mt-3 w-full">
+            Seu navegador não suporta reprodução de áudio.
+          </audio>
+          <p className="mt-2 text-xs opacity-75">{courseModule.notebookLmFormat}</p>
+        </div>
+      ) : (
+        <div className="mt-5 rounded-xl border border-orange/35 bg-orange/10 p-4 text-sm">
+          <p className="font-bold text-orange">{AI_NOTEBOOKLM_BONUS_BANNER}</p>
+          <p className="mt-1 opacity-80">{courseModule.notebookLmFormat}</p>
+        </div>
+      )}
       <div className="mt-8 space-y-6">
         {courseModule.lessons.map((lesson) => (
           <article key={lesson.id} className="rounded-2xl border border-border bg-surface/70 p-5 sm:p-7">
