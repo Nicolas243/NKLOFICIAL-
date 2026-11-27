@@ -3,9 +3,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, Bookmark, CalendarPlus, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, ChevronDown, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
@@ -28,6 +28,8 @@ import { PAID_PRODUCTS } from '@/config/products';
 import type { ActiveAdSlot } from '@/lib/ad-inventory';
 import type { Micro1Opportunity } from '@/lib/micro1-opportunities';
 
+type QuickPanelId = 'stats' | 'guide' | 'compass' | 'how-to-choose' | 'hubs' | 'objectives';
+
 type Props = {
   programs: PartnerProgramCard[];
   micro1Opportunities: Micro1Opportunity[];
@@ -35,6 +37,13 @@ type Props = {
   adSlots: ActiveAdSlot[];
   adPriceCents: number;
   adPromotionActive: boolean;
+  quickPanels?: {
+    stats: ReactNode;
+    guide: ReactNode;
+    compass: ReactNode;
+    howToChoose: ReactNode;
+    hubs: ReactNode;
+  };
   initialObjective?: string;
   initialCurrency?: string;
   initialEnglish?: string;
@@ -188,6 +197,7 @@ export function PartnerProgramsBrowser({
   adSlots,
   adPriceCents,
   adPromotionActive,
+  quickPanels,
   initialObjective,
   initialCurrency,
   initialEnglish,
@@ -211,6 +221,7 @@ export function PartnerProgramsBrowser({
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [activeQuickPanel, setActiveQuickPanel] = useState<QuickPanelId | null>(null);
   const [urlObjective, setUrlObjective] = useState<string | undefined>(initialObjective);
   const [urlCurrency, setUrlCurrency] = useState<string | undefined>(initialCurrency);
   const [urlEnglish, setUrlEnglish] = useState<string | undefined>(initialEnglish);
@@ -567,28 +578,98 @@ export function PartnerProgramsBrowser({
           {shareMessage}
         </div>
       )}
-      <section aria-labelledby="discovery-tags-title" className="rounded-2xl border border-border bg-income-surface/65 p-4">
-        <h2 id="discovery-tags-title" className="mb-3 text-xs font-bold uppercase tracking-wide opacity-60">Explore por objetivo</h2>
-        <div className="flex flex-wrap gap-3">
-          {DISCOVERY_TAGS.map((tag) => (
+      <section id="como-funciona" aria-label="Atalhos e guias rápidos" className="rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {[
+            ...(quickPanels
+              ? [
+                { id: 'stats' as const, label: 'Dados do levantamento' },
+                { id: 'guide' as const, label: 'Mapa prático' },
+                { id: 'compass' as const, label: 'Bússola de Negócios' },
+                { id: 'how-to-choose' as const, label: 'Como escolher' },
+                { id: 'hubs' as const, label: 'Guias de escolha' },
+              ]
+              : []),
+            {
+              id: 'objectives' as const,
+              label: selectedDiscoveryTag ? `Objetivo: ${selectedDiscoveryTag}` : 'Explore por objetivo',
+            },
+          ].map((item) => {
+            const isOpen = activeQuickPanel === item.id;
+            const isObjectiveActive = item.id === 'objectives' && Boolean(selectedDiscoveryTag);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setActiveQuickPanel(isOpen ? null : item.id)}
+                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-2 text-xs font-bold transition-colors ${isOpen || isObjectiveActive
+                  ? 'border-neon bg-neon text-black'
+                  : 'border-border bg-background/80 opacity-85 hover:border-neon hover:text-neon hover:opacity-100'
+                  }`}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+            );
+          })}
+          {activeQuickPanel !== null && (
             <button
-              key={tag.label}
               type="button"
-              onClick={() => {
-                const isSelected = selectedDiscoveryTag === tag.label;
-                setSelectedDiscoveryTag(isSelected ? null : tag.label);
-                setQuery('');
-                setCurrentPage(1);
-                if (!isSelected) scrollToCards();
-              }}
-              className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
-                ? 'border-neon bg-neon text-black font-bold'
-                : 'border-border opacity-75 hover:border-neon hover:opacity-100'
-                }`}
+              aria-label="Fechar painel aberto"
+              onClick={() => setActiveQuickPanel(null)}
+              className="ml-auto inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border bg-background/70 opacity-75 transition hover:border-neon hover:opacity-100"
             >
-              {tag.label}
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
-          ))}
+          )}
+        </div>
+
+        {quickPanels && (
+          <>
+            <div className={activeQuickPanel === 'stats' ? 'mt-3' : 'hidden'}>
+              {quickPanels.stats}
+            </div>
+            <div className={activeQuickPanel === 'guide' ? 'mt-3' : 'hidden'}>
+              {quickPanels.guide}
+            </div>
+            <div className={activeQuickPanel === 'compass' ? 'mt-3' : 'hidden'}>
+              {quickPanels.compass}
+            </div>
+            <div className={activeQuickPanel === 'how-to-choose' ? 'mt-3' : 'hidden'}>
+              {quickPanels.howToChoose}
+            </div>
+            <div className={activeQuickPanel === 'hubs' ? 'mt-3' : 'hidden'}>
+              {quickPanels.hubs}
+            </div>
+          </>
+        )}
+
+        <div className={activeQuickPanel === 'objectives' ? 'mt-3 border-t border-border pt-3' : 'hidden'}>
+          <div className="flex flex-wrap gap-2.5">
+            {DISCOVERY_TAGS.map((tag) => (
+              <button
+                key={tag.label}
+                type="button"
+                onClick={() => {
+                  const isSelected = selectedDiscoveryTag === tag.label;
+                  setSelectedDiscoveryTag(isSelected ? null : tag.label);
+                  setQuery('');
+                  setCurrentPage(1);
+                  if (!isSelected) scrollToCards();
+                }}
+                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
+                  ? 'border-neon bg-neon text-black font-bold'
+                  : 'border-border opacity-75 hover:border-neon hover:opacity-100'
+                  }`}
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 

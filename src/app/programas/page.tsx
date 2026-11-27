@@ -253,80 +253,6 @@ export default async function PartnerProgramsPage() {
         </div>
       </header>
 
-      <div className="mb-5 md:mb-8">
-        <CatalogStatsBox programs={programs} />
-      </div>
-
-      <section className="mb-5 grid gap-4 rounded-2xl border border-orange/30 bg-orange/5 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="guide-cta-title">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Quer decidir com menos ruído?</p>
-          <h2 id="guide-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Receba o mapa prático de renda extra</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">Cinco arquivos para comparar oportunidades, organizar critérios e escolher seu próximo passo sem promessa fácil.</p>
-        </div>
-        <Link href="/guias/renda-extra?cta_variant=2" className="inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-orange-dark">
-          Ver o pacote
-        </Link>
-      </section>
-
-      <section className="mb-5 grid gap-4 rounded-2xl border border-neon/30 bg-income-surface/85 p-5 md:mb-8 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="business-quiz-cta-title">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não sabe por onde começar?</p>
-          <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Use a Bússola de Negócios</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">
-            Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para receber seus 3 melhores caminhos reais de negócio ou renda extra.
-          </p>
-        </div>
-        <Link href="/quiz-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
-          Abrir Bússola de Negócios
-        </Link>
-      </section>
-
-      <details id="como-funciona" className="mb-5 md:mb-8">
-        <summary className="cursor-pointer rounded-xl border border-border bg-income-surface/70 px-4 py-3 text-sm font-bold transition-colors hover:border-neon">
-          Como escolher uma oportunidade
-        </summary>
-        <div className="mt-3 grid gap-3 md:grid-cols-3 md:gap-4">
-          {[
-            ['01', 'Escolha seu ponto de partida', 'Você quer gravar, pesquisar, vender serviços, indicar ou usar o tempo ocioso?'],
-            ['02', 'Leia antes de se cadastrar', 'Veja dificuldade, tags, contexto editorial e as condições que podem variar.'],
-            ['03', 'Teste com expectativa realista', 'Comece pequeno, proteja seus dados e nunca pague para liberar uma promessa.'],
-          ].map(([number, title, description]) => (
-            <article key={number} className="rounded-2xl border border-border bg-income-surface/70 p-5">
-              <p className="text-xs font-bold tracking-[0.2em] text-neon">{number}</p>
-              <h2 className="mt-3 font-playfair text-2xl font-bold">{title}</h2>
-              <p className="mt-2 text-sm leading-relaxed opacity-65">{description}</p>
-            </article>
-          ))}
-        </div>
-      </details>
-
-      <details id="guias-intencao" className="mb-5 md:mb-8">
-        <summary className="cursor-pointer rounded-xl border border-border bg-income-surface/70 px-4 py-3 transition-colors hover:border-neon">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Guias de escolha</span>
-          <span className="mt-1 block font-playfair text-2xl font-bold">Comece pela sua situação</span>
-          <span className="mt-1 block text-sm leading-relaxed opacity-70">Abra para comparar caminhos por objetivo, tempo e contexto.</span>
-        </summary>
-        <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {Object.values(PROGRAM_HUBS).map((hub) => (
-            <Link key={hub.slug} href={`/programas/${hub.slug}`} className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
-              <h3 className="font-bold">{hub.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed opacity-65">{hub.description}</p>
-              <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
-            </Link>
-          ))}
-          <Link href="/programas/iniciantes" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
-            <h3 className="font-bold">Renda extra para iniciantes</h3>
-            <p className="mt-2 text-sm leading-relaxed opacity-65">Caminhos com entrada simples ou curva moderada para dar os primeiros passos sem se perder.</p>
-            <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
-          </Link>
-          <Link href="/programas/dolar" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
-            <h3 className="font-bold">Oportunidades pagas em dólar</h3>
-            <p className="mt-2 text-sm leading-relaxed opacity-65">Plataformas com referência de pagamento em USD, métodos de saque e exigências de idioma.</p>
-            <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
-          </Link>
-        </div>
-      </details>
-
       <div id="catalogo">
         <PartnerProgramsBrowser
           programs={programs}
@@ -335,6 +261,76 @@ export default async function PartnerProgramsPage() {
           adSlots={adSlots}
           adPriceCents={adPricing.monthlyPriceCents}
           adPromotionActive={adPricing.isPromotionActive}
+          quickPanels={{
+            stats: <CatalogStatsBox programs={programs} />,
+            guide: (
+              <section className="grid gap-4 rounded-2xl border border-orange/30 bg-orange/5 p-5 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="guide-cta-title">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange">Quer decidir com menos ruído?</p>
+                  <h2 id="guide-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Receba o mapa prático de renda extra</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">Cinco arquivos para comparar oportunidades, organizar critérios e escolher seu próximo passo sem promessa fácil.</p>
+                </div>
+                <Link href="/guias/renda-extra?cta_variant=2" className="inline-flex min-h-11 items-center justify-center rounded-md bg-orange px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-orange-dark">
+                  Ver o pacote
+                </Link>
+              </section>
+            ),
+            compass: (
+              <section className="grid gap-4 rounded-2xl border border-neon/30 bg-income-surface/85 p-5 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="business-quiz-cta-title">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não sabe por onde começar?</p>
+                  <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Use a Bússola de Negócios</h2>
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">
+                    Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para receber seus 3 melhores caminhos reais de negócio ou renda extra.
+                  </p>
+                </div>
+                <Link href="/quiz-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
+                  Abrir Bússola de Negócios
+                </Link>
+              </section>
+            ),
+            howToChoose: (
+              <div className="grid gap-3 md:grid-cols-3 md:gap-4">
+                {[
+                  ['01', 'Escolha seu ponto de partida', 'Você quer gravar, pesquisar, vender serviços, indicar ou usar o tempo ocioso?'],
+                  ['02', 'Leia antes de se cadastrar', 'Veja dificuldade, tags, contexto editorial e as condições que podem variar.'],
+                  ['03', 'Teste com expectativa realista', 'Comece pequeno, proteja seus dados e nunca pague para liberar uma promessa.'],
+                ].map(([number, title, description]) => (
+                  <article key={number} className="rounded-2xl border border-border bg-income-surface/70 p-5">
+                    <p className="text-xs font-bold tracking-[0.2em] text-neon">{number}</p>
+                    <h2 className="mt-3 font-playfair text-2xl font-bold">{title}</h2>
+                    <p className="mt-2 text-sm leading-relaxed opacity-65">{description}</p>
+                  </article>
+                ))}
+              </div>
+            ),
+            hubs: (
+              <div id="guias-intencao">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Guias de escolha</p>
+                <h2 className="mt-1 font-playfair text-2xl font-bold">Comece pela sua situação</h2>
+                <p className="mt-1 text-sm leading-relaxed opacity-70">Compare caminhos por objetivo, tempo e contexto.</p>
+                <div className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                  {Object.values(PROGRAM_HUBS).map((hub) => (
+                    <Link key={hub.slug} href={`/programas/${hub.slug}`} className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
+                      <h3 className="font-bold">{hub.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed opacity-65">{hub.description}</p>
+                      <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
+                    </Link>
+                  ))}
+                  <Link href="/programas/iniciantes" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
+                    <h3 className="font-bold">Renda extra para iniciantes</h3>
+                    <p className="mt-2 text-sm leading-relaxed opacity-65">Caminhos com entrada simples ou curva moderada para dar os primeiros passos sem se perder.</p>
+                    <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
+                  </Link>
+                  <Link href="/programas/dolar" className="rounded-xl border border-border bg-income-surface/70 p-4 transition-colors hover:border-neon hover:bg-income-surface">
+                    <h3 className="font-bold">Oportunidades pagas em dólar</h3>
+                    <p className="mt-2 text-sm leading-relaxed opacity-65">Plataformas com referência de pagamento em USD, métodos de saque e exigências de idioma.</p>
+                    <span className="mt-3 inline-flex text-sm font-bold text-neon">Ver guia →</span>
+                  </Link>
+                </div>
+              </div>
+            ),
+          }}
         />
       </div>
       <div className="mt-8 md:mt-12">
