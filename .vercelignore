@@ -5,6 +5,10 @@
 
 # Paid assets and local scratch
 /private-assets/
+/nkl-video/
+/scripts/video-editor/models/
+/workspace/
+/.worktrees/
 /*.zip
 /*.mp4
 /nul
