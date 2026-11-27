@@ -10,7 +10,7 @@ import { getAllStringsCatalog } from '@/lib/seo/string-catalog-all';
 import { STRING_COMPARISONS } from '@/lib/seo/string-comparisons';
 import { absoluteSiteUrl } from '@/lib/site';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const getCachedSitemapPrograms = unstable_cache(
   async () => getPartnerPrograms().catch(() => []),

@@ -113,6 +113,26 @@ const nextConfig: NextConfig = {
         destination: "/",
         statusCode: 301,
       },
+      {
+        source: "/sitemap",
+        destination: "/sitemap.xml",
+        statusCode: 301,
+      },
+      {
+        source: "/sitemap_index.xml",
+        destination: "/sitemap.xml",
+        statusCode: 301,
+      },
+      {
+        source: "/sitemap-index.xml",
+        destination: "/sitemap.xml",
+        statusCode: 301,
+      },
+      {
+        source: "/sitemap-0.xml",
+        destination: "/sitemap.xml",
+        statusCode: 301,
+      },
     ];
   },
 };

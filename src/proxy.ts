@@ -26,9 +26,24 @@ const LEGACY_REDIRECTS: ReadonlyArray<{ from: string; to: string }> = [
   { from: '/importação', to: '/importacao' },
 ];
 
+const CRAWLER_BYPASS_PATHS = new Set([
+  '/sitemap.xml',
+  '/robots.txt',
+  '/llms.txt',
+  '/llms-full.txt',
+  '/manifest.webmanifest',
+]);
+
 export async function proxy(request: NextRequest) {
   const rawPathname = request.nextUrl.pathname;
   const pathname = normalizePathname(rawPathname);
+
+  if (
+    CRAWLER_BYPASS_PATHS.has(pathname)
+    || /\.(?:xml|txt|ico|webmanifest)$/iu.test(pathname)
+  ) {
+    return NextResponse.next({ request });
+  }
 
   // 301 permanentes: migração para slugs ASCII (SEO + links antigos).
   for (const { from, to } of LEGACY_REDIRECTS) {
@@ -74,9 +89,9 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Ignora rotas internas do Next.js e arquivos estáticos
-     * para não onerar o pool de requisições de autenticação.
+     * Ignora rotas internas do Next.js, endpoints de crawlers (.xml, .txt, manifest)
+     * e arquivos estáticos para não onerar o pool de autenticação nem devolver HTML em erro de rede.
      */
-    '/((?!_next/static|_next/image|_vercel|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|_vercel|favicon.ico|sitemap\\.xml|robots\\.txt|llms\\.txt|llms-full\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|xml|txt|webmanifest)$).*)',
   ],
 };
