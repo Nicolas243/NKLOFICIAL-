@@ -1,198 +1,318 @@
+import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import postgres from 'postgres';
+import { buildFoundationChapters } from './amazon-book/chapters-foundation';
+import { buildEncyclopediaChapters } from './amazon-book/dossier-enricher';
+import { buildScaleChapters } from './amazon-book/chapters-scale';
+import { buildKindleEpub } from './amazon-book/epub-builder';
+import {
+  renderKindleCoverJpg,
+  renderPaperbackFullWrapCoverPdf,
+  renderPaperbackInteriorPdf,
+} from './amazon-book/covers-and-pdf';
+import {
+  countHtmlWords,
+  type BookBusinessProfileRow,
+  type BookProgramRow,
+  type GeneratedBookPayload,
+} from './amazon-book/types';
 
-type BookEntry = {
-  number: number;
-  title: string;
-  chapter: number;
-  investment: 'Zero investimento' | 'Com investimento inicial';
-  payoutModel: string;
-  howItWorks: string;
-  firstWeekStep: string;
-  companionTools: string;
+loadEnv({ path: path.join(process.cwd(), '.env.local'), quiet: true });
+
+const BOOK_TITLE = '57 Formas Práticas de Construir Renda Extra';
+const BOOK_SUBTITLE =
+  'Do Zero ao Negócio Próprio: Critérios Antifraude, 57 Dossiês Reais, 18 Modelos da Bússola, 25 Prompts de IA e Caderno de Execução';
+const BOOK_AUTHOR = 'NKL_OFICIAL';
+const BOOK_PUBLISHER = 'Portal NKL';
+const SITE_URL = 'https://nkloficial.com.br';
+
+type RawProgramDbRow = {
+  slug: string;
+  name: string;
+  category: string;
+  difficulty: string;
+  short_description: string;
+  long_description: string;
+  tags: string[] | string | null;
+  website_url: string;
+  affiliate_url: string | null;
+  editorial_rating: number | string;
+  editorial_source: string;
+  pros: string[] | string | null;
+  cons: string[] | string | null;
+  requirements: string[] | string | null;
+  payment_methods: string[] | string | null;
+  earning_potential: string | null;
+  zero_investment_required: boolean;
 };
 
-const CHAPTERS: ReadonlyArray<{ number: number; title: string; subtitle: string }> = [
-  { number: 1, title: 'IA, Avaliação de Respostas e Pesquisas Pagas', subtitle: 'Caminhos com entrada gratuita que remuneram atenção, leitura crítica e feedback humano.' },
-  { number: 2, title: 'Testes de Apps, Software (QA) e Entrevistas UX', subtitle: 'Encontre erros em sites, narre experiências reais e receba em dólar por entrega.' },
-  { number: 3, title: 'Conteúdo UGC, Vídeo Curto e Economia de Criadores', subtitle: 'Grave demonstrações simples ou edite cortes para marcas sem depender de milhões de seguidores.' },
-  { number: 4, title: 'Freelancing, Ensino e Desafios Remunerados', subtitle: 'Transforme conhecimento técnico, didática ou organização em serviços fechados.' },
-  { number: 5, title: 'Afiliados, Indicações e Renda Complementar', subtitle: 'Conecte quem já quer resolver um problema com ferramentas e produtos verificados.' },
-  { number: 6, title: 'Negócios Escaláveis e Modelos com Investimento Inicial', subtitle: 'Publicação, produtos digitais, Print on Demand, automação B2B e revenda estruturada.' },
-];
+type RawBusinessProfileDbRow = {
+  id: string;
+  name: string;
+  min_capital: string | number;
+  min_time_hours: number;
+  tech_level: 'low' | 'medium' | 'high';
+  risk_level: 'low' | 'medium' | 'high';
+};
 
-const ENTRIES: readonly BookEntry[] = [
-  { number: 1, title: 'Micro1 — Projetos de Treinamento de IA e Especialistas', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por hora/projeto', howItWorks: 'Conecta programadores, linguistas e especialistas a projetos pagos de avaliação e coleta de dados.', firstWeekStep: 'Complete perfil técnico detalhado e realize a triagem objetiva em inglês.', companionTools: 'Wise / Payoneer + Inglês NKL' },
-  { number: 2, title: 'Outlier AI — Revisão e Escrita para Modelos de Linguagem', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por tarefa/hora', howItWorks: 'Remunera comparação de respostas, correção factual e escrita estruturada em português ou inglês.', firstWeekStep: 'Leia as rubricas com atenção antes de fazer a avaliação classificatória inicial.', companionTools: 'Wise + Guia de Prompting NKL' },
-  { number: 3, title: 'DataAnnotation — Avaliação Lógica e Raciocínio de IA', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por hora', howItWorks: 'Testes rigorosos de lógica, código e checagem factual para liberar projetos recorrentes.', firstWeekStep: 'Separe 60 minutos calmos para o teste inicial sem pular critérios.', companionTools: 'PayPal / Wise' },
-  { number: 4, title: 'Claru IA — Microprojetos de Curadoria e Dados', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ variável por tarefa', howItWorks: 'Campanhas pontuais de rotulagem, áudio, imagem e validação de respostas.', firstWeekStep: 'Configure conta e ative alertas de campanhas para o Brasil.', companionTools: 'Wise / Payoneer' },
-  { number: 5, title: 'Mindrift — Anotação Editorial e Contexto Multilíngue', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por hora/tarefa', howItWorks: 'Projetos guiados da Toloka focados em clareza de texto e verificação de respostas.', firstWeekStep: 'Faça testes de português e inglês para ampliar elegibilidade.', companionTools: 'Wise / Payoneer' },
-  { number: 6, title: 'Prolific — Estudos Acadêmicos e Pesquisas Universitárias', chapter: 1, investment: 'Zero investimento', payoutModel: 'GBP / US$ por estudo', howItWorks: 'Pesquisadores de universidades pagam participação honesta em estudos comportamentais.', firstWeekStep: 'Preencha 100% do "About You" e aguarde liberação da fila sem bots.', companionTools: 'PayPal / Wise' },
-  { number: 7, title: 'Dscout — Diários de Experiência e Vídeos de Produto', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ 25 a US$ 150 por missão', howItWorks: 'Missões pelo celular avaliando aplicativos, bancos ou hábitos de compra.', firstWeekStep: 'Grave resposta clara de 45s para o screener com boa iluminação.', companionTools: 'Suporte de celular / Ring light' },
-  { number: 8, title: 'OneForma — Localização, Transcrição e Avaliações', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por projeto', howItWorks: 'Plataforma global com certificações internas para tarefas em português.', firstWeekStep: 'Complete certificações de idioma português para desbloquear projetos.', companionTools: 'Payoneer / PayPal' },
-  { number: 9, title: 'Crowtado — Microtarefas e Classificação de Mídia', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ variável', howItWorks: 'Validações curtas de texto, áudio e contexto visual conforme disponibilidade.', firstWeekStep: 'Revise regras de saque mínimo e países aceitos.', companionTools: 'Wise / PayPal' },
-  { number: 10, title: 'SERP Raters (Welocalize / TELUS) — Qualidade de Busca', chapter: 1, investment: 'Zero investimento', payoutModel: 'US$ por hora', howItWorks: 'Avaliação de relevância de resultados de buscadores seguindo guia oficial de qualidade.', firstWeekStep: 'Estude o Quality Guidelines antes da prova de admissão.', companionTools: 'Payoneer + Guia de Inglês NKL' },
-  { number: 11, title: 'IA que Paga por Uso e Curadoria (Grass / Toloka)', chapter: 1, investment: 'Zero investimento', payoutModel: 'Pontos / US$ variável', howItWorks: 'Redes abertas de indexação pública e validação leve com navegador dedicado.', firstWeekStep: 'Use apenas em conexão residencial própria e separada de trabalho.', companionTools: 'Perfil de navegador isolado' },
-  { number: 12, title: 'uTest — Testes Funcionais de Sites e Aplicativos', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ por bug + ciclo', howItWorks: 'Reportar falhas reais em apps bancários, streaming e lojas antes do lançamento.', firstWeekStep: 'Conclua a uTest Academy para receber convites iniciais.', companionTools: 'Payoneer + Captura de tela' },
-  { number: 13, title: 'Testlio — Ciclos Estruturados de QA Freelance', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ por hora de teste', howItWorks: 'Rede seletiva que paga por hora fixa quando selecionado para runs em dispositivos específicos.', firstWeekStep: 'Cadastre todos os celulares e computadores disponíveis.', companionTools: 'Wise / Payoneer' },
-  { number: 14, title: 'Alligner — Avaliação Técnica e Engenharia Agêntica', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ por projeto/hora', howItWorks: 'Projetos especializados para código, raciocínio complexo e validação em português.', firstWeekStep: 'Finalize avaliação de área técnica para entrar no banco ativo.', companionTools: 'Wise / Deel' },
-  { number: 15, title: 'Testes UX Narrados (UserTesting e similares)', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ 10 por teste de 15 min', howItWorks: 'Você navega em protótipos falando em voz alta o que entende ou sente dificuldade.', firstWeekStep: 'Faça o teste de microfone sem eco e pratique pensar em voz alta.', companionTools: 'Microfone USB + PayPal' },
-  { number: 16, title: 'Entrevistas B2B (Respondent / User Interviews)', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ 50 a US$ 200 por chamada', howItWorks: 'Empresas entrevistam profissionais reais para validar softwares e produtos.', firstWeekStep: 'Vincule LinkedIn verdadeiro e aplique apenas para sua área real.', companionTools: 'Webcam HD + Microfone + PayPal' },
-  { number: 17, title: 'Clickworker — Microtarefas Móveis e Coleta', chapter: 2, investment: 'Zero investimento', payoutModel: 'EUR / US$ por lote', howItWorks: 'Tarefas rápidas de fotos, áudio, busca e UHRS pelo celular ou navegador.', firstWeekStep: 'Verifique endereço e método Payoneer antes do primeiro lote.', companionTools: 'Payoneer' },
-  { number: 18, title: 'AttaPoll — Pesquisas Rápidas no Celular', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ por pesquisa', howItWorks: 'Questionários curtos de opinião com saque baixo e interface simples.', firstWeekStep: 'Responda com consistência para não ser filtrado por contradição.', companionTools: 'PayPal' },
-  { number: 19, title: 'Nyte-X — Coleta de Vídeo em Primeira Pessoa', chapter: 2, investment: 'Zero investimento', payoutModel: 'US$ por projeto aprovado', howItWorks: 'Gravação de tarefas cotidianas seguindo roteiro e requisitos técnicos de câmera.', firstWeekStep: 'Leia especificações de ângulo e privacidade antes de gravar.', companionTools: 'Suporte de cabeça / Câmera' },
-  { number: 20, title: 'Billo — Vídeos UGC para Marcas Globais', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ 50+ por vídeo', howItWorks: 'Empresas enviam briefings e pagam por vídeos curtos autênticos de demonstração.', firstWeekStep: 'Grave vídeo de apresentação claro sem filtros excessivos.', companionTools: 'Ring Light + CapCut' },
-  { number: 21, title: 'JoinBrands — Criadores de Conteúdo de Produto', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ por entrega', howItWorks: 'Fotos e vídeos caseiros bem produzidos para lojas de e-commerce.', firstWeekStep: 'Complete verificação inicial com 2 exemplos em luz natural.', companionTools: 'Tripé + CapCut + Payoneer' },
-  { number: 22, title: 'UGC Roster — Portfólio para Agências', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ por campanha', howItWorks: 'Diretório conectado a agências buscando criadores por nicho e idioma.', firstWeekStep: 'Suba 3 vídeos de nichos distintos (casa, tech, rotina).', companionTools: 'Canva + Wise' },
-  { number: 23, title: 'Creator Space — Campanhas Sob Demanda', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ por vídeo aprovado', howItWorks: 'Marketplace de briefings curtos com aprovação direta pelo anunciante.', firstWeekStep: 'Revise prazo de entrega e direitos de uso em cada briefing.', companionTools: 'Canva + Notion' },
-  { number: 24, title: 'AppHub — Promoção de Aplicativos por Vídeo', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ por visualização/campanha', howItWorks: 'Produção de formatos curtos apresentando aplicativos conforme guia criativo.', firstWeekStep: 'Estude os 3 formatos que mais retêm atenção nos 3 primeiros segundos.', companionTools: 'CapCut + Ring Light' },
-  { number: 25, title: 'Fluencify — Conteúdo Curto em Português', chapter: 3, investment: 'Zero investimento', payoutModel: 'R$ por campanha', howItWorks: 'Conexão local entre criadores brasileiros e campanhas digitais.', firstWeekStep: 'Envie portfólio enxuto com áudio limpo.', companionTools: 'Microfone de lapela + Pix' },
-  { number: 26, title: 'Flambra — Tarefas Criativas e Social', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ / R$ variável', howItWorks: 'Missões ligadas a criação e engajamento conforme regras de cada campanha.', firstWeekStep: 'Confira prazos de validação antes de iniciar.', companionTools: 'Canva' },
-  { number: 27, title: 'Hub — Comunidade de Microcampanhas', chapter: 3, investment: 'Zero investimento', payoutModel: 'US$ variável', howItWorks: 'Pequenos projetos digitais para criadores e avaliadores de produto.', firstWeekStep: 'Cadastre links reais e acompanhe abertura de vagas.', companionTools: 'Notion' },
-  { number: 28, title: 'TikTok Shop — Comissões por Demonstração em Vídeo', chapter: 3, investment: 'Zero investimento', payoutModel: 'Comissão % por venda', howItWorks: 'Mostre utilidade real de produtos acessíveis e ganhe comissão automática no carrinho nativo.', firstWeekStep: 'Escolha 3 itens que você realmente usa em casa para começar.', companionTools: 'Ring Light + CapCut' },
-  { number: 29, title: 'Bilibili — Pesquisa de Formatos e Canal Asiático', chapter: 3, investment: 'Zero investimento', payoutModel: 'Receita de criador (avançado)', howItWorks: 'Referência de formatos visuais longos e oportunidades para quem domina idiomas.', firstWeekStep: 'Analise retenção de criadores educativos na plataforma.', companionTools: 'Guia Mandarim NKL' },
-  { number: 30, title: 'Estratégia Canal Dark YouTube + NotebookLM', chapter: 3, investment: 'Zero investimento', payoutModel: 'AdSense + Afiliados', howItWorks: 'Roteiros profundos transformados em vídeos narrados sem precisar aparecer na câmera.', firstWeekStep: 'Publique 4 vídeos semanais consistentes sobre um único tema útil.', companionTools: 'NotebookLM + ElevenLabs + CapCut' },
-  { number: 31, title: 'Edição de Cortes e Vídeos Curtos com IA', chapter: 3, investment: 'Com investimento inicial', payoutModel: 'R$ 400 a R$ 1.800/mês por cliente', howItWorks: 'Recorte palestras e podcasts em 15 a 30 Reels/Shorts mensais com legenda dinâmica.', firstWeekStep: 'Entregue 3 cortes gratuitos de amostra para 5 podcasts ou professores locais.', companionTools: 'OpusClip + CapCut Pro' },
-  { number: 32, title: 'Fiverr — Serviços Digitais Empacotados (Gigs)', chapter: 4, investment: 'Zero investimento', payoutModel: 'US$ por pedido', howItWorks: 'Venda entregas claras de preço fechado (planilhas, tradução, revisão, áudio, código).', firstWeekStep: 'Crie 1 gig hiperespecífico com 3 amostras visuais limpas.', companionTools: 'Canva + Payoneer + Notion' },
-  { number: 33, title: 'Upwork — Contratos Remotos Recorrentes', chapter: 4, investment: 'Zero investimento', payoutModel: 'US$ por hora/contrato', howItWorks: 'Propostas diretas para empresas internacionais precisando de suporte, QA, dev ou design.', firstWeekStep: 'Escreva propostas curtas focadas no problema da primeira linha.', companionTools: 'Wise + Loom + Guia Inglês NKL' },
-  { number: 34, title: 'Aulas Particulares, Mentoria e Consultoria Prática', chapter: 4, investment: 'Zero investimento', payoutModel: 'R$ / hora-aula', howItWorks: 'Ensine violino, idiomas, Excel ou ferramentas digitais em sessões individuais online.', firstWeekStep: 'Defina objetivo claro da primeira aula experimental e organize agenda.', companionTools: 'Daily/Meet + Stripe/Pix' },
-  { number: 35, title: 'Estudar e Ganhar (Kaggle, Bounties e Bolsas)', chapter: 4, investment: 'Zero investimento', payoutModel: 'Prêmios US$ por desafio', howItWorks: 'Resolva desafios públicos de dados ou reporte bugs reais em programas oficiais.', firstWeekStep: 'Resolva 2 notebooks públicos no Kaggle para construir histórico.', companionTools: 'GitHub + Estúdio IA NKL' },
-  { number: 36, title: 'Amazon Influencer — Vitrine e Reviews em Vídeo', chapter: 5, investment: 'Zero investimento', payoutModel: 'Comissão % Amazon', howItWorks: 'Grave reviews honestos de produtos reais; quando alguém compra após assistir, você ganha.', firstWeekStep: 'Liste 10 itens úteis da sua casa com boa procura na Amazon.', companionTools: 'Tripé + Ring Light + Microfone' },
-  { number: 37, title: 'Afiliados de Marketplaces (ML, Shopee, Amazon, Magalu)', chapter: 5, investment: 'Zero investimento', payoutModel: '2% a 15% por venda', howItWorks: 'Indique produtos úteis com comparativos honestos em guias, grupos ou vídeos.', firstWeekStep: 'Ative cadastros gratuitos e padronize links curtos por nicho.', companionTools: 'Canva + Metricool' },
-  { number: 38, title: 'Hotmart Afiliados — Curadoria de Cursos e Guias', chapter: 5, investment: 'Zero investimento', payoutModel: 'Comissão por venda', howItWorks: 'Recomende apenas cursos que você revisou a ementa e que resolvem dúvidas reais.', firstWeekStep: 'Avalie página, suporte e taxa de reembolso antes de divulgar.', companionTools: 'Notion + Hostinger' },
-  { number: 39, title: 'QuintoAndar Indica Aí — Indicação de Imóveis', chapter: 5, investment: 'Zero investimento', payoutModel: 'R$ 100+ por anúncio/aluguel', howItWorks: 'Indique apartamentos e casas vazias de conhecidos na área de cobertura.', firstWeekStep: 'Converse com porteiros, vizinhos e grupos de bairro com autorização.', companionTools: 'WhatsApp Business' },
-  { number: 40, title: 'Mercado Pago — Indicações de Conta e Maquininhas', chapter: 5, investment: 'Zero investimento', payoutModel: 'R$ por indicação ativa', howItWorks: 'Comércios de bairro que começam a aceitar Pix/cartão via seu convite geram bônus.', firstWeekStep: 'Ajude pequenos prestadores locais a configurar taxas claras.', companionTools: 'Gestão financeira simples' },
-  { number: 41, title: 'Afiliados B2B (Make, TubeBuddy, Hostinger)', chapter: 5, investment: 'Zero investimento', payoutModel: '20% a 30% recorrente', howItWorks: 'Recomende softwares que empresas usam todo mês para receber comissão recorrente.', firstWeekStep: 'Crie tutoriais práticos mostrando o software resolvendo um caso real.', companionTools: 'Hostinger + Notion + Loom' },
-  { number: 42, title: 'Redes CPA (AffiliaXe e similares)', chapter: 5, investment: 'Zero investimento', payoutModel: 'CPA por ação qualificada', howItWorks: 'Campanhas de cadastro ou instalação com regras rígidas de origem de tráfego.', firstWeekStep: 'Estude termos de aprovação antes de enviar tráfego.', companionTools: 'Landing page própria' },
-  { number: 43, title: 'Monetização de Atenção Web (Buy Me a Coffee / Brave)', chapter: 5, investment: 'Zero investimento', payoutModel: 'Apoios e tokens', howItWorks: 'Sustente ferramentas gratuitas, textos técnicos e portais úteis com apoio voluntário.', firstWeekStep: 'Explique com transparência o valor gratuito entregue ao leitor.', companionTools: 'Portal próprio + BuyMeACoffee' },
-  { number: 44, title: 'Honeygain / Repocket / Pawns.app — Banda Ociosa', chapter: 5, investment: 'Zero investimento', payoutModel: 'US$ 5 a US$ 25/mês', howItWorks: 'Aplicativos de rede em segundo plano em dispositivos pessoais não corporativos.', firstWeekStep: 'Use apenas em equipamento próprio verificando consumo de dados.', companionTools: 'Nobreak / Roteador controlado' },
-  { number: 45, title: 'SideShift e Ecossistema Cripto (Educação e Uso Cauteloso)', chapter: 5, investment: 'Zero investimento', payoutModel: 'Comissão / taxa variável', howItWorks: 'Referência técnica apenas para quem domina autocustódia e gestão de risco.', firstWeekStep: 'Nunca arrisque capital essencial; estude segurança digital primeiro.', companionTools: 'Hardware Wallet' },
-  { number: 46, title: 'Amazon KDP — E-books e Livros Físicos Sob Demanda', chapter: 6, investment: 'Zero investimento', payoutModel: '35% a 70% royalties', howItWorks: 'Publique guias práticos em Kindle e versão impressa 6x9" sem estoque em casa.', firstWeekStep: 'Diagramar miolo limpo e validar capa em tamanho miniatura.', companionTools: 'Canva + Wise + Associados Amazon' },
-  { number: 47, title: 'Loja de Templates e Produtos Digitais (Gumroad / Etsy)', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'R$ 200 a R$ 2.000+/mês', howItWorks: 'Venda planilhas, sistemas no Notion, planners e packs editáveis com entrega automática.', firstWeekStep: 'Mostre 3 capturas reais e vídeo curto de 30s provando utilidade.', companionTools: 'Notion + Canva + Hostinger' },
-  { number: 48, title: 'Comunidades Pagas e Microcursos (Skool / Systeme.io)', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'Recorrência mensal', howItWorks: 'Grupos estruturados com desafios semanais, biblioteca e suporte contínuo.', firstWeekStep: 'Valide o tema gratuito com 10 membros antes de abrir assinatura.', companionTools: 'Systeme.io + Stripe' },
-  { number: 49, title: 'Print on Demand (Montink Brasil / Printful Global)', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'Margem por peça', howItWorks: 'Estampas autorais para nichos específicos produzidas apenas após venda confirmada.', firstWeekStep: 'Crie 5 estampas limpas 300 DPI para uma comunidade nichada.', companionTools: 'Canva Pro + Wise + Shopify' },
-  { number: 50, title: 'Produção de Vídeos e Avatares com IA para Empresas', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'R$ 400 a R$ 3.000+ / projeto', howItWorks: 'Vídeos explicativos, onboarding de funcionários e anúncios curtos sem estúdio físico.', firstWeekStep: 'Monte 2 vídeos demonstrativos curtos com locução limpa.', companionTools: 'HeyGen + ElevenLabs + Runway' },
-  { number: 51, title: 'Automação e Assistentes de IA para Negócios Locais', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'R$ 800 a R$ 4.000+ / projeto', howItWorks: 'Fluxos automáticos ligando WhatsApp, planilhas e agenda de clínicas ou oficinas.', firstWeekStep: 'Construa 1 demo funcional e apresente pessoalmente a 5 negócios.', companionTools: 'Make + Hostinger VPS + OpenAI' },
-  { number: 52, title: 'Gestão de Tráfego Pago Local (Google Ads / Meta Ads)', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'R$ 600 a R$ 2.000/mês por cliente', howItWorks: 'Campanhas geolocalizadas focadas em ligações e mensagens de orçamento.', firstWeekStep: 'Otimize primeiro o Google Perfil da Empresa de 1 parceiro local.', companionTools: 'Hostinger + Metricool + Canva' },
-  { number: 53, title: 'Walmart Marketplace (Revenda e Arbitragem nos EUA)', chapter: 6, investment: 'Com investimento inicial', payoutModel: 'Margem líquida em US$', howItWorks: 'Revenda autorizada de produtos com demanda comprovada usando logística WFS.', firstWeekStep: 'Calcule todas as taxas, frete e devolução antes da compra inicial.', companionTools: 'Payoneer + Planilha Raio-X' },
-];
+function normalizeStringArray(value: string[] | string | null | undefined): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (typeof value === 'string' && value.trim()) {
+    try {
+      const parsed: unknown = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item).trim()).filter(Boolean);
+      }
+    } catch {
+      return [value.trim()];
+    }
+  }
+  return [];
+}
 
-function buildSharedStyles(isPrint: boolean): string {
-  if (!isPrint) {
-    return `
-      body { font-family: Georgia, serif; line-height: 1.65; color: #111827; max-width: 720px; margin: 0 auto; padding: 24px; }
-      h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; color: #0f172a; }
-      h1 { font-size: 2.2em; margin-bottom: 0.4em; }
-      h2 { font-size: 1.5em; margin-top: 2em; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; page-break-before: always; }
-      .entry { margin: 1.4em 0; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 6px; page-break-inside: avoid; }
-      .meta { font-size: 0.85em; color: #475569; margin-bottom: 6px; font-family: Arial, sans-serif; }
-    `;
+function buildMetadataGuide(stats: {
+  wordCountKindle: number;
+  wordCountPrint: number;
+  programCount: number;
+  profileCount: number;
+  pageCount: number;
+  spineInches: number;
+  wrapWidthInches: number;
+  wrapHeightInches: number;
+}): string {
+  return [
+    '# Guia de Metadados e Publicação na Amazon KDP — Edição Completa Portal NKL',
+    '',
+    'Todos os arquivos finais desta pasta estão prontos para upload direto na Amazon KDP (eBook Kindle e Livro Físico Paperback 6x9").',
+    '',
+    '## Arquivos Prontos em `private-assets/amazon-book/`',
+    '- **eBook Digital (Kindle / KDP):** `57-formas-renda-extra-kindle.epub` (padrão EPUB 3.0 + NCX, capa embutida)',
+    '- **Capa do eBook Kindle:** `capa-kindle-1600x2560.jpg` (1600x2560 px RGB JPEG)',
+    '- **Prévia HTML do eBook:** `57-formas-renda-extra-kindle.html` (conferência visual rápida no navegador)',
+    `- **Miolo do Livro Físico (Paperback 6x9"):** \`57-formas-renda-extra-paperback-6x9.pdf\` (${stats.pageCount} páginas, margens espelhadas com gutter KDP e fichas pautadas para preenchimento à caneta)`,
+    `- **Capa Completa do Livro Físico (Frente + Lombada + Verso):** \`capa-paperback-6x9-completa.pdf\` (${stats.wrapWidthInches}" x ${stats.wrapHeightInches}" com sangria de 0.125", lombada exata de ${stats.spineInches}" para papel branco e reserva de código de barras ISBN)`,
+    '',
+    '## Estatísticas da Edição Gerada',
+    `- **Palavras (Versão Digital / Kindle):** ${stats.wordCountKindle.toLocaleString('pt-BR')}`,
+    `- **Palavras (Versão Física 6x9"):** ${stats.wordCountPrint.toLocaleString('pt-BR')}`,
+    `- **Oportunidades com Dossiê Completo:** ${stats.programCount}`,
+    `- **Modelos da Bússola de Negócios:** ${stats.profileCount}`,
+    '- **Prompts de IA Prontos:** 25 (Capítulo 11) + prompts por categoria (Capítulos 4–9)',
+    '',
+    '## Campos para Preencher no Painel Amazon KDP',
+    '- **Idioma:** Português',
+    `- **Título do Livro:** ${BOOK_TITLE}`,
+    `- **Subtítulo:** ${BOOK_SUBTITLE}`,
+    `- **Autor:** ${BOOK_AUTHOR}`,
+    `- **Editora / Selo (Publisher):** ${BOOK_PUBLISHER}`,
+    '',
+    '### Descrição / Sinopse (HTML pronto para colar no KDP)',
+    '```html',
+    '<p><strong>Muito além de uma lista de links: um manual completo de execução para gerar renda extra com critérios reais e evoluir até um negócio próprio.</strong></p>',
+    '<p>Este livro reúne o método completo do <b>Portal NKL</b> em uma edição extensa, prática e sem promessas milagrosas. Em vez de dicas genéricas, você recebe o passo a passo matemático, financeiro, antifraude e operacional para testar oportunidades reais de ganho em reais, dólar e euro.</p>',
+    '<ul>',
+    `<li><b>Matemática da Hora Líquida & Infraestrutura Brasil:</b> contas globais (Wise/Payoneer), redução de spread, segurança digital e organização fiscal (Carnê-Leão e MEI).</li>`,
+    '<li><b>Método de Validação em 14 Dias e Escudo Anti-Golpe:</b> 12 sinais objetivos para evitar armadilhas e matriz prática para decidir entre parar, ajustar ou escalar.</li>',
+    `<li><b>Enciclopédia com ${stats.programCount} Dossiês Verificados:</b> como funciona, roteiro do primeiro saque (dias 1 a 14), pontos fortes vs. cuidados, erros que geram reprovação/banimento e ferramentas de apoio em IA, QA/UX, UGC, freelancing, afiliados, KDP e modelos com investimento.</li>`,
+    `<li><b>Do Extra ao Negócio Próprio:</b> os ${stats.profileCount} modelos da Bússola com oferta em 3 opções + biblioteca com 25 prompts de IA + roteiro de inglês funcional + plano de 30, 60 e 90 dias.</li>`,
+    '</ul>',
+    '<p><em>Na edição impressa, cada capítulo conta ainda com diários de campo e planilhas pautadas para registro diário à caneta.</em></p>',
+    '```',
+    '',
+    '### 7 Palavras-Chave KDP (máximo 50 caracteres cada)',
+    '1. `renda extra online trabalho remoto brasil`',
+    '2. `ganhar dinheiro internet inteligencia artificial`',
+    '3. `testes aplicativos ux freelance em dolar`',
+    '4. `negocios digitais renda extra investimento zero`',
+    '5. `marketing afiliados ugc criacao conteudo`',
+    '6. `independencia financeira trabalho em casa guia`',
+    '7. `prompts ia produtividade negocios locais`',
+    '',
+    '### 3 Categorias Recomendadas na Amazon',
+    '1. `Negócios e Economia > Empreendedorismo`',
+    '2. `Negócios e Economia > Finanças Pessoais > Renda e Orçamento`',
+    '3. `Informática e Tecnologia > Internet > Trabalho Remoto e Carreira Digital`',
+    '',
+    '### Sugestão de Preços e Royalties',
+    '- **eBook Kindle (Amazon.com.br):** R$ 24,90 a R$ 34,90 (faixa de 70% de royalties via KDP Select/Brasil; ou US$ 5.99 a US$ 7.99 global).',
+    '- **Livro Físico Paperback 6x9" (Amazon.com / Global):** Papel Branco, Tinta Preto e Branco padrão, Capa Fosca (Matte), Sem Sangria (No Bleed) para o miolo e Capa Completa em PDF enviada acima (sugestão: US$ 14.99 a US$ 19.99 conforme custo de impressão calculado pelo KDP).',
+    '',
+    '### Passo a Passo de Upload na KDP',
+    '1. Acesse `https://kdp.amazon.com` -> **Criar** -> **eBook Kindle**.',
+    '2. Cole título, subtítulo, sinopse, 7 palavras-chave e categorias acima.',
+    '3. Em **Conteúdo do eBook Kindle**, faça upload de `57-formas-renda-extra-kindle.epub` e da capa `capa-kindle-1600x2560.jpg`, e confira no **Pré-visualizador do Kindle** online.',
+    '4. Após publicar o eBook, clique em **Criar livro com capa comum (Paperback)** vinculado ao mesmo título.',
+    '5. Selecione: **Papel branco**, tamanho de corte **6 x 9 pol.**, **Sem sangria** no miolo -> faça upload de `57-formas-renda-extra-paperback-6x9.pdf`.',
+    '6. Na capa, escolha **Carregar uma capa que você já tem (PDF pronto para impressão)** -> faça upload de `capa-paperback-6x9-completa.pdf` (a caixa branca de código de barras já está reservada na contracapa).',
+    '',
+  ].join('\n');
+}
+
+async function loadDataFromDatabase(): Promise<{
+  programs: BookProgramRow[];
+  profiles: BookBusinessProfileRow[];
+}> {
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL nao configurada em .env.local.');
   }
 
-  return `
-    @page { size: 6in 9in; margin: 0.75in 0.65in 0.8in 0.75in; }
-    body { font-family: Georgia, serif; font-size: 10.5pt; line-height: 1.5; color: #111111; margin: 0; }
-    h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; color: #000000; }
-    .cover { page-break-after: always; padding-top: 1.6in; text-align: center; }
-    .cover h1 { font-size: 24pt; margin-bottom: 12pt; }
-    .cover p { font-size: 12pt; color: #333333; max-width: 4in; margin: 0 auto 10pt; }
-    .toc { page-break-after: always; }
-    h2 { font-size: 15pt; margin-top: 0; border-bottom: 1pt solid #000000; padding-bottom: 4pt; page-break-before: always; }
-    .entry { margin: 12pt 0; padding: 8pt 10pt; border: 0.6pt solid #94a3b8; page-break-inside: avoid; }
-    .entry h3 { font-size: 11.5pt; margin: 0 0 4pt; }
-    .meta { font-size: 8.5pt; color: #334155; margin-bottom: 5pt; font-family: Arial, sans-serif; }
-    p { margin: 3pt 0; }
-  `;
-}
+  const sql = postgres(databaseUrl, {
+    ssl: databaseUrl.includes('localhost') ? undefined : 'require',
+    max: 1,
+    idle_timeout: 15,
+  });
 
-function buildBookHtml(mode: 'kindle' | 'print'): string {
-  const isPrint = mode === 'print';
-  const tocItems = CHAPTERS.map(
-    (ch) => `<li><strong>Capítulo ${ch.number}: ${ch.title}</strong> — ${ch.subtitle}</li>`,
-  ).join('\n');
-
-  const chaptersHtml = CHAPTERS.map((ch) => {
-    const items = ENTRIES.filter((entry) => entry.chapter === ch.number);
-    const itemsHtml = items
-      .map(
-        (entry) => `
-      <article class="entry">
-        <h3>${String(entry.number).padStart(2, '0')}. ${entry.title}</h3>
-        <div class="meta"><strong>Modelo:</strong> ${entry.investment} | <strong>Retorno:</strong> ${entry.payoutModel}</div>
-        <p><strong>Como funciona:</strong> ${entry.howItWorks}</p>
-        <p><strong>Primeiro passo em 7 dias:</strong> ${entry.firstWeekStep}</p>
-        <p><strong>Ferramentas de apoio sugeridas:</strong> ${entry.companionTools}</p>
-      </article>`,
-      )
-      .join('\n');
-
-    return `
-      <section>
-        <h2>Capítulo ${ch.number}: ${ch.title}</h2>
-        <p><em>${ch.subtitle}</em></p>
-        ${itemsHtml}
-      </section>
+  try {
+    const rawPrograms = await sql<RawProgramDbRow[]>`
+      SELECT
+        slug,
+        name,
+        category,
+        difficulty,
+        short_description,
+        long_description,
+        tags,
+        website_url,
+        affiliate_url,
+        editorial_rating,
+        editorial_source,
+        pros,
+        cons,
+        requirements,
+        payment_methods,
+        earning_potential,
+        zero_investment_required
+      FROM partner_programs
+      WHERE status = 'published'
+      ORDER BY name ASC
     `;
-  }).join('\n');
 
-  return `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <title>50+ Formas Reais de Construir Renda Extra — Portal NKL</title>
-  <style>${buildSharedStyles(isPrint)}</style>
-</head>
-<body>
-  <div class="cover">
-    <p>PORTAL NKL · EDIÇÃO COMPLETA (${isPrint ? 'VERSÃO IMPRESSA 6x9"' : 'VERSÃO KINDLE E-BOOK'})</p>
-    <h1>50+ Formas Reais de Construir Renda Extra</h1>
-    <p>Critérios práticos, plataformas sem custo inicial, negócios com investimento e ferramentas recomendadas sem promessas irreais.</p>
-    <p>Curadoria NKL_OFICIAL · Portal NKL (nkloficial.com.br)</p>
-  </div>
+    const rawProfiles = await sql<RawBusinessProfileDbRow[]>`
+      SELECT id, name, min_capital, min_time_hours, tech_level, risk_level
+      FROM business_profiles
+      ORDER BY min_capital::numeric ASC, name ASC
+    `;
 
-  <div class="toc">
-    <h3>Sumário</h3>
-    <ol>${tocItems}</ol>
-    <p><strong>Nota editorial:</strong> Nenhuma plataforma ou modelo citado garante aprovação ou renda fixa. Trate cada frente como teste de 7 a 14 dias registrando horas reais e retorno líquido.</p>
-  </div>
+    const programs: BookProgramRow[] = rawPrograms.map((row) => ({
+      slug: row.slug,
+      name: row.name,
+      category: row.category,
+      difficulty: row.difficulty,
+      shortDescription: row.short_description,
+      longDescription: row.long_description,
+      tags: normalizeStringArray(row.tags),
+      websiteUrl: row.website_url,
+      affiliateUrl: row.affiliate_url,
+      editorialRating: Number(row.editorial_rating) || 0,
+      editorialSource: row.editorial_source,
+      pros: normalizeStringArray(row.pros),
+      cons: normalizeStringArray(row.cons),
+      requirements: normalizeStringArray(row.requirements),
+      paymentMethods: normalizeStringArray(row.payment_methods),
+      earningPotential: row.earning_potential,
+      zeroInvestmentRequired: Boolean(row.zero_investment_required),
+    }));
 
-  ${chaptersHtml}
+    const profiles: BookBusinessProfileRow[] = rawProfiles.map((row) => ({
+      id: row.id,
+      name: row.name,
+      minCapital: String(row.min_capital),
+      minTimeHours: Number(row.min_time_hours) || 0,
+      techLevel: row.tech_level,
+      riskLevel: row.risk_level,
+    }));
 
-  <section>
-    <h2>Checklist Final: Evitando Reprovações e Golpes</h2>
-    <ol>
-      <li>Nunca pague taxa antecipada para liberar saque em plataformas de microtarefas ou pesquisas.</li>
-      <li>Separe contas de recebimento em dólar/euro (Wise/Payoneer) antes de trabalhar para fora.</li>
-      <li>Registre tempo efetivo por tarefa durante 14 dias: ganho bruto sem contar horas mascara retorno baixo.</li>
-      <li>Comece por 1 frente de investimento zero antes de migrar parte do lucro para modelos com capital inicial.</li>
-    </ol>
-  </section>
-</body>
-</html>`;
+    return { programs, profiles };
+  } finally {
+    await sql.end();
+  }
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const outDir = path.join(process.cwd(), 'private-assets', 'amazon-book');
   mkdirSync(outDir, { recursive: true });
 
-  const kindlePath = path.join(outDir, '50-formas-renda-extra-kindle.html');
-  const printPath = path.join(outDir, '50-formas-renda-extra-impresso-6x9.html');
+  const { programs, profiles } = await loadDataFromDatabase();
+  const chapters = [
+    ...buildFoundationChapters(),
+    ...buildEncyclopediaChapters(programs),
+    ...buildScaleChapters(profiles),
+  ];
 
-  const kindleHtml = buildBookHtml('kindle');
-  const printHtml = buildBookHtml('print');
+  const payload: GeneratedBookPayload = {
+    title: BOOK_TITLE,
+    subtitle: BOOK_SUBTITLE,
+    author: BOOK_AUTHOR,
+    publisher: BOOK_PUBLISHER,
+    siteUrl: SITE_URL,
+    chapters,
+  };
 
-  writeFileSync(kindlePath, kindleHtml, 'utf8');
-  writeFileSync(printPath, printHtml, 'utf8');
+  const wordCountKindle = chapters.reduce(
+    (sum, chapter) => sum + countHtmlWords(chapter.htmlKindle),
+    0,
+  );
+  const wordCountPrint = chapters.reduce(
+    (sum, chapter) => sum + countHtmlWords(chapter.htmlPrint),
+    0,
+  );
+
+  const kindleCoverPath = path.join(outDir, 'capa-kindle-1600x2560.jpg');
+  const epubPath = path.join(outDir, '57-formas-renda-extra-kindle.epub');
+  const kindleHtmlPath = path.join(outDir, '57-formas-renda-extra-kindle.html');
+  const printHtmlPath = path.join(outDir, '57-formas-renda-extra-paperback-6x9.html');
+  const printPdfPath = path.join(outDir, '57-formas-renda-extra-paperback-6x9.pdf');
+  const printCoverPdfPath = path.join(outDir, 'capa-paperback-6x9-completa.pdf');
+  const metadataPath = path.join(outDir, 'KDP-METADADOS-E-PUBLICACAO.md');
+
+  const coverJpg = await renderKindleCoverJpg(BOOK_TITLE, BOOK_SUBTITLE, kindleCoverPath);
+  const epubResult = await buildKindleEpub(payload, coverJpg, epubPath, kindleHtmlPath);
+  const printResult = await renderPaperbackInteriorPdf(payload, printHtmlPath, printPdfPath);
+  const wrapCoverResult = await renderPaperbackFullWrapCoverPdf(
+    printResult.pageCount,
+    BOOK_TITLE,
+    BOOK_SUBTITLE,
+    printCoverPdfPath,
+  );
+
+  const metadataGuide = buildMetadataGuide({
+    wordCountKindle,
+    wordCountPrint,
+    programCount: programs.length,
+    profileCount: profiles.length,
+    pageCount: printResult.pageCount,
+    spineInches: wrapCoverResult.spineInches,
+    wrapWidthInches: wrapCoverResult.widthInches,
+    wrapHeightInches: wrapCoverResult.heightInches,
+  });
+  writeFileSync(metadataPath, metadataGuide, 'utf8');
 
   console.log(
     JSON.stringify({
-      entriesCount: ENTRIES.length,
-      chaptersCount: CHAPTERS.length,
-      kindleBytes: Buffer.byteLength(kindleHtml, 'utf8'),
-      printBytes: Buffer.byteLength(printHtml, 'utf8'),
-      outDir: 'private-assets/amazon-book',
+      programsCount: programs.length,
+      profilesCount: profiles.length,
+      chaptersCount: chapters.length,
+      wordCountKindle,
+      wordCountPrint,
+      kindleCoverBytes: coverJpg.byteLength,
+      epubBytes: epubResult.epubBytes,
+      kindleHtmlBytes: epubResult.htmlBytes,
+      paperbackPages: printResult.pageCount,
+      paperbackPdfBytes: printResult.bytes,
+      wrapCoverInches: `${wrapCoverResult.widthInches}x${wrapCoverResult.heightInches}`,
+      spineInches: wrapCoverResult.spineInches,
+      wrapCoverPdfBytes: wrapCoverResult.bytes,
     }),
   );
 }
 
-main();
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error('AMAZON_BOOK_BUILD_FAILED:', message);
+  process.exit(1);
+});

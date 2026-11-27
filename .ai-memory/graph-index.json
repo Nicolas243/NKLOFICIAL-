@@ -18,7 +18,7 @@
         "Foco Atual",
         "Pendencias Somente Manuais do Usuario (Contas Externas)"
       ],
-      "excerpt": "- **Correção Layout Cards `/programas` (2026-11-27):** removida a coluna lateral `shrink-0` no cabeçalho dos cards em `PartnerProgramsBrowser` e `EditorialCardView` (que espremia títulos com pílulas longas ao lado do ...",
+      "excerpt": "- **Livro Completo Amazon KDP Digital + Físico Gerado e Validado (2026-11-27):** - Pipeline modular `scripts/amazon-book/` (`types.ts`, `chapters-foundation.ts`, `dossier-enricher.ts`, `chapters-scale.ts`, `epub-build...",
       "outgoing": [],
       "incoming": [
         "decisionsLog",
@@ -39,6 +39,7 @@
       ],
       "headings": [
         "Decisions Log - ADRs Concisos",
+        "ADR-026 (2026-11-27) Gerador Modular Amazon KDP Flagship (EPUB 3.0 + Paperback 6x9\" PDF + Capa Lombada Exata)",
         "ADR-025 (2026-11-26) Cloudflare Email Routing Live, Perfil Modular (0052), Bússola/Stripe Cancel URL & Alinhamento Não Monotônico em 6 Idiomas",
         "ADR-024 (2026-11-26) Cutover Live Stripe nkloficial (acct_1UcBBKI4kUNNokuF) & Organização .env.local",
         "ADR-023 (2026-11-26) 3 Faixas de Preço Universais + Provisionamento Idempotente de 12 Produtos / 33 Preços no Stripe",
@@ -65,7 +66,7 @@
         "ADR-002 (2026-11-19) MCP local 9router desacoplado do Cline",
         "ADR-001 Stripe como autoridade de pagamento"
       ],
-      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: ativar Cloudflare Email Routing (`MX`/`S...",
+      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: construir `scripts/amazon-book/*` + `scr...",
       "outgoing": [
         "activeContext",
         "projectBrief",
@@ -202,15 +203,15 @@
     "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON": {
       "id": "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "path": "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md",
-      "title": "Blueprint do Livro Amazon KDP: 50 Formas Práticas de Construir Renda Extra",
+      "title": "Blueprint do Livro Amazon KDP: 57 Formas Práticas de Construir Renda Extra",
       "updated": null,
       "tags": [],
       "headings": [
-        "Blueprint do Livro Amazon KDP: 50 Formas Práticas de Construir Renda Extra",
-        "Estrutura Editorial do Livro (50+ Formas Reais em 7 Capítulos)",
-        "Como Gerar Novamente e Publicar na Amazon KDP"
+        "Blueprint do Livro Amazon KDP: 57 Formas Práticas de Construir Renda Extra",
+        "Estrutura Editorial (12 Capítulos + Apêndice em 3 Partes)",
+        "Como Gerar e Arquivos Produzidos"
       ],
-      "excerpt": "Este documento estrutura a edição completa do livro **Portal NKL** para publicação simultânea na **Amazon KDP** em dois formatos gerados pelo script [build-amazon-book.ts](../scripts/build-amazon-book.ts): 1. **Edição...",
+      "excerpt": "Este documento descreve o gerador modular e os artefatos completos do livro **Portal NKL** para publicação simultânea na **Amazon KDP** em formato **Digital (Kindle EPUB 3.0)** e **Físico (Paperback 6x9\" com miolo PDF...",
       "outgoing": [],
       "incoming": [
         "docs/CHECKLIST-MESTRE-NKL"
@@ -1793,7 +1794,6 @@
       "docs/setup"
     ],
     "2027": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design",
@@ -1804,6 +1804,11 @@
       "docs/setup",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
+    ],
+    "3918": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
     ],
     "4000": [
       "progress"
@@ -1985,7 +1990,6 @@
       "decisionsLog"
     ],
     "0052_profile_modes": [
-      "activeContext",
       "decisionsLog",
       "progress"
     ],
@@ -2024,6 +2028,10 @@
     ],
     "138kb": [
       "docs/estado_atual"
+    ],
+    "1600x2560": [
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "16px": [
       "docs/quality",
@@ -2201,13 +2209,13 @@
       "progress"
     ],
     "2026-11-26": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "progress"
     ],
     "2026-11-27": [
       "activeContext",
+      "decisionsLog",
       "progress"
     ],
     "21b71b68679c11184f49c23168852014bf6dde8b": [
@@ -2279,15 +2287,25 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "50-formas-renda-extra-impresso-6x9": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "50-formas-renda-extra-kindle": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "512x512": [
       "docs/ROADMAP-DEPLOY"
+    ],
+    "57-formas-renda-extra-kindle": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
+    ],
+    "57-formas-renda-extra-paperback-6x9": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "5mb": [
       "docs/estado_atual"
@@ -2305,9 +2323,11 @@
       "docs/PADRAO-CARDS-IA"
     ],
     "6x9": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "7-35": [
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
@@ -2348,7 +2368,6 @@
       "docs/architecture"
     ],
     "a9a32df7401d381a84426bfc7d9bb338": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "progress"
     ],
@@ -2361,7 +2380,6 @@
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
     ],
     "abaixo": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -2455,7 +2473,6 @@
     ],
     "abra": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/onboarding",
       "docs/setup"
     ],
@@ -2592,7 +2609,6 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
     "acao": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -3377,6 +3393,9 @@
     "adr-025": [
       "decisionsLog"
     ],
+    "adr-026": [
+      "decisionsLog"
+    ],
     "adrs": [
       "decisionsLog"
     ],
@@ -3500,6 +3519,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "afiliados": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -3695,7 +3715,6 @@
     ],
     "ai": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "ai-context": [
@@ -3790,6 +3809,7 @@
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
     ],
     "ajustar": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
     "ajustaria": [
@@ -3886,6 +3906,9 @@
     "alimentada": [
       "projectBrief"
     ],
+    "alimentado": [
+      "progress"
+    ],
     "alimentar": [
       "docs/CHECKLIST-OFFLINE-NKL"
     ],
@@ -3920,7 +3943,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "alligner": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/architecture",
       "docs/quality"
@@ -4105,6 +4127,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "amazon": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -4116,9 +4139,12 @@
       "progress"
     ],
     "amazon-book": [
+      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "amazon-influencer": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
@@ -4383,7 +4409,6 @@
       "docs/specs/portal-nkl-base-home/tasks"
     ],
     "antes": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
@@ -4416,6 +4441,9 @@
       "systemPatterns",
       "techContext"
     ],
+    "anti-golpe": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "anti-objetivos": [
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
@@ -4424,7 +4452,6 @@
       "progress"
     ],
     "anti-reprovacao": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "anti-sandbox": [
@@ -4515,6 +4542,7 @@
     ],
     "anuncios": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
@@ -4638,6 +4666,9 @@
       "projectBrief",
       "systemPatterns"
     ],
+    "apendice": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "apertados": [
       "decisionsLog"
     ],
@@ -4717,6 +4748,7 @@
       "progress"
     ],
     "aplicado": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -4795,6 +4827,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "apoio": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/specs/portal-nkl-base-home/design",
@@ -4866,7 +4899,6 @@
     "app": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -4924,11 +4956,9 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "apphub": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "appinstalled": [
-      "activeContext",
       "docs/quality",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "progress"
@@ -5136,9 +5166,6 @@
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
-    "arbitragem": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
-    ],
     "arbitrario": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
@@ -5325,6 +5352,7 @@
     "arquivos": [
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/architecture",
@@ -5372,6 +5400,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "artefatos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/spec-driven-workflow",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
@@ -5564,7 +5593,6 @@
     ],
     "associados": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA"
     ],
@@ -5658,7 +5686,6 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "ativa": [
-      "activeContext",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -5808,7 +5835,6 @@
       "docs/CHECKLIST-MESTRE-NKL"
     ],
     "attapoll": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/setup",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -5927,6 +5953,7 @@
     "audio": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM"
     ],
     "audios": [
@@ -5944,7 +5971,6 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "auditoria": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -5962,7 +5988,6 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/site-flow-and-upload-checklist",
@@ -6166,7 +6191,6 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "auto-ativacao": [
-      "activeContext",
       "decisionsLog"
     ],
     "auto-hide": [
@@ -6177,7 +6201,6 @@
     ],
     "automacao": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -6198,6 +6221,7 @@
     ],
     "automatica": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/setup",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
@@ -6213,6 +6237,7 @@
     "automaticamente": [
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -6537,6 +6562,9 @@
     "bandeja": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
+    "banimento": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "banner": [
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
@@ -6629,7 +6657,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "basico": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY"
     ],
@@ -6776,6 +6803,7 @@
       "decisionsLog"
     ],
     "biblioteca": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -6792,7 +6820,6 @@
       "docs/mcp-catalog"
     ],
     "bilibili": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
@@ -6806,7 +6833,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "billo": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "binary": [
@@ -6823,7 +6849,6 @@
       "decisionsLog"
     ],
     "birth_date": [
-      "activeContext",
       "decisionsLog",
       "progress"
     ],
@@ -6835,6 +6860,9 @@
       "docs/architecture",
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
+    ],
+    "blindagem": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "block": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -6949,7 +6977,6 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "boa-fe": [
-      "activeContext",
       "progress"
     ],
     "boas-vindas": [
@@ -6970,7 +6997,11 @@
       "docs/CHECKLIST-MESTRE-NKL"
     ],
     "book": [
-      "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "docs/superpowers/plans/2026-11-11-rifa-livros-campaign",
+      "progress"
     ],
     "booking": [
       "docs/site-flow-and-upload-checklist",
@@ -7020,7 +7051,6 @@
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
     "botao": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -7094,13 +7124,12 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "bounties": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "br": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
@@ -7129,6 +7158,7 @@
     ],
     "brasil": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
@@ -7156,7 +7186,6 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "breve": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -7235,7 +7264,6 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
     "bug": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual"
     ],
     "build": [
@@ -7272,8 +7300,8 @@
       "techContext"
     ],
     "build-amazon-book": [
+      "activeContext",
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "progress"
     ],
     "builder": [
@@ -7361,8 +7389,9 @@
       "progress"
     ],
     "bussola": [
-      "activeContext",
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "progress"
     ],
@@ -7443,7 +7472,6 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
     "cabecalho": [
-      "activeContext",
       "docs/estado_atual",
       "docs/quality",
       "docs/site-flow-and-upload-checklist",
@@ -7456,8 +7484,7 @@
       "progress"
     ],
     "cabecalhos": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "cabendo": [
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM"
@@ -7477,10 +7504,10 @@
       "docs/estado_atual"
     ],
     "cada": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
@@ -7541,7 +7568,11 @@
       "docs/CHECKLIST-MESTRE-NKL"
     ],
     "caderno": [
-      "docs/CHECKLIST-OFFLINE-NKL"
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "caem": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
@@ -7554,7 +7585,6 @@
       "docs/architecture"
     ],
     "cair": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
@@ -7562,6 +7592,7 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "caixa": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt"
@@ -7615,8 +7646,7 @@
       "progress"
     ],
     "calibre": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "call": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -7756,7 +7786,6 @@
       "docs/setup"
     ],
     "canal": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/estado_atual",
       "docs/quality",
@@ -7773,7 +7802,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "cancel_url": [
-      "activeContext",
       "decisionsLog",
       "progress"
     ],
@@ -7897,11 +7925,26 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "capa": [
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design"
+    ],
+    "capa-kindle-1600x2560": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
+    ],
+    "capa-paperback-6x9-completa": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "capabilities": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
@@ -7934,6 +7977,7 @@
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "capitulos": [
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "caps": [
@@ -8029,6 +8073,9 @@
     ],
     "carga": [
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
+    ],
+    "carne-leao": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "caro": [
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM"
@@ -8137,6 +8184,9 @@
       "projectBrief",
       "systemPatterns",
       "techContext"
+    ],
+    "catalogos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "catch": [
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability"
@@ -8373,6 +8423,12 @@
       "docs/setup",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
+    "chapters-foundation": [
+      "activeContext"
+    ],
+    "chapters-scale": [
+      "activeContext"
+    ],
     "charges_enabled": [
       "docs/CHECKLIST-MESTRE-NKL"
     ],
@@ -8452,7 +8508,6 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -8485,7 +8540,6 @@
       "docs/ai-product-spec"
     ],
     "checkout": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -8577,7 +8631,6 @@
       "projectBrief"
     ],
     "chips": [
-      "activeContext",
       "progress"
     ],
     "choice": [
@@ -8604,7 +8657,6 @@
     "chrome": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/mcp-catalog",
       "docs/quality",
       "docs/setup"
@@ -8742,7 +8794,6 @@
     ],
     "claru": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "claru-ia": [
@@ -8833,7 +8884,6 @@
       "docs/design"
     ],
     "clicavel": [
-      "activeContext",
       "docs/specs/portal-nkl-base-home/design",
       "progress"
     ],
@@ -8866,7 +8916,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "clickworker": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "client": [
@@ -8899,6 +8948,7 @@
     ],
     "cliente": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/setup",
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets",
@@ -9240,7 +9290,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "coluna": [
-      "activeContext",
       "docs/specs/portal-nkl-base-home/design",
       "progress"
     ],
@@ -9330,6 +9379,7 @@
     ],
     "comercial": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/portal-area-registry",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -9440,7 +9490,6 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "compacto": [
-      "activeContext",
       "docs/specs/portal-nkl-base-home/prd",
       "docs/specs/portal-nkl-base-home/spec",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design",
@@ -9459,6 +9508,7 @@
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
     ],
     "comparacao": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/architecture",
       "docs/quality",
@@ -9593,6 +9643,7 @@
       "docs/toolkit-setup"
     ],
     "complementar": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY"
     ],
@@ -9604,7 +9655,9 @@
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
     ],
     "completa": [
+      "activeContext",
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/quality",
@@ -9665,8 +9718,10 @@
       "techContext"
     ],
     "completo": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
@@ -9684,6 +9739,7 @@
       "techContext"
     ],
     "completos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/quality",
       "docs/setup"
@@ -9884,7 +9940,6 @@
     ],
     "comunidades": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
@@ -10436,6 +10491,9 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
+    "conquista": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "cons": [
       "docs/PADRAO-CARDS-IA"
     ],
@@ -10637,6 +10695,7 @@
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
     "construir": [
+      "decisionsLog",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -10854,7 +10913,6 @@
       "systemPatterns"
     ],
     "contato": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
@@ -11082,6 +11140,9 @@
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design",
       "progress"
     ],
+    "contracapa": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "contract": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
@@ -11166,7 +11227,6 @@
     ],
     "controle": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
@@ -11217,6 +11277,7 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "conversao": [
+      "decisionsLog",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
@@ -11248,9 +11309,6 @@
     ],
     "convert": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra"
-    ],
-    "converta": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "converte": [
       "docs/ROADMAP-DEPLOY"
@@ -11462,7 +11520,6 @@
       "decisionsLog"
     ],
     "correcao": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -11549,6 +11606,7 @@
       "progress"
     ],
     "corrigidos": [
+      "activeContext",
       "progress"
     ],
     "corrigindo": [
@@ -11580,7 +11638,6 @@
     "cortes": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -11660,9 +11717,11 @@
       "docs/superpowers/plans/2026-11-10-login-profile-recovery",
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
+    "covers-and-pdf": [
+      "activeContext"
+    ],
     "cpa": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "cpf": [
@@ -11804,7 +11863,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "creator": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/estado_atual"
     ],
@@ -12078,7 +12136,6 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "crowtado": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "cruzadas": [
@@ -12163,8 +12220,7 @@
       "progress"
     ],
     "ctrl": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "cubra": [
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
@@ -12174,6 +12230,7 @@
       "docs/estado_atual"
     ],
     "cuidados": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/specs/portal-nkl-base-home/adr",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
@@ -12192,7 +12249,6 @@
     ],
     "curadoria": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/specs/portal-nkl-base-home/spec",
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
@@ -12300,6 +12356,7 @@
     ],
     "curtos": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "curvos": [
@@ -12320,7 +12377,6 @@
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
     ],
     "custom": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
@@ -12363,7 +12419,6 @@
     ],
     "dados": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -12425,7 +12480,6 @@
     "dark": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/estado_atual",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
@@ -12491,7 +12545,6 @@
     ],
     "dataannotation": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "database": [
@@ -12695,6 +12748,9 @@
     "deduplicated": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
+    ],
+    "deel": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "deepseek": [
       "docs/setup",
@@ -13172,6 +13228,9 @@
     "desacoplar": [
       "decisionsLog"
     ],
+    "desafios": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "desalinhamentos": [
       "decisionsLog"
     ],
@@ -13266,6 +13325,9 @@
     ],
     "desconto": [
       "decisionsLog"
+    ],
+    "descreve": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "describe": [
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
@@ -13764,6 +13826,9 @@
     "diaria": [
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
+    "diario": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "dias": [
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
@@ -13786,6 +13851,7 @@
       "techContext"
     ],
     "diferenca": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "diferenciar": [
@@ -13859,7 +13925,11 @@
       "projectBrief"
     ],
     "digital": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
+      "progress",
       "projectBrief"
     ],
     "digits": [
@@ -13889,7 +13959,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "dinamico": [
-      "activeContext",
       "decisionsLog",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/estado_atual",
@@ -14082,9 +14151,6 @@
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
-    "disparo": [
-      "activeContext"
-    ],
     "displacerect": [
       "decisionsLog",
       "progress"
@@ -14248,7 +14314,6 @@
       "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design"
     ],
     "dkim": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -14464,7 +14529,6 @@
       "docs/superpowers/plans/2026-11-11-simplify-income-guide-copy"
     ],
     "dois": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/architecture",
@@ -14477,6 +14541,7 @@
     ],
     "dolar": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/architecture",
       "docs/site-flow-and-upload-checklist"
@@ -14529,6 +14594,12 @@
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
     ],
+    "dossier-enricher": [
+      "activeContext"
+    ],
+    "dossies": [
+      "docs/CHECKLIST-MESTRE-NKL"
+    ],
     "dotenv": [
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
@@ -14577,6 +14648,9 @@
     "dpl_g8gynobbqwqzx6phd9pgnjztwfnx": [
       "docs/quality"
     ],
+    "dpl_giynoqz6pa3futeqrxjhphjsxhhs": [
+      "activeContext"
+    ],
     "dpl_hzguudsdg79hcekydj2erjfjq81x": [
       "docs/CHECKLIST-MESTRE-NKL",
       "progress"
@@ -14588,7 +14662,6 @@
       "docs/estado_atual"
     ],
     "drizzle": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -14639,7 +14712,6 @@
       "docs/quality"
     ],
     "dscout": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
@@ -14902,9 +14974,7 @@
       "docs/estado_atual"
     ],
     "ebook": [
-      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/site-flow-and-upload-checklist",
@@ -14951,10 +15021,12 @@
       "progress"
     ],
     "edge": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "edicao": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ai-product-spec",
@@ -15042,7 +15114,6 @@
       "docs/PADRAO-CARDS-IA"
     ],
     "editorialcardview": [
-      "activeContext",
       "progress"
     ],
     "editorialmente": [
@@ -15152,7 +15223,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "elevenlabs": [
-      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
@@ -15359,6 +15429,9 @@
     ],
     "encerrar": [
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
+    ],
+    "enciclopedia": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "encontra": [
       "docs/ROADMAP-DEPLOY"
@@ -15636,11 +15709,11 @@
       "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "entregaveis": [
+      "activeContext",
       "decisionsLog",
       "progress"
     ],
     "entregue": [
-      "activeContext",
       "docs/ai-product-master-prompt",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
@@ -15812,8 +15885,15 @@
       "docs/CHECKLIST-MESTRE-NKL"
     ],
     "epub": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
+    ],
+    "epub-builder": [
+      "activeContext"
     ],
     "equacao": [
       "docs/engenharia-no-cotidiano-master-prompt"
@@ -15918,6 +15998,7 @@
     ],
     "erros": [
       "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/estado_atual",
@@ -15940,7 +16021,7 @@
     "escala": [
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
-    "escalavel": [
+    "escalar": [
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "escapando": [
@@ -16085,6 +16166,7 @@
       "docs/quality"
     ],
     "escudo": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
@@ -16179,7 +16261,6 @@
       "docs/design"
     ],
     "especializados": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/toolkit-setup"
     ],
     "especialmente": [
@@ -16226,6 +16307,11 @@
     "espectador": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
+    "espelhadas": [
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "espelhamento": [
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
     ],
@@ -16247,8 +16333,8 @@
     "esperar": [
       "docs/quality"
     ],
-    "espremia": [
-      "activeContext"
+    "espessura": [
+      "decisionsLog"
     ],
     "esquecidas": [
       "docs/ROADMAP-DEPLOY"
@@ -16528,7 +16614,6 @@
       "docs/specs/portal-nkl-base-home/prd"
     ],
     "estudar": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ai-product-spec"
@@ -16568,7 +16653,6 @@
     ],
     "etsy": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "eua": [
@@ -16579,11 +16663,11 @@
     ],
     "eur": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "euro": [
-      "docs/CHECKLIST-OFFLINE-NKL"
+      "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "evasao": [
       "docs/ai-product-spec"
@@ -16761,6 +16845,8 @@
       "techContext"
     ],
     "exata": [
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "progress",
@@ -16860,6 +16946,7 @@
     ],
     "execucao": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -17766,7 +17853,6 @@
       "docs/superpowers/plans/2026-11-09-seo-renda-extra"
     ],
     "faca": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
@@ -18294,6 +18380,7 @@
     "ferramentas": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -18343,7 +18430,6 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "ficam": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/mcp-catalog",
@@ -18366,6 +18452,9 @@
     "ficarao": [
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
+    ],
+    "ficha": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "ficticias": [
       "decisionsLog",
@@ -18471,6 +18560,7 @@
       "progress"
     ],
     "finais": [
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/architecture"
     ],
     "final": [
@@ -18572,8 +18662,12 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
+    "fiscal": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "fisica": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "progress"
     ],
@@ -18589,10 +18683,14 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "fisico": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
-      "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
+      "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
+      "progress"
     ],
     "fisicos": [
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -18610,9 +18708,7 @@
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer"
     ],
     "fiverr": [
-      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/setup",
       "progress"
@@ -18688,8 +18784,11 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
+    "flagship": [
+      "decisionsLog",
+      "progress"
+    ],
     "flambra": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/setup"
     ],
@@ -18742,7 +18841,6 @@
       "docs/ai-product-spec"
     ],
     "fluencify": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "fluid-obstacles": [
@@ -18954,8 +19052,10 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
     "fora": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -19046,6 +19146,7 @@
     "formato": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ai-product-spec",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -19056,7 +19157,6 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "formatos": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/portal-area-registry"
     ],
@@ -19072,7 +19172,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "forms": [
-      "activeContext",
       "docs/onboarding",
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization",
       "progress"
@@ -19082,6 +19181,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "formula": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
@@ -19126,6 +19226,9 @@
     ],
     "forte": [
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
+    ],
+    "fortes": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "forward-to": [
       "docs/setup"
@@ -19191,6 +19294,7 @@
     ],
     "fraude": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec"
     ],
     "freando": [
@@ -19226,6 +19330,9 @@
     ],
     "french-ebook-sales-page": [
       "docs/architecture"
+    ],
+    "frente": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "frentes": [
       "docs/ROADMAP-DEPLOY",
@@ -19296,6 +19403,7 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "funciona": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -19314,6 +19422,7 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "funcional": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/design",
       "docs/quality",
@@ -19363,6 +19472,7 @@
       "docs/spec-driven-workflow"
     ],
     "fundamentos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "fundo": [
@@ -19464,7 +19574,6 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "ganho": [
-      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/portal-area-registry",
       "progress"
@@ -19674,6 +19783,7 @@
       "techContext"
     ],
     "gerada": [
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/ai-product-spec",
       "docs/quality"
     ],
@@ -19681,6 +19791,7 @@
       "docs/estado_atual"
     ],
     "gerado": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -19690,20 +19801,22 @@
       "docs/toolkit-setup"
     ],
     "gerador": [
-      "docs/CHECKLIST-OFFLINE-NKL"
+      "decisionsLog",
+      "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "gerados": [
       "docs/CHECKLIST-MESTRE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/onboarding",
-      "docs/quality"
+      "docs/quality",
+      "progress"
     ],
     "gerais": [
       "docs/spec-driven-workflow"
     ],
     "geral": [
-      "activeContext",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/estado_atual",
@@ -19714,6 +19827,7 @@
       "progress"
     ],
     "gerando": [
+      "activeContext",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "gerar": [
@@ -19754,7 +19868,6 @@
     ],
     "gestao": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "gestos": [
@@ -19833,7 +19946,9 @@
       "progress"
     ],
     "git": [
+      "activeContext",
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/onboarding",
@@ -19883,6 +19998,7 @@
     "global": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/architecture",
       "docs/estado_atual",
@@ -19918,6 +20034,9 @@
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design",
       "progress"
     ],
+    "glossario": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "gmail": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -19952,7 +20071,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "golpes": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "google": [
@@ -20065,7 +20183,6 @@
     ],
     "grass": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "gratis": [
@@ -20081,7 +20198,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "gratuito": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "decisionsLog",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/site-flow-and-upload-checklist",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
@@ -20110,6 +20227,7 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "gravados": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "gravar": [
@@ -20153,6 +20271,7 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "grupos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/specs/portal-nkl-base-home/spec"
     ],
@@ -20226,8 +20345,9 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "guia": [
-      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
@@ -20542,8 +20662,10 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "gumroad": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+    ],
+    "gutter": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "h1": [
       "docs/estado_atual",
@@ -20845,6 +20967,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "higiene": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "higienizado": [
@@ -20881,6 +21004,9 @@
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design",
       "systemPatterns"
+    ],
+    "hlr": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "hoje": [
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -20926,7 +21052,6 @@
     ],
     "honeygain": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "honeypot": [
@@ -20993,7 +21118,6 @@
     "hotmart": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
@@ -21109,7 +21233,6 @@
     ],
     "hub": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design",
@@ -21198,7 +21321,6 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "ics": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/architecture",
@@ -21368,10 +21490,10 @@
       "progress"
     ],
     "idiomas": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -21441,6 +21563,12 @@
     "igual": [
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
+    ],
+    "ii": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
+    "iii": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "ilimitada": [
       "docs/ai-product-spec"
@@ -21696,9 +21824,6 @@
     ],
     "impraticavel": [
       "docs/engenharia-no-cotidiano-master-prompt"
-    ],
-    "impressa": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "impressao": [
       "decisionsLog",
@@ -22058,7 +22183,6 @@
     ],
     "indica": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "indica-ai": [
@@ -22165,7 +22289,6 @@
       "docs/estado_atual"
     ],
     "influencer": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "influenciador": [
@@ -22223,6 +22346,7 @@
     "infraestrutura": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/spec-driven-workflow",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -22240,6 +22364,7 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -22275,6 +22400,7 @@
     ],
     "iniciais": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/architecture",
       "docs/quality",
@@ -22870,9 +22996,6 @@
     "interval": [
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
-    "interviews": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
-    ],
     "into": [
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
@@ -22886,7 +23009,6 @@
       "docs/estado_atual"
     ],
     "introducao": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
     ],
     "introduce": [
@@ -23092,6 +23214,9 @@
     "irresistivel": [
       "decisionsLog"
     ],
+    "isbn": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "iserror": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
     ],
@@ -23189,6 +23314,7 @@
     ],
     "item": [
       "activeContext",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/specs/portal-nkl-base-home/tasks",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments",
@@ -23205,7 +23331,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "itens": [
-      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/PADRAO-CARDS-IA",
       "docs/quality",
@@ -23283,14 +23408,19 @@
       "docs/setup"
     ],
     "joinbrands": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "journal": [
       "docs/architecture"
     ],
+    "jpeg": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "jpg": [
+      "activeContext",
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "progress"
     ],
@@ -23362,7 +23492,6 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "jumptask": [
-      "activeContext",
       "progress"
     ],
     "junto": [
@@ -23391,19 +23520,28 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "kaggle": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+    ],
+    "kb": [
+      "decisionsLog"
     ],
     "kbps": [
       "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "kdp": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
+      "progress"
+    ],
+    "kdp-metadados-e-publicacao": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "progress"
     ],
     "kebab-case": [
@@ -23534,7 +23672,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "lado": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
       "progress"
@@ -23596,7 +23733,6 @@
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp"
     ],
     "largura": [
-      "activeContext",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
@@ -23614,7 +23750,6 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "lateral": [
-      "activeContext",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
       "progress"
@@ -23633,7 +23768,6 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "layout": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
@@ -23890,7 +24024,6 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
     "ler": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -24199,7 +24332,6 @@
       "docs/estado_atual"
     ],
     "linha": [
-      "activeContext",
       "docs/specs/portal-nkl-base-home/design",
       "progress"
     ],
@@ -24329,6 +24461,9 @@
       "progress",
       "techContext"
     ],
+    "liquida": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "liquido": [
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
@@ -24379,6 +24514,9 @@
       "docs/spec-driven-workflow",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
+    "listas": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "liste": [
       "docs/ai-product-master-prompt"
     ],
@@ -24419,6 +24557,7 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "live": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -24496,7 +24635,6 @@
     "locais": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/mcp-catalog",
@@ -24512,7 +24650,6 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -24697,7 +24834,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "logo": [
-      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
@@ -24751,6 +24887,12 @@
       "docs/site-flow-and-upload-checklist",
       "projectBrief"
     ],
+    "lombada": [
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
+    ],
     "long": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
@@ -24760,9 +24902,6 @@
     "longa": [
       "docs/specs/portal-nkl-base-home/prd",
       "systemPatterns"
-    ],
-    "longas": [
-      "activeContext"
     ],
     "longer": [
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -24866,8 +25005,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "magalu": [
-      "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "magazinevoce": [
       "docs/CHECKLIST-OFFLINE-NKL"
@@ -24897,7 +25035,6 @@
     ],
     "make": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -24991,7 +25128,6 @@
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
     ],
     "mantendo": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -25213,11 +25349,11 @@
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
-    "margem": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
-    ],
     "margens": [
-      "docs/CHECKLIST-OFFLINE-NKL"
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "mark": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
@@ -25245,7 +25381,6 @@
     ],
     "marketplace": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/setup",
       "projectBrief"
@@ -25322,6 +25457,9 @@
       "decisionsLog",
       "docs/specs/portal-nkl-base-home/spec"
     ],
+    "matematica": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "materiais": [
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -25363,6 +25501,7 @@
       "progress"
     ],
     "matriz": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
       "docs/toolkit-setup"
@@ -25443,6 +25582,7 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -25538,6 +25678,9 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
     ],
+    "mei": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "meio": [
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -25627,7 +25770,6 @@
     ],
     "menos": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/quality",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -25658,7 +25800,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "mensal": [
-      "activeContext",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
@@ -25670,9 +25812,6 @@
     "mentions": [
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability"
-    ],
-    "mentoria": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "menu": [
       "docs/estado_atual",
@@ -25689,7 +25828,6 @@
     ],
     "mercado": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -25810,6 +25948,7 @@
     ],
     "mestre": [
       "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/engenharia-no-cotidiano-master-prompt",
       "progress"
@@ -25826,6 +25965,8 @@
       "docs/specs/portal-nkl-base-home/design"
     ],
     "metadados": [
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/estado_atual",
       "docs/setup",
@@ -25871,7 +26012,6 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
     "metodo": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "metodos": [
@@ -25911,7 +26051,6 @@
     ],
     "micro1": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -26053,7 +26192,6 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "mindrift": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
@@ -26120,6 +26258,7 @@
       "docs/estado_atual"
     ],
     "miolo": [
+      "decisionsLog",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "missing": [
@@ -26169,9 +26308,6 @@
       "docs/setup",
       "progress",
       "techContext"
-    ],
-    "ml": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "mm": [
       "docs/engenharia-no-cotidiano-master-prompt"
@@ -26284,6 +26420,10 @@
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
     ],
     "modelos": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/architecture",
       "docs/estado_atual",
@@ -26368,7 +26508,10 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "modular": [
-      "decisionsLog"
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "module": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -26415,7 +26558,6 @@
     ],
     "monetizacao": [
       "docs/CHECKLIST-MESTRE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/estado_atual",
       "docs/specs/portal-nkl-base-home/design",
@@ -26450,6 +26592,9 @@
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
       "progress"
     ],
+    "montagem": [
+      "decisionsLog"
+    ],
     "montar": [
       "decisionsLog",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
@@ -26466,7 +26611,6 @@
     ],
     "montink": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "montink-embaixador": [
@@ -26474,7 +26618,6 @@
       "docs/setup"
     ],
     "moonsun-portal": [
-      "activeContext",
       "progress"
     ],
     "more": [
@@ -26809,7 +26952,6 @@
       "docs/quality"
     ],
     "mx": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -26876,7 +27018,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "narrados": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "narrow": [
@@ -26970,7 +27111,6 @@
     ],
     "navegador": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -27022,6 +27162,11 @@
     ],
     "navio": [
       "docs/engenharia-no-cotidiano-master-prompt"
+    ],
+    "ncx": [
+      "activeContext",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
     ],
     "near": [
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
@@ -27079,12 +27224,12 @@
     ],
     "negocio": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "progress"
     ],
     "negocios": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -27368,9 +27513,6 @@
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
-    "nicho": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
-    ],
     "nickname": [
       "decisionsLog"
     ],
@@ -27535,6 +27677,7 @@
       "progress"
     ],
     "nkl_oficial": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -27556,10 +27699,10 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "nkloficial": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -27855,7 +27998,6 @@
       "docs/estado_atual"
     ],
     "nota": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/quality",
@@ -27879,7 +28021,6 @@
       "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
@@ -27969,7 +28110,6 @@
       "systemPatterns"
     ],
     "novamente": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
@@ -28040,6 +28180,9 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "npm": [
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -28078,7 +28221,6 @@
     ],
     "npx": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/portal-area-registry",
       "docs/quality",
@@ -28132,6 +28274,7 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "numeracao": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "systemPatterns"
     ],
     "numeric": [
@@ -28177,7 +28320,6 @@
     ],
     "nyte-x": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
@@ -28220,6 +28362,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "objetivos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/spec-driven-workflow",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -28388,7 +28531,6 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "ocupa": [
-      "activeContext",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM"
     ],
     "ocupado": [
@@ -28588,7 +28730,6 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "oneforma": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "oneline": [
@@ -28685,6 +28826,7 @@
     ],
     "opcoes": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -28752,6 +28894,7 @@
       "docs/toolkit-setup"
     ],
     "operacionais": [
+      "activeContext",
       "docs/setup",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/toolkit-setup"
@@ -28759,6 +28902,7 @@
     "operacional": [
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
@@ -28800,7 +28944,6 @@
     "oportunidades": [
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -28958,6 +29101,7 @@
     ],
     "organizacao": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/toolkit-setup"
@@ -29088,7 +29232,6 @@
     ],
     "outlier": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "outlier-ai": [
@@ -29266,7 +29409,6 @@
     ],
     "padrao": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/architecture",
       "docs/estado_atual",
@@ -29331,15 +29473,11 @@
       "progress",
       "systemPatterns"
     ],
-    "pagando": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
-    ],
     "pagar": [
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/PADRAO-CARDS-IA"
     ],
     "pagas": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "page": [
@@ -29423,8 +29561,11 @@
       "docs/architecture"
     ],
     "paginas": [
+      "activeContext",
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/quality",
@@ -29443,11 +29584,11 @@
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design",
-      "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
+      "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design",
+      "progress"
     ],
     "pago": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -29465,6 +29606,7 @@
     ],
     "pagos": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -29506,9 +29648,12 @@
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
     ],
     "palavras": [
+      "activeContext",
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/engenharia-no-cotidiano-master-prompt",
-      "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design"
+      "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design",
+      "progress"
     ],
     "palavras-chave": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
@@ -29536,7 +29681,6 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "papel": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/onboarding",
@@ -29550,6 +29694,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "paperback": [
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
@@ -29637,6 +29782,9 @@
     "params": [
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
+    ],
+    "parar": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "parceiras": [
       "docs/PADRAO-CARDS-IA"
@@ -29731,6 +29879,7 @@
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer"
     ],
     "parte": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -29738,6 +29887,10 @@
       "docs/setup",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
+    ],
+    "partes": [
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "partial": [
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
@@ -29766,6 +29919,7 @@
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
     ],
     "partir": [
+      "activeContext",
       "docs/architecture",
       "docs/onboarding",
       "docs/setup",
@@ -29828,7 +29982,6 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
     "partnerprogramsbrowser": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -29908,7 +30061,6 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
     "passiva": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "progress"
     ],
@@ -29916,7 +30068,9 @@
       "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "passo": [
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -29929,6 +30083,7 @@
       "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design"
     ],
     "passos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/architecture",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
@@ -30009,9 +30164,20 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign",
       "systemPatterns"
     ],
+    "pautada": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
+    "pautadas": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
+    "pautado": [
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "progress"
+    ],
     "pawns": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "pawns-app": [
@@ -30077,6 +30243,7 @@
     ],
     "payoneer": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA"
     ],
@@ -30084,10 +30251,14 @@
       "docs/CHECKLIST-MESTRE-NKL"
     ],
     "paypal": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA"
     ],
     "pdf": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
@@ -30617,6 +30788,7 @@
     ],
     "pessoal": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -30677,9 +30849,6 @@
       "docs/PADRAO-CARDS-IA",
       "progress"
     ],
-    "pilulas": [
-      "activeContext"
-    ],
     "pin": [
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
@@ -30687,11 +30856,11 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "pipeline": [
+      "activeContext",
       "docs/quality",
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "pix": [
-      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
@@ -30704,7 +30873,6 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "pizza": [
-      "activeContext",
       "docs/estado_atual",
       "docs/quality",
       "docs/specs/portal-nkl-base-home/prd",
@@ -30939,13 +31107,9 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "png": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "progress"
-    ],
-    "pod": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "pode": [
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
@@ -31011,9 +31175,6 @@
     ],
     "pois": [
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
-    ],
-    "pol": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "polegadas": [
       "docs/CHECKLIST-OFFLINE-NKL"
@@ -31085,6 +31246,7 @@
     ],
     "pontos": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/quality",
       "docs/specs/portal-nkl-base-home/design",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
@@ -31304,6 +31466,9 @@
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
     ],
+    "pos-folhas": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "pos-lancamento": [
       "docs/CHECKLIST-MESTRE-NKL"
     ],
@@ -31379,7 +31544,7 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "posterior": [
-      "docs/CHECKLIST-MESTRE-NKL",
+      "decisionsLog",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
       "progress"
     ],
@@ -31447,9 +31612,6 @@
     "pr": [
       "docs/portal-area-registry",
       "docs/specs/portal-nkl-base-home/adr"
-    ],
-    "pr-14": [
-      "activeContext"
     ],
     "practical": [
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
@@ -31586,7 +31748,6 @@
       "docs/quality"
     ],
     "preco": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -31639,6 +31800,9 @@
     "preexistentes": [
       "docs/quality",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
+    ],
+    "prefacio": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "prefer": [
       "docs/superpowers/plans/2026-11-11-stripe-only-payments",
@@ -31698,7 +31862,6 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "premio": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability",
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design",
@@ -31835,7 +31998,6 @@
       "docs/quality"
     ],
     "preservando": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -31955,6 +32117,7 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
     "previa": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
@@ -31982,9 +32145,6 @@
     ],
     "preview-only": [
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
-    ],
-    "previewer": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "previews": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
@@ -32067,6 +32227,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "primeiro": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -32141,7 +32302,6 @@
     ],
     "printful": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA"
     ],
@@ -32149,7 +32309,6 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "prioridade": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -32255,6 +32414,7 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "private-assets": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -32354,7 +32514,6 @@
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -32523,9 +32682,11 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "produzidos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "produzir": [
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt"
@@ -32575,6 +32736,7 @@
       "docs/specs/portal-nkl-base-home/design"
     ],
     "profissional": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec"
     ],
     "profissoes": [
@@ -32804,6 +32966,7 @@
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
     ],
     "projeto": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -32826,7 +32989,6 @@
       "docs/site-flow-and-upload-checklist"
     ],
     "prolific": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
@@ -32895,6 +33057,7 @@
       "docs/estado_atual"
     ],
     "prompt": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -32911,6 +33074,8 @@
       "docs/ai-product-spec"
     ],
     "prompts": [
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/ai-product-spec",
@@ -32931,9 +33096,14 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "pronto": [
+      "activeContext",
+      "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "prontos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "prop": [
@@ -33008,6 +33178,7 @@
     "proprio": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/estado_atual",
@@ -33231,7 +33402,6 @@
       "docs/ai-product-spec"
     ],
     "pt": [
-      "activeContext",
       "progress"
     ],
     "pt-br": [
@@ -33319,8 +33489,8 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "publicar": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/estado_atual",
@@ -33368,6 +33538,7 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "publico": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -33508,7 +33679,6 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
     "pwa": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
@@ -33543,6 +33713,9 @@
     ],
     "quadrados": [
       "decisionsLog"
+    ],
+    "quadrantes": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "quadro": [
       "docs/engenharia-no-cotidiano-master-prompt"
@@ -33719,13 +33892,14 @@
     ],
     "quintoandar": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "quintoandar-indica-ai": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "quiser": [
+      "activeContext",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY"
@@ -33794,6 +33968,7 @@
       "progress"
     ],
     "raio-x": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
@@ -33827,6 +34002,7 @@
     ],
     "rapido": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -33843,6 +34019,9 @@
     "rapidos": [
       "docs/architecture"
     ],
+    "rasas": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "rascunho": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
@@ -33857,6 +34036,9 @@
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design"
+    ],
+    "rastreador": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "rastreamento": [
       "docs/architecture",
@@ -33891,7 +34073,6 @@
       "techContext"
     ],
     "raters": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "rather": [
@@ -34056,6 +34237,7 @@
     ],
     "real": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/architecture",
@@ -34141,7 +34323,6 @@
     ],
     "receber": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
@@ -34449,7 +34630,6 @@
     "redes": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
@@ -34525,6 +34705,7 @@
       "decisionsLog"
     ],
     "reducao": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "reduce": [
@@ -34661,7 +34842,7 @@
       "decisionsLog"
     ],
     "reflowable": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+      "decisionsLog"
     ],
     "reforcar": [
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
@@ -35127,7 +35308,6 @@
     ],
     "remoto": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/mcp-catalog",
@@ -35193,7 +35373,6 @@
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design"
     ],
     "removida": [
-      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design",
       "progress"
@@ -35225,6 +35404,7 @@
       "docs/CHECKLIST-OFFLINE-NKL"
     ],
     "remuneradas": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
     ],
@@ -35454,7 +35634,6 @@
     ],
     "repocket": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/quality"
@@ -35550,6 +35729,9 @@
     ],
     "reproduzivel": [
       "decisionsLog"
+    ],
+    "reprovacao": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "reputacao": [
       "docs/setup"
@@ -35674,7 +35856,6 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
     "resend_api_key": [
-      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
@@ -35692,7 +35873,6 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "reservado": [
-      "docs/CHECKLIST-MESTRE-NKL",
       "docs/architecture",
       "docs/quality"
     ],
@@ -35820,7 +36000,6 @@
       "docs/quality"
     ],
     "respondent": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "responder": [
@@ -36146,6 +36325,7 @@
     ],
     "retorno": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/onboarding",
       "docs/quality",
       "docs/setup",
@@ -36317,7 +36497,6 @@
     ],
     "revenda": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "revertam": [
@@ -36455,6 +36634,9 @@
     "rg": [
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
+    "rgb": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "rgba": [
       "decisionsLog"
     ],
@@ -36550,7 +36732,6 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "ritmo": [
-      "activeContext",
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "rls": [
@@ -36667,7 +36848,6 @@
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
     ],
     "roster": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "rosto": [
@@ -36737,6 +36917,7 @@
     "roteiro": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -36911,6 +37092,9 @@
       "decisionsLog"
     ],
     "run": [
+      "activeContext",
+      "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -37102,9 +37286,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "salvar": [
-      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -37188,6 +37370,7 @@
       "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design"
     ],
     "saque": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/architecture",
       "docs/estado_atual",
       "docs/quality",
@@ -37281,7 +37464,6 @@
     ],
     "script": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -37291,8 +37473,8 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "scripts": [
+      "activeContext",
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
       "docs/estado_atual",
@@ -37744,6 +37926,7 @@
     ],
     "semanal": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "progress"
@@ -37762,9 +37945,6 @@
     ],
     "semanticas": [
       "progress"
-    ],
-    "semanticos": [
-      "activeContext"
     ],
     "semantics": [
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
@@ -37930,7 +38110,6 @@
     ],
     "separar": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/setup",
       "docs/superpowers/plans/2026-11-09-light-theme-depth",
@@ -38020,7 +38199,6 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "serp": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "serp-raters-welocalize-telus": [
@@ -38093,7 +38271,6 @@
     ],
     "servicos": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
       "docs/toolkit-setup"
     ],
@@ -38303,12 +38480,10 @@
       "systemPatterns"
     ],
     "shop": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "shopee": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
       "docs/estado_atual"
@@ -38349,7 +38524,6 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "shrink-0": [
-      "activeContext",
       "progress"
     ],
     "si": [
@@ -38359,7 +38533,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "sideshift": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "siga": [
@@ -38438,6 +38611,7 @@
       "docs/quality"
     ],
     "simples": [
+      "decisionsLog",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -38484,6 +38658,7 @@
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "simultaneamente": [
+      "decisionsLog",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
@@ -38493,6 +38668,7 @@
       "decisionsLog"
     ],
     "sinais": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
     ],
@@ -38672,7 +38848,6 @@
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure"
     ],
     "skool": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "sku": [
@@ -38798,7 +38973,6 @@
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
     ],
     "sobreposto": [
-      "activeContext",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "progress"
     ],
@@ -38937,7 +39111,6 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta"
     ],
     "sorteio": [
-      "activeContext",
       "docs/architecture",
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design",
       "progress"
@@ -38966,7 +39139,6 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "space": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/estado_atual"
     ],
@@ -39080,7 +39252,6 @@
       "progress"
     ],
     "spf": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -39122,8 +39293,10 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
+    "spread": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "sql": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -39245,7 +39418,6 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
     "standalone": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
@@ -39541,6 +39713,7 @@
       "progress"
     ],
     "stripe": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -39702,7 +39875,6 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "suba": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM"
     ],
     "subagent": [
@@ -39743,7 +39915,6 @@
     ],
     "subir": [
       "decisionsLog",
-      "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY"
     ],
@@ -39827,6 +39998,9 @@
     "subsistema": [
       "docs/ROADMAP-DEPLOY"
     ],
+    "substancialmente": [
+      "decisionsLog"
+    ],
     "substep": [
       "decisionsLog"
     ],
@@ -39845,6 +40019,7 @@
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
     "substitui": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/setup",
       "docs/spec-driven-workflow",
@@ -39964,7 +40139,6 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "sugerir": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -40041,6 +40215,7 @@
       "docs/superpowers/specs/2026-11-09-program-offer-disclosure-design"
     ],
     "supabase": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -40111,6 +40286,7 @@
       "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design"
     ],
     "superior": [
+      "decisionsLog",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
       "docs/setup"
     ],
@@ -40258,6 +40434,9 @@
     "sustentam": [
       "docs/site-flow-and-upload-checklist"
     ],
+    "sustentavel": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
+    ],
     "sutil": [
       "docs/specs/portal-nkl-base-home/design",
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
@@ -40283,7 +40462,6 @@
       "docs/architecture"
     ],
     "sync": [
-      "activeContext",
       "decisionsLog",
       "docs/setup",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -40335,7 +40513,6 @@
     ],
     "systeme": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "systempatterns": [
@@ -40588,7 +40765,6 @@
     ],
     "taxas": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "te": [
@@ -40678,6 +40854,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "tecnicos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
@@ -40772,7 +40949,6 @@
     ],
     "templates": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
@@ -41043,7 +41219,6 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "testlio": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "tests": [
@@ -41070,6 +41245,7 @@
       "progress"
     ],
     "teto": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "teve": [
@@ -41296,7 +41472,6 @@
       "progress"
     ],
     "tiktok": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "tiktok-shop": [
@@ -41394,7 +41569,6 @@
       "systemPatterns"
     ],
     "titulo": [
-      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/portal-area-registry",
@@ -41410,7 +41584,6 @@
       "progress"
     ],
     "titulos": [
-      "activeContext",
       "decisionsLog",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar",
@@ -41446,7 +41619,6 @@
       "systemPatterns"
     ],
     "toda": [
-      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -41503,9 +41675,6 @@
     "together": [
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
-    "toggles": [
-      "activeContext"
-    ],
     "token": [
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -41542,7 +41711,6 @@
     ],
     "toloka": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "tool": [
@@ -41705,7 +41873,6 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "tracks": [
-      "activeContext",
       "decisionsLog",
       "progress"
     ],
@@ -41725,15 +41892,11 @@
     "tradutor": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
-    "traduzido": [
-      "activeContext"
-    ],
     "traduzir": [
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design"
     ],
     "trafego": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
@@ -41926,6 +42089,7 @@
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
     ],
     "traz": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "trazer": [
@@ -41970,11 +42134,9 @@
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
     ],
     "triagem": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "projectBrief"
-    ],
-    "tributario": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON"
     ],
     "trilha": [
       "decisionsLog",
@@ -42065,10 +42227,10 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
     "ts": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -42114,7 +42276,6 @@
     "tsx": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/architecture",
@@ -42149,7 +42310,6 @@
     ],
     "tubebuddy": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "tudo": [
@@ -42296,6 +42456,7 @@
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
     ],
     "types": [
+      "activeContext",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
@@ -42657,8 +42818,9 @@
       "progress"
     ],
     "upload": [
+      "activeContext",
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
       "docs/setup",
@@ -42708,7 +42870,6 @@
     ],
     "upwork": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "urgencia": [
@@ -42913,7 +43074,6 @@
     ],
     "usd": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "use": [
@@ -42982,7 +43142,6 @@
     ],
     "user": [
       "decisionsLog",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/estado_atual",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp",
@@ -43084,6 +43243,7 @@
     ],
     "uso": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -43139,7 +43299,6 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "utest": [
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -43290,6 +43449,7 @@
       "systemPatterns"
     ],
     "validado": [
+      "activeContext",
       "decisionsLog",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -43299,6 +43459,7 @@
     ],
     "validados": [
       "decisionsLog",
+      "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
       "progress"
@@ -43384,6 +43545,7 @@
       "docs/setup"
     ],
     "valido": [
+      "activeContext",
       "docs/architecture",
       "docs/quality",
       "docs/site-flow-and-upload-checklist",
@@ -43449,6 +43611,7 @@
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "vapid": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -43635,7 +43798,6 @@
       "docs/estado_atual"
     ],
     "venda": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
@@ -43676,7 +43838,6 @@
       "docs/specs/portal-nkl-base-home/spec"
     ],
     "vercel": [
-      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -43732,6 +43893,7 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "verificada": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -43739,6 +43901,7 @@
     ],
     "verificadas": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/site-flow-and-upload-checklist"
     ],
@@ -43849,6 +44012,7 @@
     ],
     "versao": [
       "decisionsLog",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ai-product-spec",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/setup",
@@ -43947,7 +44111,6 @@
     "via": [
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
@@ -44084,7 +44247,6 @@
     ],
     "virais": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "viram": [
@@ -44198,7 +44360,6 @@
       "progress"
     ],
     "visual": [
-      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -44279,10 +44440,12 @@
       "techContext"
     ],
     "vivo": [
+      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "progress"
     ],
     "vivos": [
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/ROADMAP-DEPLOY"
     ],
     "vizu": [
@@ -44367,7 +44530,6 @@
     ],
     "walmart": [
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "walmart-marketplace-revenda": [
@@ -44416,7 +44578,6 @@
     "web": [
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/architecture",
       "docs/setup",
@@ -44529,7 +44690,6 @@
       "docs/superpowers/plans/2026-11-11-simplify-income-guide-copy"
     ],
     "welocalize": [
-      "activeContext",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "progress"
     ],
@@ -44652,6 +44812,7 @@
     ],
     "wise": [
       "docs/CHECKLIST-OFFLINE-NKL",
+      "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA"
     ],
@@ -44791,6 +44952,7 @@
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
     "wrap": [
+      "decisionsLog",
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign",
       "docs/superpowers/plans/2026-11-11-rifa-profile-stability"
     ],
@@ -44893,7 +45055,6 @@
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network"
     ],
     "youglish": [
-      "activeContext",
       "progress"
     ],
     "youtube": [
@@ -44940,7 +45101,6 @@
       "systemPatterns"
     ],
     "zona": [
-      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/setup",

@@ -43,8 +43,11 @@ Lista unificada e priorizada com tudo o que depende apenas das suas contas exter
 
 7. **Afiliados das Oportunidades de Renda Extra (validar após conclusão do site):**
    - Etapa pós-lançamento: após concluir a publicação e revisão final do site, validar cadastros nos programas listados em [MAPA-AFILIADOS-50-OPORTUNIDADES.md](./MAPA-AFILIADOS-50-OPORTUNIDADES.md) e colar cada link em `/programas/admin` (ou tabela `partner_programs`).
-8. **Publicação na Amazon KDP (reservado para etapa posterior):**
-   - Reservado para etapa posterior: subir os arquivos gerados em `private-assets/amazon-book/` para **Kindle eBook** e **Paperback 6x9"** conforme [EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md](./EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md).
+8. **Publicação na Amazon KDP (arquivos finais gerados e validados — pronto para upload quando quiser):**
+   - Edição completa gerada em `private-assets/amazon-book/` (14 capítulos/partes, 46.110 palavras no Kindle / 48.263 palavras e 174 páginas no Paperback 6x9", 57 dossiês, 18 modelos Bússola, 25 prompts de IA):
+     - Digital: `57-formas-renda-extra-kindle.epub` + capa `capa-kindle-1600x2560.jpg`
+     - Físico: `57-formas-renda-extra-paperback-6x9.pdf` + capa completa `capa-paperback-6x9-completa.pdf`
+     - Metadados e passo a passo: `private-assets/amazon-book/KDP-METADADOS-E-PUBLICACAO.md` ([EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md](./EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON.md)).
 9. **Áudios Progressivos no NotebookLM (configurado no site como prêmio/bônus futuro em breve):**
    - Configurado em `/ia/curso` como prêmio/bônus futuro em breve para alunos ("Prêmio em breve — Áudios Progressivos no NotebookLM chegando para alunos"). Quando for produzir os episódios, gerar os resumos em áudio das aulas semanais do curso *IA na Prática* e de idiomas usando o NotebookLM conforme [GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md](./GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM.md).
 10. ~~**Push Nativo de Sistema Operacional (VAPID Web Push):**~~ CONCLUÍDO em 2026-11-26 (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT=mailto:contato@nkloficial.com.br` gravadas no `.env.local` e sincronizadas na Vercel Production; `/api/notifications/push/config` verificado ao vivo com `enabled: true` no deploy `dpl_HzGuUdSDG79hCekYdj2eRjFJq81x`).

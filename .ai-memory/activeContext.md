@@ -2,10 +2,11 @@
 
 ## Foco Atual
 
-- **Correção Layout Cards `/programas` (2026-11-27):** removida a coluna lateral `shrink-0` no cabeçalho dos cards em `PartnerProgramsBrowser` e `EditorialCardView` (que espremia títulos com pílulas longas ao lado do botão Salvar sobreposto `pr-14`). Título ocupa a largura toda e a nota + ganho mensal ficam na linha de chips logo abaixo, mantendo ritmo visual compacto.
-- **Cloudflare Email Routing ATIVO (`status: ready`) & Sync Produção (2026-11-26):** zona `a9a32df7401d381a84426bfc7d9bb338` ativa com `MX`/`SPF`/DKIM preservando Resend; `RESEND_API_KEY` + `contato@nkloficial.com.br` na Vercel; disparo boa-fé Guia 2027 entregue (`33/33`).
-- **Auditoria Geral 4 Tracks (2026-11-26):** `moonsun-portal.png`, logo `/`, PWA `appinstalled`/`standalone`, `drizzle/0052_profile_modes.sql` (`birth_date` + toggles/auto-ativação), pizza `-15%`, NotebookLM como prêmio em breve, cards de venda a cada 4, sorteio Livro/R$ 50 Pix, `/sugerir` Forms, Bússola sem preço antes do `/checkout`, `cancel_url` dinâmico, `.ics`, `/idiomas` clicável, `57` programas (`jumptask`, `elevenlabs`, `fiverr`, `welocalize` traduzido) e 6 idiomas semânticos + `pt.youglish.com`.
+- **Livro Completo Amazon KDP Digital + Físico Gerado e Validado (2026-11-27):**
+  - Pipeline modular `scripts/amazon-book/` (`types.ts`, `chapters-foundation.ts`, `dossier-enricher.ts`, `chapters-scale.ts`, `epub-builder.ts`, `covers-and-pdf.ts`) + `scripts/build-amazon-book.ts` (`npm run amazon:book`) gerando a edição completa a partir dos **57** programas e **18** modelos ao vivo do Supabase.
+  - Entregáveis em `private-assets/amazon-book/` (fora do git): `57-formas-renda-extra-kindle.epub` (`46.110` palavras, EPUB 3.0 + NCX válido), `capa-kindle-1600x2560.jpg`, `57-formas-renda-extra-paperback-6x9.pdf` (`174` páginas `6x9"`, `48.263` palavras com caderno pautado e margens espelhadas), `capa-paperback-6x9-completa.pdf` (`12.64" x 9.25"`, lombada `0.3918"`) e `KDP-METADADOS-E-PUBLICACAO.md`.
+- **Produção NKL (`dpl_GiYNoqz6PA3fUtEQrxJHPHJSxhHS`):** Cloudflare Email Routing ativo (`status: ready`), Resend/VAPID/Stripe Live 100% operacionais e cards `/programas` corrigidos.
 
 ## Pendencias Somente Manuais do Usuario (Contas Externas)
 
-1. **Checklist Consolidado:** ver `docs/CHECKLIST-MESTRE-NKL.md` (Search Console Item 5; Prioridade 4 itens 7, 8 e 9 adiados).
+1. **Checklist Consolidado:** ver `docs/CHECKLIST-MESTRE-NKL.md` (Search Console Item 5; upload KDP em `private-assets/amazon-book/` pronto para quando NKL_OFICIAL quiser publicar; Afiliados/NotebookLM adiados).

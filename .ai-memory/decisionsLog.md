@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-026 (2026-11-27) Gerador Modular Amazon KDP Flagship (EPUB 3.0 + Paperback 6x9" PDF + Capa Lombada Exata)
+- Decisao: construir `scripts/amazon-book/*` + `scripts/build-amazon-book.ts` (`npm run amazon:book`) lendo os 57 programas e 18 modelos reais do Supabase para produzir simultaneamente EPUB 3.0 reflowable, capa `1600x2560` JPG, miolo Paperback `6x9"` de 174 páginas com margens espelhadas/caderno pautado e capa wrap PDF na espessura exata (`0.3918"`).
+- Motivo: entregar livro pago substancialmente superior ao guia gratuito (`46.110` palavras no Kindle / `48.263` no físico) pronto para upload direto no painel da Amazon KDP sem edição manual posterior.
+- Descartado: manter HTML simples único de 35 KB em `build-amazon-book.ts` ou exigir conversão/montagem manual de EPUB e lombada fora do projeto.
+
 ## ADR-025 (2026-11-26) Cloudflare Email Routing Live, Perfil Modular (`0052`), Bússola/Stripe Cancel URL & Alinhamento Não Monotônico em 6 Idiomas
 - Decisao: ativar Cloudflare Email Routing (`MX`/`SPF`/DKIM) preservando Resend, aplicar `drizzle/0052_profile_modes.sql` (`music_profile_enabled`/`income_profile_enabled` + `birth_date`) com auto-ativação em ações musicais, isolar fallback Upstash em `/api/materials`, calcular `cancel_url` dinâmico via `resolveSafeCheckoutCancelUrl`, adotar `.ics` no Planner, inserir cards de venda a cada 4 oportunidades em `/programas` e refatorar `tokenizeBilingualExample` com `CJK_LEXICON` e seleção de spans disjuntos.
 - Motivo: eliminar 502 em `/api/materials` e redirecionamento errado pós-cancelamento Stripe (`/ofertas/bussola-negocios/checkout` voltando para `/guias/renda-extra`), evitar ruído musical para contas de renda extra, remover travas de impressão HTML e corrigir desalinhamentos de cor em ordens sintáticas cruzadas nos 6 idiomas.

@@ -1,22 +1,41 @@
-# Blueprint do Livro Amazon KDP: 50 Formas Práticas de Construir Renda Extra
+# Blueprint do Livro Amazon KDP: 57 Formas Práticas de Construir Renda Extra
 
-Este documento estrutura a edição completa do livro **Portal NKL** para publicação simultânea na **Amazon KDP** em dois formatos gerados pelo script [build-amazon-book.ts](../scripts/build-amazon-book.ts):
-1. **Edição Kindle (eBook Reflowable HTML):** `private-assets/amazon-book/50-formas-renda-extra-kindle.html`
-2. **Edição Impressa Paperback 6x9" (PDF / Impressão via navegador):** `private-assets/amazon-book/50-formas-renda-extra-impresso-6x9.html`
+Este documento descreve o gerador modular e os artefatos completos do livro **Portal NKL** para publicação simultânea na **Amazon KDP** em formato **Digital (Kindle EPUB 3.0)** e **Físico (Paperback 6x9" com miolo PDF + capa completa com lombada exata)**.
 
-## Estrutura Editorial do Livro (50+ Formas Reais em 7 Capítulos)
-- **Introdução:** Como ler oportunidades sem cair em golpes, como separar renda por hora vs. renda escalável e o método de validação em 14 dias.
-- **Capítulo 1 — Treinamento de IA, Dados e Pesquisas (0 Investimento):** Micro1, Outlier AI, DataAnnotation, Claru IA, Mindrift, Prolific, Dscout, OneForma, Crowtado, SERP Raters, Grass/Toloka.
-- **Capítulo 2 — Testes de Apps, QA e UX Remoto (0 Investimento):** uTest, Testlio, Alligner, Testes UX Narrados, Entrevistas B2B (Respondent / User Interviews), Clickworker, AttaPoll, Nyte-X.
-- **Capítulo 3 — Conteúdo, UGC e Economia de Criadores:** Billo, JoinBrands, UGC Roster, Creator Space, AppHub, Fluencify, Flambra, Hub, TikTok Shop, Bilibili, Canal Dark + NotebookLM.
-- **Capítulo 4 — Freelancing, Ensino e Serviços Especializados:** Fiverr, Upwork, Aulas e Mentoria Prática, Edição de Cortes Virais com IA, Estudar e Ganhar (Kaggle / Bug Bounties).
-- **Capítulo 5 — Afiliados, Indicações e Curadoria de Nicho:** Amazon Associados & Influencer, Marketplaces (Shopee / ML / Magalu), Hotmart, QuintoAndar Indica Aí, Mercado Pago, SideShift, Afiliados B2B (Make/TubeBuddy), Redes CPA, Monetização Web, Renda Passiva (Honeygain / Repocket / Pawns.app).
-- **Capítulo 6 — Produtos Digitais, Amazon KDP e Negócios com Investimento Inicial:** Amazon KDP (eBook & Impresso), Gumroad/Etsy Templates, Printful/Montink (POD), Walmart Marketplace Revenda & Arbitragem, Automação/IA para Negócios Locais, Gestão de Tráfego Pago Local, Comunidades Pagas (Skool/Systeme), Produção de Vídeos com IA.
-- **Capítulo 7 — Fechamento Prático:** Checklist anti-reprovação, controle tributário básico, como receber em USD/EUR pagando menos taxas e plano de ação de 30 dias.
+---
 
-## Como Gerar Novamente e Publicar na Amazon KDP
+## Estrutura Editorial (12 Capítulos + Apêndice em 3 Partes)
+
+- **Parte I — Fundamentos, Matemática Real e Blindagem:**
+  - *Prefácio e Guia de Uso:* por que este livro substitui listas rasas por execução verificada + diferença entre versão Kindle e caderno impresso.
+  - *Capítulo 1 — A Matemática Real da Renda Extra:* fórmula de Hora Líquida Real (HLR), Os 4 Quadrantes do Retorno Digital e teto semanal sustentável.
+  - *Capítulo 2 — Infraestrutura Profissional no Brasil (Reais, Dólar e Euro):* comparação Wise/Payoneer/PayPal/Deel, redução de spread, higiene digital operacional e organização fiscal (Carnê-Leão e MEI).
+  - *Capítulo 3 — Validação em 14 Dias e Escudo Anti-Golpe:* 12 sinais objetivos de fraude, triagem em 5 passos, matriz Parar/Ajustar/Escalar e **Ficha Pautada de Bússola Pessoal**.
+- **Parte II — Enciclopédia Prática das 57 Formas Verificadas (Capítulos 4 a 9):**
+  - *Capítulo 4:* IA, Treinamento de Modelos e Pesquisas Remuneradas
+  - *Capítulo 5:* Testes de Apps, QA, UX e Entrevistas B2B
+  - *Capítulo 6:* Conteúdo UGC, Vídeos Curtos, Áudio e Economia de Criadores
+  - *Capítulo 7:* Freelancing Global, Ensino e Desafios Técnicos
+  - *Capítulo 8:* Afiliados, Indicações, Marketplaces e Renda Complementar
+  - *Capítulo 9:* Produtos Digitais, Amazon KDP e Modelos com Investimento Inicial
+  - Cada item traz: **Raio-X Rápido, Como Funciona na Prática, Roteiro do Primeiro Saque (7–14 dias), Pontos Fortes vs. Cuidados, Erros de Reprovação/Banimento, Ferramentas de Apoio e Prompt de IA Aplicado** (+ diário pautado de capítulo na versão física).
+- **Parte III — Do Extra ao Negócio Próprio (Capítulos 10 a 12 + Apêndice):**
+  - *Capítulo 10:* Os **18 Modelos de Negócio da Bússola** com estrutura comercial de 3 opções, conquista do 1º cliente sem anúncios pagos e plano de 7 dias.
+  - *Capítulo 11:* Biblioteca com **25 Prompts Prontos de IA** em 5 grupos + guia funcional de inglês/idiomas para ganhar em dólar.
+  - *Capítulo 12:* Plano Mestre de **30, 60 e 90 Dias** + Caderno Físico Completo (Diário 14 Dias, Rastreador 30 Dias, Fechamento Mensal e páginas pautadas).
+  - *Apêndice:* Glossário prático e guia dos catálogos vivos em `nkloficial.com.br`.
+
+---
+
+## Como Gerar e Arquivos Produzidos
+
 ```powershell
-npx tsx scripts/build-amazon-book.ts
+npm run amazon:book
 ```
-- **Para Kindle:** suba `50-formas-renda-extra-kindle.html` no KDP (ou converta em EPUB via Calibre / Kindle Previewer 3 gratuito da Amazon).
-- **Para Livro Físico (Paperback 6x9"):** abra `50-formas-renda-extra-impresso-6x9.html` no Chrome/Edge -> `Ctrl+P` -> **Salvar como PDF** (Margem: Padrão / Papel: custom 6x9 pol. / Sem cabeçalhos do navegador) e faça upload do PDF de miolo no KDP Paperback.
+
+Arquivos gravados automaticamente em `private-assets/amazon-book/` (fora do git público):
+1. **Edição Digital Kindle (EPUB 3.0 + NCX):** `private-assets/amazon-book/57-formas-renda-extra-kindle.epub` (e prévia HTML `57-formas-renda-extra-kindle.html`)
+2. **Capa Digital Kindle:** `private-assets/amazon-book/capa-kindle-1600x2560.jpg` (1600x2560 RGB JPEG)
+3. **Edição Física Paperback 6x9" (PDF Pronto p/ Impressão):** `private-assets/amazon-book/57-formas-renda-extra-paperback-6x9.pdf` (margens espelhadas com gutter KDP e numeração automática pós-folhas iniciais)
+4. **Capa Completa Física (Frente + Lombada Exata + Contracapa + Caixa ISBN):** `private-assets/amazon-book/capa-paperback-6x9-completa.pdf`
+5. **Metadados & Passo a Passo de Publicação:** `private-assets/amazon-book/KDP-METADADOS-E-PUBLICACAO.md`

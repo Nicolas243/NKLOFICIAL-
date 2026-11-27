@@ -20,6 +20,7 @@
     "test:video-factory": "tsx --test tools/nkl-video-factory.test.ts",
     "guides:upload": "tsx scripts/upload-guide-assets.ts",
     "guides:generate": "node scripts/generate-language-ebooks.mjs",
+    "amazon:book": "tsx scripts/build-amazon-book.ts",
     "stripe:provision": "node scripts/migrate-stripe-account.mjs",
     "ide:sync": "node scripts/sync-ide-configs.mjs sync",
     "ide:doctor": "node scripts/sync-ide-configs.mjs doctor",
