@@ -18,7 +18,7 @@
         "Foco Atual",
         "Pendencias Somente Manuais do Usuario (Contas Externas)"
       ],
-      "excerpt": "- **Busca Compacta + Faixa Única de Atalhos (`/programas` & `/catalogo`, 2026-11-27):** em `/programas`, os 6 blocos pré-cards (Dados do levantamento, Mapa prático, Bússola de Negócios, Como escolher, Guias de escolha...",
+      "excerpt": "- **Correção Layout Mobile (`390px`, 2026-11-27):** adicionados `w-full max-w-full overflow-x-clip` em `<main>` (`layout.tsx`) e `w-full min-w-0` nos containers raiz (`/programas`, `/catalogo`, `/comparar`, `/metodolo...",
       "outgoing": [],
       "incoming": [
         "decisionsLog",
@@ -2444,6 +2444,7 @@
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
     "390px": [
+      "activeContext",
       "docs/portal-area-registry",
       "docs/quality",
       "docs/site-flow-and-upload-checklist",
@@ -2557,6 +2558,9 @@
     "960x540": [
       "decisionsLog",
       "progress"
+    ],
+    "978px": [
+      "activeContext"
     ],
     "9router": [
       "activeContext",
@@ -3432,6 +3436,7 @@
       "progress"
     ],
     "adicionados": [
+      "activeContext",
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design",
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design",
       "docs/toolkit-setup"
@@ -4201,6 +4206,7 @@
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
     "alinhados": [
+      "activeContext",
       "docs/quality"
     ],
     "alinhamento": [
@@ -10223,6 +10229,7 @@
       "progress"
     ],
     "comparar": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
@@ -10238,6 +10245,7 @@
       "docs/SEO-TOPICAL-MAP"
     ],
     "comparativos": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "progress"
@@ -11600,6 +11608,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "containers": [
+      "activeContext",
       "decisionsLog",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS"
     ],
@@ -12295,6 +12304,7 @@
       "decisionsLog"
     ],
     "correcao": [
+      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -16158,6 +16168,7 @@
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
     ],
     "eliminando": [
+      "activeContext",
       "decisionsLog"
     ],
     "eliminar": [
@@ -22291,6 +22302,7 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "horizontal": [
+      "activeContext",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/portal-area-registry",
       "docs/specs/portal-nkl-base-home/prd",
@@ -22465,6 +22477,7 @@
       "projectBrief"
     ],
     "hubs": [
+      "activeContext",
       "decisionsLog",
       "docs/SEO-TOPICAL-MAP",
       "docs/architecture",
@@ -25197,6 +25210,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "layout": [
+      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
@@ -26535,6 +26549,7 @@
       "docs/setup"
     ],
     "main": [
+      "activeContext",
       "docs/setup",
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -27059,6 +27074,9 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
+    "max-w-full": [
+      "activeContext"
+    ],
     "maxbytes": [
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp"
     ],
@@ -27452,6 +27470,7 @@
       "docs/setup"
     ],
     "mesma": [
+      "activeContext",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/ROADMAP-DEPLOY",
@@ -27614,6 +27633,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "metodologia": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/SEO-TOPICAL-MAP",
@@ -27797,6 +27817,9 @@
     "min-h-11": [
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
+    "min-w-0": [
+      "activeContext"
+    ],
     "min-w-11": [
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
@@ -27929,6 +27952,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "mobile": [
+      "activeContext",
       "docs/design",
       "docs/portal-area-registry",
       "docs/quality",
@@ -31070,6 +31094,7 @@
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA"
     ],
     "overflow": [
+      "activeContext",
       "docs/estado_atual",
       "docs/portal-area-registry",
       "docs/specs/portal-nkl-base-home/prd",
@@ -31086,6 +31111,9 @@
     ],
     "overflow-x-auto": [
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
+    ],
+    "overflow-x-clip": [
+      "activeContext"
     ],
     "overhead": [
       "decisionsLog"
@@ -36078,6 +36106,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "raiz": [
+      "activeContext",
       "decisionsLog",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
@@ -44767,6 +44796,7 @@
       "progress"
     ],
     "tsx": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA",
@@ -47166,6 +47196,9 @@
     ],
     "vulnerabilidades": [
       "docs/quality"
+    ],
+    "w-full": [
+      "activeContext"
     ],
     "wait": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",

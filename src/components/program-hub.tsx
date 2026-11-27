@@ -50,7 +50,7 @@ export function ProgramHub({ slug, title, description, programs, intro, criteria
   const { summary, zeroInvestmentPct, languagesLabel } = buildHubSummary(title, programs);
 
   return (
-    <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
+    <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@graph': [

@@ -2,6 +2,7 @@
 
 ## Foco Atual
 
+- **Correção Layout Mobile (`390px`, 2026-11-27):** adicionados `w-full max-w-full overflow-x-clip` em `<main>` (`layout.tsx`) e `w-full min-w-0` nos containers raiz (`/programas`, `/catalogo`, `/comparar`, `/metodologia`, hubs e comparativos) eliminando overflow horizontal (`978px` -> `390px`); busca + botão `Filtros` alinhados na mesma linha no mobile.
 - **Busca Compacta + Faixa Única de Atalhos (`/programas` & `/catalogo`, 2026-11-27):** em `/programas`, os 6 blocos pré-cards (Dados do levantamento, Mapa prático, Bússola de Negócios, Como escolher, Guias de escolha e Explore por objetivo) viram uma única linha de botões clicáveis acima da barra de pesquisa + botão `Filtros e ordenação` abrindo pop-up modal.
 - **3 Frentes de Escala Entregues (2026-11-27):**
   - **Frente 1 — NotebookLM & Vídeos dos Entregáveis:** `npm run nlm:sources` gerou `15` pacotes (`source.md`, `notebooklm-prompt.txt`, `video-manifest.json`, `30` capas `1920x1080`/`1080x1920`, `INDEX-PRODUCAO.md`, `run-notebooklm-batch.ps1`) + `npm run nlm:render` (`15` `captions.srt` e `metadata-upload.json`) em `private-assets/notebooklm-packs/`; `src/lib/ai-course.ts` e `/ia/curso/[moduleSlug]` prontos para `videoEmbedUrl`/`audioUrl`.

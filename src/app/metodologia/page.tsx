@@ -129,7 +129,7 @@ export default async function MetodologiaPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pt-8 pb-16">
+    <div className="mx-auto w-full min-w-0 max-w-5xl px-4 pt-8 pb-16">
       <JsonLd
         data={{
           '@context': 'https://schema.org',

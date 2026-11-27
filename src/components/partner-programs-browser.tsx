@@ -578,8 +578,8 @@ export function PartnerProgramsBrowser({
           {shareMessage}
         </div>
       )}
-      <section id="como-funciona" aria-label="Atalhos e guias rápidos" className="rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+      <section id="como-funciona" aria-label="Atalhos e guias rápidos" className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
+        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto scrollbar-none">
           {[
             ...(quickPanels
               ? [
@@ -673,9 +673,9 @@ export function PartnerProgramsBrowser({
         </div>
       </section>
 
-      <section id="filtros" aria-label="Pesquisa e filtros" className="rounded-2xl border border-border bg-income-surface/90 p-3 md:p-4">
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
+      <section id="filtros" aria-label="Pesquisa e filtros" className="w-full min-w-0 rounded-2xl border border-border bg-income-surface/90 p-2.5 md:p-4">
+        <div className="flex w-full min-w-0 items-center gap-2">
+          <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-55" aria-hidden="true" />
             <label htmlFor="search-input" className="sr-only">Pesquisar oportunidades</label>
             <input
@@ -687,8 +687,8 @@ export function PartnerProgramsBrowser({
                 setSelectedDiscoveryTag(null);
                 setCurrentPage(1);
               }}
-              placeholder="Pesquisar por nome, categoria ou tag..."
-              className="min-h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 py-2.5 text-sm outline-none transition-colors focus:border-neon"
+              placeholder="Pesquisar oportunidade..."
+              className="min-h-11 w-full rounded-xl border border-border bg-background pl-10 pr-9 py-2.5 text-sm outline-none transition-colors focus:border-neon"
             />
             {query.trim().length > 0 && (
               <button
@@ -698,7 +698,7 @@ export function PartnerProgramsBrowser({
                   setQuery('');
                   setCurrentPage(1);
                 }}
-                className="absolute right-2.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full opacity-70 transition hover:bg-surface hover:opacity-100"
+                className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full opacity-70 transition hover:bg-surface hover:opacity-100"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -709,13 +709,15 @@ export function PartnerProgramsBrowser({
             onClick={() => setFiltersOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={filtersOpen}
-            className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors ${activeFilterCount > 0
+            aria-label="Filtros e ordenação"
+            className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-colors sm:px-4 ${activeFilterCount > 0
               ? 'border-neon bg-neon/15 text-neon hover:bg-neon hover:text-black'
               : 'border-border bg-background hover:border-neon hover:text-neon'
               }`}
           >
-            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-            <span>Filtros e ordenação</span>
+            <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">Filtros e ordenação</span>
+            <span className="sm:hidden">Filtros</span>
             {activeFilterCount > 0 && (
               <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-neon px-1.5 text-xs font-extrabold text-black">
                 {activeFilterCount}

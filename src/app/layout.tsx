@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             Pular para o conteúdo principal
           </a>
-          <main id="main-content" tabIndex={-1} className="relative z-10 isolate min-h-screen pt-[5px] pb-12 flex flex-col outline-none lg:pt-[77px]">
+          <main id="main-content" tabIndex={-1} className="relative z-10 isolate min-h-screen w-full max-w-full overflow-x-clip pt-[5px] pb-12 flex flex-col outline-none lg:pt-[77px]">
             {children}
           </main>
           <RifaCampaignShell />

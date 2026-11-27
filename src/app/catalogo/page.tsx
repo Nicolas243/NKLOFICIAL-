@@ -83,7 +83,7 @@ export default async function CatalogoPage() {
     .slice(0, 24);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 pt-8 pb-16">
+    <div className="mx-auto w-full min-w-0 max-w-7xl px-4 pt-8 pb-16">
       <JsonLd
         data={{
           '@context': 'https://schema.org',

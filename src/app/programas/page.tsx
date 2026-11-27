@@ -164,7 +164,7 @@ export default async function PartnerProgramsPage() {
   const topComparisons = PROGRAM_COMPARISONS.slice(0, 6);
 
   return (
-    <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-0 md:pb-20">
+    <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 pb-12 pt-0 md:pb-20">
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@graph': [

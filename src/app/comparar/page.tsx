@@ -115,7 +115,7 @@ export default async function CompararPage() {
 
       <CompararClient initialItems={initialItems} />
 
-      <div className="max-w-5xl w-full mx-auto px-4 pb-16 space-y-8">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-8 px-4 pb-16">
         <BlufSummary
           summary={`O comparador lado a lado cruza ${allStrings.length} encordoamentos de violino em 13 critérios objetivos: nível, preço real em reais, nota da comunidade, material do núcleo, cor do som, velocidade de resposta, projeção, durabilidade, ambiente, sensibilidade climática, revestimento, fixação e tolerância de arco.`}
           facts={[

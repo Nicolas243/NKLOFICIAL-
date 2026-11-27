@@ -225,7 +225,7 @@ export default async function StringComparisonPage(props: { params: Params }) {
   const siblingComparisons = STRING_COMPARISONS.filter((entry) => entry.slug !== pair.slug);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pb-16 pt-8 md:pb-24">
+    <div className="mx-auto w-full min-w-0 max-w-5xl px-4 pb-16 pt-8 md:pb-24">
       <JsonLd
         data={{
           '@context': 'https://schema.org',

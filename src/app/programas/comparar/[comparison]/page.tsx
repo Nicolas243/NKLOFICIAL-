@@ -255,7 +255,7 @@ export default async function ProgramComparisonPage(props: { params: Params }) {
     allPrograms.length > 0 ? `Base comparada dentro de ${allPrograms.length} programas ativos.` : undefined;
 
   return (
-    <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
+    <div className="relative mx-auto w-full min-w-0 max-w-5xl px-4 pb-16 pt-4 md:pb-24 md:pt-10">
       <JsonLd
         data={{
           '@context': 'https://schema.org',
