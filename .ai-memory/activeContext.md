@@ -2,6 +2,7 @@
 
 ## Foco Atual
 
+- **Busca Compacta + Pop-up de Filtros e Ordenação (`/programas` & `/catalogo`, 2026-11-27):** barra de pesquisa posicionada imediatamente acima dos cards, com botão `Filtros e ordenação` ao final da barra abrindo pop-up modal acessível (`Escape`, backdrop, foco e badge de contagem ativa).
 - **3 Frentes de Escala Entregues (2026-11-27):**
   - **Frente 1 — NotebookLM & Vídeos dos Entregáveis:** `npm run nlm:sources` gerou `15` pacotes (`source.md`, `notebooklm-prompt.txt`, `video-manifest.json`, `30` capas `1920x1080`/`1080x1920`, `INDEX-PRODUCAO.md`, `run-notebooklm-batch.ps1`) + `npm run nlm:render` (`15` `captions.srt` e `metadata-upload.json`) em `private-assets/notebooklm-packs/`; `src/lib/ai-course.ts` e `/ia/curso/[moduleSlug]` prontos para `videoEmbedUrl`/`audioUrl`.
   - **Frente 2 — Publicador Multiplataforma (`tools/social-publisher/` + `/admin/publicador`):** 12 canais (`bluesky`, `threads`, `mastodon`, `x`, `youtube`, `tiktok`, `instagram`, `facebook`, `bilibili`, `kwai`, `postiz`, `webhook`), geração de copy em PT-BR com 9router (`NKL-OPERARIOS`) + fallback offline, `docker-compose.postiz.yml` e estúdio protegido em `/admin/publicador`.

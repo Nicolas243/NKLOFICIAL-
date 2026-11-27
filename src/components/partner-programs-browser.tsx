@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, Bookmark, CalendarPlus, Share2 } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
@@ -210,6 +210,7 @@ export function PartnerProgramsBrowser({
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [urlObjective, setUrlObjective] = useState<string | undefined>(initialObjective);
   const [urlCurrency, setUrlCurrency] = useState<string | undefined>(initialCurrency);
   const [urlEnglish, setUrlEnglish] = useState<string | undefined>(initialEnglish);
@@ -280,6 +281,49 @@ export function PartnerProgramsBrowser({
       previousFocus?.focus();
     };
   }, [selectedProgram, reminderProgram]);
+
+  useEffect(() => {
+    if (!filtersOpen) return;
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') setFiltersOpen(false);
+    }
+    function onCloseOverlays(): void {
+      setFiltersOpen(false);
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('nkl:close-overlays', onCloseOverlays);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('nkl:close-overlays', onCloseOverlays);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [filtersOpen]);
+
+  const activeFilterCount =
+    (category !== 'todas' ? 1 : 0)
+    + (difficulty !== 'todas' ? 1 : 0)
+    + (sort !== 'relevancia' ? 1 : 0)
+    + (sortDirection !== 'desc' ? 1 : 0);
+
+  const hasAnyActiveFilter =
+    Boolean(selectedDiscoveryTag)
+    || Boolean(query.trim())
+    || activeFilterCount > 0;
+
+  function resetAllFilters(): void {
+    setSelectedDiscoveryTag(null);
+    setCategory('todas');
+    setDifficulty('todas');
+    setSort('relevancia');
+    setSortDirection('desc');
+    setQuery('');
+    setCurrentPage(1);
+  }
 
   const categories = useMemo(
     () => Array.from(new Set(programs.map((program) => program.category))).sort(),
@@ -523,80 +567,6 @@ export function PartnerProgramsBrowser({
           {shareMessage}
         </div>
       )}
-      <section id="filtros" className="rounded-2xl border border-border bg-income-surface/90 p-4 md:p-5">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Encontre seu próximo caminho</p>
-            <h2 className="mt-1 font-playfair text-2xl font-bold">Filtre por objetivo, não por hype.</h2>
-          </div>
-          <p className="max-w-xs text-right text-xs leading-relaxed opacity-55">Pesquise por uma ideia como “gravar vídeos em casa” ou “ganhar indicando”.</p>
-        </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr_0.8fr]">
-          <label className="text-sm">
-            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Pesquisar</span>
-            <input
-              id="search-input"
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setSelectedDiscoveryTag(null);
-                setCurrentPage(1);
-              }}
-              placeholder="Nome, categoria ou tag"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:border-neon"
-            />
-          </label>
-          <label className="text-sm">
-            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
-            <select id="category-filters" value={category} onChange={(event) => {
-              const nextCategory = event.target.value;
-              setCategory(nextCategory);
-              setCurrentPage(1);
-              if (nextCategory !== 'todas') scrollToCards();
-            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-              <option value="todas">Todas</option>
-              {categories.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-          </label>
-          <label className="text-sm">
-            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Dificuldade</span>
-            <select value={difficulty} onChange={(event) => {
-              const nextDifficulty = event.target.value;
-              setDifficulty(nextDifficulty);
-              setCurrentPage(1);
-              if (nextDifficulty !== 'todas') scrollToCards();
-            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-              <option value="todas">Todas</option>
-              <option value="fácil">Fácil</option>
-              <option value="médio">Médio</option>
-              <option value="difícil">Difícil</option>
-            </select>
-          </label>
-          <label className="text-sm">
-            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Ordenar</span>
-            <select value={sort} onChange={(event) => {
-              setSort(event.target.value);
-              setCurrentPage(1);
-            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-              <option value="relevancia">Relevância</option>
-              <option value="nota">Nota</option>
-              <option value="ganhos">Ganhos</option>
-              <option value="nome">Nome</option>
-            </select>
-          </label>
-          <label className="text-sm">
-            <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Direção</span>
-            <select value={sortDirection} onChange={(event) => {
-              setSortDirection(event.target.value as 'asc' | 'desc');
-              setCurrentPage(1);
-            }} className="w-full rounded-md border border-border bg-background px-3 py-2">
-              <option value="desc">Decrescente</option>
-              <option value="asc">Crescente</option>
-            </select>
-          </label>
-        </div>
-      </section>
-
       <section aria-labelledby="discovery-tags-title" className="rounded-2xl border border-border bg-income-surface/65 p-4">
         <h2 id="discovery-tags-title" className="mb-3 text-xs font-bold uppercase tracking-wide opacity-60">Explore por objetivo</h2>
         <div className="flex flex-wrap gap-3">
@@ -622,24 +592,85 @@ export function PartnerProgramsBrowser({
         </div>
       </section>
 
+      <section id="filtros" aria-label="Pesquisa e filtros" className="rounded-2xl border border-border bg-income-surface/90 p-3 md:p-4">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-55" aria-hidden="true" />
+            <label htmlFor="search-input" className="sr-only">Pesquisar oportunidades</label>
+            <input
+              id="search-input"
+              type="search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setSelectedDiscoveryTag(null);
+                setCurrentPage(1);
+              }}
+              placeholder="Pesquisar por nome, categoria ou tag..."
+              className="min-h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 py-2.5 text-sm outline-none transition-colors focus:border-neon"
+            />
+            {query.trim().length > 0 && (
+              <button
+                type="button"
+                aria-label="Limpar pesquisa"
+                onClick={() => {
+                  setQuery('');
+                  setCurrentPage(1);
+                }}
+                className="absolute right-2.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full opacity-70 transition hover:bg-surface hover:opacity-100"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={filtersOpen}
+            className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors ${activeFilterCount > 0
+              ? 'border-neon bg-neon/15 text-neon hover:bg-neon hover:text-black'
+              : 'border-border bg-background hover:border-neon hover:text-neon'
+              }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            <span>Filtros e ordenação</span>
+            {activeFilterCount > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-neon px-1.5 text-xs font-extrabold text-black">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </section>
+
       <div ref={cardsResultsRef} className="scroll-mt-24 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm opacity-75">{filteredPrograms.length} oportunidades encontradas</p>
-        {(selectedDiscoveryTag || category !== 'todas' || difficulty !== 'todas' || query.trim()) && (
+        {hasAnyActiveFilter && (
           <div className="flex flex-wrap items-center gap-2">
             {selectedDiscoveryTag && (
               <span className="rounded-full border border-neon/40 bg-neon/10 px-3 py-1 text-xs font-bold text-neon">
-                Filtro ativo: {selectedDiscoveryTag}
+                Objetivo: {selectedDiscoveryTag}
+              </span>
+            )}
+            {category !== 'todas' && (
+              <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold">
+                Categoria: {category}
+              </span>
+            )}
+            {difficulty !== 'todas' && (
+              <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold">
+                Dificuldade: {difficulty}
+              </span>
+            )}
+            {(sort !== 'relevancia' || sortDirection !== 'desc') && (
+              <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold">
+                Ordem: {sort} ({sortDirection === 'asc' ? 'crescente' : 'decrescente'})
               </span>
             )}
             <button
               type="button"
-              onClick={() => {
-                setSelectedDiscoveryTag(null);
-                setCategory('todas');
-                setDifficulty('todas');
-                setQuery('');
-                setCurrentPage(1);
-              }}
+              onClick={resetAllFilters}
               className="rounded-full border border-border px-3 py-1 text-xs font-semibold hover:border-neon hover:text-neon"
             >
               Limpar filtros
@@ -1165,6 +1196,122 @@ export function PartnerProgramsBrowser({
           programName={selectedProgram.name}
           onClose={() => setShowReferralModal(false)}
         />
+      )}
+      {filtersOpen && (
+        <div
+          className="fixed inset-0 z-[310] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          onClick={() => setFiltersOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtros e ordenação"
+            className="relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-neon">Catálogo de Renda Extra</p>
+                <h2 className="mt-1 font-playfair text-2xl font-bold">Filtros e ordenação</h2>
+              </div>
+              <button
+                type="button"
+                aria-label="Fechar filtros e ordenação"
+                onClick={() => setFiltersOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border opacity-75 transition hover:border-neon hover:opacity-100"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label className="text-sm sm:col-span-2">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wide opacity-65">Categoria</span>
+                <select
+                  id="category-filters"
+                  value={category}
+                  onChange={(event) => {
+                    setCategory(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-neon"
+                >
+                  <option value="todas">Todas as categorias</option>
+                  {categories.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wide opacity-65">Dificuldade</span>
+                <select
+                  value={difficulty}
+                  onChange={(event) => {
+                    setDifficulty(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-neon"
+                >
+                  <option value="todas">Todas</option>
+                  <option value="fácil">Fácil</option>
+                  <option value="médio">Médio</option>
+                  <option value="difícil">Difícil</option>
+                </select>
+              </label>
+
+              <label className="text-sm">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wide opacity-65">Ordenar por</span>
+                <select
+                  value={sort}
+                  onChange={(event) => {
+                    setSort(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-neon"
+                >
+                  <option value="relevancia">Relevância</option>
+                  <option value="nota">Nota</option>
+                  <option value="ganhos">Ganhos</option>
+                  <option value="nome">Nome</option>
+                </select>
+              </label>
+
+              <label className="text-sm sm:col-span-2">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wide opacity-65">Direção</span>
+                <select
+                  value={sortDirection}
+                  onChange={(event) => {
+                    setSortDirection(event.target.value as 'asc' | 'desc');
+                    setCurrentPage(1);
+                  }}
+                  className="min-h-11 w-full rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-neon"
+                >
+                  <option value="desc">Decrescente (melhores primeiro)</option>
+                  <option value="asc">Crescente (A–Z / menor primeiro)</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                className="min-h-11 rounded-xl border border-border px-4 py-2 text-sm font-semibold transition hover:border-neon hover:text-neon"
+              >
+                Limpar filtros
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFiltersOpen(false);
+                  scrollToCards();
+                }}
+                className="min-h-11 rounded-xl bg-neon px-5 py-2 text-sm font-bold text-black transition hover:opacity-90"
+              >
+                Ver {filteredPrograms.length} resultados
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
