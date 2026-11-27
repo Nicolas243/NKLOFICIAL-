@@ -640,7 +640,7 @@ export function PartnerProgramsBrowser({
                   role="link"
                   tabIndex={0}
                   aria-label={`Abrir ${embeddedResource.title}`}
-                  className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+                  className="group relative flex min-h-full cursor-pointer flex-col gap-3 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-4 md:p-6"
                 >
                   <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4" onClick={(event) => event.stopPropagation()}>
                     <Link
@@ -652,21 +652,17 @@ export function PartnerProgramsBrowser({
                       <Bookmark size={16} aria-hidden="true" />
                     </Link>
                   </div>
-                  <div className="flex min-w-0 items-start justify-between gap-3 pr-14">
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold uppercase tracking-wide text-neon">{meta.eyebrow}</p>
-                      <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{embeddedResource.title}</h2>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1.5">
-                      <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-                        {meta.incomePotential}
-                      </span>
-                      <span className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-neon px-3 py-1.5 text-xs font-bold">
-                        10.0/10
-                      </span>
-                    </div>
+                  <div className="min-w-0 pr-14">
+                    <p className="text-xs font-bold uppercase tracking-wide text-neon">{meta.eyebrow}</p>
+                    <h2 className="mt-1 line-clamp-2 break-words font-playfair text-xl font-bold leading-snug sm:text-2xl">{embeddedResource.title}</h2>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="inline-flex min-h-8 shrink-0 items-center rounded-full border border-neon px-2.5 py-1 text-xs font-bold">
+                      10.0/10
+                    </span>
+                    <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold leading-tight text-neon">
+                      {meta.incomePotential}
+                    </span>
                     <span className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">Português</span>
                     <span className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
                       {embeddedResource.hasStandalonePwa ? 'App Instalável' : 'Acesso Digital'}
@@ -754,7 +750,7 @@ export function PartnerProgramsBrowser({
                 role="button"
                 tabIndex={0}
                 data-tutorial={index === 0 ? 'program-card-0' : undefined}
-                className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-5 md:p-6"
+                className="group relative flex min-h-full cursor-pointer flex-col gap-3 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-4 md:p-6"
               >
                 <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4" onClick={(event) => event.stopPropagation()}>
                   <SaveProgramButton
@@ -766,21 +762,17 @@ export function PartnerProgramsBrowser({
                     isSaved={savedSlugSet.has(program.slug)}
                   />
                 </div>
-                <div className="flex min-w-0 items-start justify-between gap-3 pr-14">
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-wide text-neon font-bold">{program.category}</p>
-                    <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{program.name}</h2>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1.5">
-                    <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-                      {program.averageEarning}
-                    </span>
-                    <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-9 shrink-0 rounded-full border border-neon px-3 py-1.5 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
-                      {rating.toFixed(1)}/10
-                    </button>
-                  </div>
+                <div className="min-w-0 pr-14">
+                  <p className="text-xs font-bold uppercase tracking-wide text-neon">{program.category}</p>
+                  <h2 className="mt-1 line-clamp-2 break-words font-playfair text-xl font-bold leading-snug sm:text-2xl">{program.name}</h2>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-8 shrink-0 rounded-full border border-neon px-2.5 py-1 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
+                    {rating.toFixed(1)}/10
+                  </button>
+                  <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold leading-tight text-neon">
+                    {program.averageEarning}
+                  </span>
                   {program.languages.map((language) => (
                     <span key={language} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
                       {language}

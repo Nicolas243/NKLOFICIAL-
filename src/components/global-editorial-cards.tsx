@@ -92,7 +92,7 @@ export function EditorialCardView({ card }: { card: EditorialCardData }) {
 
   return (
     <article
-      className="group relative flex min-h-full cursor-pointer flex-col gap-4 rounded-xl border border-border bg-income-card/95 p-4 shadow-sm transition-colors hover:border-neon/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon [container-type:inline-size] md:gap-5 md:p-6"
+      className="group relative flex min-h-full cursor-pointer flex-col gap-3 rounded-xl border border-border bg-income-card/95 p-4 shadow-sm transition-colors hover:border-neon/60 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon [container-type:inline-size] md:gap-4 md:p-6"
       onClick={navigate}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -128,22 +128,18 @@ export function EditorialCardView({ card }: { card: EditorialCardData }) {
         )}
       </div>
 
-      <div className="flex min-w-0 items-start justify-between gap-3 pr-14">
-        <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wide text-neon">{card.eyebrow}</p>
-          <h2 className="mt-1 break-words font-playfair text-2xl font-bold">{card.title}</h2>
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold text-neon">
-            {card.incomeDisplay}
-          </span>
-          <span className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-neon px-3 py-1.5 text-xs font-bold">
-            10.0/10
-          </span>
-        </div>
+      <div className="min-w-0 pr-14">
+        <p className="text-xs font-bold uppercase tracking-wide text-neon">{card.eyebrow}</p>
+        <h2 className="mt-1 line-clamp-2 break-words font-playfair text-xl font-bold leading-snug sm:text-2xl">{card.title}</h2>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="inline-flex min-h-8 shrink-0 items-center rounded-full border border-neon px-2.5 py-1 text-xs font-bold">
+          10.0/10
+        </span>
+        <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold leading-tight text-neon">
+          {card.incomeDisplay}
+        </span>
         {card.badges.map((badge) => (
           <span key={badge} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
             {badge}
