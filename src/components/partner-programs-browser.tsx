@@ -210,7 +210,34 @@ export function PartnerProgramsBrowser({
   const [shareMessage, setShareMessage] = useState<string | null>(null);
   const [reminderProgram, setReminderProgram] = useState<PartnerProgramCard | null>(null);
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
+  const [urlObjective, setUrlObjective] = useState<string | undefined>(initialObjective);
+  const [urlCurrency, setUrlCurrency] = useState<string | undefined>(initialCurrency);
+  const [urlEnglish, setUrlEnglish] = useState<string | undefined>(initialEnglish);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const cardsResultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const search = new URLSearchParams(window.location.search);
+    const qParam = search.get('q')?.trim();
+    const objParam = search.get('objetivo')?.trim() ?? undefined;
+    const curParam = search.get('moeda')?.trim() ?? undefined;
+    const engParam = search.get('ingles')?.trim() ?? undefined;
+    if (!qParam && !objParam && !curParam && !engParam) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      if (qParam) setQuery(qParam);
+      if (objParam) setUrlObjective(objParam);
+      if (curParam) setUrlCurrency(curParam);
+      if (engParam) setUrlEnglish(engParam);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  function scrollToCards(): void {
+    window.requestAnimationFrame(() => {
+      cardsResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
   useEffect(() => {
     const activeDialog = selectedProgram ?? reminderProgram;
@@ -271,10 +298,10 @@ export function PartnerProgramsBrowser({
         ...program.communityTags,
       ].join(' ').toLocaleLowerCase('pt-BR');
 
-      const objectiveMatches = initialObjective !== 'celular'
+      const objectiveMatches = urlObjective !== 'celular'
         || DISCOVERY_TAGS.find((tag) => tag.label === 'Renda extra pelo celular')?.slugs.includes(program.slug);
-      const currencyMatches = initialCurrency !== 'usd' || program.averageEarning.startsWith('US$');
-      const englishMatches = initialEnglish !== 'nao' || program.languages.includes('Português');
+      const currencyMatches = urlCurrency !== 'usd' || program.averageEarning.startsWith('US$');
+      const englishMatches = urlEnglish !== 'nao' || program.languages.includes('Português');
 
       const matchesSelectedTag = !selectedSlugs
         || selectedSlugs.includes(program.slug)
@@ -300,7 +327,7 @@ export function PartnerProgramsBrowser({
 
       return sortDirection === 'asc' ? comparison : comparison * -1;
     });
-  }, [category, difficulty, initialCurrency, initialEnglish, initialObjective, programs, query, selectedDiscoveryTag, sort, sortDirection]);
+  }, [category, difficulty, programs, query, selectedDiscoveryTag, sort, sortDirection, urlCurrency, urlEnglish, urlObjective]);
 
   const embeddedResources = useMemo(
     () => PAID_PRODUCTS.filter((product) => EMBEDDED_PORTAL_RESOURCE_SLUGS.includes(product.slug as (typeof EMBEDDED_PORTAL_RESOURCE_SLUGS)[number])),
@@ -522,8 +549,10 @@ export function PartnerProgramsBrowser({
           <label className="text-sm">
             <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Categoria</span>
             <select id="category-filters" value={category} onChange={(event) => {
-              setCategory(event.target.value);
+              const nextCategory = event.target.value;
+              setCategory(nextCategory);
               setCurrentPage(1);
+              if (nextCategory !== 'todas') scrollToCards();
             }} className="w-full rounded-md border border-border bg-background px-3 py-2">
               <option value="todas">Todas</option>
               {categories.map((item) => <option key={item} value={item}>{item}</option>)}
@@ -532,8 +561,10 @@ export function PartnerProgramsBrowser({
           <label className="text-sm">
             <span className="block text-xs font-bold uppercase tracking-wide opacity-60 mb-2">Dificuldade</span>
             <select value={difficulty} onChange={(event) => {
-              setDifficulty(event.target.value);
+              const nextDifficulty = event.target.value;
+              setDifficulty(nextDifficulty);
               setCurrentPage(1);
+              if (nextDifficulty !== 'todas') scrollToCards();
             }} className="w-full rounded-md border border-border bg-background px-3 py-2">
               <option value="todas">Todas</option>
               <option value="fácil">Fácil</option>
@@ -578,9 +609,10 @@ export function PartnerProgramsBrowser({
                 setSelectedDiscoveryTag(isSelected ? null : tag.label);
                 setQuery('');
                 setCurrentPage(1);
+                if (!isSelected) scrollToCards();
               }}
-              className={`inline-flex min-h-9 items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
-                ? 'border-neon bg-neon text-black'
+              className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
+                ? 'border-neon bg-neon text-black font-bold'
                 : 'border-border opacity-75 hover:border-neon hover:opacity-100'
                 }`}
             >
@@ -590,7 +622,31 @@ export function PartnerProgramsBrowser({
         </div>
       </section>
 
-      <p className="text-sm opacity-60">{filteredPrograms.length} oportunidades encontradas</p>
+      <div ref={cardsResultsRef} className="scroll-mt-24 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm opacity-75">{filteredPrograms.length} oportunidades encontradas</p>
+        {(selectedDiscoveryTag || category !== 'todas' || difficulty !== 'todas' || query.trim()) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {selectedDiscoveryTag && (
+              <span className="rounded-full border border-neon/40 bg-neon/10 px-3 py-1 text-xs font-bold text-neon">
+                Filtro ativo: {selectedDiscoveryTag}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedDiscoveryTag(null);
+                setCategory('todas');
+                setDifficulty('todas');
+                setQuery('');
+                setCurrentPage(1);
+              }}
+              className="rounded-full border border-border px-3 py-1 text-xs font-semibold hover:border-neon hover:text-neon"
+            >
+              Limpar filtros
+            </button>
+          </div>
+        )}
+      </div>
 
       <section id="programs-grid" className="programs-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {gridEntries.map((entry, gridIndex) => {
@@ -770,11 +826,11 @@ export function PartnerProgramsBrowser({
                   <button id={index === 0 ? 'nota-comunidade' : undefined} data-tutorial={index === 0 ? 'program-rating' : undefined} type="button" onClick={(event) => { event.stopPropagation(); openProgram(program); }} className="community-rating min-h-8 shrink-0 rounded-full border border-neon px-2.5 py-1 text-xs font-bold transition-colors hover:bg-neon hover:text-black" aria-label={`Avaliar ${program.name}`}>
                     {rating.toFixed(1)}/10
                   </button>
-                  <span className="inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold leading-tight text-neon">
+                  <span className="pointer-events-none select-none inline-flex max-w-full items-center rounded-full border border-neon/40 bg-neon/10 px-2.5 py-1 text-xs font-bold leading-tight text-neon">
                     {program.averageEarning}
                   </span>
                   {program.languages.map((language) => (
-                    <span key={language} className="rounded-full border border-border px-2.5 py-1 text-xs font-medium">
+                    <span key={language} className="pointer-events-none select-none rounded-full border border-border px-2.5 py-1 text-xs font-medium">
                       {language}
                     </span>
                   ))}

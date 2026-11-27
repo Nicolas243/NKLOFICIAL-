@@ -10,6 +10,11 @@ updated: 2026-11-26
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-027 (2026-11-27) ISR + Payload Enxuto em `/programas`, Scripts/WebGL em Idle, Auto-Scroll de Tags & `cancelPath` Universal na Stripe
+- Decisao: converter `/programas` para ISR (`revalidate = 300`) enxugando os props de `IncomeWizard`/`ProgramCompare`, adiar `PortalHomeParallax` (`ssr: false` + `requestIdleCallback`) e terceiros em `PrivacyScripts` (`lazyOnload` + `requestIdleCallback`), rolar suavemente para `#programs-grid` ao selecionar tags de descoberta e enviar `window.location.pathname` como `cancelPath` em `AiOfferCheckout`, `GuideCheckoutButton` e `GuideSubscriptionButton`.
+- Motivo: reduzir FCP/LCP/INP eliminando tripla serialização de 57 registros (606 KB) e trabalho síncrono de WebGL/terceiros na hidratação, eliminar rage clicks causados por tags que filtravam fora do viewport e assegurar 100% de retorno exato ao cancelar qualquer checkout Stripe.
+- Descartado: manter `force-dynamic` por conta de query params opcionais ou manter scripts de terceiros/WebGL competindo na janela de LCP e INP.
+
 ## ADR-026 (2026-11-27) Gerador Modular Amazon KDP Flagship (EPUB 3.0 + Paperback 6x9" PDF + Capa Lombada Exata)
 - Decisao: construir `scripts/amazon-book/*` + `scripts/build-amazon-book.ts` (`npm run amazon:book`) lendo os 57 programas e 18 modelos reais do Supabase para produzir simultaneamente EPUB 3.0 reflowable, capa `1600x2560` JPG, miolo Paperback `6x9"` de 174 páginas com margens espelhadas/caderno pautado e capa wrap PDF na espessura exata (`0.3918"`).
 - Motivo: entregar livro pago substancialmente superior ao guia gratuito (`46.110` palavras no Kindle / `48.263` no físico) pronto para upload direto no painel da Amazon KDP sem edição manual posterior.

@@ -38,7 +38,10 @@ export function AiOfferCheckout({ plan, label, helperText }: AiOfferCheckoutProp
       const response = await fetch('/api/payments/create-ai-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({
+          plan,
+          cancelPath: typeof window !== 'undefined' ? window.location.pathname : undefined,
+        }),
       });
 
       if (response.status === 401) {

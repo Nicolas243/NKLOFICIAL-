@@ -6,8 +6,23 @@ import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { useSavedProgramSlugs } from '@/components/income/save-program-button';
 import { absoluteSiteUrl } from '@/lib/site';
 
+export type WizardProgram = Pick<
+  PartnerProgramCard,
+  | 'slug'
+  | 'name'
+  | 'category'
+  | 'difficulty'
+  | 'shortDescription'
+  | 'tags'
+  | 'requirements'
+  | 'averageEarning'
+  | 'finalRating'
+  | 'languages'
+  | 'zeroInvestmentRequired'
+>;
+
 type Props = {
-  programs: PartnerProgramCard[];
+  programs: WizardProgram[];
 };
 
 type QuestionId = 'experience' | 'urgency' | 'device' | 'pc' | 'currency' | 'english' | 'video' | 'availability' | 'workType' | 'investment';
@@ -122,7 +137,7 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-function scoreProgram(program: PartnerProgramCard, answers: Partial<Record<QuestionId, string>>): number {
+function scoreProgram(program: WizardProgram, answers: Partial<Record<QuestionId, string>>): number {
   const searchText = [...program.tags, ...program.requirements, program.category, program.shortDescription].join(' ').toLocaleLowerCase('pt-BR');
   const earning = program.averageEarning.toLocaleLowerCase('pt-BR');
   let score = program.finalRating;
@@ -149,7 +164,7 @@ function scoreProgram(program: PartnerProgramCard, answers: Partial<Record<Quest
   return score;
 }
 
-function resultSummary(results: PartnerProgramCard[]): string {
+function resultSummary(results: WizardProgram[]): string {
   return [
     'Meu caminho sugerido pelo Guia de Renda Extra NKL:',
     ...results.map((program, index) => `${index + 1}. ${program.name} — ${program.shortDescription}`),
@@ -162,13 +177,13 @@ export function IncomeWizard({ programs }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<Record<QuestionId, string>>>({});
-  const [results, setResults] = useState<PartnerProgramCard[]>([]);
+  const [results, setResults] = useState<WizardProgram[]>([]);
   const { savedSlugs, toggleSlug } = useSavedProgramSlugs();
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const question = QUESTIONS[questionIndex];
   const savedPrograms = useMemo(
-    () => savedSlugs.map((slug) => programs.find((program) => program.slug === slug)).filter((program): program is PartnerProgramCard => Boolean(program)),
+    () => savedSlugs.map((slug) => programs.find((program) => program.slug === slug)).filter((program): program is WizardProgram => Boolean(program)),
     [programs, savedSlugs],
   );
 

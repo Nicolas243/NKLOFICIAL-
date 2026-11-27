@@ -77,34 +77,51 @@ function ConsentAnalytics({ consent, portalArea }: { consent: Consent | null; po
     if (!POSTHOG_KEY) return;
 
     let cancelled = false;
-    void import('posthog-js')
-      .then(({ default: posthog }) => {
-        if (cancelled) return;
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
 
-        if (!posthogInitialized) {
-          posthog.init(POSTHOG_KEY, {
-            api_host: POSTHOG_HOST,
-            capture_pageview: false,
-            capture_pageleave: true,
-            persistence: 'localStorage',
-            respect_dnt: true,
-          });
-          posthogInitialized = true;
-        }
+    const loadPostHog = (): void => {
+      void import('posthog-js')
+        .then(({ default: posthog }) => {
+          if (cancelled) return;
 
-        posthogClient = posthog;
-        posthog.register({ portal_area: portalArea, ...utms });
-        if (lastTrackedPathRef.current !== pathname) {
-          lastTrackedPathRef.current = pathname;
-          posthog.capture('$pageview', { $current_url: window.location.href, portal_area: portalArea });
-        }
-      })
-      .catch((error: unknown) => {
-        console.error('Não foi possível inicializar o PostHog.', error);
-      });
+          if (!posthogInitialized) {
+            posthog.init(POSTHOG_KEY, {
+              api_host: POSTHOG_HOST,
+              capture_pageview: false,
+              capture_pageleave: true,
+              persistence: 'localStorage',
+              respect_dnt: true,
+            });
+            posthogInitialized = true;
+          }
+
+          posthogClient = posthog;
+          posthog.register({ portal_area: portalArea, ...utms });
+          if (lastTrackedPathRef.current !== pathname) {
+            lastTrackedPathRef.current = pathname;
+            posthog.capture('$pageview', { $current_url: window.location.href, portal_area: portalArea });
+          }
+        })
+        .catch((error: unknown) => {
+          console.error('Não foi possível inicializar o PostHog.', error);
+        });
+    };
+
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(loadPostHog, { timeout: 800 });
+    } else {
+      timeoutId = window.setTimeout(loadPostHog, 300);
+    }
 
     return () => {
       cancelled = true;
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
     };
   }, [consent, pathname, portalArea]);
 
@@ -132,7 +149,7 @@ function ConsentAnalytics({ consent, portalArea }: { consent: Consent | null; po
     <>
       <Analytics />
       {CLARITY_PROJECT_ID && (
-        <Script id="microsoft-clarity" strategy="afterInteractive">
+        <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -174,14 +191,14 @@ export function PrivacyScripts() {
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8249438839607534"
             crossOrigin="anonymous"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
           <Script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-QD0HQJFWVW"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
-          <Script id="google-analytics" strategy="afterInteractive">
+          <Script id="google-analytics" strategy="lazyOnload">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){window.dataLayer.push(arguments);}

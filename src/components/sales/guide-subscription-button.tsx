@@ -45,6 +45,7 @@ export function GuideSubscriptionButton({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           offerVariant,
+          cancelPath: typeof window !== 'undefined' ? window.location.pathname : undefined,
           fullName,
           email,
           cpf,

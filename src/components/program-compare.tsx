@@ -3,12 +3,17 @@
 import { useMemo, useState } from 'react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 
+export type CompareProgram = Pick<
+  PartnerProgramCard,
+  'slug' | 'name' | 'averageEarning' | 'languages' | 'difficulty' | 'finalRating' | 'requirements'
+>;
+
 type Props = {
-  programs: PartnerProgramCard[];
+  programs: CompareProgram[];
 };
 
 const MAX_COMPARE_PROGRAMS = 3;
-const COMPARISON_ROWS: Array<{ label: string; value: (program: PartnerProgramCard) => string }> = [
+const COMPARISON_ROWS: Array<{ label: string; value: (program: CompareProgram) => string }> = [
   { label: 'Remuneração', value: (program) => program.averageEarning },
   { label: 'Idioma', value: (program) => program.languages.join(' · ') },
   { label: 'Dificuldade', value: (program) => program.difficulty },
@@ -19,7 +24,7 @@ const COMPARISON_ROWS: Array<{ label: string; value: (program: PartnerProgramCar
 export function ProgramCompare({ programs }: Props) {
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
   const selectedPrograms = useMemo(
-    () => selectedSlugs.map((slug) => programs.find((program) => program.slug === slug)).filter((program): program is PartnerProgramCard => Boolean(program)),
+    () => selectedSlugs.map((slug) => programs.find((program) => program.slug === slug)).filter((program): program is CompareProgram => Boolean(program)),
     [programs, selectedSlugs],
   );
 

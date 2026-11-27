@@ -96,11 +96,9 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-export default async function PartnerProgramsPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function PartnerProgramsPage() {
   const [programs, adSlots, micro1Result] = await Promise.all([
     getCachedPartnerPrograms(),
     getCachedActiveAdSlots().catch((error: unknown) => {
@@ -116,11 +114,28 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
     }),
   ]);
   const adPricing = getAdPricing();
-  const params = searchParams ? await searchParams : {};
-  const getParam = (key: string): string | undefined => {
-    const value = params[key];
-    return Array.isArray(value) ? value[0] : value;
-  };
+  const wizardPrograms = programs.map((program) => ({
+    slug: program.slug,
+    name: program.name,
+    category: program.category,
+    difficulty: program.difficulty,
+    shortDescription: program.shortDescription,
+    tags: program.tags,
+    requirements: program.requirements,
+    averageEarning: program.averageEarning,
+    finalRating: program.finalRating,
+    languages: program.languages,
+    zeroInvestmentRequired: program.zeroInvestmentRequired,
+  }));
+  const comparePrograms = programs.map((program) => ({
+    slug: program.slug,
+    name: program.name,
+    averageEarning: program.averageEarning,
+    languages: program.languages,
+    difficulty: program.difficulty,
+    finalRating: program.finalRating,
+    requirements: program.requirements,
+  }));
   const categoryCount = new Set(programs.map((program) => program.category)).size;
   const catalogUrl = absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog);
 
@@ -172,7 +187,7 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
         <div className="pointer-events-none absolute -bottom-40 left-1/3 h-72 w-72 rounded-full bg-emerald-300/10 blur-3xl" />
         <div className="relative grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-10 lg:items-end">
           <div className="relative z-10 mb-1 flex justify-end lg:absolute lg:right-0 lg:top-0 lg:mb-0">
-            <IncomeWizard programs={programs} />
+            <IncomeWizard programs={wizardPrograms} />
           </div>
           <div className="max-w-3xl">
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-neon md:mb-5 md:tracking-[0.28em]">Renda Extra NKL · {programs.length} formas reais catalogadas</p>
@@ -286,13 +301,10 @@ export default async function PartnerProgramsPage({ searchParams }: { searchPara
           adSlots={adSlots}
           adPriceCents={adPricing.monthlyPriceCents}
           adPromotionActive={adPricing.isPromotionActive}
-          initialObjective={getParam('objetivo')}
-          initialCurrency={getParam('moeda')}
-          initialEnglish={getParam('ingles')}
         />
       </div>
       <div className="mt-8 md:mt-12">
-        <ProgramCompare programs={programs} />
+        <ProgramCompare programs={comparePrograms} />
       </div>
       <EditorialSupportOffers />
 

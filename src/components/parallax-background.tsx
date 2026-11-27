@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { PortalHomeParallax } from '@/components/portal-home-parallax';
 import { getPortalSurface } from '@/lib/income-portal';
+
+const PortalHomeParallax = dynamic(
+  () => import('@/components/portal-home-parallax').then((module) => module.PortalHomeParallax),
+  { ssr: false },
+);
 
 const PARALLAX_SPEEDS = [-0.08, -0.18, -0.28] as const;
 
@@ -11,6 +16,33 @@ export function ParallaxBackground() {
   const pathname = usePathname();
   const layers = useRef<Array<HTMLDivElement | null>>([]);
   const surface = getPortalSurface(pathname);
+  const [ecosystemReady, setEcosystemReady] = useState(false);
+
+  useEffect(() => {
+    if (surface !== 'ecosystem') {
+      const frame = window.requestAnimationFrame(() => setEcosystemReady(false));
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+    const activate = (): void => setEcosystemReady(true);
+
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(activate, { timeout: 1200 });
+    } else {
+      timeoutId = window.setTimeout(activate, 350);
+    }
+
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [surface]);
 
   useEffect(() => {
     if (surface === 'home') return;
@@ -50,6 +82,7 @@ export function ParallaxBackground() {
   }
 
   if (surface === 'ecosystem') {
+    if (!ecosystemReady) return null;
     return (
       <div className="income-parallax-field fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
         <PortalHomeParallax variant="ecosystem" />

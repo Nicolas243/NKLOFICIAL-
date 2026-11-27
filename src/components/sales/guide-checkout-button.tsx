@@ -61,6 +61,7 @@ export function GuideCheckoutButton({
         body: JSON.stringify({
           offerVariant,
           ...(tier ? { tier } : {}),
+          cancelPath: typeof window !== 'undefined' ? window.location.pathname : undefined,
           fullName,
           email,
           cpf,
