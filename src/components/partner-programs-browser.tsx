@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, Bookmark, CalendarPlus, ChevronDown, HelpCircle, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, ChevronDown, GraduationCap, HelpCircle, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
@@ -20,6 +20,7 @@ import { SmartTagList } from '@/components/income/smart-tag-list';
 import { SocialEmbed } from '@/components/video/social-embed';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
 import { DISCOVERY_TAGS } from '@/lib/partner-program-catalog';
+import { getRecommendedCourseForProgram } from '@/lib/partner-program-courses';
 import { getMultiProjectCardHint } from '@/lib/multi-project-programs';
 import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
 import { getProgramShareUrl } from '@/lib/share-url';
@@ -31,7 +32,7 @@ import { PAID_PRODUCTS } from '@/config/products';
 import type { ActiveAdSlot } from '@/lib/ad-inventory';
 import type { Micro1Opportunity } from '@/lib/micro1-opportunities';
 
-type QuickPanelId = 'stats' | 'guide' | 'compass' | 'how-to-choose' | 'hubs' | 'objectives';
+type QuickPanelId = 'stats' | 'guide' | 'compass' | 'how-to-choose' | 'hubs';
 
 type Props = {
   programs: PartnerProgramCard[];
@@ -561,98 +562,111 @@ export function PartnerProgramsBrowser({
           {shareMessage}
         </div>
       )}
-      <section ref={comoFuncionaRef} id="como-funciona" aria-label="Atalhos e guias rápidos" className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
-        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto scrollbar-none">
-          {[
-            ...(quickPanels
-              ? [
-                { id: 'stats' as const, label: 'Dados do levantamento' },
-                { id: 'guide' as const, label: 'Mapa prático' },
-                { id: 'compass' as const, label: 'Bússola de Negócios' },
-                { id: 'how-to-choose' as const, label: 'Como escolher' },
-                { id: 'hubs' as const, label: 'Guias de escolha' },
-              ]
-              : []),
-            {
-              id: 'objectives' as const,
-              label: selectedDiscoveryTag ? `Objetivo: ${selectedDiscoveryTag}` : 'Explore por objetivo',
-            },
-          ].map((item) => {
-            const isOpen = activeQuickPanel === item.id;
-            const isObjectiveActive = item.id === 'objectives' && Boolean(selectedDiscoveryTag);
-            return (
+      {quickPanels && (
+        <section ref={comoFuncionaRef} id="como-funciona" aria-label="Atalhos e guias rápidos" className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
+          <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto scrollbar-none">
+            {[
+              { id: 'stats' as const, label: 'Dados do levantamento' },
+              { id: 'guide' as const, label: 'Mapa prático' },
+              { id: 'compass' as const, label: 'Bússola de Negócios' },
+              { id: 'how-to-choose' as const, label: 'Como escolher' },
+              { id: 'hubs' as const, label: 'Guias de escolha' },
+            ].map((item) => {
+              const isOpen = activeQuickPanel === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-expanded={isOpen}
+                  onClick={() => setActiveQuickPanel(isOpen ? null : item.id)}
+                  className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-2 text-xs font-bold transition-colors ${isOpen
+                    ? 'border-neon bg-neon text-black'
+                    : 'border-border bg-background/80 opacity-85 hover:border-neon hover:text-neon hover:opacity-100'
+                    }`}
+                >
+                  <span>{item.label}</span>
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
+            {activeQuickPanel !== null && (
               <button
-                key={item.id}
                 type="button"
-                aria-expanded={isOpen}
-                onClick={() => setActiveQuickPanel(isOpen ? null : item.id)}
-                className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl border px-3 py-2 text-xs font-bold transition-colors ${isOpen || isObjectiveActive
-                  ? 'border-neon bg-neon text-black'
-                  : 'border-border bg-background/80 opacity-85 hover:border-neon hover:text-neon hover:opacity-100'
-                  }`}
+                aria-label="Fechar painel aberto"
+                onClick={() => setActiveQuickPanel(null)}
+                className="ml-auto inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border bg-background/70 opacity-75 transition hover:border-neon hover:opacity-100"
               >
-                <span>{item.label}</span>
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                  aria-hidden="true"
-                />
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
-            );
-          })}
-          {activeQuickPanel !== null && (
+            )}
+          </div>
+
+          <div className={activeQuickPanel === 'stats' ? 'mt-3' : 'hidden'}>
+            {quickPanels.stats}
+          </div>
+          <div className={activeQuickPanel === 'guide' ? 'mt-3' : 'hidden'}>
+            {quickPanels.guide}
+          </div>
+          <div className={activeQuickPanel === 'compass' ? 'mt-3' : 'hidden'}>
+            {quickPanels.compass}
+          </div>
+          <div className={activeQuickPanel === 'how-to-choose' ? 'mt-3' : 'hidden'}>
+            {quickPanels.howToChoose}
+          </div>
+          <div className={activeQuickPanel === 'hubs' ? 'mt-3' : 'hidden'}>
+            {quickPanels.hubs}
+          </div>
+        </section>
+      )}
+
+      <section
+        aria-label="Explore por objetivo"
+        data-testid="discovery-tags-bar"
+        className="w-full min-w-0 rounded-2xl border border-border bg-income-surface/80 p-3 md:p-4"
+      >
+        <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-neon">
+            Escolha como você quer ganhar
+          </p>
+          {selectedDiscoveryTag && (
             <button
               type="button"
-              aria-label="Fechar painel aberto"
-              onClick={() => setActiveQuickPanel(null)}
-              className="ml-auto inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border bg-background/70 opacity-75 transition hover:border-neon hover:opacity-100"
+              onClick={() => {
+                setSelectedDiscoveryTag(null);
+                setCurrentPage(1);
+              }}
+              className="text-xs font-bold text-neon underline underline-offset-2 hover:opacity-80"
             >
-              <X className="h-3.5 w-3.5" aria-hidden="true" />
+              Ver todas as oportunidades
             </button>
           )}
         </div>
-
-        {quickPanels && (
-          <>
-            <div className={activeQuickPanel === 'stats' ? 'mt-3' : 'hidden'}>
-              {quickPanels.stats}
-            </div>
-            <div className={activeQuickPanel === 'guide' ? 'mt-3' : 'hidden'}>
-              {quickPanels.guide}
-            </div>
-            <div className={activeQuickPanel === 'compass' ? 'mt-3' : 'hidden'}>
-              {quickPanels.compass}
-            </div>
-            <div className={activeQuickPanel === 'how-to-choose' ? 'mt-3' : 'hidden'}>
-              {quickPanels.howToChoose}
-            </div>
-            <div className={activeQuickPanel === 'hubs' ? 'mt-3' : 'hidden'}>
-              {quickPanels.hubs}
-            </div>
-          </>
-        )}
-
-        <div className={activeQuickPanel === 'objectives' ? 'mt-3 border-t border-border pt-3' : 'hidden'}>
-          <div className="flex flex-wrap gap-2.5">
-            {DISCOVERY_TAGS.map((tag) => (
+        <div className="flex flex-wrap gap-2">
+          {DISCOVERY_TAGS.map((tag) => {
+            const isSelected = selectedDiscoveryTag === tag.label;
+            return (
               <button
                 key={tag.label}
                 type="button"
+                aria-pressed={isSelected}
                 onClick={() => {
-                  const isSelected = selectedDiscoveryTag === tag.label;
                   setSelectedDiscoveryTag(isSelected ? null : tag.label);
                   setQuery('');
                   setCurrentPage(1);
                   if (!isSelected) scrollToCards();
                 }}
-                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 py-1.5 text-xs transition-colors ${selectedDiscoveryTag === tag.label
+                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${isSelected
                   ? 'border-neon bg-neon text-black font-bold'
-                  : 'border-border opacity-75 hover:border-neon hover:opacity-100'
+                  : 'border-border bg-background/75 text-foreground/85 hover:border-neon hover:text-neon'
                   }`}
               >
                 {tag.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
 
@@ -1185,6 +1199,22 @@ export function PartnerProgramsBrowser({
                   triggerLabel="Ver vídeo"
                   inline
                 />
+                {(() => {
+                  const course = getRecommendedCourseForProgram(selectedProgram.slug);
+                  if (!course) return null;
+                  return (
+                    <OutboundLink
+                      href={course.href}
+                      trackingId={course.trackingId}
+                      sponsored={course.sponsored}
+                      title={course.courseTitle}
+                      className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-orange-500/60 bg-orange-500/10 px-3.5 text-sm font-bold leading-none text-orange-500 transition-colors hover:bg-orange-500 hover:text-black dark:text-orange-400"
+                    >
+                      <GraduationCap size={16} aria-hidden="true" />
+                      <span>{course.label}</span>
+                    </OutboundLink>
+                  );
+                })()}
                 <button
                   type="button"
                   onClick={() => void shareProgram(selectedProgram)}

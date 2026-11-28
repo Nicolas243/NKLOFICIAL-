@@ -101,6 +101,13 @@ const HIGH_QUALITY_LOGOS: Record<string, string> = {
   dataannotation: '/partner-logos/dataannotation.png',
   'marketplaces-afiliados': '/partner-logos/marketplaces.png',
   'tiktok-shop': '/NKL/tiktoklogo.png',
+  'serp-raters-welocalize-telus': 'https://www.google.com/s2/favicons?domain=welocalize.com&sz=256',
+  'babel-audio': 'https://www.google.com/s2/favicons?domain=babel.audio&sz=256',
+  grass: 'https://www.google.com/s2/favicons?domain=getgrass.io&sz=256',
+  'micro-saas-vibe-coding': 'https://www.google.com/s2/favicons?domain=lovable.dev&sz=256',
+  'otimizacao-google-meu-negocio': 'https://www.google.com/s2/favicons?domain=google.com&sz=256',
+  'milhas-cashback-pontos': 'https://www.google.com/s2/favicons?domain=livelo.com.br&sz=256',
+  'sourcing-importacao-revenda': 'https://www.google.com/s2/favicons?domain=alibaba.com&sz=256',
 };
 
 const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages: string[] }> = {
@@ -109,7 +116,12 @@ const PROGRAM_EDITORIAL_META: Record<string, { averageEarning: string; languages
   dscout: { averageEarning: 'US$ 50 ± por estudo', languages: ['Português', 'Inglês'] },
   'mercado-pago': { averageEarning: 'R$ 50 ±', languages: ['Português'] },
   honeygain: { averageEarning: 'US$ 20 ±', languages: ['Português', 'Inglês'] },
-  repocket: { averageEarning: 'US$ 20 ± por mês', languages: ['Português', 'Inglês'] },
+  grass: { averageEarning: 'US$ 10 a US$ 45/mês', languages: ['Português', 'Inglês'] },
+  'babel-audio': { averageEarning: 'US$ 15 a US$ 35/hora', languages: ['Português', 'Inglês'] },
+  'micro-saas-vibe-coding': { averageEarning: 'R$ 800 a R$ 5.000+/mês', languages: ['Português', 'Inglês'] },
+  'otimizacao-google-meu-negocio': { averageEarning: 'R$ 500 a R$ 2.500/mês', languages: ['Português'] },
+  'milhas-cashback-pontos': { averageEarning: 'R$ 150 a R$ 800/mês', languages: ['Português'] },
+  'sourcing-importacao-revenda': { averageEarning: 'R$ 600 a R$ 4.000+/mês', languages: ['Português', 'Inglês'] },
   'nyte-x': { averageEarning: 'US$ 100 ± por projeto', languages: ['Português', 'Inglês'] },
   micro1: { averageEarning: 'US$ 30 ± por hora', languages: ['Português', 'Inglês'] },
   mindrift: { averageEarning: 'US$ 20 ± por hora', languages: ['Inglês'] },

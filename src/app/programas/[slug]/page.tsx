@@ -19,6 +19,7 @@ import { PwaInstallButton } from '@/components/pwa';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
 import { MultiProjectSection } from '@/components/income/multi-project-section';
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
+import { getRecommendedCourseForProgram } from '@/lib/partner-program-courses';
 import { getMatchingProgramHubs } from '@/lib/program-hubs';
 import { getProgramComparisonsForSlug } from '@/lib/seo/program-comparisons';
 import { SCHEMA_IDS, SITE_CONTENT_LAST_MODIFIED } from '@/lib/seo/schema-graph';
@@ -109,6 +110,7 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
 
   const matchingHubs = getMatchingProgramHubs(program);
   const comparisons = getProgramComparisonsForSlug(program.slug);
+  const recommendedCourse = getRecommendedCourseForProgram(program.slug);
   const tagSet = new Set(program.tags.map((tag) => tag.toLowerCase()));
   const relatedPrograms = allPrograms
     .filter((item) => item.slug !== program.slug)
@@ -200,6 +202,17 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
           <p className="mt-5 max-w-3xl text-lg leading-relaxed opacity-75">{program.shortDescription}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <ProgramActions name={program.name} slug={program.slug} url={canonicalUrl} />
+            {recommendedCourse && (
+              <OutboundLink
+                href={recommendedCourse.href}
+                trackingId={recommendedCourse.trackingId}
+                sponsored={recommendedCourse.sponsored}
+                title={recommendedCourse.courseTitle}
+                className="inline-flex min-h-11 items-center justify-center rounded-md border border-orange-500/60 bg-orange-500/10 px-3.5 py-2 text-sm font-bold text-orange-500 transition-colors hover:bg-orange-500 hover:text-black dark:text-orange-400"
+              >
+                {recommendedCourse.label}
+              </OutboundLink>
+            )}
             <PwaInstallButton kind="income" />
           </div>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

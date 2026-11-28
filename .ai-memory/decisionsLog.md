@@ -10,6 +10,11 @@ updated: 2026-11-28
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
 
+## ADR-031 (2026-11-28) Cursos Hotmart Extensíveis, RouteProgressBar sem Intersticial e Saneamento do Catálogo (62 Oportunidades)
+- Decisao: centralizar cursos recomendados em `src/lib/partner-program-courses.ts` (botão `Melhor curso disto` ao lado de `Ver vídeo`, iniciado com `trafego-pago-negocios-locais` -> Hotmart), adotar `RouteProgressBar` global (`3px` no topo) para feedback instantâneo entre páginas em vez de página intermediária de redirecionamento, publicar `public/.well-known/brave-rewards-verification.txt` intacto, remover `repocket` (substituído por `grass` em `honeygain-vs-grass`) e expandir o catálogo com `babel-audio`, `grass` e 4 oportunidades validadas dos salvos do Instagram.
+- Motivo: preservar taxa de clique e velocidade percebida nos replays (uma página intermediária aumentaria latência e abandono), garantir integridade de links de afiliado sem inventar URLs da Hotmart e manter o catálogo confiável e atualizado.
+- Descartado: criar página intermediária/splash entre sites externos ou fabricar links de afiliado Hotmart sem afiliação ativa da conta do usuário.
+
 ## ADR-030 (2026-11-28) Overhaul CRO / UX: 3 Preços Unificados, Mini-Quiz Bússola IA via 9router e Catálogo 57/57
 - Decisao: unificar `/guias/renda-extra` em um único checkout focado em `R$ 19/mês` entre 3 opções claras; converter `/ofertas/bussola-negocios` em funil aspiracional com mini-quiz de 3 perguntas antes dos preços e diagnóstico completo via `9router` (`NKL-OPERARIOS`, timeout `10s`, allowlist de negócios do Supabase e fallback estruturado offline) mantendo `pwaBrandName: 'Bússola de Negócios'`; ampliar `/programas` para exibir todos os 57 itens na página 1 (`PROGRAMS_PER_PAGE = 60` + `contentVisibility: 'auto'`), alinhar os 5 botões do modal em linha única (`h-11` + `max-w-4xl`), padronizar listas arrastáveis multi-projeto em PT-BR (`<= 7` palavras) e ligar idiomas estrangeiros a `/idiomas`.
 - Motivo: eliminar fadiga de escolha e abandono precoce observados em PostHog/Clarity (preço exibido antes do valor percebido na Bússola, formulários redundantes nos guias, baixa transição para página 2 em `/programas` e bloqueio de idioma/confusão no card da Micro1).

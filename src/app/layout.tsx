@@ -9,6 +9,7 @@ import { JsonLd } from '@/components/seo/json-ld'
 import { PwaInstallReminder, PwaRegister } from '@/components/pwa'
 import { PrivacyScripts } from '@/components/privacy-scripts'
 import { SiteGuidance } from '@/components/site-guidance'
+import { RouteProgressBar } from '@/components/ui/route-progress-bar'
 import { SpotlightTutorial } from '@/components/ui/spotlight-tutorial'
 import { RifaCampaignShell } from '@/components/rifa-campaign/rifa-campaign-shell'
 import { absoluteSiteUrl, SITE_URL } from '@/lib/site'
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           ],
         }} />
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+          <RouteProgressBar />
           <ParallaxBackground />
           <Header />
           <SiteGuidance />

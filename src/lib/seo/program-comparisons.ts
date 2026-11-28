@@ -52,11 +52,11 @@ export const PROGRAM_COMPARISONS: ProgramComparisonDefinition[] = [
     focusKeyword: 'billo vs joinbrands',
   },
   {
-    slug: 'honeygain-vs-repocket',
+    slug: 'honeygain-vs-grass',
     leftSlug: 'honeygain',
-    rightSlug: 'repocket',
-    title: 'Honeygain vs Repocket: qual paga mais por compartilhamento de rede?',
-    focusKeyword: 'honeygain vs repocket',
+    rightSlug: 'grass',
+    title: 'Honeygain vs Grass: qual paga melhor por compartilhamento de rede?',
+    focusKeyword: 'honeygain vs grass',
   },
   {
     slug: 'clickworker-vs-oneforma',
