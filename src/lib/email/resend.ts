@@ -163,7 +163,7 @@ export async function sendWelcomeEmail(
   const siteUrl = input.siteUrl.replace(/\/+$/u, '');
   const links = {
     home: siteUrl,
-    logo: `${siteUrl}/NKL.png`,
+    logo: `${siteUrl}/nkl.png`,
     opportunities: `${siteUrl}/programas`,
     bussola: `${siteUrl}/ofertas/bussola-negocios`,
     languages: `${siteUrl}/blog/aprender/ingles`,

@@ -2,9 +2,23 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DISCOVERY_TAGS, PARTNER_PROGRAM_SLUGS } from '../partner-program-catalog';
 
-test('DISCOVERY_TAGS covers 100% of all 57 partner program slugs with zero stale slugs', () => {
+test('DISCOVERY_TAGS covers 100% of all catalog partner program slugs with zero stale slugs', () => {
   const catalogSet = new Set<string>(PARTNER_PROGRAM_SLUGS);
-  assert.equal(catalogSet.size, 57, 'Expected 57 unique catalog slugs');
+  assert.equal(catalogSet.size, PARTNER_PROGRAM_SLUGS.length, 'Expected unique catalog slugs');
+  assert.ok(catalogSet.size >= 57, `Expected at least 57 catalog slugs, got ${catalogSet.size}`);
+
+  const requiredLabels = [
+    'Ganhar sem fazer nada',
+    'Ganhar com vídeos sem aparecer',
+    'Gravar vídeos para empresas',
+    'Sou bom com idiomas',
+  ];
+  for (const label of requiredLabels) {
+    assert.ok(
+      DISCOVERY_TAGS.some((tag) => tag.label === label),
+      `Missing expected discovery tag "${label}"`,
+    );
+  }
 
   const covered = new Set<string>();
   for (const tag of DISCOVERY_TAGS) {

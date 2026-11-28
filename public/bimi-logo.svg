@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 512 512" width="512" height="512">
+  <title>Portal NKL</title>
+  <rect width="512" height="512" fill="#0B1526"/>
+  <rect x="28" y="28" width="456" height="456" rx="96" fill="#111E33" stroke="#38BDF8" stroke-width="10"/>
+  <path d="M96 348V164h38l76 112V164h36v184h-36l-78-114v114H96z" fill="#F8FAFC"/>
+  <path d="M274 348V164h38v80l68-80h46l-74 86 78 98h-47l-56-72-15 17v55h-38z" fill="#38BDF8"/>
+  <path d="M96 382h320v16H96z" fill="#F97316"/>
+</svg>

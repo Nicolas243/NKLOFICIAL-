@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     default: 'Portal NKL | Renda Extra, IA na Prática, Idiomas e Música',
     template: '%s | Portal NKL',
   },
-  description: 'Mais de 55 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
+  description: 'Mais de 60 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
   ...(process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION
     ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_ADS_VERIFICATION } }
     : {}),
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     locale: 'pt_BR',
     siteName: 'Portal NKL',
     title: 'Portal NKL | Renda Extra, IA na Prática, Idiomas e Música',
-    description: 'Mais de 55 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
+    description: 'Mais de 60 formas reais de renda extra online, ferramentas de IA na prática, idiomas e música em um só portal editorial sem promessas fáceis.',
     url: absoluteSiteUrl('/'),
     images: [
       {

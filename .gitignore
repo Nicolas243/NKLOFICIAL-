@@ -81,6 +81,8 @@ next-env.d.ts
 
 # Paid assets and local scratch (never publish)
 /private-assets/
+/nkl-video/
+/scripts/video-editor/models/
 /*.zip
 /*.mp4
 /nul

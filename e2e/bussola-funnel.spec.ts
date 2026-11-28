@@ -18,9 +18,14 @@ test.describe('Funil Bussola de Negocios IA (/ofertas/bussola-negocios)', () => 
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
       .toBe(true);
 
+    await expect(page.getByTestId('bussola-live-mirror')).toContainText('Pronto para iniciar');
+
     await page.getByRole('button', { name: /Inteligência Artificial e automações/i }).click();
+    await expect(page.getByTestId('bussola-live-mirror')).toContainText('42% calibrado');
     await page.getByRole('button', { name: /R\$ 3\.000 a R\$ 7\.000\/mês/i }).click();
+    await expect(page.getByTestId('bussola-live-mirror')).toContainText('74% calibrado');
     await page.getByRole('button', { name: /R\$ 0 — Prefiro começar sem investir/i }).click();
+    await expect(page.getByTestId('bussola-live-mirror')).toContainText('89% calibrado');
 
     await expect(page.getByText('Perfil identificado na prévia')).toBeVisible();
     await expect(page.getByText('1ª direção compatível revelada')).toBeVisible();

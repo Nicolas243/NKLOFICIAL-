@@ -45,7 +45,12 @@ export function buildOrganizationNode(): Record<string, unknown> {
     '@id': SCHEMA_IDS.organization,
     name: 'Portal NKL',
     url: SITE_URL,
-    logo: absoluteSiteUrl('/NKL.png'),
+    logo: {
+      '@type': 'ImageObject',
+      url: absoluteSiteUrl('/nkl.png'),
+      width: 512,
+      height: 512,
+    },
     sameAs: OFFICIAL_SOCIAL_PROFILES,
     contactPoint: {
       '@type': 'ContactPoint',

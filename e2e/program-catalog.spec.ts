@@ -25,6 +25,13 @@ test.describe('catálogo de oportunidades', () => {
     const totalCards = await page.locator('#programs-grid article[role="button"]').count();
     expect(totalCards).toBeGreaterThanOrEqual(50);
 
+    const tagsBar = page.getByTestId('discovery-tags-bar');
+    await expect(tagsBar).toBeVisible();
+    await expect(tagsBar.getByRole('button', { name: 'Ganhar sem fazer nada' })).toBeVisible();
+    await expect(tagsBar.getByRole('button', { name: 'Ganhar com vídeos sem aparecer' })).toBeVisible();
+    await expect(tagsBar.getByRole('button', { name: 'Gravar vídeos para empresas' })).toBeVisible();
+    await expect(tagsBar.getByRole('button', { name: 'Sou bom com idiomas' })).toBeVisible();
+
     const floatingGuide = page.getByTestId('floating-como-funciona');
     await expect(floatingGuide).toBeVisible();
     await floatingGuide.getByRole('link', { name: /Como funciona/i }).click();

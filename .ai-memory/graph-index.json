@@ -18,7 +18,7 @@
         "Foco Atual",
         "Pendencias Somente Manuais do Usuario (Contas Externas)"
       ],
-      "excerpt": "- **CRO, UX e Funis de Conversão Portal NKL (2026-11-28):** entregues as 7 frentes orientadas por analytics/Clarity: (1) `/guias/renda-extra` simplificado para 3 preços claros (`R$ 39` avulso, `R$ 19/mês` destacado co...",
+      "excerpt": "- **Tags Visíveis, Simulador Vivo Bússola IA, BIMI/DMARC Cloudflare & Logo `nkl.png` (2026-11-28):** barra fixa `discovery-tags-bar` sempre visível entre `#como-funciona` e `#filtros` com 14 tags humanas cobrindo 62/6...",
       "outgoing": [],
       "incoming": [
         "decisionsLog",
@@ -39,6 +39,7 @@
       ],
       "headings": [
         "Decisions Log - ADRs Concisos",
+        "ADR-031 (2026-11-28) Cursos Hotmart Extensíveis, RouteProgressBar sem Intersticial e Saneamento do Catálogo (62 Oportunidades)",
         "ADR-030 (2026-11-28) Overhaul CRO / UX: 3 Preços Unificados, Mini-Quiz Bússola IA via 9router e Catálogo 57/57",
         "ADR-029 (2026-11-27) Pipeline NotebookLM (15 Pacotes), NKL Social Publisher Multiplataforma & Kits Ampla Distribuição do Livro",
         "ADR-028 (2026-11-27) Arquitetura GEO + SEO Técnico, IndexNow, /llms.txt, Comparativos Curados & Topical Authority Original",
@@ -70,7 +71,7 @@
         "ADR-002 (2026-11-19) MCP local 9router desacoplado do Cline",
         "ADR-001 Stripe como autoridade de pagamento"
       ],
-      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: unificar `/guias/renda-extra` em um únic...",
+      "excerpt": "Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]]. - Decisao: centralizar cursos recomendados em `src/...",
       "outgoing": [
         "activeContext",
         "projectBrief",
@@ -2481,6 +2482,9 @@
     "3ds": [
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
+    "3px": [
+      "decisionsLog"
+    ],
     "42p01": [
       "decisionsLog"
     ],
@@ -3694,6 +3698,9 @@
     "adr-030": [
       "decisionsLog"
     ],
+    "adr-031": [
+      "decisionsLog"
+    ],
     "adrs": [
       "decisionsLog"
     ],
@@ -3805,7 +3812,12 @@
     "affiliaxe": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
+    "afiliacao": [
+      "decisionsLog"
+    ],
     "afiliado": [
+      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/PADRAO-CARDS-IA",
@@ -3818,6 +3830,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "afiliados": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -6128,6 +6141,7 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "ativa": [
+      "decisionsLog",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -6355,7 +6369,8 @@
       "docs/estado_atual",
       "docs/site-flow-and-upload-checklist",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
-      "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design"
+      "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design",
+      "progress"
     ],
     "atualizacoes": [
       "decisionsLog",
@@ -6371,12 +6386,14 @@
       "docs/quality"
     ],
     "atualizado": [
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/superpowers/specs/2026-11-11-personalized-guide-assets-design",
       "progress",
       "systemPatterns"
     ],
     "atualizados": [
+      "activeContext",
       "docs/quality"
     ],
     "atualizam": [
@@ -6462,6 +6479,9 @@
       "decisionsLog",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
+    ],
+    "aumentaria": [
+      "decisionsLog"
     ],
     "aumentem": [
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -6953,6 +6973,11 @@
     "b8c8dd": [
       "docs/ROADMAP-DEPLOY"
     ],
+    "babel-audio": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
+    ],
     "back": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-10-nkl-subagent-router-network",
@@ -7355,6 +7380,12 @@
     ],
     "billo": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+    ],
+    "bimi": [
+      "activeContext"
+    ],
+    "bimi-logo": [
+      "activeContext"
     ],
     "binarios": [
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA"
@@ -7762,8 +7793,15 @@
       "projectBrief"
     ],
     "brave": [
+      "activeContext",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
-      "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
+      "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
+      "progress"
+    ],
+    "brave-rewards-verification": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
     ],
     "breadcrumblist": [
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
@@ -8018,6 +8056,9 @@
     "bussola-cta": [
       "decisionsLog",
       "progress"
+    ],
+    "bussola-live-mirror": [
+      "activeContext"
     ],
     "bussola-negocios": [
       "activeContext",
@@ -8286,6 +8327,9 @@
     ],
     "calibrada": [
       "progress"
+    ],
+    "calibrando": [
+      "activeContext"
     ],
     "calibre": [
       "docs/CHECKLIST-OFFLINE-NKL"
@@ -8813,6 +8857,9 @@
     ],
     "case": [
       "docs/superpowers/plans/2026-11-10-login-profile-recovery"
+    ],
+    "case-sensitivity": [
+      "activeContext"
     ],
     "cases": [
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
@@ -9785,6 +9832,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "clique": [
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
@@ -9849,6 +9897,7 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "cloudflare": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -10086,6 +10135,7 @@
       "progress"
     ],
     "colunas": [
+      "activeContext",
       "decisionsLog",
       "docs/ai-product-master-prompt",
       "docs/architecture",
@@ -10351,6 +10401,9 @@
     ],
     "comparativa": [
       "docs/SEO-TOPICAL-MAP"
+    ],
+    "comparativo": [
+      "activeContext"
     ],
     "comparativos": [
       "activeContext",
@@ -11002,6 +11055,7 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
     "confiavel": [
+      "decisionsLog",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
       "docs/setup",
@@ -11089,6 +11143,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "configurados": [
+      "activeContext",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/ROADMAP-DEPLOY",
       "docs/estado_atual",
@@ -12500,6 +12555,7 @@
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design"
     ],
     "corrigida": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "progress"
     ],
@@ -12507,6 +12563,7 @@
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design"
     ],
     "corrigido": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
       "progress"
@@ -12786,6 +12843,10 @@
     "creator-space": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
+    "creators": [
+      "activeContext",
+      "progress"
+    ],
     "credenciais": [
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
@@ -12870,6 +12931,7 @@
       "progress"
     ],
     "criado": [
+      "activeContext",
       "docs/estado_atual",
       "docs/portal-area-registry",
       "docs/setup",
@@ -13257,11 +13319,14 @@
       "docs/setup"
     ],
     "cursos": [
+      "activeContext",
+      "decisionsLog",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/portal-area-registry",
       "docs/specs/portal-nkl-base-home/design",
       "docs/specs/portal-nkl-base-home/prd",
-      "docs/specs/portal-nkl-base-home/spec"
+      "docs/specs/portal-nkl-base-home/spec",
+      "progress"
     ],
     "curta": [
       "docs/ai-product-master-prompt",
@@ -13745,6 +13810,7 @@
       "docs/estado_atual"
     ],
     "default": [
+      "activeContext",
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/specs/2026-11-09-program-offer-disclosure-design"
@@ -14208,6 +14274,7 @@
       "docs/architecture"
     ],
     "desativado": [
+      "activeContext",
       "docs/mcp-catalog",
       "docs/specs/portal-nkl-base-home/design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -15124,6 +15191,9 @@
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure",
       "docs/superpowers/specs/2026-11-09-program-offer-disclosure-design"
     ],
+    "discovery-tags-bar": [
+      "activeContext"
+    ],
     "discovery_tags": [
       "activeContext",
       "docs/PADRAO-CARDS-IA",
@@ -15276,6 +15346,11 @@
     "distintos": [
       "docs/architecture"
     ],
+    "disto": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
+    ],
     "distribui-lo": [
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA"
     ],
@@ -15352,6 +15427,7 @@
       "progress"
     ],
     "dmarc": [
+      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/setup"
@@ -15361,6 +15437,7 @@
       "docs/setup"
     ],
     "dns": [
+      "activeContext",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/setup",
       "progress"
@@ -15701,7 +15778,9 @@
       "progress"
     ],
     "draft": [
-      "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS"
+      "activeContext",
+      "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
+      "progress"
     ],
     "draft2digital": [
       "decisionsLog",
@@ -16839,7 +16918,9 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "entrevistas-b2b-respondent-user-interviews": [
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "activeContext",
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "entries": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
@@ -17994,6 +18075,9 @@
     "evolucao": [
       "docs/ROADMAP-DEPLOY"
     ],
+    "evoluido": [
+      "activeContext"
+    ],
     "evoluir": [
       "decisionsLog",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -18564,6 +18648,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "expansao": [
+      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/engenharia-no-cotidiano-master-prompt",
@@ -18936,6 +19021,9 @@
       "docs/setup",
       "progress"
     ],
+    "extensiveis": [
+      "decisionsLog"
+    ],
     "extensivo": [
       "docs/specs/portal-nkl-base-home/design"
     ],
@@ -19004,6 +19092,7 @@
       "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design"
     ],
     "externos": [
+      "decisionsLog",
       "docs/architecture",
       "docs/design",
       "docs/estado_atual",
@@ -19083,6 +19172,9 @@
       "docs/ROADMAP-DEPLOY",
       "docs/quality",
       "docs/setup"
+    ],
+    "fabricar": [
+      "decisionsLog"
     ],
     "fabricated": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra"
@@ -19594,6 +19686,8 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "feedback": [
+      "activeContext",
+      "decisionsLog",
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
@@ -20012,6 +20106,7 @@
       "progress"
     ],
     "fixa": [
+      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/specs/portal-nkl-base-home/spec",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
@@ -21167,6 +21262,7 @@
       "docs/spec-driven-workflow"
     ],
     "geral": [
+      "activeContext",
       "docs/architecture",
       "docs/engenharia-no-cotidiano-master-prompt",
       "docs/estado_atual",
@@ -21358,6 +21454,7 @@
       "progress"
     ],
     "global": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
@@ -21406,6 +21503,7 @@
       "progress"
     ],
     "go": [
+      "activeContext",
       "docs/superpowers/plans/2026-11-10-cline-deepseek-mcp"
     ],
     "goal": [
@@ -21556,8 +21654,11 @@
       "docs/toolkit-setup"
     ],
     "grass": [
+      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "gratis": [
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
@@ -22361,6 +22462,10 @@
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer",
       "docs/superpowers/specs/2026-11-09-program-offer-disclosure-design"
     ],
+    "higgsfield": [
+      "activeContext",
+      "progress"
+    ],
     "highest": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-11-rifa-livros-campaign"
@@ -22462,8 +22567,14 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "honeygain": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+    ],
+    "honeygain-vs-grass": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
     ],
     "honeypot": [
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
@@ -22533,6 +22644,7 @@
       "docs/estado_atual"
     ],
     "hotmart": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA",
@@ -22687,6 +22799,9 @@
       "docs/architecture",
       "docs/quality",
       "progress"
+    ],
+    "humanas": [
+      "activeContext"
     ],
     "humanos": [
       "docs/specs/portal-nkl-base-home/adr"
@@ -22873,6 +22988,7 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "identicas": [
+      "activeContext",
       "docs/SEO-TOPICAL-MAP"
     ],
     "identicos": [
@@ -23093,6 +23209,9 @@
       "docs/site-flow-and-upload-checklist",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
+    "imageobject": [
+      "activeContext"
+    ],
     "images": [
       "progress"
     ],
@@ -23113,6 +23232,7 @@
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
     ],
     "imediato": [
+      "activeContext",
       "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-10-login-profile-recovery-design",
@@ -23938,6 +24058,7 @@
       "docs/architecture"
     ],
     "iniciado": [
+      "decisionsLog",
       "docs/ai-product-master-prompt"
     ],
     "iniciados": [
@@ -24201,6 +24322,9 @@
     "instancia": [
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
+    "instantaneo": [
+      "decisionsLog"
+    ],
     "instantes": [
       "docs/engenharia-no-cotidiano/puxar-fio-rapido-vs-devagar"
     ],
@@ -24276,6 +24400,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "intacto": [
+      "decisionsLog",
       "docs/superpowers/plans/2026-11-11-auth-and-ad-prototype"
     ],
     "integer": [
@@ -24343,6 +24468,7 @@
       "docs/superpowers/plans/2026-11-10-login-profile-recovery"
     ],
     "integridade": [
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY"
     ],
     "inteiro": [
@@ -24500,6 +24626,10 @@
       "docs/superpowers/plans/2026-11-11-simplify-income-guide-copy",
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
+    "intermediaria": [
+      "activeContext",
+      "decisionsLog"
+    ],
     "intermitente": [
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
@@ -24572,6 +24702,9 @@
     "interromper": [
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
       "docs/superpowers/specs/2026-11-11-rifa-livros-campaign-design"
+    ],
+    "intersticial": [
+      "decisionsLog"
     ],
     "interval": [
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
@@ -25309,6 +25442,8 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "lado": [
+      "activeContext",
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY",
       "docs/SEO-TOPICAL-MAP",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design",
@@ -25385,6 +25520,9 @@
     ],
     "lataria": [
       "docs/engenharia-no-cotidiano-master-prompt"
+    ],
+    "latencia": [
+      "decisionsLog"
     ],
     "later": [
       "docs/superpowers/plans/2026-11-10-login-profile-recovery",
@@ -26081,6 +26219,7 @@
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS"
     ],
     "links": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -26172,6 +26311,7 @@
       "docs/superpowers/specs/2026-11-10-cline-deepseek-mcp-design"
     ],
     "lista": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
@@ -26554,6 +26694,7 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "logo": [
+      "activeContext",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
@@ -27492,6 +27633,8 @@
       "docs/superpowers/specs/2026-11-10-nkl-subagent-router-network-design"
     ],
     "melhor": [
+      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
@@ -27501,7 +27644,8 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design",
-      "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
+      "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design",
+      "progress"
     ],
     "melhorado": [
       "docs/ai-product-spec"
@@ -27901,6 +28045,10 @@
       "decisionsLog",
       "docs/ROADMAP-DEPLOY"
     ],
+    "micro-saas-vibe-coding": [
+      "activeContext",
+      "progress"
+    ],
     "micro1": [
       "activeContext",
       "decisionsLog",
@@ -28037,6 +28185,10 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "milestones": [
+      "progress"
+    ],
+    "milhas-cashback-pontos": [
+      "activeContext",
       "progress"
     ],
     "min": [
@@ -28495,8 +28647,10 @@
       "docs/superpowers/plans/2026-11-11-simplify-income-guide-copy"
     ],
     "montink": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "montink-embaixador": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
@@ -28688,7 +28842,11 @@
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
     "multi-plataforma": [
+      "activeContext",
       "progress"
+    ],
+    "multi-project-programs": [
+      "activeContext"
     ],
     "multi-projeto": [
       "decisionsLog"
@@ -29020,6 +29178,7 @@
       "docs/superpowers/specs/2026-11-11-auth-and-ad-prototype-design"
     ],
     "navegacao": [
+      "activeContext",
       "docs/mcp-catalog",
       "docs/site-flow-and-upload-checklist",
       "docs/specs/portal-nkl-base-home/adr",
@@ -30163,6 +30322,7 @@
       "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design"
     ],
     "novos": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
       "docs/architecture",
@@ -30172,7 +30332,8 @@
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications",
       "docs/superpowers/specs/2026-11-09-seo-renda-extra-design",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design",
-      "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design"
+      "docs/superpowers/specs/2026-11-11-simplify-income-guide-copy-design",
+      "progress"
     ],
     "now": [
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization",
@@ -30992,6 +31153,7 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design"
     ],
     "oportunidades": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
@@ -31281,6 +31443,10 @@
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/plans/2026-11-11-income-guide-november-offer"
+    ],
+    "otimizacao-google-meu-negocio": [
+      "activeContext",
+      "progress"
     ],
     "ouro": [
       "docs/ROADMAP-DEPLOY"
@@ -32076,6 +32242,11 @@
     "partner-logos": [
       "docs/PADRAO-CARDS-IA"
     ],
+    "partner-program-courses": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
+    ],
     "partner-program-editorial": [
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
@@ -32554,6 +32725,9 @@
     ],
     "perceber": [
       "docs/ROADMAP-DEPLOY"
+    ],
+    "percebida": [
+      "decisionsLog"
     ],
     "percebido": [
       "decisionsLog"
@@ -33193,6 +33367,7 @@
       "progress"
     ],
     "planos": [
+      "activeContext",
       "decisionsLog",
       "docs/ai-product-master-prompt",
       "docs/estado_atual",
@@ -33339,6 +33514,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "png": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf",
       "progress"
@@ -34626,9 +34802,11 @@
       "docs/superpowers/specs/2026-11-11-stripe-only-payments-design"
     ],
     "printful": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
-      "docs/PADRAO-CARDS-IA"
+      "docs/PADRAO-CARDS-IA",
+      "progress"
     ],
     "printful-print-on-demand": [
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
@@ -34873,7 +35051,9 @@
       "progress"
     ],
     "producao-videos-ia": [
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "activeContext",
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "produce": [
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
@@ -35339,6 +35519,7 @@
       "techContext"
     ],
     "projetos": [
+      "activeContext",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/quality",
       "docs/site-flow-and-upload-checklist"
@@ -35775,6 +35956,9 @@
     "prudentes": [
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
     ],
+    "ps": [
+      "activeContext"
+    ],
     "ps1": [
       "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
@@ -35800,6 +35984,7 @@
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS"
     ],
     "public": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/PADRAO-CARDS-IA",
@@ -35864,6 +36049,7 @@
       "docs/specs/portal-nkl-base-home/prd"
     ],
     "publicada": [
+      "activeContext",
       "docs/SEO-TOPICAL-MAP",
       "docs/portal-area-registry",
       "docs/site-flow-and-upload-checklist"
@@ -35900,6 +36086,7 @@
       "docs/ROADMAP-DEPLOY"
     ],
     "publicar": [
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA",
@@ -36224,6 +36411,9 @@
       "docs/estado_atual",
       "docs/superpowers/plans/2026-11-09-light-theme-depth"
     ],
+    "quarantine": [
+      "activeContext"
+    ],
     "quase": [
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/SEO-TOPICAL-MAP"
@@ -36369,6 +36559,9 @@
     ],
     "quotas": [
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
+    ],
+    "r108704338h": [
+      "activeContext"
     ],
     "r2": [
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -36685,6 +36878,7 @@
       "progress"
     ],
     "real": [
+      "activeContext",
       "decisionsLog",
       "docs/EBOOK-50-FORMAS-RENDA-EXTRA-AMAZON",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
@@ -36876,6 +37070,7 @@
       "docs/architecture"
     ],
     "recomendados": [
+      "decisionsLog",
       "docs/SEO-TOPICAL-MAP",
       "docs/estado_atual",
       "docs/site-flow-and-upload-checklist"
@@ -38145,6 +38340,9 @@
     "replayed": [
       "docs/superpowers/plans/2026-11-11-guest-checkout-and-auth-stabilization"
     ],
+    "replays": [
+      "decisionsLog"
+    ],
     "replicar": [
       "decisionsLog"
     ],
@@ -38155,10 +38353,13 @@
       "docs/estado_atual"
     ],
     "repocket": [
+      "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "docs/ROADMAP-DEPLOY",
-      "docs/quality"
+      "docs/quality",
+      "progress"
     ],
     "report": [
       "docs/superpowers/plans/2026-11-09-program-catalog-cta",
@@ -38364,6 +38565,7 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "resend": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -38531,7 +38733,9 @@
       "docs/quality"
     ],
     "respondent": [
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "activeContext",
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "responder": [
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -39595,6 +39799,11 @@
     "routekey": [
       "docs/superpowers/plans/2026-11-10-pwa-ux-notifications"
     ],
+    "routeprogressbar": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
+    ],
     "router": [
       "docs/ai-product-master-prompt",
       "docs/architecture",
@@ -39910,6 +40119,8 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "salvos": [
+      "activeContext",
+      "decisionsLog",
       "docs/ROADMAP-DEPLOY"
     ],
     "same": [
@@ -40048,6 +40259,9 @@
       "docs/superpowers/specs/2026-11-11-rifa-profile-stability-design",
       "progress",
       "techContext"
+    ],
+    "schema-graph": [
+      "activeContext"
     ],
     "schema_backup": [
       "docs/estado_atual"
@@ -40601,6 +40815,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "sempre": [
+      "activeContext",
       "docs/DISTRIBUICAO-LIVRO-MULTIPLATAFORMA",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
       "docs/PADRAO-CARDS-IA",
@@ -40857,7 +41072,9 @@
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "serp-raters-welocalize-telus": [
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "activeContext",
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "serps": [
       "docs/SEO-TOPICAL-MAP"
@@ -41318,6 +41535,9 @@
     "simulado": [
       "docs/superpowers/specs/2026-11-11-guest-checkout-and-auth-stabilization-design"
     ],
+    "simulador": [
+      "activeContext"
+    ],
     "simular": [
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design"
@@ -41484,6 +41704,7 @@
       "systemPatterns"
     ],
     "sites": [
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/superpowers/plans/2026-11-09-program-offer-disclosure"
     ],
@@ -41540,7 +41761,9 @@
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS"
     ],
     "skool": [
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "activeContext",
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "sku": [
       "decisionsLog",
@@ -41862,6 +42085,10 @@
       "activeContext",
       "docs/CHECKLIST-MESTRE-NKL"
     ],
+    "sourcing-importacao-revenda": [
+      "activeContext",
+      "progress"
+    ],
     "sozinho": [
       "docs/ROADMAP-DEPLOY"
     ],
@@ -41998,6 +42225,9 @@
       "docs/setup"
     ],
     "spi_getclientareaanimation": [
+      "decisionsLog"
+    ],
+    "splash": [
       "decisionsLog"
     ],
     "splat_radius_base": [
@@ -42794,6 +43024,10 @@
     "substituida": [
       "decisionsLog"
     ],
+    "substituido": [
+      "activeContext",
+      "decisionsLog"
+    ],
     "substituindo": [
       "decisionsLog",
       "docs/ROADMAP-DEPLOY"
@@ -42985,6 +43219,7 @@
       "docs/SEO-TOPICAL-MAP"
     ],
     "supabase": [
+      "activeContext",
       "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/CHECKLIST-OFFLINE-NKL",
@@ -43213,6 +43448,7 @@
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design"
     ],
     "svg": [
+      "activeContext",
       "decisionsLog",
       "progress"
     ],
@@ -43388,6 +43624,7 @@
       "progress"
     ],
     "tags": [
+      "activeContext",
       "decisionsLog",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
       "docs/PADRAO-CARDS-IA",
@@ -43540,6 +43777,7 @@
       "docs/superpowers/plans/2026-11-11-personalized-guide-assets"
     ],
     "taxa": [
+      "decisionsLog",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design",
       "docs/superpowers/specs/2026-11-11-income-guide-november-offer-design"
@@ -43755,6 +43993,7 @@
       "docs/superpowers/plans/2026-11-11-stripe-only-payments"
     ],
     "tempo": [
+      "activeContext",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/ROADMAP-DEPLOY",
       "docs/SEO-TOPICAL-MAP",
@@ -44364,6 +44603,9 @@
       "docs/ROADMAP-DEPLOY",
       "progress"
     ],
+    "tiny": [
+      "activeContext"
+    ],
     "tipada": [
       "docs/specs/portal-nkl-base-home/spec"
     ],
@@ -44634,6 +44876,7 @@
       "docs/engenharia-no-cotidiano-master-prompt"
     ],
     "topo": [
+      "activeContext",
       "decisionsLog",
       "docs/PADRAO-CARDS-IA",
       "docs/ROADMAP-DEPLOY",
@@ -44785,6 +45028,8 @@
       "docs/superpowers/specs/2026-11-09-program-catalog-cta-design"
     ],
     "trafego-pago-negocios-locais": [
+      "activeContext",
+      "decisionsLog",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
     ],
     "trailing": [
@@ -45219,8 +45464,10 @@
       "docs/superpowers/plans/2026-11-11-nkl-crescimento-e-entrega-pdf"
     ],
     "tubebuddy": [
+      "activeContext",
       "docs/CHECKLIST-OFFLINE-NKL",
-      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES"
+      "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
+      "progress"
     ],
     "tudo": [
       "docs/CHECKLIST-MESTRE-NKL",
@@ -46432,6 +46679,9 @@
       "docs/superpowers/specs/2026-11-11-nkl-crescimento-e-entrega-pdf-design",
       "systemPatterns"
     ],
+    "validadas": [
+      "decisionsLog"
+    ],
     "validado": [
       "decisionsLog",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
@@ -46825,6 +47075,7 @@
     ],
     "ver": [
       "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-spec",
@@ -46874,6 +47125,7 @@
       "docs/setup"
     ],
     "verificacao": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/SEO-TOPICAL-MAP",
       "docs/ai-product-master-prompt",
@@ -46921,6 +47173,7 @@
       "docs/estado_atual"
     ],
     "verificados": [
+      "activeContext",
       "docs/SEO-TOPICAL-MAP",
       "docs/specs/portal-nkl-base-home/design"
     ],
@@ -47157,6 +47410,7 @@
     ],
     "video": [
       "activeContext",
+      "decisionsLog",
       "docs/CHECKLIST-OFFLINE-NKL",
       "docs/GUIA-CLOUDFLARE-EMAIL-E-NOTEBOOKLM",
       "docs/NOTEBOOKLM-PIPELINE-ENTREGAVEIS",
@@ -47402,12 +47656,14 @@
       "docs/superpowers/plans/2026-11-10-portal-nkl-auth-catalog-analytics"
     ],
     "visiveis": [
+      "activeContext",
       "decisionsLog",
       "docs/superpowers/specs/2026-11-09-light-theme-depth-design",
       "docs/superpowers/specs/2026-11-10-portal-nkl-auth-catalog-analytics-design",
       "docs/superpowers/specs/2026-11-10-pwa-ux-notifications-design"
     ],
     "visivel": [
+      "activeContext",
       "docs/ROADMAP-DEPLOY",
       "docs/ai-product-master-prompt",
       "docs/design",
@@ -47514,6 +47770,7 @@
       "techContext"
     ],
     "vivo": [
+      "activeContext",
       "docs/CHECKLIST-MESTRE-NKL",
       "docs/PUBLICADOR-MULTIPLATAFORMA-VIDEOS",
       "docs/SEO-TOPICAL-MAP",
@@ -47784,7 +48041,13 @@
       "docs/superpowers/plans/2026-11-09-seo-renda-extra",
       "docs/superpowers/plans/2026-11-11-simplify-income-guide-copy"
     ],
+    "well-known": [
+      "activeContext",
+      "decisionsLog",
+      "progress"
+    ],
     "welocalize": [
+      "activeContext",
       "docs/MAPA-AFILIADOS-50-OPORTUNIDADES",
       "progress"
     ],
