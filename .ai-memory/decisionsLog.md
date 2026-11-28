@@ -2,13 +2,18 @@
 id: decisionsLog
 tags: [adr, decisoes, descartes, historico]
 links: [projectBrief, techContext, systemPatterns, activeContext]
-updated: 2026-11-26
+updated: 2026-11-28
 ---
 
 # Decisions Log - ADRs Concisos
 
 Formato fixo de 3 linhas por entrada: Decisao / Motivo / Descartado. Entradas mais
 recentes no topo. Contexto: [[systemPatterns]], [[techContext]], [[projectBrief]].
+
+## ADR-030 (2026-11-28) Overhaul CRO / UX: 3 Preços Unificados, Mini-Quiz Bússola IA via 9router e Catálogo 57/57
+- Decisao: unificar `/guias/renda-extra` em um único checkout focado em `R$ 19/mês` entre 3 opções claras; converter `/ofertas/bussola-negocios` em funil aspiracional com mini-quiz de 3 perguntas antes dos preços e diagnóstico completo via `9router` (`NKL-OPERARIOS`, timeout `10s`, allowlist de negócios do Supabase e fallback estruturado offline) mantendo `pwaBrandName: 'Bússola de Negócios'`; ampliar `/programas` para exibir todos os 57 itens na página 1 (`PROGRAMS_PER_PAGE = 60` + `contentVisibility: 'auto'`), alinhar os 5 botões do modal em linha única (`h-11` + `max-w-4xl`), padronizar listas arrastáveis multi-projeto em PT-BR (`<= 7` palavras) e ligar idiomas estrangeiros a `/idiomas`.
+- Motivo: eliminar fadiga de escolha e abandono precoce observados em PostHog/Clarity (preço exibido antes do valor percebido na Bússola, formulários redundantes nos guias, baixa transição para página 2 em `/programas` e bloqueio de idioma/confusão no card da Micro1).
+- Descartado: manter paginação em 12 cards na página 1 de `/programas`, exibir `Projeto em destaque` em inglês na vitrine principal ou depender exclusivamente de API de IA online sem fallback seguro em produção.
 
 ## ADR-029 (2026-11-27) Pipeline NotebookLM (15 Pacotes), NKL Social Publisher Multiplataforma & Kits Ampla Distribuição do Livro
 - Decisao: construir `scripts/notebooklm/*` gerando `15` pacotes (`source.md`, prompts, manifestos, `30` capas `16:9`/`9:16`, `.srt`, batch `notebooklm-py`) + suporte condicional a `videoEmbedUrl`/`audioUrl` em `/ia/curso/[moduleSlug]`; construir `tools/social-publisher/*` com `12` adaptadores oficiais/bridge (incluindo Bluesky AT Protocol, Threads, Mastodon, X, YouTube, TikTok, IG/FB, Postiz e Webhook), integração 9router (`NKL-OPERARIOS`) + estúdio `/admin/publicador`; e gerar `5` kits de distribuição do livro (`UICLAP`, `Clube de Autores` `16x23cm`, `Google Play Livros`, `Draft2Digital`, venda direta) via `scripts/amazon-book/multiplatform-export.ts` respeitando a regra de exclusividade digital do KDP Select.

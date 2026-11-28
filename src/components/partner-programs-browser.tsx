@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Fragment, useActionState, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { BellPlus, Bookmark, CalendarPlus, ChevronDown, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
+import { BellPlus, Bookmark, CalendarPlus, ChevronDown, HelpCircle, Search, Share2, SlidersHorizontal, X } from 'lucide-react';
 import type { PartnerProgramCard } from '@/actions/partner-programs';
 import { submitPartnerReview } from '@/actions/partner-programs';
 import { Pagination } from '@/components/ui/pagination';
 import { OutboundLink } from '@/components/ui/outbound-link';
 import { PartnerReferralLeadModal } from '@/components/partner-referral-lead-modal';
+import { MultiProjectSection } from '@/components/income/multi-project-section';
 import { ProgramFirstWithdrawal } from '@/components/income/program-first-withdrawal';
 import { ProgramSecondaryOffer } from '@/components/income/program-secondary-offer';
 import { ProgramStrategies } from '@/components/income/program-strategies';
@@ -18,6 +19,8 @@ import { SaveProgramButton, useSavedProgramSlugs } from '@/components/income/sav
 import { SmartTagList } from '@/components/income/smart-tag-list';
 import { SocialEmbed } from '@/components/video/social-embed';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
+import { DISCOVERY_TAGS } from '@/lib/partner-program-catalog';
+import { getMultiProjectCardHint } from '@/lib/multi-project-programs';
 import { comparePartnerProgramRelevance } from '@/lib/partner-program-sorting';
 import { getProgramShareUrl } from '@/lib/share-url';
 import { SITE_URL } from '@/lib/site';
@@ -63,7 +66,7 @@ const REVIEW_TAG_GROUPS = [
     tags: ['baixa remuneração', 'poucas tarefas disponíveis', 'pagamento atrasado', 'suporte ruim', 'cadastro demorado', 'requisitos confusos', 'tarefas repetitivas'],
   },
 ];
-const PROGRAMS_PER_PAGE = 12;
+const PROGRAMS_PER_PAGE = 60;
 const EMBEDDED_PORTAL_RESOURCE_SLUGS = [
   'bussola-negocios',
   'ferramenta-ia',
@@ -77,7 +80,7 @@ const EMBEDDED_RESOURCE_MEDIA: Record<
 > = {
   'bussola-negocios': {
     areaId: 'quiz-negocios',
-    priceTag: 'R$ 39 único',
+    priceTag: 'Diagnóstico IA',
     incomePotential: 'R$ 500 a R$ 4.000/mês',
     eyebrow: 'Ferramenta NKL',
   },
@@ -89,7 +92,7 @@ const EMBEDDED_RESOURCE_MEDIA: Record<
   },
   'pacote-renda-extra': {
     areaId: 'guia-renda-extra',
-    priceTag: 'R$ 19 – R$ 247',
+    priceTag: 'R$ 19/mês',
     incomePotential: 'R$ 400 a R$ 3.000/mês',
     eyebrow: 'Guias NKL',
   },
@@ -100,19 +103,6 @@ const EMBEDDED_RESOURCE_MEDIA: Record<
     eyebrow: 'Idiomas NKL',
   },
 };
-const DISCOVERY_TAGS = [
-  { label: 'Gravar vídeos em casa', slugs: ['apphub', 'billo', 'joinbrands', 'hub', 'flambra', 'amazon-influencer', 'sideshift', 'producao-videos-ia', 'edicao-cortes-virais-ia'] },
-  { label: 'Ganhar sem fazer nada', slugs: ['honeygain', 'repocket', 'ia-remunerada-curadoria-dados'] },
-  { label: 'Ganhar com pesquisas', slugs: ['prolific', 'dscout', 'dataannotation', 'crowdato', 'attapoll'] },
-  { label: 'Testar apps e sites', slugs: ['aligner', 'utest', 'testlio', 'testes-ux-narrados'] },
-  { label: 'Vender serviços', slugs: ['fiverr', 'upwork', 'automacao-ia-negocios-locais', 'trafego-pago-negocios-locais', 'edicao-cortes-virais-ia'] },
-  { label: 'Ganhar indicando', slugs: ['mercado-pago', 'marketplaces-afiliados', 'hotmart', 'sideshift', 'quintoandar-indica-ai', 'afiliados-b2b-tubebuddy-make'] },
-  { label: 'Renda extra pelo celular', slugs: ['mercado-pago', 'honeygain', 'clickworker', 'oneforma', 'sideshift', 'attapoll', 'edicao-cortes-virais-ia'] },
-  { label: 'Renda extra sem investimento', slugs: ['prolific', 'dscout', 'honeygain', 'apphub', 'clickworker', 'oneforma', 'dataannotation', 'crowdato', 'outlier-ai', 'utest', 'testlio', 'claru-ia', 'quintoandar-indica-ai', 'amazon-kdp-ebooks', 'learn-to-earn-bolsas-digitais', 'ia-remunerada-curadoria-dados'] },
-  { label: 'Com investimento inicial', slugs: ['comunidades-pagas-skool-systeme', 'montink-embaixador', 'walmart-marketplace-revenda', 'producao-videos-ia', 'printful-print-on-demand', 'loja-templates-etsy-gumroad', 'automacao-ia-negocios-locais', 'trafego-pago-negocios-locais', 'edicao-cortes-virais-ia'] },
-  { label: 'Estudar e ganhar / IA', slugs: ['learn-to-earn-bolsas-digitais', 'ia-remunerada-curadoria-dados', 'outlier-ai', 'micro1', 'dataannotation', 'mindrift', 'claru-ia'] },
-  { label: 'E-books e produtos digitais', slugs: ['amazon-kdp-ebooks', 'loja-templates-etsy-gumroad', 'hotmart', 'comunidades-pagas-skool-systeme'] },
-];
 
 type FormState = {
   error: string | null;
@@ -152,7 +142,7 @@ function earningValue(value: string): number {
   return match ? Number(match[0].replace(',', '.')) : 0;
 }
 
-function ProgramLogo({ program }: { program: PartnerProgramCard }) {
+function ProgramLogo({ program, priority = false }: { program: PartnerProgramCard; priority?: boolean }) {
   const [failed, setFailed] = useState(false);
   const needsWhiteBackground = ['claru-ia', 'crowdato', 'oneforma', 'joinbrands'].includes(program.slug);
 
@@ -160,6 +150,8 @@ function ProgramLogo({ program }: { program: PartnerProgramCard }) {
     <img
       src={program.logoUrl}
       alt={`Logo ${program.name}`}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
       className={`h-full w-full rounded-md object-contain ${needsWhiteBackground ? 'bg-white' : ''}`}
       onError={() => setFailed(true)}
     />
@@ -168,28 +160,9 @@ function ProgramLogo({ program }: { program: PartnerProgramCard }) {
   );
 }
 
-const MARKETPLACE_AFFILIATE_LINKS = [
-  { name: 'Mercado Livre', href: 'https://www.mercadolivre.com.br/l/afiliados-home' },
-  { name: 'Shopee', href: 'https://affiliate.shopee.com.br/' },
-  { name: 'Amazon Associados', href: 'https://associados.amazon.com.br/' },
-  { name: 'Influenciador Magalu', href: 'https://www.magazinevoce.com.br/' },
-  { name: 'AliExpress Portals', href: 'https://portals.aliexpress.com/' },
-  { name: 'Shein', href: 'https://affiliate.shein.com/' },
-  { name: 'eBay Partner Network', href: 'https://partnernetwork.ebay.com/' },
-  { name: 'Temu', href: 'https://www.temu.com/affiliate_recruit.html' },
-  { name: 'Etsy Affiliates', href: 'https://www.etsy.com/affiliates' },
-  { name: 'Walmart Affiliates', href: 'https://affiliates.walmart.com/' },
-];
-
 const CLARU_PARTNER_URL = 'https://app.claru.ai/signup?ref=yzv3jv9q&mode=partner';
 const BUY_ME_A_COFFEE_SLUG = 'monetizacao-atencao-web';
 const BUY_ME_A_COFFEE_INVITE_URL = 'https://www.buymeacoffee.com/invite/ni2co3san9c';
-const ALIGNERR_PROJECTS = [
-  {
-    title: 'Senior Software Engineer — Agentic Coding',
-    href: 'https://app.alignerr.com/signin?referral-code=5b904321-66d0-4369-bf89-5b230408747a&program=b7f918c0-4ef7-11f1-9dec-3d76718b1a77&referralJobId=f4b9a0e2-e6c2-4388-b01d-b7655b313d9b',
-  },
-];
 export function PartnerProgramsBrowser({
   programs,
   micro1Opportunities,
@@ -222,11 +195,13 @@ export function PartnerProgramsBrowser({
   const [reminderFrequency, setReminderFrequency] = useState<'daily' | 'weekdays' | 'weekly'>('daily');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [activeQuickPanel, setActiveQuickPanel] = useState<QuickPanelId | null>(null);
+  const [floatingGuideDismissed, setFloatingGuideDismissed] = useState(false);
   const [urlObjective, setUrlObjective] = useState<string | undefined>(initialObjective);
   const [urlCurrency, setUrlCurrency] = useState<string | undefined>(initialCurrency);
   const [urlEnglish, setUrlEnglish] = useState<string | undefined>(initialEnglish);
   const dialogRef = useRef<HTMLDivElement>(null);
   const cardsResultsRef = useRef<HTMLDivElement>(null);
+  const comoFuncionaRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const search = new URLSearchParams(window.location.search);
@@ -248,6 +223,13 @@ export function PartnerProgramsBrowser({
   function scrollToCards(): void {
     window.requestAnimationFrame(() => {
       cardsResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function openComoFuncionaGuide(panel: QuickPanelId = 'how-to-choose'): void {
+    setActiveQuickPanel(panel);
+    window.requestAnimationFrame(() => {
+      comoFuncionaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
@@ -406,13 +388,13 @@ export function PartnerProgramsBrowser({
       | { kind: 'resource'; resource: (typeof embeddedResources)[number] }
       | { kind: 'editorial'; card: (typeof EDITORIAL_CARDS)[number] }
     > = [
-      ...(embeddedResources[0] ? [{ kind: 'resource' as const, resource: embeddedResources[0] }] : []),
-      { kind: 'editorial' as const, card: EDITORIAL_CARDS[0] },
-      ...(embeddedResources[1] ? [{ kind: 'resource' as const, resource: embeddedResources[1] }] : []),
-      ...(embeddedResources[2] ? [{ kind: 'resource' as const, resource: embeddedResources[2] }] : []),
-      { kind: 'editorial' as const, card: EDITORIAL_CARDS[1] },
-      ...(embeddedResources[3] ? [{ kind: 'resource' as const, resource: embeddedResources[3] }] : []),
-    ];
+        ...(embeddedResources[0] ? [{ kind: 'resource' as const, resource: embeddedResources[0] }] : []),
+        { kind: 'editorial' as const, card: EDITORIAL_CARDS[0] },
+        ...(embeddedResources[1] ? [{ kind: 'resource' as const, resource: embeddedResources[1] }] : []),
+        ...(embeddedResources[2] ? [{ kind: 'resource' as const, resource: embeddedResources[2] }] : []),
+        { kind: 'editorial' as const, card: EDITORIAL_CARDS[1] },
+        ...(embeddedResources[3] ? [{ kind: 'resource' as const, resource: embeddedResources[3] }] : []),
+      ];
 
     const entries: GridEntry[] = [];
     visiblePrograms.forEach((program, index) => {
@@ -423,22 +405,23 @@ export function PartnerProgramsBrowser({
         isFirst: index === 0,
       });
 
-      if ((index + 1) % 4 === 0 && salesDeck.length > 0) {
-        const slotIndex = Math.floor(index / 4);
-        const salesIndex = ((safeCurrentPage - 1) * 3 + slotIndex) % salesDeck.length;
-        const selectedOffer = salesDeck[salesIndex];
-        if (selectedOffer.kind === 'editorial') {
-          entries.push({
-            kind: 'editorial',
-            key: `editorial-p${safeCurrentPage}-${slotIndex}`,
-            card: selectedOffer.card,
-          });
-        } else {
-          entries.push({
-            kind: 'resource',
-            key: `resource-${selectedOffer.resource.slug}-p${safeCurrentPage}-${slotIndex}`,
-            resource: selectedOffer.resource,
-          });
+      if (index >= 3 && (index - 3) % 7 === 0 && salesDeck.length > 0) {
+        const slotIndex = Math.floor((index - 3) / 7);
+        if (slotIndex < salesDeck.length) {
+          const selectedOffer = salesDeck[slotIndex];
+          if (selectedOffer.kind === 'editorial') {
+            entries.push({
+              kind: 'editorial',
+              key: `editorial-p${safeCurrentPage}-${slotIndex}`,
+              card: selectedOffer.card,
+            });
+          } else {
+            entries.push({
+              kind: 'resource',
+              key: `resource-${selectedOffer.resource.slug}-p${safeCurrentPage}-${slotIndex}`,
+              resource: selectedOffer.resource,
+            });
+          }
         }
       }
     });
@@ -578,7 +561,7 @@ export function PartnerProgramsBrowser({
           {shareMessage}
         </div>
       )}
-      <section id="como-funciona" aria-label="Atalhos e guias rápidos" className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
+      <section ref={comoFuncionaRef} id="como-funciona" aria-label="Atalhos e guias rápidos" className="scroll-mt-24 w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-income-surface/75 p-2.5 md:p-3">
         <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto scrollbar-none">
           {[
             ...(quickPanels
@@ -905,6 +888,8 @@ export function PartnerProgramsBrowser({
           const ratingLabel = program.communityRating === null ? 'nota editorial' : `${program.communityReviewCount} avaliações`;
           const visibleTags = program.communityTags.length >= 1 ? program.communityTags : program.tags;
           const isDescriptionExpanded = expandedDescriptionSlugs.includes(program.slug);
+          const multiProjectHint = getMultiProjectCardHint(program.slug, micro1Opportunities.length);
+          const hasForeignLanguage = program.languages.some((language) => language !== 'Português');
 
           return (
             <Fragment key={entry.key}>
@@ -920,6 +905,7 @@ export function PartnerProgramsBrowser({
                 role="button"
                 tabIndex={0}
                 data-tutorial={index === 0 ? 'program-card-0' : undefined}
+                style={gridIndex >= 6 ? { contentVisibility: 'auto', containIntrinsicSize: '0 420px' } : undefined}
                 className="group relative flex min-h-full cursor-pointer flex-col gap-3 rounded-xl border border-border bg-income-card/95 p-4 [container-type:inline-size] transition-colors hover:border-neon/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon md:gap-4 md:p-6"
               >
                 <div className="absolute right-3 top-3 z-20 md:right-4 md:top-4" onClick={(event) => event.stopPropagation()}>
@@ -948,6 +934,15 @@ export function PartnerProgramsBrowser({
                       {language}
                     </span>
                   ))}
+                  {hasForeignLanguage && (
+                    <Link
+                      href="/idiomas"
+                      onClick={(event) => event.stopPropagation()}
+                      className="inline-flex items-center rounded-full border border-orange/45 bg-orange/10 px-2.5 py-1 text-xs font-bold text-orange-700 transition-colors hover:bg-orange hover:text-white dark:text-orange-300"
+                    >
+                      Tem dificuldade com idioma?
+                    </Link>
+                  )}
                 </div>
                 <p className={`text-sm leading-relaxed opacity-75 ${isDescriptionExpanded ? '' : 'line-clamp-2'}`}>{program.shortDescription}</p>
                 {program.shortDescription.length > 150 && (
@@ -955,12 +950,13 @@ export function PartnerProgramsBrowser({
                     {isDescriptionExpanded ? 'Recolher descrição' : 'Ler descrição completa'}
                   </button>
                 )}
-                {program.slug === 'micro1' && (
-                  <Micro1OpportunitiesSection
-                    opportunities={micro1Opportunities}
-                    error={micro1Error}
-                    variant="card"
-                  />
+                {multiProjectHint && (
+                  <p
+                    data-testid={program.slug === 'micro1' ? 'micro1-card-hint' : `multi-project-hint-${program.slug}`}
+                    className="rounded-lg border border-neon/25 bg-neon/5 px-3 py-1.5 text-xs font-semibold text-neon"
+                  >
+                    {multiProjectHint} · Clique para ver a lista
+                  </p>
                 )}
                 <div className="mt-auto flex min-w-0 flex-col gap-2">
                   <div className="flex min-h-16 items-center justify-between gap-3">
@@ -981,7 +977,7 @@ export function PartnerProgramsBrowser({
                           aria-label={`Indicar imóveis pelo ${program.name}`}
                           title={`Indicar imóveis pelo ${program.name}`}
                         >
-                          <ProgramLogo program={program} />
+                          <ProgramLogo program={program} priority={gridIndex < 6} />
                         </button>
                       ) : (
                         <OutboundLink
@@ -993,7 +989,7 @@ export function PartnerProgramsBrowser({
                           aria-label={`Acessar plataforma ${program.name}`}
                           title={`Acessar plataforma ${program.name}`}
                         >
-                          <ProgramLogo program={program} />
+                          <ProgramLogo program={program} priority={gridIndex < 6} />
                         </OutboundLink>
                       )}
                     </div>
@@ -1091,7 +1087,7 @@ export function PartnerProgramsBrowser({
 
       {selectedProgram && (
         <div ref={dialogRef} className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selectedProgram.name}`} onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProgram(null); }}>
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-income-surface p-6" onMouseDown={(event) => event.stopPropagation()}>
+          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-border bg-income-surface p-6" onMouseDown={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-wide text-neon font-bold">{selectedProgram.category}</p>
@@ -1144,28 +1140,7 @@ export function PartnerProgramsBrowser({
                 </OutboundLink>
               </section>
             )}
-            {selectedProgram.slug === 'aligner' && (
-              <section className="mt-5 rounded-lg border border-border bg-background p-4">
-                <h3 className="font-bold">Exemplos de projetos disponíveis</h3>
-                <p className="mt-1 text-sm leading-relaxed opacity-75">As oportunidades podem mudar rapidamente. Estes exemplos mostram vagas para engenharia e avaliação de IA; também podem surgir projetos para pessoas que falam português em transcrição, localização, linguística e finanças.</p>
-                <div className="mt-3 space-y-2">
-                  {ALIGNERR_PROJECTS.map((project) => (
-                    <div key={project.href} className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
-                      <span className="text-sm font-medium">{project.title}</span>
-                      <div className="flex shrink-0 gap-2">
-                        <OutboundLink href={project.href} trackingId={`aligner-${project.title}`} sponsored className="rounded-md bg-neon px-3 py-2 text-xs font-bold text-black hover:opacity-90">
-                          Ver projeto
-                        </OutboundLink>
-                        <button type="button" onClick={() => void shareProgram(selectedProgram, project.href)} className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border text-neon hover:border-neon" aria-label={`Compartilhar projeto ${project.title}`}>
-                          <Share2 size={16} aria-hidden="true" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-            {selectedProgram.slug === 'micro1' && (
+            {selectedProgram.slug === 'micro1' ? (
               <div className="mt-5">
                 <Micro1OpportunitiesSection
                   opportunities={micro1Opportunities}
@@ -1173,41 +1148,33 @@ export function PartnerProgramsBrowser({
                   variant="full"
                 />
               </div>
+            ) : (
+              <MultiProjectSection slug={selectedProgram.slug} programName={selectedProgram.name} />
             )}
-            {selectedProgram.slug === 'marketplaces-afiliados' && (
-              <section className="mt-5 rounded-lg border border-border bg-background p-4">
-                <h3 className="font-bold">Onde se cadastrar como afiliado</h3>
-                <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {MARKETPLACE_AFFILIATE_LINKS.map((marketplace) => (
-                    <li key={marketplace.name}>
-                      <OutboundLink
-                        href={marketplace.href}
-                        trackingId={`marketplace-${marketplace.name.toLowerCase().replaceAll(' ', '-')}`}
-                        sponsored
-                        className="flex min-h-11 items-center rounded-md border border-border px-3 py-2 text-sm font-medium text-neon transition-colors hover:border-neon hover:bg-neon/5 hover:no-underline"
-                      >
-                        {marketplace.name}
-                      </OutboundLink>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               {selectedProgram.languages.map((language) => <span key={`language-${language}`} className="rounded-full border border-neon/50 px-2.5 py-1 text-xs font-medium text-neon">{language}</span>)}
+              {selectedProgram.languages.some((language) => language !== 'Português') && (
+                <Link
+                  href="/idiomas"
+                  className="inline-flex items-center rounded-full border border-orange/45 bg-orange/10 px-2.5 py-1 text-xs font-bold text-orange-700 transition-colors hover:bg-orange hover:text-white dark:text-orange-300"
+                >
+                  Tem dificuldade com idioma?
+                </Link>
+              )}
               {(selectedProgram.communityTags.length >= 1 ? selectedProgram.communityTags : selectedProgram.tags).map((tag) => <span key={tag} className="rounded-full border border-border px-2.5 py-1 text-xs">{tag}</span>)}
             </div>
             <div className="mt-6 space-y-4 border-t border-border pt-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Link href={`/programas/${selectedProgram.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-orange-500/60 px-4 py-2 text-sm font-bold text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
+              <div className="flex flex-wrap items-center gap-2" data-testid="program-modal-actions">
+                <Link href={`/programas/${selectedProgram.slug}`} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-orange-500/60 px-3.5 text-sm font-bold leading-none text-orange-500 hover:bg-orange-500/10 dark:text-orange-400">
                   Abrir página completa
                 </Link>
-                <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex min-h-11 items-center rounded-md border border-border px-4 py-2 text-sm font-bold hover:border-orange-500">
+                <button type="button" onClick={() => setShowReviewForm((visible) => !visible)} className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-border px-3.5 text-sm font-bold leading-none hover:border-orange-500">
                   {showReviewForm ? 'Ocultar avaliação' : 'Avaliar oportunidade'}
                 </button>
                 <SaveProgramButton
                   slug={selectedProgram.slug}
                   name={selectedProgram.name}
+                  hideStatusText
                   nextPath={`/programas/${selectedProgram.slug}`}
                   isSaved={savedSlugSet.has(selectedProgram.slug)}
                 />
@@ -1216,58 +1183,59 @@ export function PartnerProgramsBrowser({
                   tiktokId={selectedProgram.tiktokVideoId}
                   programName={selectedProgram.name}
                   triggerLabel="Ver vídeo"
+                  inline
                 />
                 <button
                   type="button"
                   onClick={() => void shareProgram(selectedProgram)}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-md border border-neon px-4 py-2 text-sm font-bold text-neon transition-colors hover:bg-neon hover:text-black"
+                  className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-neon px-3.5 text-sm font-bold leading-none text-neon transition-colors hover:bg-neon hover:text-black"
                 >
                   <Share2 size={16} aria-hidden="true" />
                   <span>Compartilhar</span>
                 </button>
               </div>
               {showReviewForm && <form action={reviewAction} className="mt-4 space-y-4 border-t border-border pt-5">
-              <input type="hidden" name="programId" value={selectedProgram.id} />
-              <h3 className="font-playfair text-xl font-bold">Avalie esta oportunidade</h3>
-              <label className="block text-sm font-bold">Nota de 0 a 10
-                <input name="rating" type="number" min="0" max="10" step="1" required className="mt-2 block w-28 rounded-md border border-border bg-background px-3 py-2" />
-              </label>
-              <fieldset className="rounded-lg border border-border p-3">
-                <legend className="px-1 text-sm font-bold">Quanto você recebeu ou espera receber?</legend>
-                <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
-                  <input name="payAmount" type="number" min="0.01" step="0.01" placeholder="Valor médio (opcional)" className="rounded-md border border-border bg-background px-3 py-2 font-normal" />
-                  <select name="payCurrency" defaultValue="BRL" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
-                    <option value="BRL">R$ BRL</option>
-                    <option value="USD">US$ USD</option>
-                    <option value="EUR">€ EUR</option>
+                <input type="hidden" name="programId" value={selectedProgram.id} />
+                <h3 className="font-playfair text-xl font-bold">Avalie esta oportunidade</h3>
+                <label className="block text-sm font-bold">Nota de 0 a 10
+                  <input name="rating" type="number" min="0" max="10" step="1" required className="mt-2 block w-28 rounded-md border border-border bg-background px-3 py-2" />
+                </label>
+                <fieldset className="rounded-lg border border-border p-3">
+                  <legend className="px-1 text-sm font-bold">Quanto você recebeu ou espera receber?</legend>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+                    <input name="payAmount" type="number" min="0.01" step="0.01" placeholder="Valor médio (opcional)" className="rounded-md border border-border bg-background px-3 py-2 font-normal" />
+                    <select name="payCurrency" defaultValue="BRL" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
+                      <option value="BRL">R$ BRL</option>
+                      <option value="USD">US$ USD</option>
+                      <option value="EUR">€ EUR</option>
+                    </select>
+                    <select name="payPeriod" defaultValue="trabalho" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
+                      <option value="hora">por hora</option>
+                      <option value="dia">por dia</option>
+                      <option value="semana">por semana</option>
+                      <option value="trabalho">por trabalho</option>
+                    </select>
+                  </div>
+                  <p className="mt-2 text-xs font-normal opacity-60">Informe apenas se você tiver uma referência real.</p>
+                </fieldset>
+                <label className="block text-sm font-bold">Tags da sua experiência
+                  <select name="tags" multiple className="mt-2 min-h-32 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" aria-describedby="review-tags-help">
+                    {REVIEW_TAG_GROUPS.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+                      </optgroup>
+                    ))}
                   </select>
-                  <select name="payPeriod" defaultValue="trabalho" className="rounded-md border border-border bg-background px-3 py-2 font-normal">
-                    <option value="hora">por hora</option>
-                    <option value="dia">por dia</option>
-                    <option value="semana">por semana</option>
-                    <option value="trabalho">por trabalho</option>
-                  </select>
-                </div>
-                <p className="mt-2 text-xs font-normal opacity-60">Informe apenas se você tiver uma referência real.</p>
-              </fieldset>
-              <label className="block text-sm font-bold">Tags da sua experiência
-                <select name="tags" multiple className="mt-2 min-h-32 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" aria-describedby="review-tags-help">
-                  {REVIEW_TAG_GROUPS.map((group) => (
-                    <optgroup key={group.label} label={group.label}>
-                      {group.tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
-                <span id="review-tags-help" className="mt-1 block text-xs font-normal opacity-60">Você pode selecionar quantas tags quiser, incluindo pontos positivos e negativos.</span>
-              </label>
-              <label className="block text-sm font-bold">Por que você deu esta nota?
-                <textarea name="reason" required minLength={100} rows={6} placeholder="Escreva pelo menos 20 palavras sobre sua experiência." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" />
-              </label>
-              <p className="text-xs opacity-60">Sua avaliação será anônima. O texto precisa ter pelo menos 20 palavras.</p>
-              {reviewState.error && <p role="alert" className="text-sm text-red-400">{reviewState.error}</p>}
-              {reviewState.success && <p role="status" className="text-sm text-neon">Avaliação publicada com sucesso.</p>}
-              <SubmitButton idleLabel="Publicar avaliação" pendingLabel="Processando..." />
-            </form>}
+                  <span id="review-tags-help" className="mt-1 block text-xs font-normal opacity-60">Você pode selecionar quantas tags quiser, incluindo pontos positivos e negativos.</span>
+                </label>
+                <label className="block text-sm font-bold">Por que você deu esta nota?
+                  <textarea name="reason" required minLength={100} rows={6} placeholder="Escreva pelo menos 20 palavras sobre sua experiência." className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 font-normal" />
+                </label>
+                <p className="text-xs opacity-60">Sua avaliação será anônima. O texto precisa ter pelo menos 20 palavras.</p>
+                {reviewState.error && <p role="alert" className="text-sm text-red-400">{reviewState.error}</p>}
+                {reviewState.success && <p role="status" className="text-sm text-neon">Avaliação publicada com sucesso.</p>}
+                <SubmitButton idleLabel="Publicar avaliação" pendingLabel="Processando..." />
+              </form>}
               <ProgramSecondaryOffer programSlug={selectedProgram.slug} currentPage={safeCurrentPage} />
             </div>
           </div>
@@ -1394,6 +1362,33 @@ export function PartnerProgramsBrowser({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {!floatingGuideDismissed && !selectedProgram && !reminderProgram && !filtersOpen && (
+        <div
+          data-testid="floating-como-funciona"
+          className="fixed bottom-5 left-4 z-40 flex max-w-[calc(100vw-6.5rem)] items-center gap-2 rounded-full border border-neon/40 bg-card/95 px-3 py-2 text-xs shadow-xl backdrop-blur-md sm:left-6"
+        >
+          <HelpCircle size={16} className="shrink-0 text-neon" aria-hidden="true" />
+          <a
+            href="#como-funciona"
+            onClick={(event) => {
+              event.preventDefault();
+              openComoFuncionaGuide('how-to-choose');
+            }}
+            className="font-semibold text-foreground transition hover:text-neon"
+          >
+            Dúvida em qual escolher? <span className="text-neon underline">Como funciona</span>
+          </a>
+          <button
+            type="button"
+            aria-label="Fechar sugestão de guia"
+            onClick={() => setFloatingGuideDismissed(true)}
+            className="ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full opacity-65 transition hover:bg-background hover:opacity-100"
+          >
+            <X size={13} aria-hidden="true" />
+          </button>
         </div>
       )}
     </div>

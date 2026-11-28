@@ -10,7 +10,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { OfferCheckoutCta } from '@/components/funnel/offer-checkout-cta';
-import { AdaptiveCtaLink } from '@/components/sales/adaptive-cta-link';
+import { BussolaSalesFunnel } from '@/components/offers/bussola-sales-funnel';
 import {
   PAID_PRODUCT_SLUGS,
   getProductBySlug,
@@ -127,6 +127,10 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
           </Link>
         </div>
 
+        {product.slug === 'bussola-negocios' ? (
+          <BussolaSalesFunnel product={product} />
+        ) : (
+        <>
         <header className="rounded-3xl border border-border bg-surface/90 p-6 shadow-sm backdrop-blur-md sm:p-10">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center rounded-full border border-[#c2410c]/30 bg-[#c2410c]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#9a3412] dark:border-[#f97316]/35 dark:bg-[#f97316]/15 dark:text-[#fdba74]">
@@ -162,18 +166,6 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
             )}
 
             <div className="flex flex-wrap items-center gap-3">
-              {product.slug === 'bussola-negocios' && (
-                <AdaptiveCtaLink
-                  experiment="bussola-cta"
-                  href={product.checkoutRoute}
-                  variants={[
-                    { id: '0', label: 'Descobrir meu negócio dos sonhos' },
-                    { id: '1', label: 'Mapear minhas 3 melhores ideias' },
-                    { id: '2', label: 'Começar pela bússola interativa' },
-                  ]}
-                  className="inline-flex min-h-[52px] items-center justify-center rounded-xl border border-[#c2410c]/40 bg-background/80 px-5 py-3 text-center text-sm font-bold text-[#9a3412] no-underline transition-colors hover:border-[#c2410c] dark:border-[#f97316]/45 dark:text-[#fdba74] dark:hover:border-[#fb923c]"
-                />
-              )}
               <OfferCheckoutCta
                 href={product.checkoutRoute}
                 label={product.ctaLabel}
@@ -341,6 +333,8 @@ export default async function OfferDetailPage({ params }: OfferPageProps) {
             </div>
           </div>
         </section>
+        </>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 id: progress
 tags: [progresso, checklist, milestones, pre-deploy]
 links: [activeContext, projectBrief, techContext, decisionsLog]
-updated: 2026-11-24
+updated: 2026-11-28
 ---
 
 # Progress
@@ -61,6 +61,9 @@ gates de qualidade em [quality.md](../docs/quality.md); roteiro executivo em [RO
 - [x] **CWV (LCP/FCP/INP), Auto-Scroll de Tags em `/programas` & Auditoria `cancel_url` Stripe (2026-11-27)**: `/programas` migrado para ISR (`revalidate = 300`) sem tripla serialização de 57 programas; `PortalHomeParallax` e `PrivacyScripts` (AdSense/GA4/Clarity `lazyOnload` + `posthog-js` idle) fora da linha crítica; seleção de tags/filtros em `PartnerProgramsBrowser` rola até `#programs-grid` com barra `Filtro ativo`/`Limpar filtros`; `ai-offer-checkout`, `guide-checkout-button` e `guide-subscription-button` enviando `cancelPath` exato de origem.
 - [x] **Arquitetura GEO + SEO Técnico Completa & Blindagem `/sitemap.xml` (2026-11-27)**: IndexNow (`public/a7f4c92e1b8d40539e6c1a2f8b4d7e03.txt` + `seo:indexnow`), `/llms.txt` e `/llms-full.txt`, `robots.ts` liberando bots de IA, `sitemap.ts` em ISR com `lastmod` real e bypass no `proxy.ts`, Schema `@id`, `/metodologia`, `<CatalogStatsBox />`, `<BlufSummary />`, tabelas SSR e 22 comparativos.
 - [x] **3 Frentes de Escala — NotebookLM Packs, Publicador Social + 9Router & Distribuição Ampla do Livro (2026-11-27)**: `scripts/notebooklm/*` gerando 15 pacotes + 30 capas + player opcional em `/ia/curso/[moduleSlug]`; `tools/social-publisher/*` (12 canais incl. Bluesky, Threads, Mastodon, X, YouTube, TikTok, IG/FB, Postiz/Webhook) + `/admin/publicador`; `scripts/amazon-book/multiplatform-export.ts` + `scripts/build-book-multiplatform.ts` gerando 5 kits prontos (`UICLAP`, `Clube de Autores`, `Google Play Livros`, `Draft2Digital`, venda direta).
+- [x] **Pipeline Local de Edição Stories 9:16 v4 + Chroma Key + Skills (`scripts/video-editor/`, 2026-11-27)**: reconstrução visual v4 com capturas Retina `fullPage` (`1080x10500`) animadas com scroll suave em 100% da tela, apresentador compacto (`520x655`) no canto inferior direito com `speaker_edge_mask.png`, legendas `Alignment=1` no canto inferior esquerdo, card Analytics + CTA no topo, recorte `RobustVideoMatting` ONNX (`04-nkl-chroma-greenscreen-1080x1920.mp4`), skill `.agents/skills/nkl-stories-video-editor/SKILL.md` e 4 skills globais instaladas (`remotion-best-practices`, `remotion-captions`, `ffmpeg`, `video-editing`).
+
+- [x] **Overhaul CRO, UX e Funis Portal NKL (`master`, 2026-11-28)**: `/guias/renda-extra` com 3 opções exclusivas focadas em `R$ 19/mês`; funil aspiracional + mini-quiz antes do preço + diagnóstico IA via `9router` (com fallback determinístico offline) em `Bússola de Negócios IA`; 57 programas na página 1 de `/programas` (`contentVisibility: 'auto'`), pill flutuante `#como-funciona`, `DISCOVERY_TAGS` 57/57, botões do modal alinhados (`h-11`), remoção do destaque Micro1 no card, `DraggableProjectList` PT-BR `<= 7` palavras multi-plataforma e tag clicável `Tem dificuldade com idioma?` -> `/idiomas` (`37/37` unitários + `npm run verify` + `33/33` E2E Playwright).
 
 ## Proximas acoes manuais (Contas Externas)
 

@@ -8,13 +8,19 @@ type Props = {
   tiktokId?: string | null;
   programName: string;
   triggerLabel?: string;
+  inline?: boolean;
 };
 
 function isPlaceholder(value: string | null | undefined): boolean {
   return !value || value === 'SEU_ID_EXEMPLO';
 }
 
-export function SocialEmbed({ youtubeId, programName, triggerLabel = 'Ver vídeo em português' }: Props) {
+export function SocialEmbed({
+  youtubeId,
+  programName,
+  triggerLabel = 'Ver vídeo em português',
+  inline = false,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const activeYoutubeId = isPlaceholder(youtubeId) ? null : youtubeId;
   const searchQuery = encodeURIComponent(`como funciona ${programName} português`);
@@ -49,7 +55,11 @@ export function SocialEmbed({ youtubeId, programName, triggerLabel = 'Ver vídeo
       <button
         type="button"
         onClick={openVideo}
-        className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md border border-orange px-4 py-3 text-sm font-bold text-orange transition hover:bg-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className={
+          inline
+            ? 'inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-orange px-4 text-sm font-bold leading-none text-orange transition hover:bg-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+            : 'mt-6 inline-flex min-h-11 items-center gap-2 rounded-md border border-orange px-4 py-3 text-sm font-bold text-orange transition hover:bg-orange/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+        }
         aria-haspopup="dialog"
         aria-expanded={isOpen}
       >

@@ -28,6 +28,7 @@ type ProductCheckoutClientProps = {
   product: PaidProduct;
   isLoggedIn: boolean;
   userEmail: string | null;
+  initialTier?: OfferTier;
 };
 
 type AiCheckoutResponse = {
@@ -79,6 +80,7 @@ export function ProductCheckoutClient({
   product,
   isLoggedIn,
   userEmail,
+  initialTier,
 }: ProductCheckoutClientProps) {
   const router = useRouter();
   const loginHref = `/login?next=${encodeURIComponent(product.checkoutRoute)}`;
@@ -86,7 +88,7 @@ export function ProductCheckoutClient({
   const [selectedPlan, setSelectedPlan] = useState<AiOfferPlan>(
     product.legacyOfferVariant === 'ai-subscription' ? 'subscription' : 'one_time',
   );
-  const [selectedTier, setSelectedTier] = useState<OfferTier>('complete');
+  const [selectedTier, setSelectedTier] = useState<OfferTier>(initialTier ?? 'complete');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState(userEmail ?? '');
   const [cpf, setCpf] = useState('');

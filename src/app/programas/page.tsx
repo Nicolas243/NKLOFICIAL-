@@ -78,8 +78,8 @@ const getCachedMicro1Opportunities = unstable_cache(
 );
 
 export const metadata: Metadata = {
-  title: 'Renda Extra 2026: 55+ Formas Reais e Plataformas Verificadas',
-  description: 'Descubra mais de 55 formas reais de fazer renda extra online, pelo celular, em dólar, sem investimento inicial ou com IA. Comparativo atualizado sem promessas fáceis.',
+  title: 'Renda Extra 2026: 57 Formas Reais e Plataformas Verificadas',
+  description: 'Descubra 57 formas reais de fazer renda extra online, pelo celular, em dólar, sem investimento inicial ou com IA. Comparativo atualizado sem promessas fáceis.',
   keywords: [
     'renda extra',
     'como ganhar renda extra',
@@ -95,22 +95,22 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    title: 'Renda Extra 2026: 55+ Formas Reais | Portal NKL',
-    description: 'Mais de 55 caminhos reais de renda extra online, em dólar, pelo celular, sem investimento ou com IA — com requisitos, ferramentas e comparador.',
+    title: 'Renda Extra 2026: 57 Formas Reais | Portal NKL',
+    description: '57 caminhos reais de renda extra online, em dólar, pelo celular, sem investimento ou com IA — com requisitos, ferramentas e comparador.',
     url: absoluteSiteUrl(INCOME_PORTAL_ROUTES.catalog),
     images: [
       {
         url: absoluteSiteUrl('/images/areas/renda-extra.jpg'),
         width: 960,
         height: 540,
-        alt: 'Catálogo de 55+ formas reais de renda extra no Portal NKL',
+        alt: 'Catálogo de 57 formas reais de renda extra no Portal NKL',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Renda Extra 2026: 55+ Formas Reais | Portal NKL',
-    description: 'Compare 55+ plataformas e estratégias reais de renda extra online, em dólar, pelo celular ou com IA.',
+    title: 'Renda Extra 2026: 57 Formas Reais | Portal NKL',
+    description: 'Compare 57 plataformas e estratégias reais de renda extra online, em dólar, pelo celular ou com IA.',
     images: [absoluteSiteUrl('/images/areas/renda-extra.jpg')],
   },
 };
@@ -279,22 +279,22 @@ export default async function PartnerProgramsPage() {
               <section className="grid gap-4 rounded-2xl border border-neon/30 bg-income-surface/85 p-5 md:grid-cols-[1fr_auto] md:items-center md:p-6" aria-labelledby="business-quiz-cta-title">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-neon">Não sabe por onde começar?</p>
-                  <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Use a Bússola de Negócios</h2>
+                  <h2 id="business-quiz-cta-title" className="mt-2 font-playfair text-2xl font-bold md:text-3xl">Use a Bússola de Negócios IA</h2>
                   <p className="mt-2 max-w-3xl text-sm leading-relaxed opacity-75">
-                    Avalie seu tempo disponível, capital inicial, afinidade com tecnologia e tolerância a risco para receber seus 3 melhores caminhos reais de negócio ou renda extra.
+                    Simule sua área, meta de ganhos e investimento inicial em 3 passos ou faça o diagnóstico completo com IA para descobrir seus 3 melhores caminhos reais.
                   </p>
                 </div>
-                <Link href="/quiz-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
-                  Abrir Bússola de Negócios
+                <Link href="/ofertas/bussola-negocios" className="inline-flex min-h-11 items-center justify-center rounded-md border border-neon bg-neon/10 px-5 py-3 text-center text-sm font-bold text-neon transition hover:bg-neon hover:text-black">
+                  Abrir Bússola de Negócios IA
                 </Link>
               </section>
             ),
             howToChoose: (
               <div className="grid gap-3 md:grid-cols-3 md:gap-4">
                 {[
-                  ['01', 'Escolha seu ponto de partida', 'Você quer gravar, pesquisar, vender serviços, indicar ou usar o tempo ocioso?'],
-                  ['02', 'Leia antes de se cadastrar', 'Veja dificuldade, tags, contexto editorial e as condições que podem variar.'],
-                  ['03', 'Teste com expectativa realista', 'Comece pequeno, proteja seus dados e nunca pague para liberar uma promessa.'],
+                  ['01', 'Filtre pelo seu objetivo', 'Explore todas as 57 plataformas atuais por objetivo, celular, dólar ou sem investimento — sem ficar preso à página 1.'],
+                  ['02', 'Abra projetos e idiomas', 'Plataformas como Micro1, Alligner e Marketplaces reúnem dezenas de projetos em português dentro da ficha; se o idioma travar, acesse /idiomas.'],
+                  ['03', 'Teste com expectativa realista', 'Comece por uma frente, proteja seus dados e nunca pague taxa para liberar promessa de saque ou cadastro.'],
                 ].map(([number, title, description]) => (
                   <article key={number} className="rounded-2xl border border-border bg-income-surface/70 p-5">
                     <p className="text-xs font-bold tracking-[0.2em] text-neon">{number}</p>

@@ -2,13 +2,22 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProductCheckoutClient } from '@/components/funnel/product-checkout-client';
 import { getProductBySlug } from '@/config/products';
+import type { OfferTier } from '@/lib/guide-offer';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
 type CheckoutPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ tier?: string }>;
 };
+
+function parseInitialTier(rawTier: string | undefined): OfferTier | undefined {
+  if (rawTier === 'essential' || rawTier === 'complete' || rawTier === 'vip') {
+    return rawTier;
+  }
+  return undefined;
+}
 
 export async function generateMetadata({
   params,
@@ -51,8 +60,14 @@ async function loadCheckoutAuthState(): Promise<{
   }
 }
 
-export default async function OfferCheckoutPage({ params }: CheckoutPageProps) {
-  const { slug } = await params;
+export default async function OfferCheckoutPage({
+  params,
+  searchParams,
+}: CheckoutPageProps) {
+  const [{ slug }, query] = await Promise.all([
+    params,
+    searchParams ?? Promise.resolve({} as { tier?: string }),
+  ]);
   const product = getProductBySlug(slug);
 
   if (!product) {
@@ -66,6 +81,7 @@ export default async function OfferCheckoutPage({ params }: CheckoutPageProps) {
       product={product}
       isLoggedIn={authState.isLoggedIn}
       userEmail={authState.userEmail}
+      initialTier={parseInitialTier(query.tier)}
     />
   );
 }

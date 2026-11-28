@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   describeMicro1Opportunity,
+  formatMicro1CompactSummary,
   formatMicro1Pay,
   getMicro1Categories,
   getMicro1FilterOptions,
@@ -31,6 +32,28 @@ const sampleOpportunity: Micro1Opportunity = {
 
 test('translates common role terms without hiding the original title', () => {
     assert.equal(translateMicro1Title(sampleOpportunity.jobName), 'Engenheiro de software sênior (Brasil)');
+    assert.equal(translateMicro1Title('Lawyer'), 'Advogado');
+    assert.equal(translateMicro1Title('General Counsel'), 'Diretor jurídico');
+    assert.equal(translateMicro1Title('Image Annotator'), 'Anotador de imagens');
+});
+
+test('formats compact PT-BR project descriptions with at most 7 words and no English job titles', () => {
+  const cases: Micro1Opportunity[] = [
+    sampleOpportunity,
+    { ...sampleOpportunity, jobId: 'law-1', jobName: 'Lawyer', domainSlug: 'law' },
+    { ...sampleOpportunity, jobId: 'law-2', jobName: 'General Counsel', domainSlug: 'law' },
+    { ...sampleOpportunity, jobId: 'img-1', jobName: 'Image Annotator', domainSlug: 'generalist' },
+    { ...sampleOpportunity, jobId: 'tax-1', jobName: 'Senior Tax Reviewer', domainSlug: 'other' },
+    { ...sampleOpportunity, jobId: 'med-1', jobName: 'Radiation Oncologist', domainSlug: 'medicine' },
+    { ...sampleOpportunity, jobId: 'vid-1', jobName: 'At-Home Video Recorder (LATAM)', domainSlug: 'robotics' },
+  ];
+
+  for (const item of cases) {
+    const summary = formatMicro1CompactSummary(item);
+    const words = summary.trim().split(/\s+/u).filter(Boolean);
+    assert.ok(words.length >= 2 && words.length <= 7, `"${summary}" must have 2..7 words`);
+    assert.doesNotMatch(summary, /\b(Lawyer|Counsel|Annotator|Reviewer|Oncologist|Recorder|Engineer)\b/i);
+  }
 });
 
 test('groups all opportunities by domain', () => {

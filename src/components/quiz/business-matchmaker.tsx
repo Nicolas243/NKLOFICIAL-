@@ -134,7 +134,7 @@ export function BusinessMatchmaker() {
             <div className="flex flex-wrap gap-3">
               <button type="button" onClick={goBack} className="min-h-11 rounded-lg border border-border px-5 py-3 text-sm font-bold hover:border-neon">Voltar</button>
               <button type="submit" disabled={isProcessing || !privacyConsent} className="min-h-11 flex-1 rounded-lg bg-neon px-5 py-3 text-sm font-bold text-black disabled:cursor-not-allowed disabled:opacity-60">
-                {isProcessing ? 'Processando...' : 'Ver meu resultado imediato'}
+                {isProcessing ? 'Gerando diagnóstico com IA...' : 'Gerar meu diagnóstico personalizado com IA'}
               </button>
             </div>
           </motion.form>

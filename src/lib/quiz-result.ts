@@ -3,12 +3,19 @@ import type { BusinessProfile } from './quiz-engine';
 
 export type QuizBusinessResult = {
   name: string;
+  whyItFits?: string;
   actionPlan3Steps: [string, string, string];
 };
 
 export type QuizResult = {
   archetype: string;
+  diagnosticTitle?: string;
+  diagnosticHeadline?: string;
+  diagnosticSource?: '9router' | 'openai' | 'fallback';
   analysis: string;
+  strengths?: string[];
+  watchouts?: string[];
+  firstWeekFocus?: string;
   profile: CalculatedQuizProfile;
   top3Businesses: QuizBusinessResult[];
 };
@@ -106,6 +113,41 @@ const PROFILE_PLAYBOOKS: Readonly<Record<string, [string, string, string]>> = {
   ],
 };
 
+function buildStrengths(profile: CalculatedQuizProfile): string[] {
+  const strengths: string[] = [];
+  if (profile.capital <= 2) {
+    strengths.push('Disciplina financeira: você evita comprometer o orçamento fixo antes de validar demanda real.');
+  } else {
+    strengths.push('Capacidade de aporte controlado: consegue usar ferramentas ou testes pagos para encurtar o caminho.');
+  }
+  if (profile.tech >= 3.5) {
+    strengths.push('Autonomia digital acima da média para configurar ferramentas, prompts e fluxos técnicos.');
+  } else {
+    strengths.push('Foco em simplicidade operacional: maior facilidade para manter modelos enxutos e diretos.');
+  }
+  if (profile.social >= 3.5) {
+    strengths.push('Desenvoltura para se comunicar, apresentar soluções e criar confiança com clientes ou audiência.');
+  } else {
+    strengths.push('Perfil focado em execução nos bastidores, ideal para entregas técnicas ou operação silenciosa.');
+  }
+  return strengths;
+}
+
+function buildWatchouts(profile: CalculatedQuizProfile): string[] {
+  const watchouts: string[] = [];
+  if (profile.time < 2.5) {
+    watchouts.push('Agenda apertada: escolha no máximo 1 frente por 30 dias para não dispersar suas horas livres.');
+  } else {
+    watchouts.push('Excesso de ideias simultâneas: mantenha métricas semanais para não trocar de modelo na segunda semana.');
+  }
+  if (profile.risk <= 2) {
+    watchouts.push('Baixa tolerância a oscilações iniciais: prefira validação de baixo risco e metas de curto ciclo (7 dias).');
+  } else {
+    watchouts.push('Tolerância maior a risco: defina teto máximo de perda e prazo de corte antes de investir em escala.');
+  }
+  return watchouts;
+}
+
 export function buildDeterministicResult(
   profile: CalculatedQuizProfile,
   businesses: BusinessProfile[],
@@ -118,15 +160,26 @@ export function buildDeterministicResult(
         ? 'Comunicador de oportunidades'
         : 'Explorador estratégico';
 
+  const primary = businesses[0]?.name ?? 'modelo principal';
   const topNames = businesses.map((item) => item.name).join(', ');
   const analysis = `Seu perfil combina disponibilidade de investimento ${profile.capital.toFixed(1)}/5, tempo ${profile.time.toFixed(1)}/5, domínio técnico ${profile.tech.toFixed(1)}/5, tolerância a risco ${profile.risk.toFixed(1)}/5 e conforto social ${profile.social.toFixed(1)}/5. Os 3 caminhos com maior encaixe real agora são: ${topNames}. Comece pelo primeiro modelo e valide com um ciclo curto de 7 dias antes de aumentar seu compromisso.`;
 
   return {
     archetype,
+    diagnosticTitle: 'Diagnóstico Personalizado · Bússola de Negócios IA',
+    diagnosticHeadline: `${archetype}: direção prática focada em ${primary}`,
+    diagnosticSource: 'fallback',
     analysis,
+    strengths: buildStrengths(profile),
+    watchouts: buildWatchouts(profile),
+    firstWeekFocus: `Dedique os próximos 7 dias apenas a testar "${primary}" com meta clara de horas e registro dos primeiros resultados reais.`,
     profile,
-    top3Businesses: businesses.map((business) => ({
+    top3Businesses: businesses.map((business, index) => ({
       name: business.name,
+      whyItFits:
+        index === 0
+          ? 'Maior compatibilidade geral com seu tempo disponível, investimento inicial e estilo de execução.'
+          : 'Alternativa complementar alinhada aos mesmos eixos caso queira testar uma segunda frente.',
       actionPlan3Steps: PROFILE_PLAYBOOKS[business.name] ?? [
         `Leia as regras oficiais e confirme os requisitos atuais para ${business.name}.`,
         'Reserve um teste curto de 7 dias com teto de horas e gasto zero/controlado.',

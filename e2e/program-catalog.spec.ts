@@ -18,16 +18,57 @@ test.describe('catálogo de oportunidades', () => {
     await expect(page.locator('#programs-grid')).not.toContainText('Conteúdo Premium');
   });
 
-  test('abre o filtro rolável da Micro1 com filtros rápidos antes das especialidades', async ({ page }) => {
+  test('exibe todas as oportunidades na primeira pagina, botoes alinhados, link de idiomas e projetos Micro1 em PT-BR', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/programas');
+
+    const totalCards = await page.locator('#programs-grid article[role="button"]').count();
+    expect(totalCards).toBeGreaterThanOrEqual(50);
+
+    const floatingGuide = page.getByTestId('floating-como-funciona');
+    await expect(floatingGuide).toBeVisible();
+    await floatingGuide.getByRole('link', { name: /Como funciona/i }).click();
+    await expect(page.locator('#como-funciona')).toBeVisible();
+
+    const helperIdiomasLink = page.getByRole('link', { name: 'Tem dificuldade com idioma?' }).first();
+    await expect(helperIdiomasLink).toBeVisible();
+    await expect(helperIdiomasLink).toHaveAttribute('href', '/idiomas');
 
     const micro1Card = page.locator('#programs-grid article').filter({ hasText: 'Micro1' }).first();
     if (await micro1Card.count() === 0) {
       test.skip(true, 'Micro1 requires drizzle/0044_new_income_programs.sql in the test database.');
     }
-    await micro1Card.getByRole('button', { name: 'Tipos' }).click();
+    await expect(micro1Card.getByTestId('micro1-card-hint')).toBeVisible();
+    await expect(micro1Card.getByText('Projeto em destaque')).toHaveCount(0);
 
-    const dialog = page.getByRole('dialog', { name: 'Filtrar vagas' });
+    await micro1Card.locator('button').filter({ hasText: 'Ler mais' }).last().click();
+
+    const modalActions = page.getByTestId('program-modal-actions');
+    await expect(modalActions).toBeVisible();
+    const actionBoxes = await modalActions
+      .locator('a, button')
+      .evaluateAll((elements) =>
+        elements.map((el) => {
+          const rect = el.getBoundingClientRect();
+          return { top: Math.round(rect.top), height: Math.round(rect.height) };
+        }),
+      );
+    expect(actionBoxes.length).toBeGreaterThanOrEqual(4);
+    for (const box of actionBoxes) {
+      expect(box.height).toBeGreaterThanOrEqual(42);
+      expect(box.height).toBeLessThanOrEqual(48);
+    }
+    const heights = actionBoxes.map((box) => box.height);
+    expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(2);
+    const tops = actionBoxes.map((box) => box.top);
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(2);
+
+    const fullOpportunities = page.getByTestId('micro1-full-opportunities');
+    await expect(fullOpportunities).toBeVisible();
+    await expect(fullOpportunities.getByTestId('micro1-draggable-list')).toBeVisible();
+    await fullOpportunities.getByRole('button', { name: /Tipo:/u }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Filtrar projetos' });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('button', { name: /Português/u })).toBeVisible();
     await expect(dialog.getByRole('button', { name: /Fácil/u })).toBeVisible();
@@ -42,8 +83,13 @@ test.describe('catálogo de oportunidades', () => {
       test.skip(true, 'Micro1 requires drizzle/0044_new_income_programs.sql in the test database.');
     }
     await expect(page.getByTestId('micro1-full-opportunities')).toBeVisible();
-    await expect(page.getByPlaceholder('Pesquisar vaga...')).toBeVisible();
+    await expect(page.getByPlaceholder('Pesquisar projeto ou área...')).toBeVisible();
     await expect(page.getByRole('button', { name: /Tipo:/u })).toBeVisible();
+
+    const list = page.getByTestId('micro1-draggable-list');
+    await expect(list).toBeVisible();
+    await expect(list.getByRole('link', { name: /Quero entrar/i }).first()).toBeVisible();
+    await expect(list.getByRole('button', { name: /Compartilhar/i }).first()).toBeVisible();
   });
 
   test('abre a oportunidade pelo botão principal Ler mais', async ({ page }) => {
@@ -97,17 +143,17 @@ test.describe('catálogo de oportunidades', () => {
   });
 
   test('limita o convite do Buy Me a Coffee à oportunidade correspondente', async ({ page }) => {
-    const inviteLink = page.getByRole('link', { name: 'Convidar no Buy Me a Coffee' });
+    const inviteLink = page.getByRole('link', { name: 'Convidar no Pague um Café' });
 
     await page.goto('/programas');
-    await expect(page.locator('footer')).not.toContainText('Convidar no Buy Me a Coffee');
+    await expect(page.locator('footer')).not.toContainText('Convidar no Pague um Café');
 
     await page.locator('#search-input').fill('Buy Me a Coffee');
     const buyMeACoffeeCard = page.locator('#programs-grid article').filter({ hasText: 'Buy Me a Coffee' });
     await expect(buyMeACoffeeCard).toHaveCount(1);
     await buyMeACoffeeCard.getByRole('button', { name: 'Ler mais' }).click();
     const opportunityDialog = page.getByRole('dialog', { name: /Detalhes de/ });
-    await expect(opportunityDialog.getByRole('link', { name: 'Convidar no Buy Me a Coffee' }))
+    await expect(opportunityDialog.getByRole('link', { name: 'Convidar no Pague um Café' }))
       .toHaveAttribute('href', 'https://www.buymeacoffee.com/invite/ni2co3san9c');
 
     await page.goto('/programas/monetizacao-atencao-web');
@@ -115,7 +161,7 @@ test.describe('catálogo de oportunidades', () => {
     await expect(inviteLink).toHaveAttribute('rel', /noopener noreferrer sponsored/u);
 
     await page.goto('/programas/mercado-pago');
-    await expect(page.locator('body')).not.toContainText('Convidar no Buy Me a Coffee');
+    await expect(page.locator('body')).not.toContainText('Convidar no Pague um Café');
   });
 
   test('encerra o tutorial ao clicar no elemento destacado e mantém a ação', async ({ page }) => {
@@ -201,7 +247,7 @@ test.describe('catálogo de oportunidades', () => {
 
   test('preserva a oferta com atribuição válida ou inválida', async ({ page }) => {
     await page.goto('/guias/renda-extra?cta_variant=1');
-    await expect(page.locator('#discount-simulator-title')).toBeVisible();
+    await expect(page.locator('#guide-unified-checkout')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Guias para Liberdade Financeira' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Começar por R$ 19/mês' })).toBeVisible();
 
@@ -229,13 +275,11 @@ test.describe('catálogo de oportunidades', () => {
     });
 
     await page.goto('/guias/renda-extra?cta_variant=1');
-    await page.locator('#guide-subscription-cpf').fill('529.982.247-25');
-    await page.getByText('Concordo que o CPF seja usado apenas para personalizar e proteger meus materiais.').last().click();
+    await page.locator('#guide-checkout-name').fill('Nicolas Santos');
+    await page.locator('#guide-checkout-email').fill('buyer@example.com');
+    await page.locator('#guide-checkout-cpf').fill('529.982.247-25');
+    await page.locator('#guide-unified-checkout input[type="checkbox"]').click();
     await page.getByRole('button', { name: 'Começar por R$ 19/mês' }).click();
-    const stripeButton = page.getByRole('button', { name: 'Assinar com Stripe' });
-    if (await stripeButton.count() > 0) {
-      await stripeButton.click();
-    }
 
     await expect.poll(() => events.some((event) => (
       event.experiment === 'guide-page-cta'

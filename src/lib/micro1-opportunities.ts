@@ -172,9 +172,11 @@ const DOMAIN_LABELS: Record<string, string> = {
   law: 'Direito',
   medicine: 'Medicina e saúde',
   other: 'Outras especialidades',
+  'retail-hospitality': 'Varejo e atendimento',
   robotics: 'Robótica e vídeo',
   'sales-marketing': 'Vendas e marketing',
   'sciences-research': 'Ciência e pesquisa',
+  'skilled-trades-construction': 'Ofícios e construção',
   'software-engineering': 'Tecnologia e programação',
 };
 
@@ -202,6 +204,9 @@ const QUICK_FILTER_LABELS: Array<{ slug: string; label: string }> = [
 function opportunitySearchText(opportunity: Micro1Opportunity): string {
   return [
     opportunity.jobName,
+    translateMicro1Title(opportunity.jobName),
+    formatMicro1CompactSummary(opportunity),
+    getMicro1CategoryLabel(opportunity.domainSlug),
     opportunity.domainSlug,
     opportunity.roleType ?? '',
     ...opportunity.skills,
@@ -247,21 +252,84 @@ export function getMicro1FilterLabel(opportunities: Micro1Opportunity[], filterS
 const TRANSLATIONS: Array<[RegExp, string]> = [
   [/\bSenior Software Engineer\b/giu, 'Engenheiro de software sênior'],
   [/\bSoftware Engineer\b/giu, 'Engenheiro de software'],
+  [/\bMechanical Design Engineer\b/giu, 'Engenheiro de projeto mecânico'],
+  [/\bOptomechanical Design Engineer\b/giu, 'Engenheiro optomecânico'],
+  [/\bForward Deployed Engineer\b/giu, 'Engenheiro de implantação'],
+  [/\bBackend Developer\b/giu, 'Desenvolvedor backend'],
   [/\bData Scientist\b/giu, 'Cientista de dados'],
+  [/\bResearch Scientist\b/giu, 'Cientista pesquisador'],
+  [/\bPolymer Scientist\b/giu, 'Cientista de polímeros'],
+  [/\bFormulation Scientist\b/giu, 'Cientista de formulações'],
   [/\bEnglish Language Expert\b/giu, 'Especialista em idioma inglês'],
   [/\bPortuguese Bilingual Expert\b/giu, 'Especialista bilíngue em português'],
+  [/\bAt-Home Video Recorder\b/giu, 'Gravador de vídeo em casa'],
+  [/\bSmartphone Video Recorder\b/giu, 'Gravador de vídeo no celular'],
   [/\bVideo Recorder\b/giu, 'Gravador de vídeo'],
   [/\bCar-Mounted\b/giu, 'Montado em carro'],
+  [/\bImage Annotator\b/giu, 'Anotador de imagens'],
+  [/\bHuman Data Manager\b/giu, 'Gerente de dados humanos'],
+  [/\bGeneral Counsel\b/giu, 'Diretor jurídico'],
+  [/\bTransactional Attorney\b/giu, 'Advogado de transações'],
+  [/\bCommercial Attorney\b/giu, 'Advogado comercial'],
+  [/\bContracts? Attorney\b/giu, 'Advogado de contratos'],
+  [/\bInvestment Funds Attorney\b/giu, 'Advogado de fundos'],
+  [/\bIn-House Counsel\b/giu, 'Advogado corporativo'],
+  [/\bDerivatives Counsel\b/giu, 'Advogado de derivativos'],
+  [/\bMilitary Legal Advisor\b/giu, 'Consultor jurídico militar'],
+  [/\bJunior Lawyer\b/giu, 'Advogado júnior'],
+  [/\bLaw Student\b/giu, 'Estudante de direito'],
+  [/\bLawyer\b/giu, 'Advogado'],
+  [/\bAttorney\b/giu, 'Advogado'],
+  [/\bCounsel\b/giu, 'Consultor jurídico'],
+  [/\bFighter Pilot\b/giu, 'Piloto de caça'],
+  [/\bRadiation Oncologist\b/giu, 'Oncologista de radiação'],
+  [/\bRegistered Nurse\b/giu, 'Enfermeiro registrado'],
+  [/\bClinical Psychologist\b/giu, 'Psicólogo clínico'],
+  [/\bPsychiatrist\b/giu, 'Psiquiatra'],
+  [/\bPhysician\b/giu, 'Médico'],
+  [/\bMedical Doctor\b/giu, 'Médico'],
+  [/\bMedical Coder\b/giu, 'Codificador médico'],
+  [/\bInpatient Coder\b/giu, 'Codificador hospitalar'],
+  [/\bInpatient facility coder\b/giu, 'Codificador hospitalar'],
+  [/\bHospitalist\b/giu, 'Médico hospitalista'],
+  [/\bFamily Medicine\b/giu, 'Medicina de família'],
+  [/\bMental Health Clinician\b/giu, 'Clínico de saúde mental'],
+  [/\bTax Reviewer\b/giu, 'Revisor tributário'],
+  [/\bTax Expert\b/giu, 'Especialista tributário'],
+  [/\bFinance & Accounting\b/giu, 'Finanças e contabilidade'],
+  [/\bCustomer Experience\b/giu, 'Experiência do cliente'],
+  [/\bCustomer Support\b/giu, 'Suporte ao cliente'],
+  [/\bCustomer Service\b/giu, 'Atendimento ao cliente'],
+  [/\bHospitality Worker\b/giu, 'Profissional de hospitalidade'],
+  [/\bProfessional Photographer\b/giu, 'Fotógrafo profissional'],
+  [/\bProfessional Shopper\b/giu, 'Comprador misterioso'],
+  [/\bUI\/UX Designer\b/giu, 'Designer UI/UX'],
+  [/\bProduct Owner\b/giu, 'Dono de produto'],
+  [/\bCategory Manager\b/giu, 'Gerente de categoria'],
+  [/\bData Partnerships Manager\b/giu, 'Gerente de parcerias de dados'],
+  [/\bMusic Teacher\b/giu, 'Professor de música'],
+  [/\bAI Trainer\b/giu, 'Treinador de IA'],
+  [/\bAI Product Tester\b/giu, 'Testador de produtos de IA'],
+  [/\bDomain Researcher\b/giu, 'Pesquisador de área'],
   [/\bSenior\b/giu, 'Sênior'],
   [/\bJunior\b/giu, 'Júnior'],
+  [/\bPrincipal\b/giu, 'Principal'],
+  [/\bDistinguished\b/giu, 'Sênior'],
   [/\bLead\b/giu, 'Líder'],
   [/\bExpert\b/giu, 'Especialista'],
   [/\bSpecialist\b/giu, 'Especialista'],
+  [/\bPractitioner\b/giu, 'Especialista'],
+  [/\bAdvisor\b/giu, 'Consultor'],
+  [/\bExaminer\b/giu, 'Analista'],
+  [/\bAuditor\b/giu, 'Auditor'],
   [/\bEngineer\b/giu, 'Engenheiro'],
   [/\bEngineering\b/giu, 'Engenharia'],
   [/\bDeveloper\b/giu, 'Desenvolvedor'],
+  [/\bProgrammer\b/giu, 'Programador'],
+  [/\bArchitect\b/giu, 'Arquiteto'],
   [/\bScientist\b/giu, 'Cientista'],
   [/\bResearcher\b/giu, 'Pesquisador'],
+  [/\bResearch\b/giu, 'Pesquisa'],
   [/\bAnalyst\b/giu, 'Analista'],
   [/\bDesigner\b/giu, 'Designer'],
   [/\bWriter\b/giu, 'Redator'],
@@ -271,6 +339,9 @@ const TRANSLATIONS: Array<[RegExp, string]> = [
   [/\bTester\b/giu, 'Testador'],
   [/\bTeacher\b/giu, 'Professor'],
   [/\bTutor\b/giu, 'Tutor'],
+  [/\bRecruiter\b/giu, 'Recrutador'],
+  [/\bStatistician\b/giu, 'Estatístico'],
+  [/\bContributor\b/giu, 'Colaborador'],
   [/\bLanguage\b/giu, 'Idioma'],
   [/\bEnglish\b/giu, 'inglês'],
   [/\bPortuguese\b/giu, 'português'],
@@ -288,10 +359,78 @@ const TRANSLATIONS: Array<[RegExp, string]> = [
   [/\bRemote\b/giu, 'Remoto'],
   [/\bBrazil\b/giu, 'Brasil'],
   [/\bUnited States\b/giu, 'Estados Unidos'],
+  [/\bLATAM\b/giu, 'América Latina'],
+  [/\bU\.S\.?\b/giu, 'EUA'],
 ];
 
 export function translateMicro1Title(title: string): string {
-  return TRANSLATIONS.reduce((translated, [pattern, replacement]) => translated.replace(pattern, replacement), title);
+  return TRANSLATIONS.reduce((translated, [pattern, replacement]) => translated.replace(pattern, replacement), title).trim();
+}
+
+export function enforceMaxSevenWords(text: string): string {
+  const words = text.trim().split(/\s+/u).filter(Boolean);
+  if (words.length <= 7) return words.join(' ');
+  return words.slice(0, 7).join(' ');
+}
+
+export function formatMicro1CompactSummary(opportunity: Micro1Opportunity): string {
+  const source = `${opportunity.jobName} ${opportunity.skills.join(' ')}`.toLocaleLowerCase('en-US');
+
+  let summary: string;
+
+  if (/(lawyer|attorney|counsel|legal|law\b)/u.test(source)) {
+    summary = 'Avaliar contratos e pareceres jurídicos com IA';
+  } else if (/(image annotator|imagery|drone|maritime|photographer)/u.test(source)) {
+    summary = 'Analisar ou capturar fotos e imagens';
+  } else if (/(video recorder|gravador|smartphone video|data-video|robotics)/u.test(source)) {
+    summary = 'Gravar vídeos reais seguindo o roteiro';
+  } else if (/(tax|budget|accounting|finance|derivatives|m&a|auditor|claims)/u.test(source)) {
+    summary = 'Revisar finanças, tributos e análises para IA';
+  } else if (/(oncologist|physician|medical|nurse|psychologist|psychiatrist|mental health|inpatient|coder)/u.test(source)) {
+    summary = 'Revisar conteúdos médicos e saúde para IA';
+  } else if (/(scientist|physics|polymer|formulation|life sciences|math|statistician|lean 4)/u.test(source)) {
+    summary = 'Avaliar pesquisas científicas e raciocínio lógico';
+  } else if (/(software|backend|rust|cuda|gpu|electron|it specialist|cybersecurity|deployed engineer)/u.test(source)) {
+    summary = 'Avaliar códigos e projetos de engenharia';
+  } else if (/(mechanical|optomechanical|manufacturing|cnc|semiconductor|autodesk)/u.test(source)) {
+    summary = 'Revisar projetos mecânicos e engenharia aplicada';
+  } else if (/(education|teacher|tutor|learning|assessment)/u.test(source)) {
+    summary = 'Criar e avaliar materiais de ensino';
+  } else if (/(pilot|military|intelligence|combat|defense|humanitarian|federal)/u.test(source)) {
+    summary = 'Avaliar cenários operacionais e políticas públicas';
+  } else if (/(hospitality|travel|customer|retail|telecom|airline|shopper|recruiter|talent)/u.test(source)) {
+    summary = 'Avaliar atendimento, suporte e processos comerciais';
+  } else if (/(ui\/ux|creative|marketing|category|product owner)/u.test(source)) {
+    summary = 'Avaliar design, marketing ou produto digital';
+  } else if (opportunity.domainSlug === 'language-audio' || /(language|portuguese|english|spanish|french|german|audio|linguist|translator)/u.test(source)) {
+    summary = 'Avaliar áudios, traduções e textos em idiomas';
+  } else if (opportunity.domainSlug === 'software-engineering' || opportunity.domainSlug === 'cybersecurity') {
+    summary = 'Avaliar códigos e soluções de tecnologia';
+  } else if (opportunity.domainSlug === 'robotics') {
+    summary = 'Gravar ou revisar vídeos para robótica';
+  } else if (opportunity.domainSlug === 'medicine') {
+    summary = 'Revisar conteúdos técnicos na área médica';
+  } else if (opportunity.domainSlug === 'law') {
+    summary = 'Avaliar questões e textos da área jurídica';
+  } else if (opportunity.domainSlug === 'finance') {
+    summary = 'Revisar análises financeiras para treinar IA';
+  } else if (opportunity.domainSlug === 'sciences-research') {
+    summary = 'Avaliar pesquisas científicas para modelos IA';
+  } else if (opportunity.domainSlug === 'applied-engineering') {
+    summary = 'Revisar projetos técnicos de engenharia aplicada';
+  } else if (opportunity.domainSlug === 'education') {
+    summary = 'Avaliar questões e conteúdos educacionais';
+  } else if (opportunity.domainSlug === 'arts-design') {
+    summary = 'Avaliar peças visuais, design e criatividade';
+  } else if (opportunity.domainSlug === 'sales-marketing') {
+    summary = 'Avaliar estratégias comerciais e de marketing';
+  } else if (opportunity.domainSlug === 'business-operations') {
+    summary = 'Avaliar operações e fluxos empresariais';
+  } else {
+    summary = 'Revisar dados e respostas para treinar IA';
+  }
+
+  return enforceMaxSevenWords(summary);
 }
 
 export function describeMicro1Opportunity(opportunity: Micro1Opportunity): string {
@@ -320,6 +459,12 @@ function formatNumber(value: number): string {
 export function formatMicro1Pay(opportunity: Micro1Opportunity): { original: string; estimatedBrl: string | null } {
   if (opportunity.hourlyRate) {
     const { min, max } = opportunity.hourlyRate;
+    if (min >= 5000) {
+      return {
+        original: `US$ ${formatNumber(min)}–${formatNumber(max)}/ano`,
+        estimatedBrl: null,
+      };
+    }
     const original = `US$ ${formatNumber(min)}–${formatNumber(max)}/hora`;
     const estimatedBrl = `≈ R$ ${formatNumber(min * MICRO1_EDITORIAL_USD_BRL_RATE)}–${formatNumber(max * MICRO1_EDITORIAL_USD_BRL_RATE)}/hora`;
     return { original, estimatedBrl };
@@ -333,5 +478,5 @@ export function formatMicro1Pay(opportunity: Micro1Opportunity): { original: str
   if (opportunity.yearlyCompensation) {
     return { original: opportunity.yearlyCompensation, estimatedBrl: null };
   }
-  return { original: 'Valor informado no projeto', estimatedBrl: null };
+  return { original: 'Valor no projeto', estimatedBrl: null };
 }

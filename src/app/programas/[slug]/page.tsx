@@ -17,6 +17,7 @@ import { TrustBadges } from '@/components/ui/trust-badges';
 import { SocialEmbed } from '@/components/video/social-embed';
 import { PwaInstallButton } from '@/components/pwa';
 import { Micro1OpportunitiesSection } from '@/components/micro1-opportunities-section';
+import { MultiProjectSection } from '@/components/income/multi-project-section';
 import { getMicro1Opportunities } from '@/lib/micro1-opportunities';
 import { getMatchingProgramHubs } from '@/lib/program-hubs';
 import { getProgramComparisonsForSlug } from '@/lib/seo/program-comparisons';
@@ -214,6 +215,14 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
             <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Idioma</p>
               <p className="mt-2 font-bold">{program.languages.join(' · ')}</p>
+              {program.languages.some((language) => language !== 'Português') && (
+                <Link
+                  href="/idiomas"
+                  className="mt-2 inline-flex rounded-full border border-orange/45 bg-orange/10 px-2.5 py-0.5 text-xs font-bold text-orange-700 transition hover:bg-orange hover:text-white dark:text-orange-300"
+                >
+                  Tem dificuldade com idioma?
+                </Link>
+              )}
             </div>
             <div className="rounded-xl border border-border bg-income-card/80 p-4">
               <p className="text-xs uppercase tracking-wide opacity-55">Dificuldade</p>
@@ -255,6 +264,9 @@ export default async function PartnerProgramDetailsPage(props: { params: Params 
                     variant="full"
                   />
                 </div>
+              )}
+              {program.slug !== 'micro1' && (
+                <MultiProjectSection slug={program.slug} programName={program.name} />
               )}
               {program.slug === BUY_ME_A_COFFEE_SLUG && (
                 <section className="mt-5 rounded-xl border border-neon/25 bg-neon/5 p-5">

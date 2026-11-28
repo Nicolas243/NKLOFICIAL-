@@ -37,7 +37,7 @@ export default async function IncomeGuidePage({ searchParams }: IncomeGuidePageP
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange">Guia NKL · produto digital</p>
             <h1 className="mt-4 max-w-xl font-playfair text-5xl font-bold leading-[0.98] md:text-7xl">Pare de abrir oportunidade no escuro.</h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Você recebe cinco arquivos práticos para comparar opções, entender os critérios e escolher um próximo passo realista — ou pode levar apenas o guia essencial ou o acervo completo com os 6 e-books de idiomas.</p>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">Você recebe cinco arquivos práticos para comparar oportunidades, entender os critérios e escolher um próximo passo realista — com acesso mensal de R$ 19/mês, pacote único ou acervo total com os 6 e-books de idiomas.</p>
             <ul className="mt-5 space-y-3 text-sm font-medium">
               {[
                 'Guia Essencial Renda Extra 2027',

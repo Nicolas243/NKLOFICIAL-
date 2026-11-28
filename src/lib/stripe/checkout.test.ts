@@ -72,7 +72,7 @@ test('buildGuidePurchaseCheckoutParams forwards exact productSlug and specialize
   assert.equal(bussolaParams.metadata.productSlug, 'bussola-negocios');
   assert.equal(
     (bussolaParams.lineItems[0] as { price_data?: { product_data?: { name?: string } } })?.price_data?.product_data?.name,
-    'Bússola de Negócios',
+    'Bússola de Negócios IA',
   );
 
   const idiomasParams = buildGuidePurchaseCheckoutParams({
